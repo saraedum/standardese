@@ -231,6 +231,8 @@ standardese::generation_config get_generation_config(const po::variables_map& op
                     !get_option<bool>(options, "input.require_comment").value());
     config.set_flag(standardese::generation_config::inline_doc,
                     get_option<bool>(options, "output.inline_doc").value());
+    config.set_flag(standardese::generation_config::show_output_section,
+                    get_option<bool>(options, "output.show_output_section").value());
 
     auto order = get_option<std::string>(options, "output.entity_index_order").value();
     if (order == "namespace_inline_sorted")
@@ -417,6 +419,8 @@ int main(int argc, char* argv[])
          "whether or not to separate all class members with an empty line")
         ("output.show_macro_replacement", po::value<bool>()->default_value(false)->implicit_value(true),
          "whether or not the replacement of macros will be shown")
+        ("output.show_output_section", po::value<bool>()->default_value(false)->implicit_value(true),
+         "whether or not output sections show up in the detailed API as headlines")
         ("output.show_group_output_section", po::value<bool>()->default_value(true)->implicit_value(true),
          "whether or not member groups have an implicit output section");
     // clang-format on
