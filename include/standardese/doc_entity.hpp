@@ -102,6 +102,8 @@ public:
         document_uncommented, //< Generate documentation for uncommented entities,
         /// even if they have no documented child entities.
 
+        blacklist_uncommented, //< Do not mention uncommented entities in the class synopsis
+
         inline_doc, //< Show documentation of entities like parameters inline in the parent
                     // documentation.
         show_output_section, //< If set, each output section will be
@@ -732,7 +734,7 @@ private:
 /// Excludes all entities that need excluding.
 /// \notes This must be called before [standardese::build_doc_entities]() for all files.
 void exclude_entities(const comment_registry& registry, const cppast::cpp_entity_index& index,
-                      const entity_blacklist& blacklist, const cppast::cpp_file& file);
+                      const entity_blacklist& blacklist, bool blacklist_uncommented, const cppast::cpp_file& file);
 
 /// Creates the [standardese::doc_entity]() hierarchy.
 /// \effects Traverses over all entities in the file, builds matching doc entities and marks
