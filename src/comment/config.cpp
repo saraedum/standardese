@@ -3,10 +3,11 @@
 // This file is subject to the license terms in the LICENSE file
 // found in the top-level directory of this distribution.
 
-#include <standardese/comment/config.hpp>
 #include <stdexcept>
 #include <cassert>
 
+#include "../../include/standardese/comment/config.hpp"
+#include "../../include/standardese/comment/commands.hpp"
 #include "../util/enum_values.hpp"
 
 using namespace standardese::comment;

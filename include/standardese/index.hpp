@@ -9,24 +9,20 @@
 #include <mutex>
 #include <vector>
 
+#include <cppast/forward.hpp>
+
 #include <type_safe/reference.hpp>
 #include <type_safe/variant.hpp>
 
-#include <standardese/markup/index.hpp>
-
-namespace cppast
-{
-class cpp_entity;
-class cpp_file;
-class cpp_namespace;
-} // namespace cppast
+#include "output/markup/brief_section.hpp"
+#include "output/markup/namespace_documentation.hpp"
+#include "output/markup/entity_index.hpp"
+#include "output/markup/file_index.hpp"
+#include "output/markup/module_documentation.hpp"
+#include "output/markup/module_index.hpp"
 
 namespace standardese
 {
-namespace markup
-{
-    class document_entity;
-} // namespace markup
 
 /// An index of all the namespace level entities.
 ///
@@ -42,14 +38,14 @@ public:
     /// scope. The user data of the entity must be `nullptr` or the corresponding
     /// [standardese::doc_entity]. \notes This function is thread safe.
     void register_entity(std::string link_name, const cppast::cpp_entity& entity,
-                         type_safe::optional_ref<const markup::brief_section> brief) const;
+                         type_safe::optional_ref<const output::markup::brief_section> brief) const;
 
     /// \effects Registers a namespace and its (incomplete) documentation.
     /// The user data of the namespace must be `nullptr` or the corresponding
     /// [standardese::doc_entity]. Duplicate registration will merge documentation. \notes This
     /// function is thread safe.
     void register_namespace(const cppast::cpp_namespace&             ns,
-                            markup::namespace_documentation::builder doc) const;
+                            output::markup::namespace_documentation::builder doc) const;
 
     /// How the entities are ordered.
     enum order
@@ -61,21 +57,21 @@ public:
     /// \returns The markup containing the index of all entities registered so far.
     /// \requires This function must only be called once.
     /// \notes This function is thread safe.
-    std::unique_ptr<markup::entity_index> generate(order o) const;
+    std::unique_ptr<output::markup::entity_index> generate(order o) const;
 
 private:
     struct entity
     {
         std::string name, scope;
-        type_safe::variant<std::unique_ptr<markup::entity_index_item>,
-                           markup::namespace_documentation::builder>
+        type_safe::variant<std::unique_ptr<output::markup::entity_index_item>,
+                           output::markup::namespace_documentation::builder>
             doc;
 
-        entity(std::unique_ptr<markup::entity_index_item> doc, std::string name, std::string scope)
+        entity(std::unique_ptr<output::markup::entity_index_item> doc, std::string name, std::string scope)
         : name(std::move(name)), scope(std::move(scope)), doc(std::move(doc))
         {}
 
-        entity(markup::namespace_documentation::builder doc, std::string name, std::string scope)
+        entity(output::markup::namespace_documentation::builder doc, std::string name, std::string scope)
         : name(std::move(name)), scope(std::move(scope)), doc(std::move(doc))
         {}
     };
@@ -100,20 +96,20 @@ public:
     /// Duplicate registration has no effect.
     /// \notes This function is thread safe.
     void register_file(std::string link_name, std::string file_name,
-                       type_safe::optional_ref<const markup::brief_section> brief) const;
+                       type_safe::optional_ref<const output::markup::brief_section> brief) const;
 
     /// \returns The markup containing the index of all files registered so far.
     /// \requires This function must only be called once.
     /// \notes This function is thread safe.
-    std::unique_ptr<markup::file_index> generate() const;
+    std::unique_ptr<output::markup::file_index> generate() const;
 
 private:
     struct file
     {
         std::string                                name;
-        std::unique_ptr<markup::entity_index_item> doc;
+        std::unique_ptr<output::markup::entity_index_item> doc;
 
-        file(std::string name, std::unique_ptr<markup::entity_index_item> doc)
+        file(std::string name, std::unique_ptr<output::markup::entity_index_item> doc)
         : name(std::move(name)), doc(std::move(doc))
         {}
     };
@@ -129,7 +125,7 @@ public:
     /// \effects Registers a module passing its (incomplete) documentation.
     /// Duplicate registration has no effect.
     /// \notes This function is thread safe.
-    void register_module(markup::module_documentation::builder doc) const;
+    void register_module(output::markup::module_documentation::builder doc) const;
 
     /// \effects Registers an entity for the given module.
     /// \returns Whether or not there was a module already.
@@ -137,19 +133,17 @@ public:
     /// \notes This function is thread safe.
     bool register_entity(std::string module, std::string link_name,
                          const cppast::cpp_entity&                            entity,
-                         type_safe::optional_ref<const markup::brief_section> brief) const;
+                         type_safe::optional_ref<const output::markup::brief_section> brief) const;
 
     /// \returns The markup containing the index of all modules registered so far.
     /// \requires This function must only be called once.
     /// \notes This function is thread safe.
-    std::unique_ptr<markup::module_index> generate() const;
+    std::unique_ptr<output::markup::module_index> generate() const;
 
 private:
     mutable std::mutex                                         mutex_;
-    mutable std::vector<markup::module_documentation::builder> modules_;
+    mutable std::vector<output::markup::module_documentation::builder> modules_;
 };
-
-class comment_registry;
 
 /// Registers all entities in a module for the corresponding module.
 void register_module_entities(const module_index& index, const comment_registry& registry,

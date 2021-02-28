@@ -6,8 +6,9 @@
 
 #include <fstream>
 
-#include <standardese/index.hpp>
-#include <standardese/linker.hpp>
+#include "../include/standardese/index.hpp"
+#include "../include/standardese/linker.hpp"
+#include "../include/standardese/output/markup/subdocument.hpp"
 
 #include "thread_pool.hpp"
 
@@ -98,10 +99,10 @@ std::vector<std::unique_ptr<standardese::doc_cpp_file>> standardese_tool::build_
 
 namespace
 {
-std::unique_ptr<standardese::markup::document_entity> get_index_document(
-    std::unique_ptr<standardese::markup::index_entity> index, const char* title, const char* name)
+std::unique_ptr<standardese::output::markup::document_entity> get_index_document(
+    std::unique_ptr<standardese::output::markup::index_entity> index, const char* title, const char* name)
 {
-    standardese::markup::subdocument::builder document(title, name);
+    standardese::output::markup::subdocument::builder document(title, name);
     document.add_child(std::move(index));
     return document.finish();
 }
@@ -114,7 +115,7 @@ documents standardese_tool::generate(
     const std::vector<std::unique_ptr<standardese::doc_cpp_file>>& files, unsigned no_threads)
 {
     std::mutex                                                         result_mutex;
-    std::vector<std::unique_ptr<standardese::markup::document_entity>> result;
+    std::vector<std::unique_ptr<standardese::output::markup::document_entity>> result;
 
     standardese::entity_index eindex;
     standardese::file_index   findex;
@@ -126,7 +127,7 @@ documents standardese_tool::generate(
         std::vector<std::future<void>> futures;
         for (auto& file : files)
             futures.push_back(add_job(pool, [&] {
-                standardese::markup::subdocument::builder document(file->output_name(),
+                standardese::output::markup::subdocument::builder document(file->output_name(),
                                                                    "doc_"
                                                                        + get_output_file_name(
                                                                              file->output_name()));
@@ -169,13 +170,3 @@ documents standardese_tool::generate(
     return result;
 }
 
-void standardese_tool::write_files(const documents& docs, standardese::markup::generator generator,
-                                   std::string prefix, const char* extension, unsigned no_threads)
-{
-    thread_pool pool(no_threads);
-    for (auto& doc : docs)
-        add_job(pool, [&] {
-            std::ofstream file(prefix + doc->output_name().file_name(extension));
-            generator(file, *doc);
-        });
-}

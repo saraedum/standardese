@@ -8,15 +8,11 @@
 #include <cassert>
 #include <unordered_set>
 
+#include <type_safe/flag_set.hpp>
+
 #include <cppast/code_generator.hpp>
-#include <cppast/cpp_entity.hpp>
-#include <cppast/cpp_namespace.hpp>
 
 #include "index.hpp"
-#include <standardese/comment/doc_comment.hpp>
-#include <standardese/markup/code_block.hpp>
-#include <standardese/markup/documentation.hpp>
-#include <standardese/markup/index.hpp>
 
 namespace standardese
 {
@@ -153,18 +149,18 @@ namespace detail
 {
     struct inline_entity_list
     {
-        markup::unordered_list::builder params;
-        markup::unordered_list::builder tparams;
-        markup::unordered_list::builder bases;
-        markup::unordered_list::builder enumerators;
-        markup::unordered_list::builder members;
+        output::markup::unordered_list::builder params;
+        output::markup::unordered_list::builder tparams;
+        output::markup::unordered_list::builder bases;
+        output::markup::unordered_list::builder enumerators;
+        output::markup::unordered_list::builder members;
 
         explicit inline_entity_list(const std::string& link_name)
-        : params(markup::block_id(link_name + "-params")),
-          tparams(markup::block_id(link_name + "-tparams")),
-          bases(markup::block_id(link_name + "-bases")),
-          enumerators(markup::block_id(link_name + "-enumerators")),
-          members(markup::block_id(link_name + "-members"))
+        : params(output::markup::block_id(link_name + "-params")),
+          tparams(output::markup::block_id(link_name + "-tparams")),
+          bases(output::markup::block_id(link_name + "-bases")),
+          enumerators(output::markup::block_id(link_name + "-enumerators")),
+          members(output::markup::block_id(link_name + "-members"))
         {}
     };
 
@@ -210,7 +206,7 @@ public:
     }
 
     /// \returns The id of the block where the entity is documented.
-    markup::block_id get_documentation_id() const
+    output::markup::block_id get_documentation_id() const
     {
         return do_get_id();
     }
@@ -221,7 +217,7 @@ public:
         return comment_;
     }
 
-    using iterator = markup::detail::vector_ptr_iterator<doc_entity>;
+    using iterator = output::markup::detail::vector_ptr_iterator<doc_entity>;
 
     /// \returns An iterator to the first child.
     iterator begin() const noexcept
@@ -299,14 +295,14 @@ private:
     virtual entity_kind do_get_kind() const noexcept = 0;
 
     /// \exclude
-    virtual markup::block_id do_get_id() const = 0;
+    virtual output::markup::block_id do_get_id() const = 0;
 
     /// \exclude
-    virtual std::unique_ptr<markup::documentation_entity> do_generate_documentation(
+    virtual std::unique_ptr<output::markup::documentation_entity> do_generate_documentation(
         const generation_config& gen_config, const synopsis_config& syn_config,
         const cppast::cpp_entity_index&                     index,
         type_safe::optional_ref<detail::inline_entity_list> inlines,
-        std::unique_ptr<markup::code_block>                 synopsis) const = 0;
+        std::unique_ptr<output::markup::code_block>                 synopsis) const = 0;
 
     /// \exclude
     virtual cppast::code_generator::generation_options do_get_generation_options(
@@ -331,11 +327,11 @@ private:
     bool                                                injected_ = false;
 
     friend class detail::markdown_code_generator;
-    friend std::unique_ptr<markup::code_block> generate_synopsis(
+    friend std::unique_ptr<output::markup::code_block> generate_synopsis(
         const synopsis_config& config, const cppast::cpp_entity_index& index,
         const doc_entity& entity);
 
-    friend std::unique_ptr<markup::documentation_entity> generate_documentation(
+    friend std::unique_ptr<output::markup::documentation_entity> generate_documentation(
         const generation_config& gen_config, const synopsis_config& syn_config,
         const cppast::cpp_entity_index& index, const doc_entity& entity);
 
@@ -349,13 +345,13 @@ private:
 
 /// Generates synopsis for that entity.
 /// \returns The synopsis of that entity.
-std::unique_ptr<markup::code_block> generate_synopsis(const synopsis_config&          config,
+std::unique_ptr<output::markup::code_block> generate_synopsis(const synopsis_config&          config,
                                                       const cppast::cpp_entity_index& index,
                                                       const doc_entity&               entity);
 
 /// Generates documentation for that entity.
 /// \returns The documentation of that entity.
-std::unique_ptr<markup::documentation_entity> generate_documentation(
+std::unique_ptr<output::markup::documentation_entity> generate_documentation(
     const generation_config& gen_config, const synopsis_config& syn_config,
     const cppast::cpp_entity_index& index, const doc_entity& entity);
 
@@ -373,15 +369,15 @@ private:
         return excluded;
     }
 
-    markup::block_id do_get_id() const override
+    output::markup::block_id do_get_id() const override
     {
-        return markup::block_id("");
+        return output::markup::block_id("");
     }
 
-    std::unique_ptr<markup::documentation_entity> do_generate_documentation(
+    std::unique_ptr<output::markup::documentation_entity> do_generate_documentation(
         const generation_config&, const synopsis_config&, const cppast::cpp_entity_index&,
         type_safe::optional_ref<detail::inline_entity_list>,
-        std::unique_ptr<markup::code_block>) const override
+        std::unique_ptr<output::markup::code_block>) const override
     {
         return nullptr;
     }
@@ -440,19 +436,19 @@ private:
         return cpp_entity;
     }
 
-    markup::block_id do_get_id() const override
+    output::markup::block_id do_get_id() const override
     {
         if (in_member_group() || !comment())
             return parent().value().get_documentation_id();
         else
-            return markup::block_id(link_name());
+            return output::markup::block_id(link_name());
     }
 
-    std::unique_ptr<markup::documentation_entity> do_generate_documentation(
+    std::unique_ptr<output::markup::documentation_entity> do_generate_documentation(
         const generation_config& gen_config, const synopsis_config& syn_config,
         const cppast::cpp_entity_index&                     index,
         type_safe::optional_ref<detail::inline_entity_list> inlines,
-        std::unique_ptr<markup::code_block>                 synopsis) const override;
+        std::unique_ptr<output::markup::code_block>                 synopsis) const override;
 
     cppast::code_generator::generation_options do_get_generation_options(
         const synopsis_config& config, bool is_main) const override;
@@ -500,16 +496,16 @@ private:
         return doc_entity::metadata;
     }
 
-    markup::block_id do_get_id() const override
+    output::markup::block_id do_get_id() const override
     {
         return parent().value().get_documentation_id();
     }
 
-    std::unique_ptr<markup::documentation_entity> do_generate_documentation(
+    std::unique_ptr<output::markup::documentation_entity> do_generate_documentation(
         const generation_config& gen_config, const synopsis_config& syn_config,
         const cppast::cpp_entity_index&                     index,
         type_safe::optional_ref<detail::inline_entity_list> inlines,
-        std::unique_ptr<markup::code_block>                 synopsis) const override;
+        std::unique_ptr<output::markup::code_block>                 synopsis) const override;
 
     cppast::code_generator::generation_options do_get_generation_options(
         const synopsis_config& config, bool is_main) const override;
@@ -561,16 +557,16 @@ private:
         return member_group;
     }
 
-    markup::block_id do_get_id() const override
+    output::markup::block_id do_get_id() const override
     {
-        return markup::block_id(begin()->link_name());
+        return output::markup::block_id(begin()->link_name());
     }
 
-    std::unique_ptr<markup::documentation_entity> do_generate_documentation(
+    std::unique_ptr<output::markup::documentation_entity> do_generate_documentation(
         const generation_config& gen_config, const synopsis_config& syn_config,
         const cppast::cpp_entity_index&                     index,
         type_safe::optional_ref<detail::inline_entity_list> inlines,
-        std::unique_ptr<markup::code_block>                 synopsis) const override;
+        std::unique_ptr<output::markup::code_block>                 synopsis) const override;
 
     cppast::code_generator::generation_options do_get_generation_options(
         const synopsis_config& config, bool is_main) const override;
@@ -602,7 +598,7 @@ public:
 
     /// \returns The incomplete namespace documentation.
     /// It is used for the [standardese::entity_index]().
-    markup::namespace_documentation::builder get_builder() const;
+    output::markup::namespace_documentation::builder get_builder() const;
 
 private:
     doc_cpp_namespace(std::string                                         link_name,
@@ -616,16 +612,16 @@ private:
         return cpp_namespace;
     }
 
-    markup::block_id do_get_id() const override
+    output::markup::block_id do_get_id() const override
     {
-        return markup::block_id(link_name());
+        return output::markup::block_id(link_name());
     }
 
-    std::unique_ptr<markup::documentation_entity> do_generate_documentation(
+    std::unique_ptr<output::markup::documentation_entity> do_generate_documentation(
         const generation_config& gen_config, const synopsis_config& syn_config,
         const cppast::cpp_entity_index&                     index,
         type_safe::optional_ref<detail::inline_entity_list> inlines,
-        std::unique_ptr<markup::code_block>                 synopsis) const override;
+        std::unique_ptr<output::markup::code_block>                 synopsis) const override;
 
     cppast::code_generator::generation_options do_get_generation_options(
         const synopsis_config& config, bool is_main) const override;
@@ -679,16 +675,16 @@ private:
         return cpp_file;
     }
 
-    markup::block_id do_get_id() const override
+    output::markup::block_id do_get_id() const override
     {
-        return markup::block_id(link_name());
+        return output::markup::block_id(link_name());
     }
 
-    std::unique_ptr<markup::documentation_entity> do_generate_documentation(
+    std::unique_ptr<output::markup::documentation_entity> do_generate_documentation(
         const generation_config& gen_config, const synopsis_config& syn_config,
         const cppast::cpp_entity_index&                     index,
         type_safe::optional_ref<detail::inline_entity_list> inlines,
-        std::unique_ptr<markup::code_block>                 synopsis) const override;
+        std::unique_ptr<output::markup::code_block>                 synopsis) const override;
 
     cppast::code_generator::generation_options do_get_generation_options(
         const synopsis_config& config, bool is_main) const override;
@@ -698,8 +694,6 @@ private:
     std::string                       output_name_;
     std::unique_ptr<cppast::cpp_file> file_;
 };
-
-class comment_registry;
 
 /// Controls which entities are excluded in the documentation.
 class entity_blacklist

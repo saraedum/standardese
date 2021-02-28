@@ -11,11 +11,10 @@
 #include <cppast/cpp_file.hpp>
 #include <cppast/libclang_parser.hpp>
 
-#include <standardese/comment.hpp>
-#include <standardese/doc_entity.hpp>
-#include <standardese/linker.hpp>
-#include <standardese/markup/document.hpp>
-#include <standardese/markup/generator.hpp>
+#include "../include/standardese/comment.hpp"
+#include "../include/standardese/doc_entity.hpp"
+#include "../include/standardese/linker.hpp"
+#include "../include/standardese/output/markup/document_entity.hpp"
 
 #include "filesystem.hpp"
 
@@ -48,7 +47,7 @@ std::vector<std::unique_ptr<standardese::doc_cpp_file>> build_files(
     std::vector<parsed_file>&& files, const standardese::entity_blacklist& blacklist,
     bool hide_uncommented, unsigned no_threads);
 
-using documents = std::vector<std::unique_ptr<standardese::markup::document_entity>>;
+using documents = std::vector<std::unique_ptr<standardese::output::markup::document_entity>>;
 
 documents generate(const standardese::generation_config& gen_config,
                    const standardese::synopsis_config&   syn_config,
@@ -57,8 +56,6 @@ documents generate(const standardese::generation_config& gen_config,
                    const std::vector<std::unique_ptr<standardese::doc_cpp_file>>& files,
                    unsigned                                                       no_threads);
 
-void write_files(const documents& docs, standardese::markup::generator generator,
-                 std::string prefix, const char* extension, unsigned no_threads);
 } // namespace standardese_tool
 
 #endif // STANDARDESE_TOOL_GENERATOR_HPP_INCLUDED

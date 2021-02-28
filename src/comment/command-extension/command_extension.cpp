@@ -5,6 +5,7 @@
 #include "command_extension.hpp"
 #include "user_data.hpp"
 #include "../../util/enum_values.hpp"
+#include "../../../include/standardese/comment/commands.hpp"
 
 #include <type_traits>
 #include <cassert>

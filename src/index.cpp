@@ -2,8 +2,6 @@
 // This file is subject to the license terms in the LICENSE file
 // found in the top-level directory of this distribution.
 
-#include <standardese/index.hpp>
-
 #include <algorithm>
 #include <cassert>
 #include <cppast/cpp_file.hpp>
@@ -11,12 +9,11 @@
 #include <cppast/cpp_preprocessor.hpp>
 #include <type_safe/downcast.hpp>
 
-#include <standardese/comment.hpp>
-#include <standardese/doc_entity.hpp>
-#include <standardese/markup/code_block.hpp>
-#include <standardese/markup/document.hpp>
-#include <standardese/markup/entity_kind.hpp>
-#include <standardese/markup/link.hpp>
+#include "../include/standardese/index.hpp"
+#include "../include/standardese/comment.hpp"
+#include "../include/standardese/doc_entity.hpp"
+#include "../include/standardese/output/markup/documentation_link.hpp"
+#include "../include/standardese/output/markup/code.hpp"
 
 #include "entity_visitor.hpp"
 
@@ -37,10 +34,10 @@ void entity_index::insert(entity e) const
         assert(std::next(range.first) == range.second);
         auto& inserted = *range.first;
         if (auto builder = inserted.doc.optional_value(
-                type_safe::variant_type<markup::namespace_documentation::builder>{}))
+                type_safe::variant_type<output::markup::namespace_documentation::builder>{}))
         {
             auto& e_builder
-                = e.doc.value(type_safe::variant_type<markup::namespace_documentation::builder>{});
+                = e.doc.value(type_safe::variant_type<output::markup::namespace_documentation::builder>{});
             if (!builder.value().has_documentation() && e_builder.has_documentation())
                 inserted.doc = std::move(e.doc);
         }
@@ -49,26 +46,26 @@ void entity_index::insert(entity e) const
 
 namespace
 {
-std::unique_ptr<markup::entity_index_item> get_entity_entry(
+std::unique_ptr<output::markup::entity_index_item> get_entity_entry(
     const std::string& name, std::string link_name,
-    type_safe::optional_ref<const markup::brief_section> brief)
+    type_safe::optional_ref<const output::markup::brief_section> brief)
 {
-    auto link = markup::documentation_link::builder(link_name)
-                    .add_child(markup::code::build(name))
+    auto link = output::markup::documentation_link::builder(link_name)
+                    .add_child(output::markup::code::build(name))
                     .finish();
-    auto term = markup::term::build(std::move(link));
+    auto term = output::markup::term::build(std::move(link));
 
     if (brief)
     {
-        markup::description::builder description;
+        output::markup::description::builder description;
         for (auto& child : brief.value())
-            description.add_child(markup::clone(child));
+            description.add_child(output::markup::clone(child));
 
-        return markup::entity_index_item::build(markup::block_id(std::move(link_name)),
+        return output::markup::entity_index_item::build(output::markup::block_id(std::move(link_name)),
                                                 std::move(term), description.finish());
     }
     else
-        return markup::entity_index_item::build(markup::block_id(std::move(link_name)),
+        return output::markup::entity_index_item::build(output::markup::block_id(std::move(link_name)),
                                                 std::move(term));
 }
 
@@ -85,7 +82,7 @@ std::string get_scope(const cppast::cpp_entity& e)
 } // namespace
 
 void entity_index::register_entity(std::string link_name, const cppast::cpp_entity& e,
-                                   type_safe::optional_ref<const markup::brief_section> brief) const
+                                   type_safe::optional_ref<const output::markup::brief_section> brief) const
 {
     assert(e.kind() != cppast::cpp_file::kind() && e.kind() != cppast::cpp_namespace::kind());
     if (e.kind() != cppast::cpp_include_directive::kind()) // don't insert includes
@@ -94,7 +91,7 @@ void entity_index::register_entity(std::string link_name, const cppast::cpp_enti
 }
 
 void entity_index::register_namespace(const cppast::cpp_namespace&             ns,
-                                      markup::namespace_documentation::builder doc) const
+                                      output::markup::namespace_documentation::builder doc) const
 {
     insert(entity(std::move(doc), ns.name(), get_scope(ns)));
 }
@@ -104,8 +101,8 @@ namespace
 struct nested_list_builder
 {
     std::string scope;
-    type_safe::variant<type_safe::object_ref<markup::entity_index::builder>,
-                       markup::namespace_documentation::builder>
+    type_safe::variant<type_safe::object_ref<output::markup::entity_index::builder>,
+                       output::markup::namespace_documentation::builder>
         builder;
 
     // adds *this, which must be a namespace, to the previous list
@@ -113,14 +110,14 @@ struct nested_list_builder
     {
         struct lambda
         {
-            void operator()(type_safe::object_ref<markup::entity_index::builder> builder,
-                            std::unique_ptr<markup::namespace_documentation>     doc)
+            void operator()(type_safe::object_ref<output::markup::entity_index::builder> builder,
+                            std::unique_ptr<output::markup::namespace_documentation>     doc)
             {
                 builder->add_child(std::move(doc));
             }
 
-            void operator()(markup::namespace_documentation::builder&        builder,
-                            std::unique_ptr<markup::namespace_documentation> doc)
+            void operator()(output::markup::namespace_documentation::builder&        builder,
+                            std::unique_ptr<output::markup::namespace_documentation> doc)
             {
                 builder.add_child(std::move(doc));
             }
@@ -128,23 +125,23 @@ struct nested_list_builder
         type_safe::with(previous.builder, lambda{},
                         builder
                             .value(
-                                type_safe::variant_type<markup::namespace_documentation::builder>{})
+                                type_safe::variant_type<output::markup::namespace_documentation::builder>{})
                             .finish());
     }
 
     // adds an item to the current list
-    void add_item(std::unique_ptr<markup::entity_index_item> item)
+    void add_item(std::unique_ptr<output::markup::entity_index_item> item)
     {
         struct lambda
         {
-            void operator()(type_safe::object_ref<markup::entity_index::builder> builder,
-                            std::unique_ptr<markup::entity_index_item>           item)
+            void operator()(type_safe::object_ref<output::markup::entity_index::builder> builder,
+                            std::unique_ptr<output::markup::entity_index_item>           item)
             {
                 builder->add_child(std::move(item));
             }
 
-            void operator()(markup::namespace_documentation::builder&  builder,
-                            std::unique_ptr<markup::entity_index_item> item)
+            void operator()(output::markup::namespace_documentation::builder&  builder,
+                            std::unique_ptr<output::markup::entity_index_item> item)
             {
                 builder.add_child(std::move(item));
             }
@@ -154,10 +151,10 @@ struct nested_list_builder
 };
 } // namespace
 
-std::unique_ptr<markup::entity_index> entity_index::generate(order o) const
+std::unique_ptr<output::markup::entity_index> entity_index::generate(order o) const
 {
-    markup::entity_index::builder builder(
-        markup::heading::build(markup::block_id(), "Project index"));
+    output::markup::entity_index::builder builder(
+        output::markup::heading::build(output::markup::block_id(), "Project index"));
 
     std::vector<nested_list_builder> lists;
     lists.push_back(nested_list_builder{"", type_safe::ref(builder)});
@@ -174,13 +171,13 @@ std::unique_ptr<markup::entity_index> entity_index::generate(order o) const
         }
 
         if (auto ns = entity.doc.optional_value(
-                type_safe::variant_type<markup::namespace_documentation::builder>{}))
+                type_safe::variant_type<output::markup::namespace_documentation::builder>{}))
             // we've got a namespace
             lists.push_back(nested_list_builder{entity.scope + entity.name, std::move(ns.value())});
         else
             // normal entity
             lists.back().add_item(std::move(entity.doc.value(
-                type_safe::variant_type<std::unique_ptr<markup::entity_index_item>>{})));
+                type_safe::variant_type<std::unique_ptr<output::markup::entity_index_item>>{})));
     }
     lock.unlock();
 
@@ -224,7 +221,7 @@ void standardese::register_index_entities(const entity_index& index, const cppas
 }
 
 void file_index::register_file(std::string link_name, std::string file_name,
-                               type_safe::optional_ref<const markup::brief_section> brief) const
+                               type_safe::optional_ref<const output::markup::brief_section> brief) const
 {
     file_index::file f(file_name, get_entity_entry(file_name, link_name, brief));
 
@@ -237,10 +234,10 @@ void file_index::register_file(std::string link_name, std::string file_name,
         files_.insert(range.first, std::move(f));
 }
 
-std::unique_ptr<markup::file_index> file_index::generate() const
+std::unique_ptr<output::markup::file_index> file_index::generate() const
 {
-    markup::file_index::builder builder(
-        markup::heading::build(markup::block_id(), "Project files"));
+    output::markup::file_index::builder builder(
+        output::markup::heading::build(output::markup::block_id(), "Project files"));
 
     std::unique_lock<std::mutex> lock(mutex_);
     for (auto& file : files_)
@@ -250,12 +247,12 @@ std::unique_ptr<markup::file_index> file_index::generate() const
     return builder.finish();
 }
 
-void module_index::register_module(markup::module_documentation::builder doc) const
+void module_index::register_module(output::markup::module_documentation::builder doc) const
 {
     std::lock_guard<std::mutex> lock(mutex_);
     auto                        range = std::equal_range(modules_.begin(), modules_.end(), doc,
-                                  [](const markup::module_documentation::builder& lhs,
-                                     const markup::module_documentation::builder& rhs) {
+                                  [](const output::markup::module_documentation::builder& lhs,
+                                     const output::markup::module_documentation::builder& rhs) {
                                       return lhs.id().as_str() < rhs.id().as_str();
                                   });
     if (range.first == range.second)
@@ -264,11 +261,11 @@ void module_index::register_module(markup::module_documentation::builder doc) co
 
 bool module_index::register_entity(std::string module, std::string link_name,
                                    const cppast::cpp_entity&                            entity,
-                                   type_safe::optional_ref<const markup::brief_section> brief) const
+                                   type_safe::optional_ref<const output::markup::brief_section> brief) const
 {
     std::lock_guard<std::mutex> lock(mutex_);
     auto                        iter = std::lower_bound(modules_.begin(), modules_.end(), module,
-                                 [](const markup::module_documentation::builder& lhs,
+                                 [](const output::markup::module_documentation::builder& lhs,
                                     const std::string& rhs) { return lhs.id().as_str() < rhs; });
     if (iter == modules_.end() || iter->id().as_str() != module)
         return false;
@@ -276,10 +273,10 @@ bool module_index::register_entity(std::string module, std::string link_name,
     return true;
 }
 
-std::unique_ptr<markup::module_index> module_index::generate() const
+std::unique_ptr<output::markup::module_index> module_index::generate() const
 {
-    markup::module_index::builder builder(
-        markup::heading::build(markup::block_id(), "Project modules"));
+    output::markup::module_index::builder builder(
+        output::markup::heading::build(output::markup::block_id(), "Project modules"));
 
     std::unique_lock<std::mutex> lock(mutex_);
     for (auto& module : modules_)
@@ -311,10 +308,10 @@ void standardese::register_module_entities(const module_index&     index,
     };
 
     auto get_module_doc = [&](const std::string& name) {
-        markup::module_documentation::builder builder(markup::block_id(name),
-                                                      markup::heading::builder(markup::block_id())
-                                                          .add_child(markup::text::build("Module "))
-                                                          .add_child(markup::code::build(name))
+        output::markup::module_documentation::builder builder(output::markup::block_id(name),
+                                                      output::markup::heading::builder(output::markup::block_id())
+                                                          .add_child(output::markup::text::build("Module "))
+                                                          .add_child(output::markup::code::build(name))
                                                           .finish());
 
         if (auto module_comment = registry.get_comment(name))

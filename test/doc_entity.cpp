@@ -2,7 +2,7 @@
 // This file is subject to the license terms in the LICENSE file
 // found in the top-level directory of this distribution.
 
-#include <standardese/doc_entity.hpp>
+#include "../../include/standardese/doc_entity.hpp"
 
 #include "../external/catch/single_include/catch2/catch.hpp"
 

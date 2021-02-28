@@ -2,7 +2,7 @@
 // This file is subject to the license terms in the LICENSE file
 // found in the top-level directory of this distribution.
 
-#include <standardese/linker.hpp>
+#include "../include/standardese/linker.hpp"
 
 #include <algorithm>
 #include <cassert>
@@ -12,12 +12,12 @@
 #include <cppast/cpp_namespace.hpp>
 #include <cppast/visitor.hpp>
 
-#include <standardese/doc_entity.hpp>
-#include <standardese/logger.hpp>
-#include <standardese/markup/document.hpp>
-#include <standardese/markup/documentation.hpp>
-#include <standardese/markup/entity_kind.hpp>
-#include <standardese/markup/index.hpp>
+#include "../include/standardese/doc_entity.hpp"
+#include "../include/standardese/logger.hpp"
+
+#include "../include/standardese/output/markup/documentation_link.hpp"
+#include "../include/standardese/output/markup/document_entity.hpp"
+#include "../include/standardese/output/markup/file_documentation.hpp"
 
 #include "get_special_entity.hpp"
 
@@ -97,10 +97,10 @@ std::string short_link_name(const std::string& name)
 }
 } // namespace
 
-bool linker::register_documentation(std::string link_name, const markup::document_entity& document,
-                                    const markup::block_id& documentation, bool force) const
+bool linker::register_documentation(std::string link_name, const output::markup::document_entity& document,
+                                    const output::markup::block_id& documentation, bool force) const
 {
-    auto ref = markup::block_reference(document.output_name(), documentation);
+    auto ref = output::markup::block_reference(document.output_name(), documentation);
 
     link_name       = process_link_name(std::move(link_name));
     auto short_name = short_link_name(link_name);
@@ -141,7 +141,7 @@ bool has_scope(const std::string& str, const std::string& scope)
     return std::strncmp(str.c_str(), scope.c_str(), scope.size()) == 0 && str[scope.size()] == ':';
 }
 
-markup::url get_url(const std::string& url, const std::string& link_name)
+output::markup::url get_url(const std::string& url, const std::string& link_name)
 {
     std::string result;
 
@@ -154,7 +154,7 @@ markup::url get_url(const std::string& url, const std::string& link_name)
             result += *iter;
     }
 
-    return markup::url(result);
+    return output::markup::url(result);
 }
 
 std::string get_scope_name(const cppast::cpp_entity& entity)
@@ -177,7 +177,7 @@ std::string get_entity_scope(const cppast::cpp_entity& entity)
 }
 } // namespace
 
-type_safe::variant<type_safe::nullvar_t, markup::block_reference, markup::url> linker::
+type_safe::variant<type_safe::nullvar_t, output::markup::block_reference, output::markup::url> linker::
     lookup_documentation(type_safe::optional_ref<const cppast::cpp_entity> context,
                          std::string                                       link_name) const
 {
@@ -186,7 +186,7 @@ type_safe::variant<type_safe::nullvar_t, markup::block_reference, markup::url> l
 
     // performs local lookup
     auto do_lookup = [&](const std::string& link_name)
-        -> type_safe::variant<type_safe::nullvar_t, markup::block_reference, markup::url> {
+        -> type_safe::variant<type_safe::nullvar_t, output::markup::block_reference, output::markup::url> {
         std::lock_guard<std::mutex> lock(mutex_);
         auto                        iter = map_.find(process_link_name(link_name));
         if (iter == map_.end())
@@ -224,16 +224,16 @@ type_safe::variant<type_safe::nullvar_t, markup::block_reference, markup::url> l
 namespace
 {
 template <class FileVisitor, class DocVisitor>
-void visit_documentations(const markup::document_entity& document, const FileVisitor& file_visitor,
+void visit_documentations(const output::markup::document_entity& document, const FileVisitor& file_visitor,
                           const DocVisitor& doc_visitor)
 {
-    markup::visit(document, [&](const markup::entity& e) {
-        if (e.kind() == markup::entity_kind::file_documentation)
-            file_visitor(static_cast<const markup::file_documentation&>(e));
-        else if (e.kind() == markup::entity_kind::namespace_documentation
-                 || e.kind() == markup::entity_kind::module_documentation)
+    output::markup::entity::visit(document, [&](const output::markup::entity& e) {
+        if (e.kind() == output::markup::entity_kind::file_documentation)
+            file_visitor(static_cast<const output::markup::file_documentation&>(e));
+        else if (e.kind() == output::markup::entity_kind::namespace_documentation
+                 || e.kind() == output::markup::entity_kind::module_documentation)
             // note: no need to handle entity_documentation
-            doc_visitor(static_cast<const markup::documentation_entity&>(e));
+            doc_visitor(static_cast<const output::markup::documentation_entity&>(e));
     });
 }
 
@@ -272,7 +272,7 @@ bool force_linking(const doc_entity& doc_e)
 }
 
 void register_documentation(const cppast::diagnostic_logger& logger, const linker& l,
-                            const markup::document_entity& document, const doc_entity& doc_e)
+                            const output::markup::document_entity& document, const doc_entity& doc_e)
 {
     auto result = l.register_documentation(doc_e.link_name(), document,
                                            doc_e.get_documentation_id(), force_linking(doc_e));
@@ -292,7 +292,7 @@ void register_documentation(const cppast::diagnostic_logger& logger, const linke
 } // namespace
 
 void standardese::register_documentations(const cppast::diagnostic_logger& logger, const linker& l,
-                                          const markup::document_entity& document)
+                                          const output::markup::document_entity& document)
 {
     auto register_doc = [&](const cppast::cpp_entity& e) {
         if (auto doc_e = get_doc_entity(e))
@@ -300,7 +300,7 @@ void standardese::register_documentations(const cppast::diagnostic_logger& logge
     };
 
     visit_documentations(document,
-                         [&](const markup::file_documentation& file) {
+                         [&](const output::markup::file_documentation& file) {
                              cppast::visit(file.file(), [&](const cppast::cpp_entity&   e,
                                                             const cppast::visitor_info& info) {
                                  if (info.event != cppast::visitor_info::container_entity_exit
@@ -328,7 +328,7 @@ void standardese::register_documentations(const cppast::diagnostic_logger& logge
                                  return true;
                              });
                          },
-                         [&](const markup::documentation_entity& entity) {
+                         [&](const output::markup::documentation_entity& entity) {
                              auto result = l.register_documentation(entity.id().as_str(), document,
                                                                     entity.id());
                              if (!result)
@@ -342,16 +342,16 @@ void standardese::register_documentations(const cppast::diagnostic_logger& logge
 
 namespace
 {
-cppast::source_location get_location(const markup::document_entity&    document,
-                                     const markup::documentation_link& link)
+cppast::source_location get_location(const output::markup::document_entity&    document,
+                                     const output::markup::documentation_link& link)
 {
     auto result = cppast::source_location::make_file(document.output_name().name());
 
     for (auto parent = link.parent(); parent; parent = parent.value().parent())
-        if (parent.value().kind() == markup::entity_kind::entity_documentation)
+        if (parent.value().kind() == output::markup::entity_kind::entity_documentation)
         {
             result.entity
-                = static_cast<const markup::entity_documentation&>(parent.value()).id().as_str();
+                = static_cast<const output::markup::entity_documentation&>(parent.value()).id().as_str();
             break;
         }
 
@@ -360,42 +360,42 @@ cppast::source_location get_location(const markup::document_entity&    document,
 } // namespace
 
 void standardese::resolve_links(const cppast::diagnostic_logger& logger, const linker& l,
-                                const markup::document_entity& document)
+                                const output::markup::document_entity& document)
 {
     auto get_context
-        = [](const markup::entity& entity) -> type_safe::optional_ref<const cppast::cpp_entity> {
-        if (entity.kind() == markup::entity_kind::file_documentation)
+        = [](const output::markup::entity& entity) -> type_safe::optional_ref<const cppast::cpp_entity> {
+        if (entity.kind() == output::markup::entity_kind::file_documentation)
             return type_safe::opt_ref(
-                &static_cast<const markup::file_documentation&>(entity).file());
-        else if (entity.kind() == markup::entity_kind::entity_documentation)
+                &static_cast<const output::markup::file_documentation&>(entity).file());
+        else if (entity.kind() == output::markup::entity_kind::entity_documentation)
             return type_safe::opt_ref(
-                &static_cast<const markup::entity_documentation&>(entity).entity());
-        else if (entity.kind() == markup::entity_kind::namespace_documentation)
+                &static_cast<const output::markup::entity_documentation&>(entity).entity());
+        else if (entity.kind() == output::markup::entity_kind::namespace_documentation)
             return type_safe::opt_ref(
-                &static_cast<const markup::namespace_documentation&>(entity).namespace_());
+                &static_cast<const output::markup::namespace_documentation&>(entity).namespace_());
         else
             return nullptr;
     };
 
-    auto get_documentation_block = [](const markup::entity& entity) {
+    auto get_documentation_block = [](const output::markup::entity& entity) {
         for (auto cur = entity.parent(); cur; cur = cur.value().parent())
-            if (markup::is_documentation(cur.value().kind()))
-                return static_cast<const markup::documentation_entity&>(cur.value()).id();
+            if (output::markup::is_documentation(cur.value().kind()))
+                return static_cast<const output::markup::documentation_entity&>(cur.value()).id();
 
         assert(false);
-        return markup::block_id();
+        return output::markup::block_id();
     };
 
     type_safe::optional_ref<const cppast::cpp_entity> context;
-    markup::visit(document, [&](const markup::entity& entity) {
-        if (entity.kind() == markup::entity_kind::documentation_link)
+    output::markup::entity::visit(document, [&](const output::markup::entity& entity) {
+        if (entity.kind() == output::markup::entity_kind::documentation_link)
         {
-            auto& link = static_cast<const markup::documentation_link&>(entity);
+            auto& link = static_cast<const output::markup::documentation_link&>(entity);
             if (auto unresolved = link.unresolved_destination())
             {
                 auto destination = l.lookup_documentation(context, unresolved.value());
                 if (auto block = destination.optional_value(
-                        type_safe::variant_type<markup::block_reference>{}))
+                        type_safe::variant_type<output::markup::block_reference>{}))
                 {
                     auto same_document = !block.value().document()
                                          || block.value().document().value().name()
@@ -406,7 +406,7 @@ void standardese::resolve_links(const cppast::diagnostic_logger& logger, const l
                         link.resolve_destination(block.value());
                 }
                 else if (auto url
-                         = destination.optional_value(type_safe::variant_type<markup::url>{}))
+                         = destination.optional_value(type_safe::variant_type<output::markup::url>{}))
                     link.resolve_destination(url.value());
                 else
                     logger.log("standardese linker",

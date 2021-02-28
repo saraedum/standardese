@@ -6,9 +6,9 @@
 #ifndef STANDARDESE_COMMENT_COMMANDS_HPP_INCLUDED
 #define STANDARDESE_COMMENT_COMMANDS_HPP_INCLUDED
 
-namespace standardese
-{
-namespace comment
+#include "../forward.hpp"
+
+namespace standardese::comment
 {
     /// The documentation special commands.
     enum class command_type
@@ -69,7 +69,6 @@ namespace comment
         count,
     };
 
-} // namespace comment
-} // namespace standardese
+}
 
 #endif // STANDARDESE_COMMENT_COMMANDS_HPP_INCLUDED

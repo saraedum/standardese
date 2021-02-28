@@ -2,15 +2,15 @@
 // This file is subject to the license terms in the LICENSE file
 // found in the top-level directory of this distribution.
 
-#include <standardese/doc_entity.hpp>
-
 #include "../external/catch/single_include/catch2/catch.hpp"
 
-#include <standardese/markup/generator.hpp>
+#include "../include/standardese/doc_entity.hpp"
+#include "../include/standardese/output/generator/xml/xml_generator.hpp"
 
 #include "test_parser.hpp"
 
 using namespace standardese;
+using standardese::output::generator::xml::xml_generator;
 
 TEST_CASE("synopsis")
 {
@@ -51,7 +51,7 @@ ns::foo<ns::foo<int>> make();
 )");
         auto file_synopsis = generate_synopsis({}, index, *file);
         REQUIRE(
-            markup::as_xml(*file_synopsis)
+            xml_generator::render(*file_synopsis)
             == R"(<code-block language="cpp"><code-block-preprocessor>#define</code-block-preprocessor> <code-block-identifier>FOO</code-block-identifier><soft-break></soft-break>
 <soft-break></soft-break>
 <code-block-keyword>void</code-block-keyword> <code-block-identifier>func</code-block-identifier><code-block-punctuation>(</code-block-punctuation><code-block-keyword>int</code-block-keyword> <code-block-identifier>i</code-block-identifier><code-block-punctuation>,</code-block-punctuation> <code-block-keyword>char</code-block-keyword> <code-block-identifier>c</code-block-identifier> <code-block-punctuation>=</code-block-punctuation> <code-block-int-literal>42</code-block-int-literal><code-block-punctuation>)</code-block-punctuation><code-block-punctuation>;</code-block-punctuation><soft-break></soft-break>
@@ -69,7 +69,7 @@ ns::foo<ns::foo<int>> make();
         auto& foo          = get_named_entity(*file, "foo");
         auto  foo_synopsis = generate_synopsis({}, index, foo);
         REQUIRE(
-            markup::as_xml(*foo_synopsis)
+            xml_generator::render(*foo_synopsis)
             == R"*(<code-block language="cpp"><code-block-keyword>template</code-block-keyword> <code-block-punctuation>&lt;</code-block-punctuation><code-block-keyword>typename</code-block-keyword> <code-block-identifier>T</code-block-identifier><code-block-punctuation>&gt;</code-block-punctuation><soft-break></soft-break>
 <code-block-keyword>struct</code-block-keyword> <code-block-identifier>foo</code-block-identifier><soft-break></soft-break>
 <code-block-punctuation>{</code-block-punctuation><soft-break></soft-break>
@@ -106,7 +106,7 @@ private:
         auto& foo      = get_named_entity(*file, "foo");
         auto  synopsis = generate_synopsis({}, index, foo);
         REQUIRE(
-            markup::as_xml(*synopsis)
+            xml_generator::render(*synopsis)
             == R"(<code-block language="cpp"><code-block-keyword>class</code-block-keyword> <code-block-identifier>foo</code-block-identifier><soft-break></soft-break>
 <code-block-punctuation>{</code-block-punctuation><soft-break></soft-break>
 <code-block-keyword>public</code-block-keyword><code-block-punctuation>:</code-block-punctuation><soft-break></soft-break>
@@ -150,7 +150,7 @@ auto exclude_return2() -> const int&;
 
         auto synopsis = generate_synopsis({}, index, *file);
         REQUIRE(
-            markup::as_xml(*synopsis)
+            xml_generator::render(*synopsis)
             == R"(<code-block language="cpp"><code-block-keyword>using</code-block-keyword> <code-block-keyword>namespace</code-block-keyword> <code-block-identifier>std</code-block-identifier><code-block-punctuation>;</code-block-punctuation><soft-break></soft-break>
 <soft-break></soft-break>
 <code-block-keyword>using</code-block-keyword> <code-block-identifier>exclude_target1</code-block-identifier> <code-block-punctuation>=</code-block-punctuation> <code-block-identifier>&apos;hidden&apos;</code-block-identifier><code-block-punctuation>;</code-block-punctuation><soft-break></soft-break>
@@ -185,7 +185,7 @@ private:
         auto& foo      = get_named_entity(*file, "foo");
         auto  synopsis = generate_synopsis({}, index, foo);
         REQUIRE(
-            markup::as_xml(*synopsis)
+            xml_generator::render(*synopsis)
             == R"(<code-block language="cpp"><code-block-keyword>class</code-block-keyword> <code-block-identifier>foo</code-block-identifier><soft-break></soft-break>
 <code-block-punctuation>:</code-block-punctuation> <code-block-keyword>public</code-block-keyword> <code-block-identifier>base1</code-block-identifier><code-block-punctuation>,</code-block-punctuation> <code-block-keyword>protected</code-block-keyword> <code-block-identifier>base3</code-block-identifier><soft-break></soft-break>
 <code-block-punctuation>{</code-block-punctuation><soft-break></soft-break>
@@ -254,7 +254,7 @@ using e = excluded<int>;
 
         auto synopsis = generate_synopsis({}, index, *file);
         REQUIRE(
-            markup::as_xml(*synopsis)
+            xml_generator::render(*synopsis)
             == R"(<code-block language="cpp"><code-block-identifier>&apos;hidden&apos;</code-block-identifier> <code-block-identifier>a</code-block-identifier><code-block-punctuation>(</code-block-punctuation><code-block-punctuation>)</code-block-punctuation><code-block-punctuation>;</code-block-punctuation><soft-break></soft-break>
 <soft-break></soft-break>
 <code-block-identifier>&apos;hidden&apos;</code-block-identifier> <code-block-keyword>const</code-block-keyword><code-block-punctuation>&amp;</code-block-punctuation> <code-block-identifier>b</code-block-identifier><code-block-punctuation>(</code-block-punctuation><code-block-punctuation>)</code-block-punctuation><code-block-punctuation>;</code-block-punctuation><soft-break></soft-break>
@@ -275,7 +275,7 @@ void foo();
 )");
 
         auto synopsis = generate_synopsis({}, index, *file);
-        REQUIRE(markup::as_xml(*synopsis)
+        REQUIRE(xml_generator::render(*synopsis)
                 == R"(<code-block language="cpp">synopsis is overriden<soft-break></soft-break>
 </code-block>
 )");
@@ -296,7 +296,7 @@ void c();
 )");
 
         auto synopsis = generate_synopsis({}, index, *file);
-        REQUIRE(markup::as_xml(*synopsis)
+        REQUIRE(xml_generator::render(*synopsis)
                 == R"(<code-block language="cpp">//=== First ===//<soft-break></soft-break>
 <code-block-keyword>void</code-block-keyword> <code-block-identifier>a</code-block-identifier><code-block-punctuation>(</code-block-punctuation><code-block-punctuation>)</code-block-punctuation><code-block-punctuation>;</code-block-punctuation><soft-break></soft-break>
 <soft-break></soft-break>
@@ -337,7 +337,7 @@ void baz();
 
         auto synopsis = generate_synopsis({}, index, *file);
         REQUIRE(
-            markup::as_xml(*synopsis)
+            xml_generator::render(*synopsis)
             == R"(<code-block language="cpp"><code-block-keyword>void</code-block-keyword> <code-block-identifier>foo</code-block-identifier><code-block-punctuation>(</code-block-punctuation><code-block-punctuation>)</code-block-punctuation><code-block-punctuation>;</code-block-punctuation><soft-break></soft-break>
 <soft-break></soft-break>
 //=== a ===//<soft-break></soft-break>
@@ -360,7 +360,7 @@ void baz();
         auto& group          = get_named_entity(*file, "a");
         auto  group_synopsis = generate_synopsis({}, index, group);
         REQUIRE(
-            markup::as_xml(*group_synopsis)
+            xml_generator::render(*group_synopsis)
             == R"(<code-block language="cpp">(1) <code-block-keyword>void</code-block-keyword> <code-block-identifier>a</code-block-identifier><code-block-punctuation>(</code-block-punctuation><code-block-punctuation>)</code-block-punctuation><code-block-punctuation>;</code-block-punctuation><soft-break></soft-break>
 <soft-break></soft-break>
 (2) <code-block-keyword>void</code-block-keyword> <code-block-identifier>a</code-block-identifier><code-block-punctuation>(</code-block-punctuation><code-block-keyword>int</code-block-keyword><code-block-punctuation>)</code-block-punctuation><code-block-punctuation>;</code-block-punctuation><soft-break></soft-break>
@@ -373,7 +373,7 @@ void baz();
         config.set_flag(synopsis_config::show_group_output_section, false);
         auto synopsis_no_output_section = generate_synopsis(config, index, *file);
         REQUIRE(
-            markup::as_xml(*synopsis_no_output_section)
+            xml_generator::render(*synopsis_no_output_section)
             == R"(<code-block language="cpp"><code-block-keyword>void</code-block-keyword> <code-block-identifier>foo</code-block-identifier><code-block-punctuation>(</code-block-punctuation><code-block-punctuation>)</code-block-punctuation><code-block-punctuation>;</code-block-punctuation><soft-break></soft-break>
 <soft-break></soft-break>
 <code-block-keyword>void</code-block-keyword> <code-block-identifier>a</code-block-identifier><code-block-punctuation>(</code-block-punctuation><code-block-punctuation>)</code-block-punctuation><code-block-punctuation>;</code-block-punctuation><soft-break></soft-break>
