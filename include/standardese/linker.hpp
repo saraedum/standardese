@@ -12,20 +12,13 @@
 
 #include <type_safe/variant.hpp>
 
-#include <standardese/markup/link.hpp>
+#include <cppast/forward.hpp>
 
-namespace cppast
-{
-class cpp_entity;
-class diagnostic_logger;
-} // namespace cppast
+#include "output/markup/block_reference.hpp"
+#include "output/markup/url.hpp"
 
 namespace standardese
 {
-namespace markup
-{
-    class document_entity;
-} // namespace markup
 
 /// Stores the information about the location of the entity documentation in the output.
 ///
@@ -40,18 +33,18 @@ public:
     /// If `force` is `true`, it will replace a previous registered documentation.
     /// \returns `false` if the link name was used twice.
     /// \notes This function is thread safe.
-    bool register_documentation(std::string link_name, const markup::document_entity& document,
-                                const markup::block_id& documentation, bool force = false) const;
+    bool register_documentation(std::string link_name, const output::markup::document_entity& document,
+                                const output::markup::block_id& documentation, bool force = false) const;
 
     /// \returns A reference to the documentation for the given linke name, if there is any.
     /// \notes This function is thread safe.
-    type_safe::variant<type_safe::nullvar_t, markup::block_reference, markup::url>
+    type_safe::variant<type_safe::nullvar_t, output::markup::block_reference, output::markup::url>
         lookup_documentation(type_safe::optional_ref<const cppast::cpp_entity> context,
                              std::string                                       link_name) const;
 
 private:
     mutable std::mutex                                               mutex_;
-    mutable std::unordered_map<std::string, markup::block_reference> map_;
+    mutable std::unordered_map<std::string, output::markup::block_reference> map_;
 
     std::map<std::string, std::string> external_doc_;
 };
@@ -61,7 +54,7 @@ private:
 /// Registers every [cppast::cpp_entity]() that is not documented but would have been documented in
 /// that file, using a documented parent's unique name. \notes This function is thread safe.
 void register_documentations(const cppast::diagnostic_logger& logger, const linker& l,
-                             const markup::document_entity& document);
+                             const output::markup::document_entity& document);
 
 /// Resolves all unresolved links in a document.
 /// \effects For all [standardese::markup::documentation_link]() entities that are not yet resolved,
@@ -69,7 +62,7 @@ void register_documentations(const cppast::diagnostic_logger& logger, const link
 /// \notes This function is *not* thread safe and must be called after the linker is entirely
 /// populated.
 void resolve_links(const cppast::diagnostic_logger& logger, const linker& l,
-                   const markup::document_entity& document);
+                   const output::markup::document_entity& document);
 } // namespace standardese
 
 #endif // STANDARDESE_LINKER_HPP_INCLUDED

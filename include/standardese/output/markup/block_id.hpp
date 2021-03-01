@@ -8,6 +8,8 @@
 
 #include <string>
 
+#include "../../forward.hpp"
+
 namespace standardese::output::markup
 {
     /// The id of a [standardese::markup::block_entity]().

@@ -13,12 +13,6 @@
 
 namespace standardese::output::markup
 {
-    /// \exclude
-    namespace detail
-    {
-        struct parent_updater;
-    } // namespace detail
-
     /// The base class for all markup entities.
     ///
     /// This is how the documentation output is described.
@@ -46,6 +40,12 @@ namespace standardese::output::markup
         std::unique_ptr<entity> clone() const
         {
             return do_clone();
+        }
+
+        template <typename Func>
+        static void visit(const entity& e, Func f) {
+            // TODO
+            throw std::logic_error("TODO: visit");
         }
 
     protected:

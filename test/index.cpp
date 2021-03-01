@@ -2,19 +2,19 @@
 // This file is subject to the license terms in the LICENSE file
 // found in the top-level directory of this distribution.
 
-#include <standardese/index.hpp>
-
 #include "../external/catch/single_include/catch2/catch.hpp"
 
 #include <cppast/cpp_namespace.hpp>
 #include <cppast/cpp_type_alias.hpp>
 
-#include <standardese/markup/document.hpp>
-#include <standardese/markup/generator.hpp>
+#include "../include/standardese/index.hpp"
+#include "../include/standardese/output/markup/brief_section.hpp"
+#include "../include/standardese/output/generator/xml/xml_generator.hpp"
 
 #include "test_parser.hpp"
 
 using namespace standardese;
+using standardese::output::generator::xml::xml_generator;
 
 TEST_CASE("entity_index")
 {
@@ -50,8 +50,8 @@ namespace ns2
 using z = int;
 )");
 
-    auto brief_doc = markup::brief_section::builder()
-                         .add_child(markup::text::build("some brief documentation"))
+    auto brief_doc = output::markup::brief_section::builder()
+                         .add_child(output::markup::text::build("some brief documentation"))
                          .finish();
 
     entity_index index;
@@ -61,13 +61,13 @@ using z = int;
             return true;
         else if (e.kind() == cppast::cpp_namespace::kind())
         {
-            auto ns_doc = markup::namespace_documentation::
+            auto ns_doc = output::markup::namespace_documentation::
                 builder(type_safe::ref(static_cast<const cppast::cpp_namespace&>(e)),
-                        markup::block_id(e.name()),
-                        markup::heading::build(markup::block_id(), "no heading"));
+                        output::markup::block_id(e.name()),
+                        output::markup::heading::build(output::markup::block_id(), "no heading"));
             if (e.name() == "ns2")
-                ns_doc.add_brief(markup::brief_section::builder()
-                                     .add_child(markup::text::build("some brief documentation"))
+                ns_doc.add_brief(output::markup::brief_section::builder()
+                                     .add_child(output::markup::text::build("some brief documentation"))
                                      .finish());
             index.register_namespace(static_cast<const cppast::cpp_namespace&>(e),
                                      std::move(ns_doc));
@@ -128,7 +128,7 @@ using z = int;
 </namespace-documentation>
 </entity-index>
 )";
-        REQUIRE(markup::as_xml(*index.generate(entity_index::order::namespace_inline_sorted))
+        REQUIRE(xml_generator::render(*index.generate(entity_index::order::namespace_inline_sorted))
                 == xml);
     }
     SECTION("namespace_external")
@@ -180,14 +180,14 @@ using z = int;
 </namespace-documentation>
 </entity-index>
 )";
-        REQUIRE(markup::as_xml(*index.generate(entity_index::order::namespace_external)) == xml);
+        REQUIRE(xml_generator::render(*index.generate(entity_index::order::namespace_external)) == xml);
     }
 }
 
 TEST_CASE("file_index")
 {
-    auto brief_doc = markup::brief_section::builder()
-                         .add_child(markup::text::build("some brief documentation"))
+    auto brief_doc = output::markup::brief_section::builder()
+                         .add_child(output::markup::text::build("some brief documentation"))
                          .finish();
 
     auto file_a = cppast::cpp_file::builder("a.cpp").finish({});
@@ -213,18 +213,18 @@ TEST_CASE("file_index")
 </entity-index-item>
 </file-index>
 )";
-    REQUIRE(markup::as_xml(*index.generate()) == xml);
+    REQUIRE(xml_generator::render(*index.generate()) == xml);
 }
 
 TEST_CASE("module_index")
 {
     // no need to test much here, the markup test does the most
 
-    auto module_a = markup::module_documentation::builder(markup::block_id("module-a"),
-                                                          markup::heading::build(markup::block_id(),
+    auto module_a = output::markup::module_documentation::builder(output::markup::block_id("module-a"),
+                                                          output::markup::heading::build(output::markup::block_id(),
                                                                                  "Module A"));
-    auto module_b = markup::module_documentation::builder(markup::block_id("module-b"),
-                                                          markup::heading::build(markup::block_id(),
+    auto module_b = output::markup::module_documentation::builder(output::markup::block_id("module-b"),
+                                                          output::markup::heading::build(output::markup::block_id(),
                                                                                  "Module B"));
 
     module_index index;
@@ -233,7 +233,7 @@ TEST_CASE("module_index")
     index.register_module(std::move(module_a));
 
     auto brief_doc
-        = markup::brief_section::builder().add_child(markup::text::build("brief")).finish();
+        = output::markup::brief_section::builder().add_child(output::markup::text::build("brief")).finish();
 
     REQUIRE(
         index.register_entity("module-a", "foo",
@@ -272,5 +272,5 @@ TEST_CASE("module_index")
 </module-documentation>
 </module-index>
 )*";
-    REQUIRE(markup::as_xml(*index.generate()) == xml);
+    REQUIRE(xml_generator::render(*index.generate()) == xml);
 }

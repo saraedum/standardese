@@ -5,6 +5,8 @@
 #ifndef STANDARDESE_OUTPUT_MARKUP_ENTITY_KIND_HPP_INCLUDED
 #define STANDARDESE_OUTPUT_MARKUP_ENTITY_KIND_HPP_INCLUDED
 
+#include "../../forward.hpp"
+
 namespace standardese::output::markup
 {
     /// The kind of markup entity.

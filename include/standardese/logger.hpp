@@ -9,6 +9,8 @@
 
 #include <cppast/diagnostic_logger.hpp>
 
+#include "forward.hpp"
+
 namespace standardese
 {
 namespace detail

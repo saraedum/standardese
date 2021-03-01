@@ -2,18 +2,18 @@
 // This file is subject to the license terms in the LICENSE file
 // found in the top-level directory of this distribution.
 
-#include <standardese/doc_entity.hpp>
-
 #include "../external/catch/single_include/catch2/catch.hpp"
 
-#include <standardese/index.hpp>
-#include <standardese/linker.hpp>
-#include <standardese/markup/document.hpp>
-#include <standardese/markup/generator.hpp>
+#include "../include/standardese/doc_entity.hpp"
+#include "../include/standardese/index.hpp"
+#include "../include/standardese/linker.hpp"
+#include "../include/standardese/output/generator/xml/xml_generator.hpp"
+#include "../include/standardese/output/markup/main_document.hpp"
 
 #include "test_parser.hpp"
 
 using namespace standardese;
+using standardese::output::generator::xml::xml_generator;
 
 std::vector<std::string> get_details(const std::string& str)
 {
@@ -61,7 +61,7 @@ namespace std
 )");
 
         auto doc = generate_documentation({}, {}, index, *file);
-        REQUIRE(markup::as_xml(*doc) == R"*(<file-documentation id="documentation__readme.hpp">
+        REQUIRE(xml_generator::render(*doc) == R"*(<file-documentation id="documentation__readme.hpp">
 <heading>Header file <code>documentation__readme.hpp</code></heading>
 <code-block language="cpp"><code-block-keyword>namespace</code-block-keyword> <code-block-identifier>std</code-block-identifier><soft-break></soft-break>
 <code-block-punctuation>{</code-block-punctuation><soft-break></soft-break>
@@ -109,7 +109,7 @@ namespace ns
 )");
 
         auto doc = generate_documentation({}, {}, index, *file);
-        REQUIRE(markup::as_xml(*doc) == R"*(<file-documentation id="documentation__basic.cpp">
+        REQUIRE(xml_generator::render(*doc) == R"*(<file-documentation id="documentation__basic.cpp">
 <heading>Header file <code>documentation__basic.cpp</code></heading>
 <code-block language="cpp"><code-block-keyword>void</code-block-keyword> <documentation-link unresolved-destination-id="foo()"><code-block-identifier>foo</code-block-identifier></documentation-link><code-block-punctuation>(</code-block-punctuation><code-block-punctuation>)</code-block-punctuation><code-block-punctuation>;</code-block-punctuation><soft-break></soft-break>
 <soft-break></soft-break>
@@ -169,7 +169,7 @@ class X {};
 )");
 
         auto doc = generate_documentation({}, {}, index, *file);
-        REQUIRE(markup::as_xml(*doc) == R"*(<file-documentation id="documentation__guards.hpp">
+        REQUIRE(xml_generator::render(*doc) == R"*(<file-documentation id="documentation__guards.hpp">
 <heading>Header file <code>documentation__guards.hpp</code></heading>
 <code-block language="cpp"><code-block-preprocessor>#define</code-block-preprocessor> <code-block-identifier>XXX</code-block-identifier><soft-break></soft-break>
 <soft-break></soft-break>
@@ -216,7 +216,7 @@ enum class bar
 )");
 
         auto doc = generate_documentation({}, {}, index, *file);
-        REQUIRE(markup::as_xml(*doc) == R"*(<file-documentation id="documentation__inlines.cpp">
+        REQUIRE(xml_generator::render(*doc) == R"*(<file-documentation id="documentation__inlines.cpp">
 <heading>Header file <code>documentation__inlines.cpp</code></heading>
 <code-block language="cpp"><code-block-keyword>template</code-block-keyword> <code-block-punctuation>&lt;</code-block-punctuation><code-block-keyword>typename</code-block-keyword> <documentation-link unresolved-destination-id="foo&lt;A,B,C&gt;.A"><code-block-identifier>A</code-block-identifier></documentation-link><code-block-punctuation>,</code-block-punctuation> <code-block-keyword>typename</code-block-keyword> <documentation-link unresolved-destination-id="foo&lt;A,B,C&gt;.B"><code-block-identifier>B</code-block-identifier></documentation-link><code-block-punctuation>,</code-block-punctuation> <code-block-keyword>typename</code-block-keyword> <code-block-identifier>C</code-block-identifier><code-block-punctuation>&gt;</code-block-punctuation><soft-break></soft-break>
 <code-block-keyword>struct</code-block-keyword> <documentation-link unresolved-destination-id="foo&lt;A,B,C&gt;"><code-block-identifier>foo</code-block-identifier></documentation-link><code-block-punctuation>;</code-block-punctuation><soft-break></soft-break>
@@ -331,7 +331,7 @@ void a(int param);
 )");
 
         auto doc = generate_documentation({}, {}, index, *file);
-        REQUIRE(markup::as_xml(*doc) == R"*(<file-documentation id="documentation__groups.cpp">
+        REQUIRE(xml_generator::render(*doc) == R"*(<file-documentation id="documentation__groups.cpp">
 <heading>Header file <code>documentation__groups.cpp</code></heading>
 <code-block language="cpp">//=== The a ===//<soft-break></soft-break>
 <code-block-keyword>void</code-block-keyword> <documentation-link unresolved-destination-id="a"><code-block-identifier>a</code-block-identifier></documentation-link><code-block-punctuation>(</code-block-punctuation><code-block-punctuation>)</code-block-punctuation><code-block-punctuation>;</code-block-punctuation><soft-break></soft-break>
@@ -408,7 +408,7 @@ namespace ns
         register_index_entities(eindex, file_b->file());
 
         auto result = eindex.generate(entity_index::namespace_inline_sorted);
-        REQUIRE(markup::as_xml(*result) == R"*(<entity-index id="entity-index">
+        REQUIRE(xml_generator::render(*result) == R"*(<entity-index id="entity-index">
 <heading>Project index</heading>
 <entity-index-item id="a--">
 <entity><documentation-link unresolved-destination-id="a()"><code>a</code></documentation-link></entity>
@@ -468,7 +468,7 @@ void foo(int);
         register_module_entities(mindex, comments, file->file());
 
         auto result = mindex.generate();
-        REQUIRE(markup::as_xml(*result) == R"*(<module-index id="module-index">
+        REQUIRE(xml_generator::render(*result) == R"*(<module-index id="module-index">
 <heading>Project modules</heading>
 <module-documentation id="bar">
 <heading>Module <code>bar</code></heading>
@@ -559,10 +559,10 @@ namespace ns
 }
 )");
 
-        auto target_doc = markup::main_document::builder("target", "target")
+        auto target_doc = output::markup::main_document::builder("target", "target")
                               .add_child(generate_documentation({}, {}, index, *target_file))
                               .finish();
-        auto doc = markup::main_document::builder("doc", "doc")
+        auto doc = output::markup::main_document::builder("doc", "doc")
                        .add_child(generate_documentation({}, {}, index, *file))
                        .finish();
 
@@ -573,7 +573,7 @@ namespace ns
         resolve_links(*test_logger(), l, *target_doc);
         resolve_links(*test_logger(), l, *doc);
 
-        auto xml_doc = markup::as_xml(*doc);
+        auto xml_doc = xml_generator::render(*doc);
         auto details = get_details(xml_doc);
         REQUIRE(details.size() == 3u);
 

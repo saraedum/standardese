@@ -6,7 +6,6 @@
 #ifndef STANDARDESE_OUTPUT_MARKUP_DOC_SECTION_HPP_INCLUDED
 #define STANDARDESE_OUTPUT_MARKUP_DOC_SECTION_HPP_INCLUDED
 
-#include "../../comment/commands.hpp"
 #include "entity.hpp"
 
 namespace standardese::output::markup

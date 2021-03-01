@@ -6,7 +6,7 @@
 #ifndef STANDARDESE_OUTPUT_MARKUP_FILE_DOCUMENTATION_HPP_INCLUDED
 #define STANDARDESE_OUTPUT_MARKUP_FILE_DOCUMENTATION_HPP_INCLUDED
 
-#include <cppast/cpp_file.hpp>
+#include <cppast/forward.hpp>
 
 #include "documentation_entity.hpp"
 #include "entity_documentation.hpp"

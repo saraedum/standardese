@@ -145,8 +145,7 @@ namespace standardese::output::markup
 
         entity_kind do_get_kind() const noexcept override;
 
-        // TODO
-        // void do_visit(detail::visitor_callback_t cb, void* mem) const override;
+        void do_visit(visitor_callback_t cb, void* mem) const override;
 
         std::unique_ptr<entity> do_clone() const override;
 

@@ -11,6 +11,8 @@
 #include <type_safe/optional.hpp>
 #include <type_safe/variant.hpp>
 
+#include "../forward.hpp"
+
 namespace standardese
 {
 namespace comment

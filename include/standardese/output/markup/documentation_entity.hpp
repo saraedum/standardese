@@ -111,8 +111,12 @@ namespace standardese::output::markup
 
             void add_section_impl(std::unique_ptr<doc_section> section)
             {
+                throw std::logic_error("parent_updater");
+                // TODO
+                /*
                 detail::parent_updater::set(*section, type_safe::ref(this->peek()));
                 this->peek().sections_.push_back(std::move(section));
+                */
             }
 
             friend class entity_documentation;

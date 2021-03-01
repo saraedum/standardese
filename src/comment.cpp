@@ -7,11 +7,14 @@
 #include <unordered_set>
 #include <stack>
 
-#include <standardese/comment.hpp>
+#include "../include/standardese/comment.hpp"
+#include "../include/standardese/comment/parser.hpp"
+#include "../include/standardese/logger.hpp"
 
 #include <cppast/cpp_friend.hpp>
 #include <cppast/cpp_namespace.hpp>
 #include <cppast/visitor.hpp>
+#include <cppast/diagnostic.hpp>
 
 #include "get_special_entity.hpp"
 
@@ -207,8 +210,8 @@ void file_comment_parser::parse(type_safe::object_ref<const cppast::cpp_file> fi
                 logger_->log("standardese comment", make_parse_diagnostic(entity, ex));
                 comment
                     = comment::parse_result{comment::doc_comment(comment::metadata(),
-                                                                 markup::brief_section::builder()
-                                                                     .add_child(markup::text::build(
+                                                                 output::markup::brief_section::builder()
+                                                                     .add_child(output::markup::text::build(
                                                                          std::string(
                                                                              "(error while parsing "
                                                                              "comment text: ")

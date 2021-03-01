@@ -3,7 +3,7 @@
 // This file is subject to the license terms in the LICENSE file
 // found in the top-level directory of this distribution.
 
-#include <standardese/comment/parser.hpp>
+#include "../include/standardese/comment/parser.hpp"
 
 #include <cassert>
 #include <cstring>
@@ -12,20 +12,28 @@
 #include <cmark-gfm-extension_api.h>
 #include <cmark-gfm.h>
 
-#include <standardese/markup/code_block.hpp>
-#include <standardese/markup/entity_kind.hpp>
-#include <standardese/markup/heading.hpp>
-#include <standardese/markup/link.hpp>
-#include <standardese/markup/list.hpp>
-#include <standardese/markup/paragraph.hpp>
-#include <standardese/markup/quote.hpp>
-#include <standardese/markup/thematic_break.hpp>
-
 #include "cmark-extension/cmark_extension.hpp"
 #include "command-extension/command_extension.hpp"
 #include "command-extension/user_data.hpp"
 #include "ignore-html-extension/ignore_html_extension.hpp"
 #include "verbatim-extension/verbatim_extension.hpp"
+
+#include "../include/standardese/comment/commands.hpp"
+
+#include "../include/standardese/output/markup/block_quote.hpp"
+#include "../include/standardese/output/markup/ordered_list.hpp"
+#include "../include/standardese/output/markup/list_item.hpp"
+#include "../include/standardese/output/markup/subheading.hpp"
+#include "../include/standardese/output/markup/thematic_break.hpp"
+#include "../include/standardese/output/markup/soft_break.hpp"
+#include "../include/standardese/output/markup/hard_break.hpp"
+#include "../include/standardese/output/markup/verbatim.hpp"
+#include "../include/standardese/output/markup/text.hpp"
+#include "../include/standardese/output/markup/code.hpp"
+#include "../include/standardese/output/markup/emphasis.hpp"
+#include "../include/standardese/output/markup/strong_emphasis.hpp"
+#include "../include/standardese/output/markup/external_link.hpp"
+#include "../include/standardese/output/markup/documentation_link.hpp"
 
 using namespace standardese;
 using namespace standardese::comment;
@@ -101,17 +109,17 @@ void add_children(const config& c, Builder& b, bool has_matching_entity, cmark_n
                       unsigned(cmark_node_get_start_column(node)), std::move(msg));
 }
 
-std::unique_ptr<markup::block_quote> parse_block_quote(const config& c, bool has_matching_entity,
+std::unique_ptr<output::markup::block_quote> parse_block_quote(const config& c, bool has_matching_entity,
                                                        cmark_node* node)
 {
     assert(cmark_node_get_type(node) == CMARK_NODE_BLOCK_QUOTE);
 
-    markup::block_quote::builder builder(markup::block_id{});
+    output::markup::block_quote::builder builder(output::markup::block_id{});
     add_children(c, builder, has_matching_entity, node);
     return builder.finish();
 }
 
-std::unique_ptr<markup::block_entity> parse_list(const config& c, bool has_matching_entity,
+std::unique_ptr<output::markup::block_entity> parse_list(const config& c, bool has_matching_entity,
                                                  cmark_node* node)
 {
     assert(cmark_node_get_type(node) == CMARK_NODE_LIST);
@@ -119,13 +127,13 @@ std::unique_ptr<markup::block_entity> parse_list(const config& c, bool has_match
     auto type = cmark_node_get_list_type(node);
     if (type == CMARK_BULLET_LIST)
     {
-        markup::unordered_list::builder builder(markup::block_id{});
+        output::markup::unordered_list::builder builder(output::markup::block_id{});
         add_children(c, builder, has_matching_entity, node);
         return builder.finish();
     }
     else if (type == CMARK_ORDERED_LIST)
     {
-        markup::ordered_list::builder builder(markup::block_id{});
+        output::markup::ordered_list::builder builder(output::markup::block_id{});
         add_children(c, builder, has_matching_entity, node);
         return builder.finish();
     }
@@ -135,34 +143,34 @@ std::unique_ptr<markup::block_entity> parse_list(const config& c, bool has_match
     return nullptr;
 }
 
-std::unique_ptr<markup::list_item> parse_item(const config& c, bool has_matching_entity,
+std::unique_ptr<output::markup::list_item> parse_item(const config& c, bool has_matching_entity,
                                               cmark_node* node)
 {
     assert(cmark_node_get_type(node) == CMARK_NODE_ITEM);
 
-    markup::list_item::builder builder;
+    output::markup::list_item::builder builder;
     add_children(c, builder, has_matching_entity, node);
     return builder.finish();
 }
 
-std::unique_ptr<markup::code_block> parse_code_block(const config&, bool, cmark_node* node)
+std::unique_ptr<output::markup::code_block> parse_code_block(const config&, bool, cmark_node* node)
 {
     assert(cmark_node_get_type(node) == CMARK_NODE_CODE_BLOCK);
-    return markup::code_block::build(markup::block_id{}, cmark_node_get_fence_info(node),
+    return output::markup::code_block::build(output::markup::block_id{}, cmark_node_get_fence_info(node),
                                      cmark_node_get_literal(node));
 }
 
-std::unique_ptr<markup::paragraph> parse_paragraph(const config& c, bool has_matching_entity,
+std::unique_ptr<output::markup::paragraph> parse_paragraph(const config& c, bool has_matching_entity,
                                                    cmark_node* node)
 {
     assert(cmark_node_get_type(node) == CMARK_NODE_PARAGRAPH);
 
-    markup::paragraph::builder builder;
+    output::markup::paragraph::builder builder;
     add_children(c, builder, has_matching_entity, node);
     return builder.finish();
 }
 
-std::unique_ptr<markup::block_entity> parse_heading(const config& c, bool has_matching_entity,
+std::unique_ptr<output::markup::block_entity> parse_heading(const config& c, bool has_matching_entity,
                                                     cmark_node* node)
 {
     assert(cmark_node_get_type(node) == CMARK_NODE_HEADING);
@@ -170,83 +178,83 @@ std::unique_ptr<markup::block_entity> parse_heading(const config& c, bool has_ma
     auto level = cmark_node_get_heading_level(node);
     if (level == 1)
     {
-        markup::heading::builder builder(markup::block_id{});
+        output::markup::heading::builder builder(output::markup::block_id{});
         add_children(c, builder, has_matching_entity, node);
         return builder.finish();
     }
     else
     {
-        markup::subheading::builder builder(markup::block_id{});
+        output::markup::subheading::builder builder(output::markup::block_id{});
         add_children(c, builder, has_matching_entity, node);
         return builder.finish();
     }
 }
 
-std::unique_ptr<markup::thematic_break> parse_thematic_break(const config&, bool, cmark_node* node)
+std::unique_ptr<output::markup::thematic_break> parse_thematic_break(const config&, bool, cmark_node* node)
 {
     assert(cmark_node_get_type(node) == CMARK_NODE_THEMATIC_BREAK);
     (void)node;
-    return markup::thematic_break::build();
+    return output::markup::thematic_break::build();
 }
 
-std::unique_ptr<markup::text> parse_text(const config&, bool, cmark_node* node)
+std::unique_ptr<output::markup::text> parse_text(const config&, bool, cmark_node* node)
 {
     assert(cmark_node_get_type(node) == CMARK_NODE_TEXT);
-    return markup::text::build(cmark_node_get_literal(node));
+    return output::markup::text::build(cmark_node_get_literal(node));
 }
 
-std::unique_ptr<markup::soft_break> parse_softbreak(const config&, bool, cmark_node* node)
+std::unique_ptr<output::markup::soft_break> parse_softbreak(const config&, bool, cmark_node* node)
 {
     assert(cmark_node_get_type(node) == CMARK_NODE_SOFTBREAK);
-    return markup::soft_break::build();
+    return output::markup::soft_break::build();
 }
 
-std::unique_ptr<markup::hard_break> parse_linebreak(const config&, bool, cmark_node* node)
+std::unique_ptr<output::markup::hard_break> parse_linebreak(const config&, bool, cmark_node* node)
 {
     assert(cmark_node_get_type(node) == CMARK_NODE_LINEBREAK);
-    return markup::hard_break::build();
+    return output::markup::hard_break::build();
 }
 
-std::unique_ptr<markup::code> parse_code(const config&, bool, cmark_node* node)
+std::unique_ptr<output::markup::code> parse_code(const config&, bool, cmark_node* node)
 {
     assert(cmark_node_get_type(node) == CMARK_NODE_CODE);
-    return markup::code::build(cmark_node_get_literal(node));
+    return output::markup::code::build(cmark_node_get_literal(node));
 }
 
-std::unique_ptr<markup::verbatim> parse_verbatim(const config&, bool, cmark_node* node)
+std::unique_ptr<output::markup::verbatim> parse_verbatim(const config&, bool, cmark_node* node)
 {
-    return markup::verbatim::build(cmark_node_get_string_content(node));
+    return output::markup::verbatim::build(cmark_node_get_string_content(node));
 }
 
-std::unique_ptr<markup::emphasis> parse_emph(const config& c, bool has_matching_entity,
+std::unique_ptr<output::markup::emphasis> parse_emph(const config& c, bool has_matching_entity,
                                              cmark_node* node)
 {
     assert(cmark_node_get_type(node) == CMARK_NODE_EMPH);
-    markup::emphasis::builder builder;
+    output::markup::emphasis::builder builder;
     add_children(c, builder, has_matching_entity, node);
     return builder.finish();
 }
 
-std::unique_ptr<markup::strong_emphasis> parse_strong(const config& c, bool has_matching_entity,
+std::unique_ptr<output::markup::strong_emphasis> parse_strong(const config& c, bool has_matching_entity,
                                                       cmark_node* node)
 {
     assert(cmark_node_get_type(node) == CMARK_NODE_STRONG);
-    markup::strong_emphasis::builder builder;
+    output::markup::strong_emphasis::builder builder;
     add_children(c, builder, has_matching_entity, node);
     return builder.finish();
 }
 
-std::unique_ptr<markup::external_link> parse_external_link(const config& c,
+std::unique_ptr<output::markup::external_link> parse_external_link(const config& c,
                                                            bool          has_matching_entity,
                                                            cmark_node* node, const char* title,
                                                            const char* url)
 {
-    markup::external_link::builder builder(title, markup::url(url));
+    output::markup::external_link::builder builder(title, output::markup::url(url));
     add_children(c, builder, has_matching_entity, node);
     return builder.finish();
 }
 
-std::unique_ptr<markup::link_base> parse_link(const config& c, bool has_matching_entity,
+std::unique_ptr<output::markup::link_base> parse_link(const config& c, bool has_matching_entity,
                                               cmark_node* node)
 {
     assert(cmark_node_get_type(node) == CMARK_NODE_LINK);
@@ -266,15 +274,15 @@ std::unique_ptr<markup::link_base> parse_link(const config& c, bool has_matching
         {
             auto unique_name = cmark_node_get_literal(child);
             auto is_relative = *unique_name == '?' || *unique_name == '*';
-            return markup::documentation_link::builder(unique_name)
-                .add_child(markup::code::build(is_relative ? unique_name + 1 : unique_name))
+            return output::markup::documentation_link::builder(unique_name)
+                .add_child(output::markup::code::build(is_relative ? unique_name + 1 : unique_name))
                 .finish();
         }
     }
     else if (*url == '\0')
     {
         // url is empty, unique name is title
-        markup::documentation_link::builder builder(title);
+        output::markup::documentation_link::builder builder(title);
         add_children(c, builder, has_matching_entity, node);
         return builder.finish();
     }
@@ -285,7 +293,7 @@ std::unique_ptr<markup::link_base> parse_link(const config& c, bool has_matching
         if (!unique_name.empty() && unique_name.back() == '/')
             unique_name.pop_back();
 
-        markup::documentation_link::builder builder(title, unique_name);
+        output::markup::documentation_link::builder builder(title, unique_name);
         add_children(c, builder, has_matching_entity, node);
         return builder.finish();
     }
@@ -299,7 +307,7 @@ std::unique_ptr<markup::link_base> parse_link(const config& c, bool has_matching
     return nullptr;
 }
 
-std::unique_ptr<markup::phrasing_entity> parse_key(const char* key)
+std::unique_ptr<output::markup::phrasing_entity> parse_key(const char* key)
 {
     if (*key == '[')
     {
@@ -312,35 +320,35 @@ std::unique_ptr<markup::phrasing_entity> parse_key(const char* key)
         {
             // found one
             auto unique_name = std::string(begin, std::size_t(key - begin));
-            markup::documentation_link::builder link(unique_name);
-            link.add_child(markup::text::build(std::move(unique_name)));
+            output::markup::documentation_link::builder link(unique_name);
+            link.add_child(output::markup::text::build(std::move(unique_name)));
             return link.finish();
         }
     }
 
     // normal text
-    return markup::text::build(key);
+    return output::markup::text::build(key);
 }
 
-std::unique_ptr<markup::brief_section> parse_brief(const config& c, bool has_matching_entity,
+std::unique_ptr<output::markup::brief_section> parse_brief(const config& c, bool has_matching_entity,
                                                    cmark_node* node)
 {
     assert(cmark_node_get_type(cmark_node_first_child(node)) == CMARK_NODE_PARAGRAPH);
 
-    markup::brief_section::builder builder;
+    output::markup::brief_section::builder builder;
     add_children(c, builder, has_matching_entity, cmark_node_first_child(node));
     return builder.finish();
 }
 
-std::unique_ptr<markup::details_section> parse_details(const config& c, bool has_matching_entity,
+std::unique_ptr<output::markup::details_section> parse_details(const config& c, bool has_matching_entity,
                                                        cmark_node* node)
 {
-    markup::details_section::builder builder;
+    output::markup::details_section::builder builder;
     add_children(c, builder, has_matching_entity, node);
     return builder.finish();
 }
 
-std::unique_ptr<markup::doc_section> parse_section(const config& c, bool has_matching_entity,
+std::unique_ptr<output::markup::doc_section> parse_section(const config& c, bool has_matching_entity,
                                                    cmark_node*& node)
 {
     const auto& data = command_extension::user_data<section_type>::get(node);
@@ -368,7 +376,7 @@ std::unique_ptr<markup::doc_section> parse_section(const config& c, bool has_mat
     case section_type::diagnostics:
     case section_type::see:
     {
-        auto result = markup::inline_section::builder(data.command, c.inline_section_name(data.command));
+        auto result = output::markup::inline_section::builder(data.command, c.inline_section_name(data.command));
 
         auto first = true;
         for (auto child = cmark_node_first_child(node); child; child = cmark_node_next(child))
@@ -376,11 +384,11 @@ std::unique_ptr<markup::doc_section> parse_section(const config& c, bool has_mat
             if (first)
                 first = false;
             else
-                result.add_child(markup::soft_break::build());
+                result.add_child(output::markup::soft_break::build());
 
             auto paragraph = parse_paragraph(c, has_matching_entity, child);
             for (auto& paragraph_child : *paragraph)
-                result.add_child(markup::clone(paragraph_child));
+                result.add_child(output::markup::clone(paragraph_child));
         }
 
         return result.finish();
@@ -400,8 +408,8 @@ struct comment_builder
 
     metadata data;
 
-    std::unique_ptr<markup::brief_section>            brief;
-    std::vector<std::unique_ptr<markup::doc_section>> sections;
+    std::unique_ptr<output::markup::brief_section>            brief;
+    std::vector<std::unique_ptr<output::markup::doc_section>> sections;
     std::vector<unmatched_doc_comment>                inlines;
 };
 
@@ -567,8 +575,8 @@ void parse_inline(const config& c, comment_builder& builder, bool, cmark_node* n
     assert(cmark_node_get_type(node) == command_extension::command_extension::node_type<inline_type>());
 
     metadata                                          data;
-    std::unique_ptr<markup::brief_section>            brief;
-    std::vector<std::unique_ptr<markup::doc_section>> sections;
+    std::unique_ptr<output::markup::brief_section>            brief;
+    std::vector<std::unique_ptr<output::markup::doc_section>> sections;
     for (auto child = cmark_node_first_child(node); child; child = cmark_node_next(child))
     {
         if (cmark_node_get_type(child) == command_extension::command_extension::node_type<command_type>())
@@ -580,8 +588,8 @@ void parse_inline(const config& c, comment_builder& builder, bool, cmark_node* n
             if (data_.command == section_type::brief)
             {
                 assert(!brief);
-                brief = std::unique_ptr<markup::brief_section>(
-                    static_cast<markup::brief_section*>(section.release()));
+                brief = std::unique_ptr<output::markup::brief_section>(
+                    static_cast<output::markup::brief_section*>(section.release()));
             }
             else
                 sections.push_back(std::move(section));
@@ -615,12 +623,12 @@ void add_child(int, Builder& b, std::unique_ptr<T> entity,
     b.add_item(std::move(entity));
 }
 
-void add_child(int, comment_builder& builder, std::unique_ptr<markup::doc_section> ptr)
+void add_child(int, comment_builder& builder, std::unique_ptr<output::markup::doc_section> ptr)
 {
-    if (ptr->kind() == markup::entity_kind::brief_section)
+    if (ptr->kind() == output::markup::entity_kind::brief_section)
     {
-        auto brief = std::unique_ptr<markup::brief_section>(
-            static_cast<markup::brief_section*>(ptr.release()));
+        auto brief = std::unique_ptr<output::markup::brief_section>(
+            static_cast<output::markup::brief_section*>(ptr.release()));
         if (builder.brief)
             error(nullptr, "multiple brief sections for comment");
         else

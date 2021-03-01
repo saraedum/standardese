@@ -9,6 +9,8 @@
 
 #include <type_safe/variant.hpp>
 
+#include "../forward.hpp"
+
 namespace standardese
 {
 namespace comment

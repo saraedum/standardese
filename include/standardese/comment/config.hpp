@@ -10,7 +10,7 @@
 #include <string>
 #include <regex>
 
-#include <standardese/comment/commands.hpp>
+#include "../forward.hpp"
 
 namespace standardese::comment
 {

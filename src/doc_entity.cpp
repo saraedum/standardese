@@ -2,8 +2,6 @@
 // This file is subject to the license terms in the LICENSE file
 // found in the top-level directory of this distribution.
 
-#include <standardese/doc_entity.hpp>
-
 #include <algorithm>
 #include <cassert>
 #include <cctype>
@@ -20,10 +18,12 @@
 #include <cppast/cpp_static_assert.hpp>
 #include <cppast/visitor.hpp>
 
-#include <standardese/comment.hpp>
-#include <standardese/markup/entity_kind.hpp>
-#include <standardese/markup/heading.hpp>
-#include <standardese/markup/link.hpp>
+#include "../include/standardese/doc_entity.hpp"
+#include "../include/standardese/comment.hpp"
+#include "../include/standardese/output/markup/documentation_link.hpp"
+#include "../include/standardese/output/markup/soft_break.hpp"
+#include "../include/standardese/output/markup/code.hpp"
+#include "../include/standardese/output/markup/term_description_item.hpp"
 
 #include "entity_visitor.hpp"
 #include "get_special_entity.hpp"
@@ -223,11 +223,11 @@ class standardese::detail::markdown_code_generator : public cppast::code_generat
 public:
     markdown_code_generator(type_safe::object_ref<const synopsis_config>          config,
                             type_safe::object_ref<const cppast::cpp_entity_index> index)
-    : config_(config), index_(index), builder_(markup::block_id(), "cpp"), level_(0u),
+    : config_(config), index_(index), builder_(standardese::output::markup::block_id(), "cpp"), level_(0u),
       need_indent_(false), allow_group_(false), render_injected_(false)
     {}
 
-    std::unique_ptr<markup::code_block> finish()
+    std::unique_ptr<standardese::output::markup::code_block> finish()
     {
         return builder_.finish();
     }
@@ -355,19 +355,19 @@ private:
     void do_write_token_seq(cppast::string_view tokens) override
     {
         update_indent();
-        builder_.add_child(markup::text::build(tokens.c_str()));
+        builder_.add_child(standardese::output::markup::text::build(tokens.c_str()));
     }
 
     void do_write_keyword(cppast::string_view keyword) override
     {
         update_indent();
-        builder_.add_child(markup::code_block::keyword::build(keyword.c_str()));
+        builder_.add_child(standardese::output::markup::code_block::keyword::build(keyword.c_str()));
     }
 
     void write_identifier(cppast::string_view identifier)
     {
         if (identifier.length() > 0u)
-            builder_.add_child(markup::code_block::identifier::build(identifier.c_str()));
+            builder_.add_child(standardese::output::markup::code_block::identifier::build(identifier.c_str()));
     }
 
     bool write_link(const doc_entity& entity, cppast::string_view name)
@@ -375,8 +375,8 @@ private:
         if (is_documented(entity))
         {
             // only generate link if the entity has actual documentation
-            markup::documentation_link::builder link(entity.link_name());
-            link.add_child(markup::code_block::identifier::build(name.c_str()));
+            standardese::output::markup::documentation_link::builder link(entity.link_name());
+            link.add_child(standardese::output::markup::code_block::identifier::build(name.c_str()));
             builder_.add_child(link.finish());
         }
         else if (entity.is_excluded())
@@ -429,37 +429,37 @@ private:
     void do_write_punctuation(cppast::string_view punct) override
     {
         update_indent();
-        builder_.add_child(markup::code_block::punctuation::build(punct.c_str()));
+        builder_.add_child(standardese::output::markup::code_block::punctuation::build(punct.c_str()));
     }
 
     void do_write_str_literal(cppast::string_view str) override
     {
         update_indent();
-        builder_.add_child(markup::code_block::string_literal::build(str.c_str()));
+        builder_.add_child(standardese::output::markup::code_block::string_literal::build(str.c_str()));
     }
 
     void do_write_int_literal(cppast::string_view str) override
     {
         update_indent();
-        builder_.add_child(markup::code_block::int_literal::build(str.c_str()));
+        builder_.add_child(standardese::output::markup::code_block::int_literal::build(str.c_str()));
     }
 
     void do_write_float_literal(cppast::string_view str) override
     {
         update_indent();
-        builder_.add_child(markup::code_block::float_literal::build(str.c_str()));
+        builder_.add_child(standardese::output::markup::code_block::float_literal::build(str.c_str()));
     }
 
     void do_write_preprocessor(cppast::string_view punct) override
     {
         update_indent();
-        builder_.add_child(markup::code_block::preprocessor::build(punct.c_str()));
+        builder_.add_child(standardese::output::markup::code_block::preprocessor::build(punct.c_str()));
     }
 
     void write_excluded()
     {
         update_indent();
-        builder_.add_child(markup::code_block::identifier::build(config_->hidden_name()));
+        builder_.add_child(standardese::output::markup::code_block::identifier::build(config_->hidden_name()));
     }
 
     void do_write_excluded(const cppast::cpp_entity&) override
@@ -469,26 +469,26 @@ private:
 
     void do_write_newline() override
     {
-        builder_.add_child(markup::soft_break::build());
+        builder_.add_child(standardese::output::markup::soft_break::build());
         need_indent_.set();
     }
 
     void do_write_whitespace() override
     {
         update_indent();
-        builder_.add_child(markup::text::build(" "));
+        builder_.add_child(standardese::output::markup::text::build(" "));
     }
 
     void update_indent()
     {
         if (need_indent_.try_reset())
-            builder_.add_child(markup::text::build(std::string(level_, ' ')));
+            builder_.add_child(standardese::output::markup::text::build(std::string(level_, ' ')));
     }
 
     type_safe::object_ref<const synopsis_config>          config_;
     type_safe::object_ref<const cppast::cpp_entity_index> index_;
 
-    markup::code_block::builder builder_;
+    standardese::output::markup::code_block::builder builder_;
 
     std::stack<type_safe::object_ref<const cppast::cpp_entity>> entities_;
 
@@ -498,7 +498,7 @@ private:
     type_safe::flag render_injected_;
 };
 
-std::unique_ptr<markup::code_block> standardese::generate_synopsis(
+std::unique_ptr<output::markup::code_block> standardese::generate_synopsis(
     const synopsis_config& config, const cppast::cpp_entity_index& index, const doc_entity& entity)
 {
     if (entity.kind() == doc_entity::cpp_entity
@@ -736,11 +736,11 @@ const char* get_entity_kind_spelling(const cppast::cpp_entity& e)
     return "should never get here";
 }
 
-markup::documentation_header get_header(const cppast::cpp_entity&                           e,
+output::markup::documentation_header get_header(const cppast::cpp_entity&                           e,
                                         type_safe::optional_ref<const comment::doc_comment> comment,
                                         std::string                                         name)
 {
-    markup::heading::builder builder{markup::block_id()};
+    output::markup::heading::builder builder{output::markup::block_id()};
 
     auto heading
         = comment.map([](const comment::doc_comment& c) { return type_safe::ref(c.metadata()); })
@@ -748,16 +748,16 @@ markup::documentation_header get_header(const cppast::cpp_entity&               
               .map([](const comment::member_group& group) { return group.heading(); });
 
     if (heading)
-        builder.add_child(markup::text::build(heading.value()));
+        builder.add_child(output::markup::text::build(heading.value()));
     else
     {
         auto spelling = get_entity_kind_spelling(e);
-        builder.add_child(markup::text::build(spelling));
-        builder.add_child(markup::text::build(" "));
-        builder.add_child(markup::code::build(std::move(name)));
+        builder.add_child(output::markup::text::build(spelling));
+        builder.add_child(output::markup::text::build(" "));
+        builder.add_child(output::markup::code::build(std::move(name)));
     }
 
-    return markup::documentation_header(builder.finish(), comment
+    return output::markup::documentation_header(builder.finish(), comment
                                                               ? comment.value().metadata().module()
                                                               : type_safe::nullopt);
 }
@@ -770,19 +770,19 @@ bool empty_sections(type_safe::optional_ref<const comment::doc_comment> comment)
         return true;
 }
 
-std::unique_ptr<markup::term_description_item> get_inline_doc(
-    markup::block_id id, const cppast::cpp_entity& e,
+std::unique_ptr<output::markup::term_description_item> get_inline_doc(
+    output::markup::block_id id, const cppast::cpp_entity& e,
     type_safe::optional_ref<const comment::doc_comment> comment)
 {
     if (comment && comment.value().brief_section())
     {
-        auto term = markup::term::build(markup::code::build(get_entity_name(false, e)));
+        auto term = output::markup::term::build(output::markup::code::build(get_entity_name(false, e)));
 
-        markup::description::builder description;
+        output::markup::description::builder description;
         for (auto& phrasing : comment.value().brief_section().value())
-            description.add_child(markup::clone(phrasing));
+            description.add_child(output::markup::clone(phrasing));
 
-        return markup::term_description_item::build(std::move(id), std::move(term),
+        return output::markup::term_description_item::build(std::move(id), std::move(term),
                                                     description.finish());
     }
     else
@@ -790,7 +790,7 @@ std::unique_ptr<markup::term_description_item> get_inline_doc(
 }
 } // namespace
 
-std::unique_ptr<markup::documentation_entity> standardese::generate_documentation(
+std::unique_ptr<output::markup::documentation_entity> standardese::generate_documentation(
     const generation_config& gen_config, const synopsis_config& syn_config,
     const cppast::cpp_entity_index& index, const doc_entity& entity)
 {
@@ -798,11 +798,11 @@ std::unique_ptr<markup::documentation_entity> standardese::generate_documentatio
                                             generate_synopsis(syn_config, index, entity));
 }
 
-std::unique_ptr<markup::documentation_entity> doc_cpp_entity::do_generate_documentation(
+std::unique_ptr<output::markup::documentation_entity> doc_cpp_entity::do_generate_documentation(
     const generation_config& gen_config, const synopsis_config& syn_config,
     const cppast::cpp_entity_index&                     index,
     type_safe::optional_ref<detail::inline_entity_list> inlines,
-    std::unique_ptr<markup::code_block>                 synopsis) const
+    std::unique_ptr<output::markup::code_block>                 synopsis) const
 {
     auto inline_doc
         = gen_config.is_flag_set(generation_config::inline_doc) && empty_sections(comment());
@@ -833,7 +833,7 @@ std::unique_ptr<markup::documentation_entity> doc_cpp_entity::do_generate_docume
     // non-inline entity
     else
     {
-        markup::entity_documentation::builder builder(entity_, get_documentation_id(),
+        output::markup::entity_documentation::builder builder(entity_, get_documentation_id(),
                                                       get_header(*entity_, comment(),
                                                                  get_entity_name(true, *entity_)),
                                                       std::move(synopsis));
@@ -849,27 +849,27 @@ std::unique_ptr<markup::documentation_entity> doc_cpp_entity::do_generate_docume
                                                   generate_synopsis(syn_config, index, child));
             if (child_doc)
             {
-                assert(child_doc->kind() == markup::entity_kind::entity_documentation);
-                builder.add_child(std::unique_ptr<markup::entity_documentation>(
-                    static_cast<markup::entity_documentation*>(child_doc.release())));
+                assert(child_doc->kind() == output::markup::entity_kind::entity_documentation);
+                builder.add_child(std::unique_ptr<output::markup::entity_documentation>(
+                    static_cast<output::markup::entity_documentation*>(child_doc.release())));
             }
         }
 
         // add inlines
         if (!my_inlines.tparams.empty())
-            builder.add_section(markup::list_section::build("Template parameters",
+            builder.add_section(output::markup::list_section::build("Template parameters",
                                                             my_inlines.tparams.finish()));
         if (!my_inlines.params.empty())
-            builder.add_section(markup::list_section::build("Parameters",
+            builder.add_section(output::markup::list_section::build("Parameters",
                                                             my_inlines.params.finish()));
         if (!my_inlines.bases.empty())
-            builder.add_section(markup::list_section::build("Base classes",
+            builder.add_section(output::markup::list_section::build("Base classes",
                                                             my_inlines.bases.finish()));
         if (!my_inlines.enumerators.empty())
-            builder.add_section(markup::list_section::build("Enumerators",
+            builder.add_section(output::markup::list_section::build("Enumerators",
                                                             my_inlines.enumerators.finish()));
         if (!my_inlines.members.empty())
-            builder.add_section(markup::list_section::build("Member variables",
+            builder.add_section(output::markup::list_section::build("Member variables",
                                                             my_inlines.members.finish()));
 
         if (comment() || (!builder.empty() && !builder.has_documentation())
@@ -880,30 +880,30 @@ std::unique_ptr<markup::documentation_entity> doc_cpp_entity::do_generate_docume
     return nullptr;
 }
 
-std::unique_ptr<markup::documentation_entity> doc_metadata_entity::do_generate_documentation(
+std::unique_ptr<output::markup::documentation_entity> doc_metadata_entity::do_generate_documentation(
     const generation_config&, const synopsis_config&, const cppast::cpp_entity_index&,
-    type_safe::optional_ref<detail::inline_entity_list>, std::unique_ptr<markup::code_block>) const
+    type_safe::optional_ref<detail::inline_entity_list>, std::unique_ptr<output::markup::code_block>) const
 {
     return nullptr;
 }
 
-std::unique_ptr<markup::documentation_entity> doc_member_group_entity::do_generate_documentation(
+std::unique_ptr<output::markup::documentation_entity> doc_member_group_entity::do_generate_documentation(
     const generation_config& gen_config, const synopsis_config& syn_config,
     const cppast::cpp_entity_index&                     index,
     type_safe::optional_ref<detail::inline_entity_list> inlines,
-    std::unique_ptr<markup::code_block>                 synopsis) const
+    std::unique_ptr<output::markup::code_block>                 synopsis) const
 {
     return begin()->do_generate_documentation(gen_config, syn_config, index, inlines,
                                               std::move(synopsis));
 }
 
-std::unique_ptr<markup::documentation_entity> doc_cpp_namespace::do_generate_documentation(
+std::unique_ptr<output::markup::documentation_entity> doc_cpp_namespace::do_generate_documentation(
     const generation_config& gen_config, const synopsis_config& syn_config,
     const cppast::cpp_entity_index&     index, type_safe::optional_ref<detail::inline_entity_list>,
-    std::unique_ptr<markup::code_block> synopsis) const
+    std::unique_ptr<output::markup::code_block> synopsis) const
 {
     // generate child documentation
-    std::vector<std::unique_ptr<markup::entity_documentation>> child_docs;
+    std::vector<std::unique_ptr<output::markup::entity_documentation>> child_docs;
     for (auto& child : *this)
     {
         auto child_doc
@@ -911,16 +911,16 @@ std::unique_ptr<markup::documentation_entity> doc_cpp_namespace::do_generate_doc
                                               generate_synopsis(syn_config, index, child));
         if (child_doc)
         {
-            assert(child_doc->kind() == markup::entity_kind::entity_documentation);
-            child_docs.push_back(std::unique_ptr<markup::entity_documentation>(
-                static_cast<markup::entity_documentation*>(child_doc.release())));
+            assert(child_doc->kind() == output::markup::entity_kind::entity_documentation);
+            child_docs.push_back(std::unique_ptr<output::markup::entity_documentation>(
+                static_cast<output::markup::entity_documentation*>(child_doc.release())));
         }
     }
 
     if (child_docs.empty() && comment())
     {
         // generate documentation of namespace, if there is any
-        markup::entity_documentation::builder builder(entity_, get_documentation_id(),
+        output::markup::entity_documentation::builder builder(entity_, get_documentation_id(),
                                                       get_header(namespace_(), comment(),
                                                                  namespace_().name()),
                                                       std::move(synopsis));
@@ -931,7 +931,7 @@ std::unique_ptr<markup::documentation_entity> doc_cpp_namespace::do_generate_doc
     else
     {
         // generate empty namespace documentation
-        markup::entity_documentation::builder builder(entity_, get_documentation_id(),
+        output::markup::entity_documentation::builder builder(entity_, get_documentation_id(),
                                                       type_safe::nullopt, nullptr);
         for (auto& doc : child_docs)
             builder.add_child(std::move(doc));
@@ -940,9 +940,9 @@ std::unique_ptr<markup::documentation_entity> doc_cpp_namespace::do_generate_doc
     }
 }
 
-markup::namespace_documentation::builder doc_cpp_namespace::get_builder() const
+output::markup::namespace_documentation::builder doc_cpp_namespace::get_builder() const
 {
-    markup::namespace_documentation::builder builder(entity_, get_documentation_id(),
+    output::markup::namespace_documentation::builder builder(entity_, get_documentation_id(),
                                                      get_header(namespace_(), comment(),
                                                                 get_entity_name(true,
                                                                                 namespace_())));
@@ -951,12 +951,12 @@ markup::namespace_documentation::builder doc_cpp_namespace::get_builder() const
     return builder;
 }
 
-std::unique_ptr<markup::documentation_entity> doc_cpp_file::do_generate_documentation(
+std::unique_ptr<output::markup::documentation_entity> doc_cpp_file::do_generate_documentation(
     const generation_config& gen_config, const synopsis_config& syn_config,
     const cppast::cpp_entity_index&     index, type_safe::optional_ref<detail::inline_entity_list>,
-    std::unique_ptr<markup::code_block> synopsis) const
+    std::unique_ptr<output::markup::code_block> synopsis) const
 {
-    markup::file_documentation::builder builder(type_safe::ref(*file_), get_documentation_id(),
+    output::markup::file_documentation::builder builder(type_safe::ref(*file_), get_documentation_id(),
                                                 get_header(*file_, comment(), output_name()),
                                                 std::move(synopsis));
     if (comment())
@@ -969,9 +969,9 @@ std::unique_ptr<markup::documentation_entity> doc_cpp_file::do_generate_document
                                               generate_synopsis(syn_config, index, child));
         if (child_doc)
         {
-            assert(child_doc->kind() == markup::entity_kind::entity_documentation);
-            builder.add_child(std::unique_ptr<markup::entity_documentation>(
-                static_cast<markup::entity_documentation*>(child_doc.release())));
+            assert(child_doc->kind() == output::markup::entity_kind::entity_documentation);
+            builder.add_child(std::unique_ptr<output::markup::entity_documentation>(
+                static_cast<output::markup::entity_documentation*>(child_doc.release())));
         }
     }
 

@@ -7,7 +7,6 @@
 #define STANDARDESE_OUTPUT_MARKUP_DETAILS_SECTION_HPP_INCLUDED
 
 #include "doc_section.hpp"
-#include "block_entity.hpp"
 #include "container_entity.hpp"
 
 namespace standardese::output::markup

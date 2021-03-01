@@ -8,6 +8,8 @@
 
 #include <string>
 
+#include "../../forward.hpp"
+
 namespace standardese::output::markup
 {
     /// A URL.

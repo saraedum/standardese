@@ -4,17 +4,17 @@
 
 set(tests
     comment/parser.cpp
-    markup/code_block.cpp
-    markup/document.cpp
-    markup/documentation.cpp
-    markup/heading.cpp
-    markup/index.cpp
-    markup/link.cpp
-    markup/list.cpp
-    markup/paragraph.cpp
-    markup/phrasing.cpp
-    markup/quote.cpp
-    markup/thematic_break.cpp
+    output/markup/code_block.cpp
+    output/markup/document.cpp
+    output/markup/documentation.cpp
+    output/markup/heading.cpp
+    output/markup/index.cpp
+    output/markup/link.cpp
+    output/markup/list.cpp
+    output/markup/paragraph.cpp
+    output/markup/phrasing.cpp
+    output/markup/block_quote.cpp
+    output/markup/thematic_break.cpp
     comment.cpp
     doc_entity.cpp
     documentation.cpp

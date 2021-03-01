@@ -11,7 +11,7 @@
 
 #include <cmark-gfm.h>
 
-#include <standardese/comment/config.hpp>
+#include "../../../include/standardese/comment/config.hpp"
 
 #include "../cmark-extension/cmark_extension.hpp"
 

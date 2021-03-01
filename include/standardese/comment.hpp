@@ -8,17 +8,15 @@
 #include <mutex>
 #include <unordered_map>
 
-#include "index.hpp"
-#include <standardese/comment/config.hpp>
-#include <standardese/comment/doc_comment.hpp>
-#include <standardese/comment/parser.hpp>
-#include <standardese/logger.hpp>
+#include <cppast/forward.hpp>
+#include <stdexcept>
+#include <cassert>
 
-namespace cppast
-{
-class cpp_entity;
-class cpp_file;
-} // namespace cppast
+#include <type_safe/optional_ref.hpp>
+
+#include "comment/doc_comment.hpp"
+#include "comment/config.hpp"
+#include "comment/parser.hpp"
 
 namespace standardese
 {

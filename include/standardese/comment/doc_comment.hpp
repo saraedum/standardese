@@ -5,10 +5,14 @@
 #ifndef STANDARDESE_COMMENT_DOC_COMMENT_HPP_INCLUDED
 #define STANDARDESE_COMMENT_DOC_COMMENT_HPP_INCLUDED
 
-#include <standardese/comment/metadata.hpp>
-#include <standardese/markup/doc_section.hpp>
-#include <standardese/markup/documentation.hpp>
-#include <standardese/markup/index.hpp>
+#include "metadata.hpp"
+
+#include "../output/markup/doc_section.hpp"
+#include "../output/markup/brief_section.hpp"
+#include "../output/markup/entity_documentation.hpp"
+#include "../output/markup/file_documentation.hpp"
+#include "../output/markup/namespace_documentation.hpp"
+#include "../output/markup/module_documentation.hpp"
 
 namespace standardese
 {
@@ -17,12 +21,12 @@ namespace comment
     /// The comment associated with an entity.
     class doc_comment
     {
-        using section_iterator = markup::container_entity<markup::doc_section>::iterator;
+        using section_iterator = output::markup::container_entity<output::markup::doc_section>::iterator;
 
         class section_range
         {
         public:
-            section_range(const std::vector<std::unique_ptr<markup::doc_section>>& sections)
+            section_range(const std::vector<std::unique_ptr<output::markup::doc_section>>& sections)
             : begin_(sections.begin()), end_(sections.end())
             {}
 
@@ -47,14 +51,14 @@ namespace comment
             }
 
         private:
-            std::vector<std::unique_ptr<markup::doc_section>>::const_iterator begin_, end_;
+            std::vector<std::unique_ptr<output::markup::doc_section>>::const_iterator begin_, end_;
         };
 
     public:
         /// \effects Creates it giving the metadata and all the sections.
         /// \requires Sections must not contain the brief section.
-        doc_comment(comment::metadata metadata, std::unique_ptr<markup::brief_section> brief,
-                    std::vector<std::unique_ptr<markup::doc_section>> sections)
+        doc_comment(comment::metadata metadata, std::unique_ptr<output::markup::brief_section> brief,
+                    std::vector<std::unique_ptr<output::markup::doc_section>> sections)
         : metadata_(std::move(metadata)), sections_(std::move(sections)), brief_(std::move(brief))
         {}
 
@@ -78,15 +82,15 @@ namespace comment
         }
 
         /// \returns A reference to the brief section, if there is one.
-        type_safe::optional_ref<const markup::brief_section> brief_section() const noexcept
+        type_safe::optional_ref<const output::markup::brief_section> brief_section() const noexcept
         {
             return type_safe::opt_ref(brief_.get());
         }
 
     private:
         comment::metadata                                 metadata_;
-        std::vector<std::unique_ptr<markup::doc_section>> sections_;
-        std::unique_ptr<markup::brief_section>            brief_;
+        std::vector<std::unique_ptr<output::markup::doc_section>> sections_;
+        std::unique_ptr<output::markup::brief_section>            brief_;
 
         friend doc_comment merge(comment::metadata data, doc_comment&& other);
     };
@@ -99,17 +103,17 @@ namespace comment
 
     /// \effects Adds a copy of the sections to the documentation builder.
     /// \group set_sections
-    void set_sections(markup::entity_documentation::builder& builder, const doc_comment& comment);
+    void set_sections(output::markup::entity_documentation::builder& builder, const doc_comment& comment);
 
     /// \group set_sections
-    void set_sections(markup::file_documentation::builder& builder, const doc_comment& comment);
+    void set_sections(output::markup::file_documentation::builder& builder, const doc_comment& comment);
 
     /// \group set_sections
-    void set_sections(markup::namespace_documentation::builder& builder,
+    void set_sections(output::markup::namespace_documentation::builder& builder,
                       const doc_comment&                        comment);
 
     /// \group set_sections
-    void set_sections(markup::module_documentation::builder& builder, const doc_comment& comment);
+    void set_sections(output::markup::module_documentation::builder& builder, const doc_comment& comment);
 } // namespace comment
 } // namespace standardese
 

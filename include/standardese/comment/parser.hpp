@@ -10,13 +10,9 @@
 
 #include <type_safe/optional.hpp>
 
-#include <standardese/markup/doc_section.hpp>
-#include <standardese/markup/documentation.hpp>
-
-#include <standardese/comment/config.hpp>
-#include <standardese/comment/doc_comment.hpp>
-#include <standardese/comment/matching_entity.hpp>
-#include <standardese/comment/metadata.hpp>
+#include "config.hpp"
+#include "doc_comment.hpp"
+#include "matching_entity.hpp"
 
 extern "C"
 {

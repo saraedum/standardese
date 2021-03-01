@@ -6,10 +6,10 @@
 #ifndef STANDARDESE_OUTPUT_MARKUP_BRIEF_SECTION_HPP_INCLUDED
 #define STANDARDESE_OUTPUT_MARKUP_BRIEF_SECTION_HPP_INCLUDED
 
-#include "doc_section.hpp"
 #include "phrasing_entity.hpp"
 #include "container_entity.hpp"
 #include "block_id.hpp"
+#include "doc_section.hpp"
 
 namespace standardese::output::markup
 {

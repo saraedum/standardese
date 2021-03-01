@@ -8,6 +8,8 @@
 
 #include <string>
 
+#include "../../forward.hpp"
+
 namespace standardese::output::markup
 {
     /// The file name of a [standardese::markup::document_entity]().

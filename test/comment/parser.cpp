@@ -9,7 +9,7 @@
 #include "../util/indent.hpp"
 
 #include "../../include/standardese/comment/parser.hpp"
-#include "standardese/comment/config.hpp"
+#include "../../include/standardese/comment/config.hpp"
 
 namespace standardese::test::comment {
 

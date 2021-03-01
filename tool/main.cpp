@@ -245,6 +245,7 @@ standardese::generation_config get_generation_config(const po::variables_map& op
     return config;
 }
 
+/*
 std::vector<std::pair<standardese::markup::generator, const char*>> get_formats(
     const po::variables_map& options)
 {
@@ -279,6 +280,7 @@ std::vector<std::pair<standardese::markup::generator, const char*>> get_formats(
 
     return formats;
 }
+*/
 
 standardese::entity_blacklist get_blacklist(const po::variables_map& options)
 {
@@ -437,7 +439,7 @@ int main(int argc, char* argv[])
 
             auto blacklist = get_blacklist(options);
 
-            auto formats = get_formats(options);
+            // auto formats = get_formats(options);
             auto prefix  = get_option<std::string>(options, "output.prefix").value();
 
             standardese::linker linker;
@@ -464,6 +466,8 @@ int main(int argc, char* argv[])
                 auto docs = standardese_tool::generate(generation_config, synopsis_config, comments,
                                                        index, linker, files, no_threads);
 
+                throw std::logic_error("not implemented: write files");
+                /*
                 for (auto& format : formats)
                 {
                     std::clog << "writing files in format '" << format.second << "'...\n";
@@ -472,9 +476,11 @@ int main(int argc, char* argv[])
                         = formats.size() > 1u ? std::string(format.second) + '/' + prefix : prefix;
                     if (!format_prefix.empty())
                         fs::create_directories(fs::path(format_prefix).parent_path());
+
                     standardese_tool::write_files(docs, format.first, std::move(format_prefix),
                                                   format.second, no_threads);
                 }
+                */
             }
             catch (std::exception& ex)
             {

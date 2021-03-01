@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "detail/vector_ptr_iterator.hpp"
-#include "detail/parent_updater.hpp"
 
 namespace standardese::output::markup
 {
@@ -56,7 +55,9 @@ namespace standardese::output::markup
             {
                 if (entity)
                 {
-                    detail::parent_updater::set(*entity, type_safe::ref(*result_));
+                    // TODO
+                    throw std::logic_error("not implemented: parent updater");
+                    // detail::parent_updater::set(*entity, type_safe::ref(*result_));
                     as_container().children_.push_back(std::move(entity));
                 }
                 return *this;

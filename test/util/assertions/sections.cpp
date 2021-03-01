@@ -7,18 +7,19 @@
 #include "sections.hpp"
 #include "../indent.hpp"
 
-#include "../../include/standardese/markup/generator.hpp"
+#include "../../include/standardese/output/generator/xml/xml_generator.hpp"
 
 namespace standardese::test::util::assertions {
 
 using namespace standardese::comment;
+using standardese::output::generator::xml::xml_generator;
 
 void CHECK_BRIEF_EQUIVALENT_TO(const doc_comment& entity, std::string xml) {
     INFO("There must be a brief.");
     REQUIRE(entity.brief_section().has_value());
 
     INFO("The brief must have the expected structure.");
-    CHECK(standardese::markup::as_xml(entity.brief_section().value()) == unindent(xml));
+    CHECK(xml_generator::render(entity.brief_section().value()) == unindent(xml));
 }
 
 void CHECK_BRIEF_EQUIVALENT_TO(const unmatched_doc_comment& imline, std::string xml) {
@@ -40,7 +41,7 @@ void CHECK_SECTIONS_EQUIVALENT_TO(const doc_comment& entity, std::vector<std::st
     auto section = entity.sections().begin();
     auto expected = xml.begin();
     while (section != entity.sections().end()) {
-        CHECK(markup::as_xml(*section) == unindent(*expected));
+        CHECK(xml_generator::render(*section) == unindent(*expected));
         section++;
         expected++;
     }
