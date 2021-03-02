@@ -2,13 +2,16 @@
 // This file is subject to the license terms in the LICENSE file
 // found in the top-level directory of this distribution.
 
+/*
 #include "generator.hpp"
 
 #include <fstream>
 
 #include "../include/standardese/index.hpp"
 #include "../include/standardese/linker.hpp"
-#include "../include/standardese/output/markup/subdocument.hpp"
+#include "../include/standardese/model/index_entity.hpp"
+#include "../include/standardese/model/file_index.hpp"
+#include "../include/standardese/model/module_index.hpp"
 
 #include "thread_pool.hpp"
 
@@ -54,7 +57,7 @@ type_safe::optional<std::vector<parsed_file>> standardese_tool::parse(
 }
 
 standardese::comment_registry standardese_tool::parse_comments(
-    const standardese::comment::config& config, const std::vector<parsed_file>& files,
+    const standardese::parser::config& config, const std::vector<parsed_file>& files,
     unsigned no_threads)
 {
     standardese::file_comment_parser parser(cppast::default_logger(), config);
@@ -99,12 +102,13 @@ std::vector<std::unique_ptr<standardese::doc_cpp_file>> standardese_tool::build_
 
 namespace
 {
-std::unique_ptr<standardese::output::markup::document_entity> get_index_document(
-    std::unique_ptr<standardese::output::markup::index_entity> index, const char* title, const char* name)
+standardese::model::document_entity get_index_document(
+    standardese::model::index_entity index, const char* title, const char* name)
 {
-    standardese::output::markup::subdocument::builder document(title, name);
+    throw std::logic_error("not implemented: add_child");
+    standardese::model::subdocument document(title, name);
     document.add_child(std::move(index));
-    return document.finish();
+    return document;
 }
 } // namespace
 
@@ -115,8 +119,9 @@ documents standardese_tool::generate(
     const std::vector<std::unique_ptr<standardese::doc_cpp_file>>& files, unsigned no_threads)
 {
     std::mutex                                                         result_mutex;
-    std::vector<std::unique_ptr<standardese::output::markup::document_entity>> result;
+    std::vector<std::unique_ptr<standardese::model::document_entity>> result;
 
+    throw std::logic_error("not implemented: indexes");
     standardese::entity_index eindex;
     standardese::file_index   findex;
     standardese::module_index mindex;
@@ -127,7 +132,7 @@ documents standardese_tool::generate(
         std::vector<std::future<void>> futures;
         for (auto& file : files)
             futures.push_back(add_job(pool, [&] {
-                standardese::output::markup::subdocument::builder document(file->output_name(),
+                standardese::model::subdocument::builder document(file->output_name(),
                                                                    "doc_"
                                                                        + get_output_file_name(
                                                                              file->output_name()));
@@ -170,3 +175,4 @@ documents standardese_tool::generate(
     return result;
 }
 
+*/

@@ -5,6 +5,7 @@
 #ifndef STANDARDESE_TOOL_GENERATOR_HPP_INCLUDED
 #define STANDARDESE_TOOL_GENERATOR_HPP_INCLUDED
 
+/*
 #include <vector>
 
 #include <cppast/cpp_entity_index.hpp>
@@ -14,7 +15,7 @@
 #include "../include/standardese/comment.hpp"
 #include "../include/standardese/doc_entity.hpp"
 #include "../include/standardese/linker.hpp"
-#include "../include/standardese/output/markup/document_entity.hpp"
+#include "../include/standardese/model/document_entity.hpp"
 
 #include "filesystem.hpp"
 
@@ -38,7 +39,7 @@ type_safe::optional<std::vector<parsed_file>> parse(
     const std::vector<input_file>& files, const cppast::cpp_entity_index& index,
     unsigned no_threads);
 
-standardese::comment_registry parse_comments(const standardese::comment::config& config,
+standardese::comment_registry parse_comments(const standardese::parser::config& config,
                                              const std::vector<parsed_file>&     files,
                                              unsigned                            no_threads);
 
@@ -47,7 +48,7 @@ std::vector<std::unique_ptr<standardese::doc_cpp_file>> build_files(
     std::vector<parsed_file>&& files, const standardese::entity_blacklist& blacklist,
     bool hide_uncommented, unsigned no_threads);
 
-using documents = std::vector<std::unique_ptr<standardese::output::markup::document_entity>>;
+using documents = std::vector<std::unique_ptr<standardese::model::document_entity>>;
 
 documents generate(const standardese::generation_config& gen_config,
                    const standardese::synopsis_config&   syn_config,
@@ -57,5 +58,6 @@ documents generate(const standardese::generation_config& gen_config,
                    unsigned                                                       no_threads);
 
 } // namespace standardese_tool
+*/
 
 #endif // STANDARDESE_TOOL_GENERATOR_HPP_INCLUDED

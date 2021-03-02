@@ -1,16 +1,56 @@
 // Copyright (C) 2016-2019 Jonathan Müller <jonathanmueller.dev@gmail.com>
-//               2021 Julian Rüth <julian.rueth@fsfe.org>
+//                    2021 Julian Rüth <julian.rueth@fsfe.org>
 // This file is subject to the license terms in the LICENSE file
 // found in the top-level directory of this distribution.
 
+#include "../standardese/tool/options.hpp"
+#include "../standardese/tool/parsers.hpp"
+#include "../standardese/tool/document_builders.hpp"
+#include "../standardese/tool/transformations.hpp"
+#include "../standardese/tool/output_generators.hpp"
+#include "../standardese/model/unordered_entities.hpp"
+#include "../standardese/logger.hpp"
+
+int main(int argc, const char* argv[])
+{
+    // Parse command line options.
+    auto options = standardese::tool::options::parse(argc, argv, {});
+
+    if (options.parser_options.sources.empty()) {
+      standardese::logger::warn("No input header files.");
+    }
+    
+    // Parse source code.
+    auto [parsed, context] = standardese::tool::parsers(options.parser_options).parse();
+    
+    // Create output document outlines.
+    auto documents = standardese::tool::document_builders(options.document_builder_options).create(parsed);
+
+    // Apply transformations to output documents.
+    standardese::tool::transformations(options.transformation_options).transform(documents, context);
+
+    // Emit output documents.
+    standardese::tool::output_generators(options.output_generator_options).emit(documents);
+
+    if (standardese::logger::errors())
+      return 1;
+
+    return 0;
+}
+
+/*
 #include <fstream>
 #include <iostream>
 
 #include <boost/program_options.hpp>
+#include <type_safe/optional.hpp>
+#include <cppast/libclang_parser.hpp>
 
 #include "filesystem.hpp"
 #include "generator.hpp"
 #include "thread_pool.hpp"
+
+#include "../include/standardese/parser/config.hpp"
 
 namespace po = boost::program_options;
 namespace fs = boost::filesystem;
@@ -50,7 +90,6 @@ po::variables_map get_options(int argc, char* argv[], const po::options_descript
     po::variables_map map;
 
     po::options_description input("");
-    input.add_options()("input-files", po::value<std::vector<fs::path>>(), "input files");
     po::positional_options_description input_pos;
     input_pos.add("input-files", -1);
 
@@ -195,15 +234,15 @@ std::vector<standardese_tool::input_file> get_input(const po::variables_map& opt
     return files;
 }
 
-standardese::comment::config get_comment_config(const po::variables_map& variables)
+standardese::parser::config get_comment_config(const po::variables_map& variables)
 {
-    standardese::comment::config::options options;
+    standardese::parser::config::options options;
     options.command_character = get_option<char>(variables, "comment.command_character").value();
     options.free_file_comments = get_option<bool>(variables, "comment.free_file_comments").value();
     options.group_uncommented = get_option<bool>(variables, "comment.group_uncommented").value();
     options.command_patterns = get_option<std::vector<std::string>>(variables, "comment.command_pattern").value();
 
-    return standardese::comment::config(options);
+    return standardese::parser::config(options);
 }
 
 standardese::synopsis_config get_synopsis_config(const po::variables_map& options)
@@ -245,7 +284,6 @@ standardese::generation_config get_generation_config(const po::variables_map& op
     return config;
 }
 
-/*
 std::vector<std::pair<standardese::markup::generator, const char*>> get_formats(
     const po::variables_map& options)
 {
@@ -280,7 +318,6 @@ std::vector<std::pair<standardese::markup::generator, const char*>> get_formats(
 
     return formats;
 }
-*/
 
 standardese::entity_blacklist get_blacklist(const po::variables_map& options)
 {
@@ -313,108 +350,69 @@ void register_external_documentations(standardese::linker& l, const po::variable
     }
 }
 
-int main(int argc, char* argv[])
-{
-    // clang-format off
-    po::options_description generic("Generic options", terminal_width), configuration("Configuration", terminal_width);
-    generic.add_options()
-        ("version,V", "prints version information and exits")
-        ("help,h", "prints this help message and exits")
-        ("config,c", po::value<fs::path>(), "read options from additional config file as well")
-        ("verbose,v", po::value<bool>()->implicit_value(true)->default_value(false),
-         "prints more information")
-        ("jobs,j", po::value<unsigned>()->default_value(standardese_tool::default_no_threads()),
-         "sets the number of threads to use");
-
-    configuration.add_options()
-        ("input.source_ext",
-         po::value<std::vector<std::string>>()
-         ->default_value({".h", ".hpp", ".h++", ".hxx"}, "(common C++ header file extensions)"),
-         "file extensions that are treated as header files and where files will be parsed")
-        ("input.blacklist_ext",
-         po::value<std::vector<std::string>>()->default_value({}, "(none)"),
-         R"(file extension that is forbidden (e.g. ".md"; "." for no extension))")
-        ("input.blacklist_file",
-         po::value<std::vector<std::string>>()->default_value({}, "(none)"),
-         "file that is forbidden, relative to traversed directory")
-        ("input.blacklist_dir",
-         po::value<std::vector<std::string>>()->default_value({}, "(none)"),
-         "directory that is forbidden, relative to traversed directory")
-        ("input.blacklist_dotfiles",
-         po::value<bool>()->implicit_value(true)->default_value(true),
-         "whether or not dotfiles are blacklisted")
-        ("input.blacklist_namespace",
-         po::value<std::vector<std::string>>()->default_value({}, "(none)"),
-         "C++ namespace names (with all children) that are forbidden")
-        ("input.force_blacklist",
-         po::value<bool>()->implicit_value(true)->default_value(false),
-         "force the blacklist for explicitly given files")
-        ("input.require_comment",
-         po::value<bool>()->implicit_value(true)->default_value(true),
-         "only generates documentation for entities that have a documentation comment")
-        ("input.hide_uncommented",
-         po::value<bool>()->implicit_value(true)->default_value(false),
-         "omit uncommented members from the synopsis")
-        ("input.extract_private",
-         po::value<bool>()->implicit_value(true)->default_value(false),
-         "whether or not to document private entities")
-
-        ("compilation.commands_dir", po::value<std::string>(),
-         "the directory where a compile_commands.json is located, its options have lower priority than the other ones")
-        ("compilation.standard", po::value<std::string>()->default_value("c++14"),
-         "the C++ standard to use for parsing, valid values are c++98/03/11/14/1z/17")
-        ("compilation.include_dir,I", po::value<std::vector<std::string>>(),
-         "adds an additional include directory to use for parsing")
-        ("compilation.macro_definition,D", po::value<std::vector<std::string>>(),
-         "adds an implicit #define before parsing")
-        ("compilation.macro_undefinition,U", po::value<std::vector<std::string>>(),
-         "adds an implicit #undef before parsing")
-         ("compilation.feature,f", po::value<std::vector<std::string>>(),
-         "enable a custom feature (-fXX flag)")
-        ("compilation.gnu_extensions",
-         po::value<bool>()->implicit_value(true)->default_value(false),
-         "enable/disable GNU extension support (-std=gnu++XX vs -std=c++XX)")
-        ("compilation.ms_extensions",
-         po::value<bool>()->implicit_value(true)->default_value(default_msvc_comp()),
-         "enable/disable MSVC extension support (-fms-extensions)")
-        ("compilation.ms_compatibility",
-         po::value<bool>()->implicit_value(true)->default_value(default_msvc_comp()),
-         "enable/disable MSVC compatibility (-fms-compatibility)")
-
-        ("comment.command_character", po::value<char>()->default_value(standardese::comment::config::options().command_character),
-         "character used to introduce special commands")
-        ("comment.command_pattern", po::value<std::vector<std::string>>()->default_value({}, ""),
-         "set the regular expression to detect a command, e.g., `--comment.command_pattern 'returns=RETURNS:'` or `'returns|=RETURNS:'` to also keep the original pattern.")
-        ("comment.external_doc", po::value<std::vector<std::string>>()->default_value({}, ""),
-         "syntax is namespace=url, supports linking to a different URL for entities in a certain namespace")
-        ("comment.free_file_comments", po::value<bool>()->implicit_value(true)->default_value(standardese::comment::config::options().free_file_comments),
-         "associate free comments to their entire file")
-        ("comment.group_uncommented", po::value<bool>()->implicit_value(true)->default_value(standardese::comment::config::options().group_uncommented),
-         "group undocumented members with preceding commented members")
-
-        ("output.prefix",
-         po::value<std::string>()->default_value(""),
-         "a prefix that will be added to all output files")
-        ("output.format",
-         po::value<std::vector<std::string>>()->default_value(std::vector<std::string>{"commonmark"}, "{commonmark}"),
-         "the output format used (html, commonmark, commonmark_html, xml, text)")
-        ("output.link_extension", po::value<std::string>(),
-         "the file extension of the links to entities, useful if you convert standardese output to a different format and change the extension")
-        ("output.link_prefix", po::value<std::string>(),
-        "a prefix that will be added to all links, if not specified they'll be relative links")
-        ("output.entity_index_order", po::value<std::string>()->default_value("namespace_inline_sorted"),
-         "how the namespaces are handled in the entity index: namespace_inline_sorted (sorted inline with all others), "
-         "namespace_external (namespaces in top-level list only, sorted by the end position in the source file)")
-        ("output.tab_width", po::value<unsigned>()->default_value(standardese::synopsis_config::default_tab_width()),
-         "the tab width (i.e. number of spaces, won't emit tab) of the code in the synthesis")
-        ("output.inline_doc", po::value<bool>()->default_value(true)->implicit_value(true),
-         "whether or not some entity documentation (parameters etc.) will be shown inline")
-        ("output.show_complex_noexcept", po::value<bool>()->default_value(true)->implicit_value(true),
-         "whether or not complex noexcept expressions will be shown in the synopsis or replaced by \"see below\"")
-        ("output.show_macro_replacement", po::value<bool>()->default_value(false)->implicit_value(true),
-         "whether or not the replacement of macros will be shown")
-        ("output.show_group_output_section", po::value<bool>()->default_value(true)->implicit_value(true),
-         "whether or not member groups have an implicit output section");
+//TODO: bring these parameters back  // clang-format off
+//TODO: bring these parameters back  po::options_description generic("Generic options", terminal_width), configuration("Configuration", terminal_width);
+//TODO: bring these parameters back  generic.add_options()
+//TODO: bring these parameters back      ("jobs,j", po::value<unsigned>()->default_value(standardese_tool::default_no_threads()),
+//TODO: bring these parameters back       "sets the number of threads to use");
+//TODO: bring these parameters back
+//TODO: bring these parameters back  configuration.add_options()
+//TODO: bring these parameters back      ("compilation.commands_dir", po::value<std::string>(),
+//TODO: bring these parameters back       "the directory where a compile_commands.json is located, its options have lower priority than the other ones")
+//TODO: bring these parameters back      ("compilation.standard", po::value<std::string>()->default_value("c++14"),
+//TODO: bring these parameters back       "the C++ standard to use for parsing, valid values are c++98/03/11/14/1z/17")
+//TODO: bring these parameters back      ("compilation.include_dir,I", po::value<std::vector<std::string>>(),
+//TODO: bring these parameters back       "adds an additional include directory to use for parsing")
+//TODO: bring these parameters back      ("compilation.macro_definition,D", po::value<std::vector<std::string>>(),
+//TODO: bring these parameters back       "adds an implicit #define before parsing")
+//TODO: bring these parameters back      ("compilation.macro_undefinition,U", po::value<std::vector<std::string>>(),
+//TODO: bring these parameters back       "adds an implicit #undef before parsing")
+//TODO: bring these parameters back      ("compilation.feature,f", po::value<std::vector<std::string>>(),
+//TODO: bring these parameters back       "enable a custom feature (-fXX flag)")
+//TODO: bring these parameters back      ("compilation.gnu_extensions",
+//TODO: bring these parameters back       po::value<bool>()->implicit_value(true)->default_value(false),
+//TODO: bring these parameters back       "enable/disable GNU extension support (-std=gnu++XX vs -std=c++XX)")
+//TODO: bring these parameters back      ("compilation.ms_extensions",
+//TODO: bring these parameters back       po::value<bool>()->implicit_value(true)->default_value(default_msvc_comp()),
+//TODO: bring these parameters back       "enable/disable MSVC extension support (-fms-extensions)")
+//TODO: bring these parameters back      ("compilation.ms_compatibility",
+//TODO: bring these parameters back       po::value<bool>()->implicit_value(true)->default_value(default_msvc_comp()),
+//TODO: bring these parameters back       "enable/disable MSVC compatibility (-fms-compatibility)")
+//TODO: bring these parameters back
+//TODO: bring these parameters back      ("comment.command_character", po::value<char>()->default_value(standardese::parser::config::options().command_character),
+//TODO: bring these parameters back       "character used to introduce special commands")
+//TODO: bring these parameters back      ("comment.command_pattern", po::value<std::vector<std::string>>()->default_value({}, ""),
+//TODO: bring these parameters back       "set the regular expression to detect a command, e.g., `--comment.command_pattern 'returns=RETURNS:'` or `'returns|=RETURNS:'` to also keep the original pattern.")
+//TODO: bring these parameters back      ("comment.external_doc", po::value<std::vector<std::string>>()->default_value({}, ""),
+//TODO: bring these parameters back       "syntax is namespace=url, supports linking to a different URL for entities in a certain namespace")
+//TODO: bring these parameters back      ("comment.free_file_comments", po::value<bool>()->implicit_value(true)->default_value(standardese::parser::config::options().free_file_comments),
+//TODO: bring these parameters back       "associate free comments to their entire file")
+//TODO: bring these parameters back      ("comment.group_uncommented", po::value<bool>()->implicit_value(true)->default_value(standardese::parser::config::options().group_uncommented),
+//TODO: bring these parameters back       "group undocumented members with preceding commented members")
+//TODO: bring these parameters back
+//TODO: bring these parameters back      ("output.prefix",
+//TODO: bring these parameters back       po::value<std::string>()->default_value(""),
+//TODO: bring these parameters back       "a prefix that will be added to all output files")
+//TODO: bring these parameters back      ("output.format",
+//TODO: bring these parameters back       po::value<std::vector<std::string>>()->default_value(std::vector<std::string>{"commonmark"}, "{commonmark}"),
+//TODO: bring these parameters back       "the output format used (html, commonmark, commonmark_html, xml, text)")
+//TODO: bring these parameters back      ("output.link_extension", po::value<std::string>(),
+//TODO: bring these parameters back       "the file extension of the links to entities, useful if you convert standardese output to a different format and change the extension")
+//TODO: bring these parameters back      ("output.link_prefix", po::value<std::string>(),
+//TODO: bring these parameters back      "a prefix that will be added to all links, if not specified they'll be relative links")
+//TODO: bring these parameters back      ("output.entity_index_order", po::value<std::string>()->default_value("namespace_inline_sorted"),
+//TODO: bring these parameters back       "how the namespaces are handled in the entity index: namespace_inline_sorted (sorted inline with all others), "
+//TODO: bring these parameters back       "namespace_external (namespaces in top-level list only, sorted by the end position in the source file)")
+//TODO: bring these parameters back      ("output.tab_width", po::value<unsigned>()->default_value(standardese::synopsis_config::default_tab_width()),
+//TODO: bring these parameters back       "the tab width (i.e. number of spaces, won't emit tab) of the code in the synthesis")
+//TODO: bring these parameters back      ("output.inline_doc", po::value<bool>()->default_value(true)->implicit_value(true),
+//TODO: bring these parameters back       "whether or not some entity documentation (parameters etc.) will be shown inline")
+//TODO: bring these parameters back      ("output.show_complex_noexcept", po::value<bool>()->default_value(true)->implicit_value(true),
+//TODO: bring these parameters back       "whether or not complex noexcept expressions will be shown in the synopsis or replaced by \"see below\"")
+//TODO: bring these parameters back      ("output.show_macro_replacement", po::value<bool>()->default_value(false)->implicit_value(true),
+//TODO: bring these parameters back       "whether or not the replacement of macros will be shown")
+//TODO: bring these parameters back      ("output.show_group_output_section", po::value<bool>()->default_value(true)->implicit_value(true),
+//TODO: bring these parameters back       "whether or not member groups have an implicit output section");
     // clang-format on
 
     try
@@ -466,8 +464,6 @@ int main(int argc, char* argv[])
                 auto docs = standardese_tool::generate(generation_config, synopsis_config, comments,
                                                        index, linker, files, no_threads);
 
-                throw std::logic_error("not implemented: write files");
-                /*
                 for (auto& format : formats)
                 {
                     std::clog << "writing files in format '" << format.second << "'...\n";
@@ -480,7 +476,6 @@ int main(int argc, char* argv[])
                     standardese_tool::write_files(docs, format.first, std::move(format_prefix),
                                                   format.second, no_threads);
                 }
-                */
             }
             catch (std::exception& ex)
             {
@@ -496,3 +491,4 @@ int main(int argc, char* argv[])
         return 1;
     }
 }
+*/

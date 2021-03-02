@@ -1,9 +1,10 @@
 # Copyright (C) 2016-2017 Jonathan Müller <jonathanmueller.dev@gmail.com>
+#                    2021 Julian Rüth <julian.rueth@fsfe.org>
 # This file is subject to the license terms in the LICENSE file
 # found in the top-level directory of this distribution.
 
 set(header filesystem.hpp generator.hpp thread_pool.hpp)
-set(src generator.cpp main.cpp)
+set(src main.cpp)
 
 add_executable(standardese_tool ${header} ${src})
 target_link_libraries(standardese_tool PUBLIC standardese)
