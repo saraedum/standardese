@@ -10,6 +10,7 @@
 #include "../../standardese/model/cpp_entity_documentation.hpp"
 #include "../../standardese/document_builder/entity_document_builder.hpp"
 #include "../../standardese/model/document.hpp"
+#include "../../standardese/logger.hpp"
 
 namespace standardese::tool {
 

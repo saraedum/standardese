@@ -3,6 +3,7 @@
 // This file is subject to the license terms in the LICENSE file
 // found in the top-level directory of this distribution.
 
+#include <boost/filesystem/operations.hpp>
 #include <stdexcept>
 #include <fstream>
 
@@ -27,14 +28,20 @@ void output_generators::emit(model::unordered_entities& documents) {
     document.accept(generator);
   }
   */
+
+  const auto open = [&](const boost::filesystem::path& path) {
+    boost::filesystem::create_directories(path.parent_path());
+    return std::ofstream{path};
+  };
+
   for (auto& document : documents) {
-    std::ofstream out(options.output_directory / (document.as<model::document>().name + ".md"));
+    auto out = open(options.output_directory / (document.as<model::document>().name + ".md"));
     auto generator = output_generator::markdown::markdown_generator{out};
     document.accept(generator);
   }
 
   {
-    std::ofstream out(options.output_directory / "objects.inv");
+    auto out = open(options.output_directory / "objects.inv");
     auto generator = output_generator::sphinx::inventory_generator{out};
     for (auto& document : documents) {
       document.accept(generator);
