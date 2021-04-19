@@ -2,6 +2,11 @@
 // This file is subject to the license terms in the LICENSE file
 // found in the top-level directory of this distribution.
 
+#include <sstream>
+
+#include <cppast/visitor.hpp>
+#include <cppast/cpp_function_template.hpp>
+
 #include "../../standardese/document_builder/entity_document_builder.hpp"
 #include "../../standardese/model/document.hpp"
 #include "../../standardese/model/visitor/recursive_visitor.hpp"
@@ -9,9 +14,6 @@
 #include "../../standardese/model/unordered_entities.hpp"
 #include "../../standardese/model/mixin/container.hpp"
 #include "../../standardese/logger.hpp"
-#include <cppast/visitor.hpp>
-#include <sstream>
-#include <cppast/cpp_function_template.hpp>
 
 // TODO: Standardese had a generation_config::flag::inline_doc. Was it actually implemented anywhere? What did it do?
 /*
