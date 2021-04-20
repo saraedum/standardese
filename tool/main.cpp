@@ -386,6 +386,27 @@ standardese::entity_blacklist get_blacklist(const po::variables_map& options)
 //TODO: bring these parameters back      ("output.tab_width", po::value<unsigned>()->default_value(standardese::synopsis_config::default_tab_width()),
 //TODO: bring these parameters back       "the tab width (i.e. number of spaces, won't emit tab) of the code in the synthesis")
 //TODO: bring these parameters back      ("output.inline_doc", po::value<bool>()->default_value(true)->implicit_value(true),
+//      This is the effect. The following inline entities are normally
+//      included but can be explicitly disabled.
+//        else if (inline_doc
+//                 && (entity().kind() == cppast::cpp_function_parameter::kind()
+//                     || entity().kind() == cppast::cpp_macro_parameter::kind()))
+//            inlines.value().params.add_item(
+//                get_inline_doc(get_documentation_id(), entity(), comment()));
+//        else if (inline_doc && cppast::is_parameter(entity().kind()))
+//            // not a function parameter at this point
+//            inlines.value().tparams.add_item(
+//                get_inline_doc(get_documentation_id(), entity(), comment()));
+//        else if (inline_doc && entity().kind() == cppast::cpp_base_class::kind())
+//            inlines.value().bases.add_item(get_inline_doc(get_documentation_id(), entity(), comment()));
+//        else if (inline_doc && entity().kind() == cppast::cpp_enum_value::kind())
+//            inlines.value().enumerators.add_item(
+//                get_inline_doc(get_documentation_id(), entity(), comment()));
+//        else if (inline_doc
+//                 && (entity().kind() == cppast::cpp_member_variable::kind()
+//                     || entity().kind() == cppast::cpp_bitfield::kind()))
+//            inlines.value().members.add_item(
+//                get_inline_doc(get_documentation_id(), entity(), comment()));
 //TODO: bring these parameters back       "whether or not some entity documentation (parameters etc.) will be shown inline")
 //TODO: bring these parameters back      ("output.show_complex_noexcept", po::value<bool>()->default_value(true)->implicit_value(true),
 //TODO: bring these parameters back       "whether or not complex noexcept expressions will be shown in the synopsis or replaced by \"see below\"")

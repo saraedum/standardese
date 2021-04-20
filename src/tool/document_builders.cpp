@@ -27,13 +27,16 @@ model::unordered_entities document_builders::create(model::unordered_entities& p
     if (entity.is<model::cpp_entity_documentation>()) {
       auto& documentation = entity.as<model::cpp_entity_documentation>();
       if (cppast::cpp_file::kind() == documentation.entity().kind()) {
-        documents.insert(builder(entity, parsed));
+        documents.insert(builder.build(entity, parsed));
       }
     }
     if (entity.is<model::document>()) {
       documents.insert(entity);
     }
   }
+
+  // TODO: Make sure document names/paths are unique.
+  // TODO: Set document paths.
 
   return documents;
 }

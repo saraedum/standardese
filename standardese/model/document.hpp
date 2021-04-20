@@ -14,7 +14,7 @@ namespace standardese::model
     class document final : public mixin::visitable<document>, public mixin::anchored_container<> {
       public:
         template <typename ...Args>
-        document(std::string name, Args&&... args) : name(std::move(name)), mixin::anchored_container<>(std::forward<Args>(args)...) {}
+        document(std::string name, Args&&... args) : name(name), mixin::anchored_container<>(std::forward<Args>(args)...) {}
 
         /// A (unique) symbolic base name for this document. Typically, the
         /// final output name without the suffix.

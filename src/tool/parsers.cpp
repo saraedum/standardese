@@ -119,8 +119,6 @@ std::pair<model::unordered_entities, parser::cpp_context> parsers::parse() {
   // TODO: Is this really what we should do? And should we do this here?
   for (auto& cpp_file : successfully_parsed)
     comment_parser.add_uncommented_entities(ret, *cpp_file.value());
-  // TODO: Is this really what we should do? And should we do this here?
-  comment_parser.add_missing_sections(ret);
 
   return {std::move(ret), cpp_parser.context()};
 }

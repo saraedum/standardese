@@ -14,6 +14,7 @@
 #include <cppast/cpp_language_linkage.hpp>
 #include <cppast/cpp_type_alias.hpp>
 #include <cppast/cpp_friend.hpp>
+#include <cppast/cpp_preprocessor.hpp>
 #include <cppast/visitor.hpp>
 
 #include "../../standardese/inventory/symbols.hpp"
@@ -50,6 +51,7 @@ class symbols::impl::generic_symbols : public symbols::impl {
   virtual type_safe::optional_ref<const T> child(const T&, const std::string& name) const = 0;
   virtual type_safe::optional_ref<const T> parameter(const T&, const std::string& name) const = 0;
   virtual type_safe::optional_ref<const T> template_parameter(const T&, const std::string& name) const = 0;
+  virtual type_safe::optional_ref<const T> base_class(const T&, const std::string& name) const = 0;
 };
 
 class symbols::impl::cppast_symbols : public symbols::impl::generic_symbols<cppast::cpp_entity> {
@@ -62,6 +64,7 @@ class symbols::impl::cppast_symbols : public symbols::impl::generic_symbols<cppa
   type_safe::optional_ref<const cppast::cpp_entity> child(const cppast::cpp_entity&, const std::string& name) const override;
   type_safe::optional_ref<const cppast::cpp_entity> parameter(const cppast::cpp_entity&, const std::string& name) const override;
   type_safe::optional_ref<const cppast::cpp_entity> template_parameter(const cppast::cpp_entity&, const std::string& name) const override;
+  type_safe::optional_ref<const cppast::cpp_entity> base_class(const cppast::cpp_entity&, const std::string& name) const override;
 
  private:
   bool matches(const cppast::cpp_entity& entity, const std::string& search) const;
@@ -144,8 +147,11 @@ type_safe::optional<model::link_target> symbols::impl::cppast_symbols::find(cons
     throw std::invalid_argument("Cannot look up symbol relative to something not defined in any of the loaded files.");
 
   auto search = descendant(entity, name);
-  if (search)
+  if (search.has_value())
       return search.value();
+
+  if (!entity.parent().has_value())
+    return this->find(name);
 
   return this->find(name, entity.parent().value());
 }
@@ -181,6 +187,9 @@ type_safe::optional_ref<const T> symbols::impl::generic_symbols<T>::descendant(c
   const auto templ = template_parameter(root, name);
   if (templ) return templ;
 
+  const auto base = base_class(root, name);
+  if (base) return base;
+
   return child(root, name);
 }
 
@@ -197,6 +206,11 @@ type_safe::optional_ref<const cppast::cpp_entity> symbols::impl::cppast_symbols:
   // If this is a function: see if name is the name of one of the arguments.
   if (cppast::is_function(root->kind()))
     for (const auto& param : static_cast<const cppast::cpp_function_base&>(*root).parameters())
+      if (param.name() == name)
+        return type_safe::ref(param);
+
+  if (root->kind() == cppast::cpp_macro_definition::kind())
+    for (const auto& param : static_cast<const cppast::cpp_macro_definition&>(*root).parameters())
       if (param.name() == name)
         return type_safe::ref(param);
 
@@ -262,11 +276,27 @@ type_safe::optional_ref<const cppast::cpp_entity> symbols::impl::cppast_symbols:
   return child;
 }
 
-type_safe::optional_ref<const cppast::cpp_entity> symbols::impl::cppast_symbols::template_parameter(const cppast::cpp_entity& root, const std::string& name_) const {
+type_safe::optional_ref<const cppast::cpp_entity> symbols::impl::cppast_symbols::base_class(const cppast::cpp_entity& root_, const std::string& name_) const {
   std::string name = name_;
 
   boost::erase_all(name, " ");
 
+  type_safe::object_ref<const cppast::cpp_entity> root{root_};
+
+  if (cppast::is_template(root->kind()))
+    root = type_safe::ref(*static_cast<const cppast::cpp_template&>(*root).begin());
+
+  if (root->kind() != cppast::cpp_class::kind())
+    return type_safe::nullopt;
+
+  for (const auto& base : static_cast<const cppast::cpp_class&>(*root).bases())
+    if (base.name() == name)
+      return type_safe::ref(base);
+
+  return type_safe::nullopt;
+}
+
+type_safe::optional_ref<const cppast::cpp_entity> symbols::impl::cppast_symbols::template_parameter(const cppast::cpp_entity& root, const std::string& name) const {
   if (cppast::is_template(root.kind()))
     for (const auto& param : static_cast<const cppast::cpp_template&>(root).parameters())
       if (param.name() == name)

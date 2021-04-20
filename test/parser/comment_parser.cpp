@@ -49,7 +49,7 @@ TEST_CASE("Markdown Markup", "[comment_parser]")
 
         CHECK(xml_generator::render(parsed) == unindent(R"(
             <?xml version="1.0"?>
-            <entity-documentation>
+            <entity-documentation name="f">
               <section name="Brief">
                 <paragraph>A brief which is not relevant for this test</paragraph>
               </section>
@@ -78,7 +78,7 @@ TEST_CASE("Markdown Markup", "[comment_parser]")
 
         CHECK(xml_generator::render(parsed) == unindent(R"(
             <?xml version="1.0"?>
-            <entity-documentation>
+            <entity-documentation name="f">
               <section name="Brief">
                 <paragraph>
                   <link href="https://foonathan.net">external link</link>
@@ -98,7 +98,7 @@ TEST_CASE("Markdown Markup", "[comment_parser]")
 
         CHECK(xml_generator::render(parsed) == unindent(R"(
             <?xml version="1.0"?>
-            <entity-documentation>
+            <entity-documentation name="f">
               <section name="Brief">
                 <paragraph>
                   <link target="target&lt;T>">internal link</link>
@@ -116,7 +116,7 @@ TEST_CASE("Markdown Markup", "[comment_parser]")
 
         CHECK(xml_generator::render(parsed) == unindent(R"(
             <?xml version="1.0"?>
-            <entity-documentation>
+            <entity-documentation name="f">
               <section name="Brief">
                 <paragraph>
                   <link target="target&lt;T>">target&lt;T&gt;</link>
@@ -134,7 +134,7 @@ TEST_CASE("Markdown Markup", "[comment_parser]")
 
         CHECK(xml_generator::render(parsed) == unindent(R"(
             <?xml version="1.0"?>
-            <entity-documentation>
+            <entity-documentation name="f">
               <section name="Brief">
                 <paragraph>
                   <link href="target&lt;T>">target</link>
@@ -154,7 +154,7 @@ TEST_CASE("Markdown Markup", "[comment_parser]")
 
         CHECK(xml_generator::render(parsed) == unindent(R"(
             <?xml version="1.0"?>
-            <entity-documentation>
+            <entity-documentation name="f">
               <section name="Brief">
                 <paragraph>
                   <link target="*target">target</link>
@@ -178,7 +178,7 @@ TEST_CASE("Markdown Markup", "[comment_parser]")
 
             CHECK(xml_generator::render(parsed) == unindent(R"(
                 <?xml version="1.0"?>
-                <entity-documentation>
+                <entity-documentation name="f">
                   <section name="Brief">
                     <paragraph>This brief contains &lt;i&gt;some&lt;/i&gt; HTML but it won’t render as markup so we can write vector&lt;T&gt; without having to escape things.</paragraph>
                   </section>
@@ -198,7 +198,7 @@ TEST_CASE("Markdown Markup", "[comment_parser]")
 
             CHECK(xml_generator::render(parsed) == unindent(R"(
                 <?xml version="1.0"?>
-                <entity-documentation>
+                <entity-documentation name="f">
                   <section name="Brief">
                     <paragraph>&lt;p&gt;
                     This paragraph will be part of the brief. But &lt;b&gt;any&lt;/b&gt; HTML &lt;p&gt;markup&lt;/p&gt; in here will be escaped, even if it is &lt;a&gt;&lt;b&gt;&lt;i&gt;malformed&lt;/b&gt;&lt;/i&gt;.
@@ -224,7 +224,7 @@ TEST_CASE("Markdown Markup", "[comment_parser]")
 
         CHECK(xml_generator::render(parsed) == unindent(R"(
           <?xml version="1.0"?>
-          <entity-documentation>
+          <entity-documentation name="f">
             <section name="Brief">
               <paragraph>
                 <img src="https://raw.githubusercontent.com/standardese/standardese/master/standardese-logo.svg" title="Standardese Logo">The Standardese Logo</img>
@@ -247,7 +247,7 @@ TEST_CASE("Markdown Markup", "[comment_parser]")
     
         CHECK(xml_generator::render(parsed) == unindent(R"(
             <?xml version="1.0"?>
-            <entity-documentation>
+            <entity-documentation name="f">
               <section name="Details">
                 <block-quote>
                   <paragraph>This initial quote is not used for the brief but goes into details.</paragraph>
@@ -294,7 +294,7 @@ TEST_CASE("Markdown Markup", "[comment_parser]")
 
         CHECK(xml_generator::render(parsed) == unindent(R"(
             <?xml version="1.0"?>
-            <entity-documentation>
+            <entity-documentation name="f">
               <section name="Details">
                 <unordered-list>
                   <list-item>
@@ -367,7 +367,7 @@ TEST_CASE("Markdown Markup", "[comment_parser]")
 
         CHECK(xml_generator::render(parsed) == unindent(R"(
             <?xml version="1.0"?>
-            <entity-documentation>
+            <entity-documentation name="f">
               <section name="Details">
                 <code-block>A code block starting a comment is not used for a brief but goes to the details.
             </code-block>
@@ -396,7 +396,7 @@ TEST_CASE("Markdown Markup", "[comment_parser]")
 
         CHECK(xml_generator::render(parsed) == unindent(R"(
             <?xml version="1.0"?>
-            <entity-documentation>
+            <entity-documentation name="f">
               <section name="Details">
                 <heading level="1">A heading starting a comment is not used for a brief but goes to the details.</heading>
                 <heading level="2">B</heading>
@@ -422,7 +422,7 @@ TEST_CASE("Markdown Markup", "[comment_parser]")
 
         CHECK(xml_generator::render(parsed) == unindent(R"(
             <?xml version="1.0"?>
-            <entity-documentation>
+            <entity-documentation name="f">
               <section name="Brief">
                 <paragraph>This line is used for the brief and does not show up in the details.</paragraph>
               </section>
@@ -452,7 +452,7 @@ TEST_CASE("Markdown Markup", "[comment_parser]")
 
             CHECK(xml_generator::render(parsed) == unindent(R"(
                 <?xml version="1.0"?>
-                <entity-documentation>
+                <entity-documentation name="f">
                   <section name="Brief">
                     <paragraph>The first line ends in punctuation so it defines the brief and does not show up in the details.</paragraph>
                   </section>
@@ -478,7 +478,7 @@ TEST_CASE("Markdown Markup", "[comment_parser]")
 
             CHECK(xml_generator::render(parsed) == unindent(R"(
                 <?xml version="1.0"?>
-                <entity-documentation>
+                <entity-documentation name="f">
                   <section name="Brief">
                     <paragraph>Brief<soft-break />sentence<soft-break />split<soft-break />into<soft-break />multiple!</paragraph>
                   </section>
@@ -510,7 +510,7 @@ TEST_CASE("Markdown Markup", "[comment_parser]")
 
             CHECK(xml_generator::render(parsed) == unindent(R"(
                 <?xml version="1.0"?>
-                <entity-documentation>
+                <entity-documentation name="f">
                   <section name="Brief">
                     <paragraph>Implicit brief.</paragraph>
                   </section>
@@ -569,7 +569,7 @@ TEST_CASE("Standardese Specific Markup Rules", "[comment_parser]")
 
         CHECK(xml_generator::render(parsed) == unindent(R"(
             <?xml version="1.0"?>
-            <entity-documentation>
+            <entity-documentation name="f">
               <section name="Brief">
                 <paragraph>Explicit brief.<soft-break />Still explicit brief.</paragraph>
               </section>
@@ -611,7 +611,7 @@ TEST_CASE("Standardese Specific Markup Rules", "[comment_parser]")
 
         CHECK(xml_generator::render(parsed) == unindent(R"(
             <?xml version="1.0"?>
-            <entity-documentation synopsis="Ignore all lines starting with a command.">
+            <entity-documentation name="f" synopsis="Ignore all lines starting with a command.">
               <section name="Details">
                 <paragraph>Ignore \effects not starting at beginning.<soft-break />Technically, this is because our cmark extension only recognizes such commands when they start a new block, and blocks can only start at the beginning of a line.</paragraph>
                 <paragraph>But please include me.</paragraph>
@@ -675,7 +675,7 @@ TEST_CASE("Standardese Specific Markup Rules", "[comment_parser]")
 
         CHECK(xml_generator::render(parsed["f"]) == unindent(R"(
             <?xml version="1.0"?>
-            <entity-documentation>
+            <entity-documentation name="f">
               <section name="Effects">
                 <paragraph>The first line of the effects section.<soft-break />The second line of the effects.</paragraph>
                 <paragraph>This is part of effects and not details because there is an explicit end command.</paragraph>
@@ -703,7 +703,7 @@ TEST_CASE("Standardese Specific Markup Rules", "[comment_parser]")
 
         CHECK(xml_generator::render(parsed["f.foo"]) == unindent(R"(
             <?xml version="1.0"?>
-            <entity-documentation>
+            <entity-documentation name="foo">
               <section name="Brief">
                 <paragraph>A parameter.</paragraph>
               </section>
@@ -751,7 +751,7 @@ TEST_CASE("Standardese Specific Markup Rules", "[comment_parser]")
 
         CHECK(xml_generator::render(parsed) == unindent(R"(
             <?xml version="1.0"?>
-            <entity-documentation>
+            <entity-documentation name="f">
               <section name="Return values">
                 <paragraph>0 - Value 0.<soft-break />1-Value 1.<soft-break />It requires extra long description.</paragraph>
               </section>
@@ -801,7 +801,7 @@ TEST_CASE("Standardese Commands", "[comment_parser]")
 
         CHECK(xml_generator::render(parsed) == unindent(R"(
             <?xml version="1.0"?>
-            <entity-documentation>
+            <entity-documentation name="f">
               <section name="Brief">
                 <paragraph>This is *verbatim*.<soft-break />And `this` as well.</paragraph>
               </section>
@@ -843,7 +843,7 @@ TEST_CASE("Standardese Commands", "[comment_parser]")
             const auto parsed = parsed_comments(header).add(header["f"], R"(\exclude foo)");
             CHECK(xml_generator::render(parsed) == unindent(R"(
                 <?xml version="1.0"?>
-                <entity-documentation>
+                <entity-documentation name="f">
                   <section name="Brief">
                     <paragraph>\exclude foo</paragraph>
                   </section>
@@ -875,7 +875,7 @@ TEST_CASE("Standardese Commands", "[comment_parser]")
             const auto parsed = parsed_comments(header).add(header["f"], R"(\unique_name a b c)");
             CHECK(xml_generator::render(parsed) == unindent(R"(
                 <?xml version="1.0"?>
-                <entity-documentation>
+                <entity-documentation name="f">
                   <section name="Brief">
                     <paragraph>\unique_name a b c</paragraph>
                   </section>
@@ -924,7 +924,7 @@ TEST_CASE("Standardese Commands", "[comment_parser]")
             const auto parsed = parsed_comments(header).add(header["f"], R"(\output_name a b c)");
             CHECK(xml_generator::render(parsed) == unindent(R"(
                 <?xml version="1.0"?>
-                <entity-documentation>
+                <entity-documentation name="f">
                   <section name="Brief">
                     <paragraph>\output_name a b c</paragraph>
                   </section>
@@ -1007,7 +1007,7 @@ TEST_CASE("Standardese Commands", "[comment_parser]")
                 \group
                 )")) == unindent(R"(
                 <?xml version="1.0"?>
-                <entity-documentation>
+                <entity-documentation name="f">
                   <section name="Brief">
                     <paragraph>\group<soft-break />\group</paragraph>
                   </section>
@@ -1066,7 +1066,7 @@ TEST_CASE("Standardese Commands", "[comment_parser]")
                 \module
                 )")) == unindent(R"(
                 <?xml version="1.0"?>
-                <entity-documentation>
+                <entity-documentation name="f">
                   <section name="Brief">
                     <paragraph>\module</paragraph>
                   </section>
@@ -1076,7 +1076,7 @@ TEST_CASE("Standardese Commands", "[comment_parser]")
                 \module a b c
                 )")) == unindent(R"(
                 <?xml version="1.0"?>
-                <entity-documentation>
+                <entity-documentation name="f">
                   <section name="Brief">
                     <paragraph>\module a b c</paragraph>
                   </section>
@@ -1162,7 +1162,7 @@ TEST_CASE("Standardese Commands", "[comment_parser]")
             \invalid comment
             )")) == unindent(R"(
             <?xml version="1.0"?>
-            <entity-documentation>
+            <entity-documentation name="f">
               <section name="Brief">
                 <paragraph>\invalid comment</paragraph>
               </section>
@@ -1180,7 +1180,7 @@ TEST_CASE("Standardese Commands", "[comment_parser]")
                 \param
                 )")) == unindent(R"(
                 <?xml version="1.0"?>
-                <entity-documentation>
+                <entity-documentation name="f">
                   <section name="Brief">
                     <paragraph>\param</paragraph>
                   </section>
@@ -1198,7 +1198,7 @@ TEST_CASE("Standardese Commands", "[comment_parser]")
 
             CHECK(xml_generator::render(parsed["f"]) == unindent(R"(
                 <?xml version="1.0"?>
-                <entity-documentation>
+                <entity-documentation name="f">
                   <section name="Brief">
                     <paragraph>This is the brief of the method we are documenting.</paragraph>
                   </section>
@@ -1209,7 +1209,7 @@ TEST_CASE("Standardese Commands", "[comment_parser]")
                 )"));
             CHECK(xml_generator::render(parsed["f.arg"]) == unindent(R"(
                 <?xml version="1.0"?>
-                <entity-documentation>
+                <entity-documentation name="arg">
                   <section name="Brief">
                     <paragraph>This is the brief of the parameter arg.</paragraph>
                   </section>
@@ -1228,7 +1228,7 @@ TEST_CASE("Standardese Commands", "[comment_parser]")
 
             CHECK(xml_generator::render(parsed["f"]) == unindent(R"(
                 <?xml version="1.0"?>
-                <entity-documentation>
+                <entity-documentation name="f">
                   <section name="Return values">
                     <paragraph>This is the description of the return value.</paragraph>
                   </section>
@@ -1236,7 +1236,7 @@ TEST_CASE("Standardese Commands", "[comment_parser]")
                 )"));
             CHECK(xml_generator::render(parsed["f.arg"]) == unindent(R"(
                 <?xml version="1.0"?>
-                <entity-documentation>
+                <entity-documentation name="arg">
                   <section name="Brief">
                     <paragraph>This is the brief of the parameter arg.</paragraph>
                   </section>
@@ -1254,7 +1254,7 @@ TEST_CASE("Standardese Commands", "[comment_parser]")
 
             CHECK(xml_generator::render(parsed["f"]) == unindent(R"(
                 <?xml version="1.0"?>
-                <entity-documentation>
+                <entity-documentation name="f">
                   <section name="Details">
                     <paragraph>These are the details of the method.</paragraph>
                   </section>
@@ -1262,7 +1262,7 @@ TEST_CASE("Standardese Commands", "[comment_parser]")
                 )"));
             CHECK(xml_generator::render(parsed["f.arg"]) == unindent(R"(
                 <?xml version="1.0"?>
-                <entity-documentation>
+                <entity-documentation name="arg">
                   <section name="Brief">
                     <paragraph>This is the brief of the parameter arg.</paragraph>
                   </section>
@@ -1282,7 +1282,7 @@ TEST_CASE("Standardese Commands", "[comment_parser]")
 
             CHECK(xml_generator::render(parsed["f"]) == unindent(R"(
                 <?xml version="1.0"?>
-                <entity-documentation>
+                <entity-documentation name="f">
                   <section name="Details">
                     <paragraph>These are the details of the method.</paragraph>
                   </section>
@@ -1290,7 +1290,7 @@ TEST_CASE("Standardese Commands", "[comment_parser]")
                 )"));
             CHECK(xml_generator::render(parsed["f.arg"]) == unindent(R"(
                 <?xml version="1.0"?>
-                <entity-documentation>
+                <entity-documentation name="arg">
                   <section name="Brief">
                     <paragraph>This is the brief of the parameter arg.</paragraph>
                   </section>
@@ -1308,7 +1308,7 @@ TEST_CASE("Standardese Commands", "[comment_parser]")
 
             CHECK(xml_generator::render(parsed["f.arg"]) == unindent(R"(
                 <?xml version="1.0"?>
-                <entity-documentation>
+                <entity-documentation name="arg">
                   <section name="Brief">
                     <paragraph>This is the brief of the parameter arg.</paragraph>
                   </section>
@@ -1316,7 +1316,7 @@ TEST_CASE("Standardese Commands", "[comment_parser]")
                 )"));
             CHECK(xml_generator::render(parsed["f.brg"]) == unindent(R"(
                 <?xml version="1.0"?>
-                <entity-documentation>
+                <entity-documentation name="brg">
                   <section name="Brief">
                     <paragraph>This is the brief of the parameter brg.</paragraph>
                   </section>
@@ -1335,7 +1335,7 @@ TEST_CASE("Standardese Commands", "[comment_parser]")
                 \tparam
                 )")) == unindent(R"(
                 <?xml version="1.0"?>
-                <entity-documentation>
+                <entity-documentation name="swap">
                   <section name="Brief">
                     <paragraph>\tparam</paragraph>
                   </section>
@@ -1353,7 +1353,7 @@ TEST_CASE("Standardese Commands", "[comment_parser]")
 
             CHECK(xml_generator::render(parsed["swap"]) == unindent(R"(
                 <?xml version="1.0"?>
-                <entity-documentation>
+                <entity-documentation name="swap">
                   <section name="Brief">
                     <paragraph>This is the brief of the method we are documenting.</paragraph>
                   </section>
@@ -1364,7 +1364,7 @@ TEST_CASE("Standardese Commands", "[comment_parser]")
                 )"));
             CHECK(xml_generator::render(parsed["swap.T"]) == unindent(R"(
                 <?xml version="1.0"?>
-                <entity-documentation>
+                <entity-documentation name="T">
                   <section name="Brief">
                     <paragraph>This is the brief of the parameter T.</paragraph>
                   </section>
@@ -1383,7 +1383,7 @@ TEST_CASE("Standardese Commands", "[comment_parser]")
 
             CHECK(xml_generator::render(parsed["swap"]) == unindent(R"(
                 <?xml version="1.0"?>
-                <entity-documentation>
+                <entity-documentation name="swap">
                   <section name="Return values">
                     <paragraph>This is the description of the return value.</paragraph>
                   </section>
@@ -1391,7 +1391,7 @@ TEST_CASE("Standardese Commands", "[comment_parser]")
                 )"));
             CHECK(xml_generator::render(parsed["swap.T"]) == unindent(R"(
                 <?xml version="1.0"?>
-                <entity-documentation>
+                <entity-documentation name="T">
                   <section name="Brief">
                     <paragraph>This is the brief of the parameter T.</paragraph>
                   </section>
@@ -1409,7 +1409,7 @@ TEST_CASE("Standardese Commands", "[comment_parser]")
 
             CHECK(xml_generator::render(parsed["swap"]) == unindent(R"(
                 <?xml version="1.0"?>
-                <entity-documentation>
+                <entity-documentation name="swap">
                   <section name="Details">
                     <paragraph>These are the details of the method.</paragraph>
                   </section>
@@ -1417,7 +1417,7 @@ TEST_CASE("Standardese Commands", "[comment_parser]")
                 )"));
             CHECK(xml_generator::render(parsed["swap.T"]) == unindent(R"(
                 <?xml version="1.0"?>
-                <entity-documentation>
+                <entity-documentation name="T">
                   <section name="Brief">
                     <paragraph>This is the brief of the parameter T.</paragraph>
                   </section>
@@ -1437,7 +1437,7 @@ TEST_CASE("Standardese Commands", "[comment_parser]")
 
             CHECK(xml_generator::render(parsed["swap"]) == unindent(R"(
                 <?xml version="1.0"?>
-                <entity-documentation>
+                <entity-documentation name="swap">
                   <section name="Details">
                     <paragraph>These are the details of the method.</paragraph>
                   </section>
@@ -1445,7 +1445,7 @@ TEST_CASE("Standardese Commands", "[comment_parser]")
                 )"));
             CHECK(xml_generator::render(parsed["swap.T"]) == unindent(R"(
                 <?xml version="1.0"?>
-                <entity-documentation>
+                <entity-documentation name="T">
                   <section name="Brief">
                     <paragraph>This is the brief of the parameter T.</paragraph>
                   </section>
@@ -1462,7 +1462,7 @@ TEST_CASE("Standardese Commands", "[comment_parser]")
 
             CHECK(xml_generator::render(parsed["swap.T"]) == unindent(R"(
                 <?xml version="1.0"?>
-                <entity-documentation>
+                <entity-documentation name="T">
                   <section name="Brief">
                     <paragraph>This is the brief of the parameter T.</paragraph>
                   </section>

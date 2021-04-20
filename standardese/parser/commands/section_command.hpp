@@ -38,6 +38,7 @@ namespace standardese::parser::commands
         see,
 
         parameters,
+        bases,
 
         count,
     };

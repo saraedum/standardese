@@ -20,7 +20,7 @@ using standardese::model::document;
 namespace standardese::document_builder
 {
 
-document index_document_builder::operator()(const std::function<bool(const model::entity&)> predicate, const model::unordered_entities& entities) const {
+document index_document_builder::build(const std::function<bool(const model::entity&)> predicate, const model::unordered_entities& entities) const {
   auto list = model::markup::list(false);
   
   for (auto& entity : entities)

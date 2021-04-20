@@ -61,11 +61,6 @@ namespace standardese::parser
         /// TODO: Should be a transformation?
         void add_uncommented_modules(model::unordered_entities&) const;
 
-        /// Add the minimal expected sections to each parse result, e.g., adds
-        /// a "Parameters" section to each function.
-        /// TODO: Should be a transformation?
-        void add_missing_sections(model::unordered_entities&) const;
-
     private:
         // TODO: Hide all this in the .cpp file.
 

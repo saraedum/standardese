@@ -51,6 +51,7 @@ struct comment_parser_options {
     std::regex diagnostics_command_pattern;
     std::regex see_command_pattern;
     std::regex parameters_command_pattern;
+    std::regex bases_command_pattern;
 
     std::regex param_command_pattern;
     std::regex tparam_command_pattern;

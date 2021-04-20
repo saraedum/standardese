@@ -418,6 +418,8 @@ cmark_node* command_extension::postprocess_section_command(cmark_node* command, 
         case commands::section_command::constraints:
         case commands::section_command::diagnostics:
         case commands::section_command::see:
+        case commands::section_command::parameters:
+        case commands::section_command::bases:
             break;
         default:
             throw std::logic_error("unsupported section type could not be postprocessed");
@@ -579,6 +581,8 @@ const std::regex& command_extension::command_pattern(commands::section_command c
         return options.see_command_pattern;
       case commands::section_command::parameters:
         return options.parameters_command_pattern;
+      case commands::section_command::bases:
+        return options.bases_command_pattern;
       default:
         throw std::logic_error("not implemented: unsupported section command");
     }
