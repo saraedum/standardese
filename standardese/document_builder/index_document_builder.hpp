@@ -15,7 +15,7 @@ namespace standardese::document_builder
 class index_document_builder {
   public:
     /// Create an index of all entities satisfying `predicate`.
-    model::document operator()(const std::function<bool(const model::entity&)> predicate, const model::unordered_entities&) const;
+    model::document build(const std::function<bool(const model::entity&)> predicate, const model::unordered_entities&) const;
 
     static bool is_module(const model::entity&);
     static bool is_header_file(const model::entity&);

@@ -2,6 +2,9 @@
 // This file is subject to the license terms in the LICENSE file
 // found in the top-level directory of this distribution.
 
+#include <cppast/cpp_file.hpp>
+#include <boost/filesystem/path.hpp>
+
 #include "../../../standardese/output_generator/xml/xml_generator.hpp"
 
 #include "../../../standardese/model/markup/text.hpp"
@@ -13,7 +16,6 @@
 #include "../../../standardese/model/markup/heading.hpp"
 #include "../../../standardese/model/document.hpp"
 #include "../../../standardese/model/cpp_entity_documentation.hpp"
-#include <cassert>
 
 namespace standardese::output_generator::xml
 {
@@ -80,6 +82,8 @@ void xml_generator::visit(section& section) {
           return "See also";
         case parser::commands::section_command::parameters:
           return "Parameters";
+        case parser::commands::section_command::bases:
+          return "Base classes";
         default:
           throw std::logic_error("not implemented");
       }
@@ -96,6 +100,12 @@ void xml_generator::visit(emphasis& emphasis) {
 
 void xml_generator::visit(cpp_entity_documentation& entity_documentation) {
     top = top.append_child("entity-documentation");
+
+    std::string name = entity_documentation.entity().name();
+    if (entity_documentation.entity().kind() == cppast::cpp_file::kind())
+      name = boost::filesystem::path(name).filename().native();
+
+    top.append_attribute("name").set_value(name.c_str());
 
     if (entity_documentation.synopsis)
         top.append_attribute("synopsis").set_value(entity_documentation.synopsis.value().c_str());

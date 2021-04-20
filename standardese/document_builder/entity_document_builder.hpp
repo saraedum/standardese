@@ -10,10 +10,11 @@
 namespace standardese::document_builder
 {
 
+/// Creates a [model::document]() describing a C++ entity such as a header file.
 class entity_document_builder {
   public:
     /// Create a document describing `entity`.
-    model::document operator()(const model::entity& entity, const model::unordered_entities&) const;
+    model::document build(const model::entity& entity, const model::unordered_entities&) const;
 };
 
 }

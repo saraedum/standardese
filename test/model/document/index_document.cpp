@@ -40,7 +40,7 @@ TEST_CASE("Typical Index Files can be Generated", "[document]")
 
   SECTION("Index of All Header Files")
   {
-    auto index = builder(document_builder::index_document_builder::is_header_file, parsed.entities);
+    auto index = builder.build(document_builder::index_document_builder::is_header_file, parsed.entities);
     index.name = "headers";
     
     SECTION("Links Cannot be Emitted Without a Header File Entity")
@@ -52,7 +52,7 @@ TEST_CASE("Typical Index Files can be Generated", "[document]")
 
     SECTION("Links Can be Emitted With a Header File Entity")
     {
-      standardese::model::unordered_entities documents{std::vector{std::move(index), document_builder::entity_document_builder()(parsed[header], parsed.entities)}};
+      standardese::model::unordered_entities documents{std::vector{std::move(index), document_builder::entity_document_builder().build(parsed[header], parsed.entities)}};
 
       transformation::anchor_transformation(documents).transform();
 
@@ -66,7 +66,7 @@ TEST_CASE("Typical Index Files can be Generated", "[document]")
 
   SECTION("Index of All Modules")
   {
-    auto index = builder(document_builder::index_document_builder::is_module, parsed.entities);
+    auto index = builder.build(document_builder::index_document_builder::is_module, parsed.entities);
     index.name = "modules";
 
     CHECK(xml_generator::render(index) == unindent(R"(

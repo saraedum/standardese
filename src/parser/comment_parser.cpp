@@ -7,11 +7,11 @@
 #include "../../standardese/parser/parse_error.hpp"
 
 #include <cassert>
+#include <cppast/forward.hpp>
 #include <cppast/visitor.hpp>
 #include <cstring>
 #include <stdexcept>
 #include <type_traits>
-#include <boost/type_erasure/any_cast.hpp>
 
 #include <cmark-gfm-extension_api.h>
 #include <cmark-gfm.h>
@@ -33,6 +33,9 @@
 #include "../../standardese/parser/commands/section_command.hpp"
 #include "../../standardese/parser/commands/special_command.hpp"
 #include "../../standardese/parser/commands/inline_command.hpp"
+
+#include "../../standardese/inventory/cppast_inventory.hpp"
+#include "../../standardese/inventory/symbols.hpp"
 
 #include "../../standardese/model/markup/block_quote.hpp"
 #include "../../standardese/model/markup/code.hpp"
@@ -248,30 +251,57 @@ std::vector<model::entity> comment_parser::extract_inlines(cmark_node* root, con
 
 const cppast::cpp_entity& comment_parser::resolve_base(const cppast::cpp_entity& entity, const std::string& name) const
 {
-    throw std::logic_error("not implemented: comment_parser::resolve_base");
-}
+  inventory::cppast_inventory inventory{{&entity}, context};
+  inventory::symbols symbols{inventory};
 
-const cppast::cpp_entity& comment_parser::resolve_param(const cppast::cpp_entity& entity_, const std::string& name) const
-{
-    auto* entity = &entity_;
+  // TODO: Limit lookup to only bases.
+  const auto base = symbols.find(name, entity);
 
-    switch(entity->kind())
-    {
-        case cppast::cpp_entity_kind::function_template_t:
-            entity = &static_cast<const cppast::cpp_function_template&>(*entity).function();
-            [[fallthrough]];
-        case cppast::cpp_entity_kind::function_t:
-            for (const auto& param : static_cast<const cppast::cpp_function&>(*entity).parameters())
-                if (param.name() == name)
-                    return param;
-            throw parse_error("Could not resolve parameter `{}` in `{}`.", name, *entity);
+  if (!base.has_value())
+    throw parse_error("Could not resolve base `{}` of `{}`.", name, entity);
+
+  return *base.value().accept([&](auto&& target) -> type_safe::object_ref<const cppast::cpp_entity> {
+    using T = std::decay_t<decltype(target)>;
+    if constexpr (std::is_same_v<T, model::link_target::cppast_target>) {
+      if (target.target->kind() != cppast::cpp_base_class::kind())
+        throw parse_error("Could not resolve `{}` to a base class of `{}`.", name, entity);
+      return target.target;
     }
 
-    throw std::logic_error("not implemented: comment_parser::resolve_param");
+    throw std::logic_error("not implemented: unexpected symbol lookup result when looking for base class");
+  });
+}
+
+const cppast::cpp_entity& comment_parser::resolve_param(const cppast::cpp_entity& entity, const std::string& name) const
+{
+  inventory::cppast_inventory inventory{{&entity}, context};
+  inventory::symbols symbols{inventory};
+
+  // TODO: Limit lookup to only parameters.
+  const auto param = symbols.find(name, entity);
+
+  if (!param.has_value())
+    throw parse_error("Could not resolve parameter `{}` of `{}`.", name, entity);
+
+  return *param.value().accept([&](auto&& target) -> type_safe::object_ref<const cppast::cpp_entity> {
+    using T = std::decay_t<decltype(target)>;
+    if constexpr (std::is_same_v<T, model::link_target::cppast_target>) {
+      switch(target.target->kind()) {
+        case cppast::cpp_entity_kind::function_parameter_t:
+        case cppast::cpp_entity_kind::macro_parameter_t:
+          return target.target;
+        default:
+          throw parse_error("Could not resolve `{}` to a parameter of `{}`.", name, entity);
+      }
+    }
+
+    throw std::logic_error("not implemented: unexpected symbol lookup result when looking for parameter");
+  });
 }
 
 const cppast::cpp_entity& comment_parser::resolve_tparam(const cppast::cpp_entity& entity, const std::string& name) const
 {
+  // TODO: Use symbols
     if (cppast::is_template(entity.kind())) {
         for (const auto& param : static_cast<const cppast::cpp_template&>(entity).parameters())
             if (param.name() == name)
@@ -582,6 +612,14 @@ void comment_parser::add_uncommented_entities(model::unordered_entities& entitie
             for (const auto& param : static_cast<const cppast::cpp_function_base&>(e).parameters())
                 ensure_entity(param);
         }
+        if (e.kind() == cppast::cpp_class_template::kind()) {
+            for (const auto& base : static_cast<const cppast::cpp_class_template&>(e).class_().bases())
+                ensure_entity(base);
+        }
+        if (e.kind() == cppast::cpp_class::kind()) {
+            for (const auto& base : static_cast<const cppast::cpp_class&>(e).bases())
+                ensure_entity(base);
+        }
     });
 }
 
@@ -604,28 +642,6 @@ void comment_parser::add_uncommented_modules(model::unordered_entities& entities
     }
 }
 
-void comment_parser::add_missing_sections(model::unordered_entities& entities) const {
-    for (auto& entity : entities) {
-      model::visitor::visit([&](auto&& documentation) {
-        using T = std::decay_t<decltype(documentation)>;
-        if constexpr (std::is_same_v<T, model::cpp_entity_documentation>) {
-          auto kind = documentation.entity().kind();
-
-          const bool needs_requires = cppast::is_template(kind);
-          const bool needs_parameters = cppast::is_function(kind) || (cppast::is_template(kind) && cppast::is_function(static_cast<const cppast::cpp_template&>(documentation.entity()).begin()->kind()));
-
-          if (needs_requires)
-            if (!documentation.section(parser::commands::section_command::requires))
-              documentation.add_child(model::section(parser::commands::section_command::requires));
-
-          if (needs_parameters)
-            if (!documentation.section(parser::commands::section_command::parameters))
-              documentation.add_child(model::section(parser::commands::section_command::parameters));
-        }
-      }, entity);
-    }
-}
-
 void comment_parser::visit_children(cmark_node* parent, std::function<void(cmark_node*)> callback) const
 {
     for (cmark_node* child = cmark_node_first_child(parent); child != nullptr; child = cmark_node_next(child))
@@ -633,6 +649,8 @@ void comment_parser::visit_children(cmark_node* parent, std::function<void(cmark
 }
 
 }
+
+// TODO: Remove me.
 
 /*
 namespace

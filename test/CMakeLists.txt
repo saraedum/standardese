@@ -9,7 +9,7 @@ set(tests
     inventory/sphinx/documentation_set.cpp
     tool/options.cpp
     tool/parsers.cpp
-    model/document/entity_document.cpp
+    document_builder/entity_document_builder.cpp
     model/document/index_document.cpp
     model/markup/code_block.cpp
     model/visitor/visit.cpp

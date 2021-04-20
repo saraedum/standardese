@@ -90,6 +90,8 @@ const char* command_name(commands::section_command cmd) {
             return "see";
         case commands::section_command::parameters:
             return "parameters";
+        case commands::section_command::bases:
+            return "bases";
         default:
             throw std::logic_error("not implemented: unknown section type");
     }
@@ -238,6 +240,7 @@ comment_parser_options::comment_parser_options(char command_character, const std
     this->command_extension_options.diagnostics_command_pattern = pattern(commands::section_command::diagnostics);
     this->command_extension_options.see_command_pattern = pattern(commands::section_command::see);
     this->command_extension_options.parameters_command_pattern = pattern(commands::section_command::parameters);
+    this->command_extension_options.bases_command_pattern = pattern(commands::section_command::bases);
 
     this->command_extension_options.base_command_pattern = pattern(commands::inline_command::base);
     this->command_extension_options.param_command_pattern = pattern(commands::inline_command::param);
