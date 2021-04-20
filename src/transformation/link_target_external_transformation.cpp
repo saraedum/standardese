@@ -9,53 +9,36 @@
 #include <cppast/cpp_file.hpp>
 
 #include "../../standardese/transformation/link_target_external_transformation.hpp"
-#include "../../standardese/model/visitor/recursive_visitor.hpp"
+#include "../../standardese/model/visitor/visit.hpp"
 #include "../../standardese/model/markup/link.hpp"
 #include "../../standardese/model/entity.hpp"
 
 namespace standardese::transformation
 {
 
-namespace {
-
-// Visits all the entities in a document and resolves external links.
-struct visitor : model::visitor::recursive_visitor<false> {
-  visitor(const inventory::symbols& symbols) : symbols(symbols) {}
-
-  void visit(link& link) override;
-
-  const inventory::symbols& symbols;
-};
-
-}
-
 link_target_external_transformation::link_target_external_transformation(model::unordered_entities& documents, inventory::symbols symbols) :
   transformation(documents),
   symbols(std::move(symbols)) {}
 
 void link_target_external_transformation::do_transform(model::entity& document) {
-  visitor visitor{symbols};
-  document.accept(visitor);
-}
+  model::visitor::visit([&](auto&& link) {
+    using T = std::decay_t<decltype(link)>;
+    if constexpr (std::is_same_v<T, model::markup::link>) {
+      link.target.accept([&](auto&& target) {
+        using T = std::decay_t<decltype(target)>;
+        if constexpr (std::is_same_v<T, model::link_target::standardese_target>) {
+          // TODO: Support relative lookup here.
+          auto search = symbols.find(target.target);
+          if (search)
+            link.target = search.value();
+        }
 
-namespace {
-
-void visitor::visit(link& link) {
-  link.target.accept([&](auto&& target) {
-    using T = std::decay_t<decltype(target)>;
-    if constexpr (std::is_same_v<T, model::link_target::standardese_target>) {
-      // TODO: Support relative lookup here.
-      auto search = symbols.find(target.target);
-      if (search)
-        link.target = search.value();
+        // TODO: Handle the special schema:// here.
+      });
     }
 
-    // TODO: Handle the special schema:// here.
-  });
-
-  model::visitor::recursive_visitor<false>::visit(link);
-}
-
+    return model::visitor::recursion::RECURSE;
+  }, document);
 }
 
 }

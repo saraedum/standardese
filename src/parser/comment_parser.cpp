@@ -595,28 +595,34 @@ void comment_parser::add_uncommented_modules(model::unordered_entities& entities
     };
 
     for (const auto& entity : entities) {
-      model::visitor::visit(entity, [&](const model::cpp_entity_documentation& documentation) {
-        if (documentation.module) ensure_module(documentation.module.value());
-      }, [&](const model::module& module) {});
+      model::visitor::visit([&](auto&& documentation) {
+        using T = std::decay_t<decltype(documentation)>;
+        if constexpr (std::is_same_v<T, model::cpp_entity_documentation>) {
+          if (documentation.module) ensure_module(documentation.module.value());
+        }
+      }, entity);
     }
 }
 
 void comment_parser::add_missing_sections(model::unordered_entities& entities) const {
     for (auto& entity : entities) {
-      model::visitor::visit(entity, [&](model::cpp_entity_documentation& documentation) {
-        auto kind = documentation.entity().kind();
+      model::visitor::visit([&](auto&& documentation) {
+        using T = std::decay_t<decltype(documentation)>;
+        if constexpr (std::is_same_v<T, model::cpp_entity_documentation>) {
+          auto kind = documentation.entity().kind();
 
-        const bool needs_requires = cppast::is_template(kind);
-        const bool needs_parameters = cppast::is_function(kind) || (cppast::is_template(kind) && cppast::is_function(static_cast<const cppast::cpp_template&>(documentation.entity()).begin()->kind()));
+          const bool needs_requires = cppast::is_template(kind);
+          const bool needs_parameters = cppast::is_function(kind) || (cppast::is_template(kind) && cppast::is_function(static_cast<const cppast::cpp_template&>(documentation.entity()).begin()->kind()));
 
-        if (needs_requires)
-          if (!documentation.section(parser::commands::section_command::requires))
-            documentation.add_child(model::section(parser::commands::section_command::requires));
+          if (needs_requires)
+            if (!documentation.section(parser::commands::section_command::requires))
+              documentation.add_child(model::section(parser::commands::section_command::requires));
 
-        if (needs_parameters)
-          if (!documentation.section(parser::commands::section_command::parameters))
-            documentation.add_child(model::section(parser::commands::section_command::parameters));
-      }, [](){});
+          if (needs_parameters)
+            if (!documentation.section(parser::commands::section_command::parameters))
+              documentation.add_child(model::section(parser::commands::section_command::parameters));
+        }
+      }, entity);
     }
 }
 

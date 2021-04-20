@@ -25,30 +25,36 @@ document index_document_builder::operator()(const std::function<bool(const model
   
   for (auto& entity : entities)
     if (predicate(entity))
-      model::visitor::visit(entity, [&](const model::cpp_entity_documentation& documentation) {
+      model::visitor::visit([&](auto&& documentation) {
+        using T = std::decay_t<decltype(documentation)>;
+        if constexpr (std::is_same_v<T, model::cpp_entity_documentation>) {
           list.add_child(model::markup::list_item(model::markup::link(documentation.entity(), "", documentation.entity().name())));
-      }, [&](const model::module& module) {
-          list.add_child(model::markup::list_item(model::markup::link(model::link_target::module_target(module.name), "", module.name)));
-      });
+        } else if constexpr (std::is_same_v<T, model::module>) {
+          list.add_child(model::markup::list_item(model::markup::link(model::link_target::module_target(documentation.name), "", documentation.name)));
+        } else {
+          throw std::logic_error("unexpected entity in index document builder");
+        }
+      }, entity);
 
   // TODO
   return document("TODO", std::move(list));
 }
 
 bool index_document_builder::is_header_file(const model::entity& entity) {
-  return model::visitor::visit(entity, [](const model::cpp_entity_documentation& entity) {
+  return model::visitor::visit([](auto&& entity) {
+    using T = std::decay_t<decltype(entity)>;
+    if constexpr (std::is_same_v<T, model::cpp_entity_documentation>) {
       return entity.entity().kind() == cppast::cpp_file::kind();
-  }, []() {
-      return false;
-  });
+    }
+    return false;
+  }, entity);
 }
 
 bool index_document_builder::is_module(const model::entity& entity) {
-  return model::visitor::visit(entity, [](const model::module&) {
-      return true;
-  }, []() {
-      return false;
-  });
+  return model::visitor::visit([](auto&& entity) {
+    using T = std::decay_t<decltype(entity)>;
+    return std::is_same_v<T, model::module>;
+  }, entity);
 }
 
 }

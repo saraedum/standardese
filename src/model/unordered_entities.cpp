@@ -202,31 +202,40 @@ std::conditional_t<is_const, const entity*, entity*> unordered_entities::unorder
 }
 
 size_t unordered_entities::impl::hash::operator()(const entity& self) const {
-    return visitor::visit(self, [](const model::cpp_entity_documentation& entity) {
-        return reinterpret_cast<size_t>(&entity.entity());
-      }, [](const model::module& entity) {
-        return std::hash<std::string>()(entity.name);
-      }, [&]() {
-        return reinterpret_cast<size_t>(self.get());
-      });
+  return visitor::visit([&](auto&& entity) {
+    using T = std::decay_t<decltype(entity)>;
+    if constexpr (std::is_same_v<T, model::cpp_entity_documentation>) {
+      return reinterpret_cast<size_t>(&entity.entity());
+    } else if constexpr (std::is_same_v<T, model::module>) {
+      return std::hash<std::string>()(entity.name);
+    } else {
+      return reinterpret_cast<size_t>(self.get());
+    }
+  }, self);
 }
 
 bool unordered_entities::impl::equality::operator()(const entity& lhs, const entity& rhs) const {
-  return visitor::visit(lhs, [&](const model::cpp_entity_documentation& lentity) {
-      return visitor::visit(rhs, [&](const model::cpp_entity_documentation& rentity) {
-          return &lentity.entity() == &rentity.entity();
-          }, []() {
+  return visitor::visit([&](auto&& lentity) {
+      using T = std::decay_t<decltype(lentity)>;
+      if constexpr (std::is_same_v<T, model::cpp_entity_documentation>) {
+        return visitor::visit([&](auto&& rentity) {
+          using S = std::decay_t<decltype(rentity)>;
+          if constexpr (std::is_same_v<S, T>) {
+            return &lentity.entity() == &rentity.entity();
+          }
           return false;
-          });
-      }, [&](const model::module& lentity) {
-      return visitor::visit(rhs, [&](const model::module& rentity) {
-          return lentity.name == rentity.name;
-          }, []() {
+        }, rhs);
+      } else if constexpr (std::is_same_v<T, model::module>) {
+        return visitor::visit([&](auto&& rentity) {
+          using S = std::decay_t<decltype(rentity)>;
+          if constexpr (std::is_same_v<S, T>) {
+            return lentity.name == rentity.name;
+          }
           return false;
-          });
-      }, [&]() {
+        }, rhs);
+      }
       return lhs.get() == rhs.get();
-  });
+  }, lhs);
 }
 
 template class unordered_entities::unordered_iterator<true>;

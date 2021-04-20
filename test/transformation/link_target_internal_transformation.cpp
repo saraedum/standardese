@@ -9,7 +9,7 @@
 #include "../../external/catch/single_include/catch2/catch.hpp"
 
 #include "../../standardese/transformation/link_target_internal_transformation.hpp"
-#include "../../standardese/model/visitor/recursive_visitor.hpp"
+#include "../../standardese/model/visitor/visit.hpp"
 #include "../../standardese/model/markup/link.hpp"
 #include "../../standardese/output_generator/xml/xml_generator.hpp"
 
@@ -39,17 +39,19 @@ TEST_CASE("Links to Header Files are Resolved", "[link_target_internal_transform
     CAPTURE(output_generator::xml::xml_generator::render(parsed));
 
     // Verify that all link could be resolved to C++ entities, namely the header file.
-    struct visitor : model::visitor::recursive_visitor<true> {
-      void visit(link& link) override {
-        link.target.accept([](auto&& target) -> void {
-          using T = std::decay_t<decltype(target)>;
-          CAPTURE(boost::typeindex::type_id<T>().pretty_name());
-          REQUIRE(std::is_same_v<T, model::link_target::cppast_target>);
-        });
-      };
-    } visitor{};
     for (auto& document: parsed.entities)
-      document.accept(visitor);
+      model::visitor::visit([](auto&& link) {
+        using T = std::decay_t<decltype(link)>;
+        if constexpr (std::is_same_v<T, model::markup::link>) {
+          link.target.accept([](auto&& target) -> void {
+            using T = std::decay_t<decltype(target)>;
+            CAPTURE(boost::typeindex::type_id<T>().pretty_name());
+            REQUIRE(std::is_same_v<T, model::link_target::cppast_target>);
+          });
+        }
+
+        return model::visitor::recursion::RECURSE;
+      }, document);
   }
 }
 

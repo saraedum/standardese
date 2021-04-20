@@ -8,7 +8,7 @@
 #include "../../external/catch/single_include/catch2/catch.hpp"
 
 #include "../../standardese/transformation/link_external_legacy_transformation.hpp"
-#include "../../standardese/model/visitor/recursive_visitor.hpp"
+#include "../../standardese/model/visitor/visit.hpp"
 #include "../../standardese/model/markup/link.hpp"
 
 #include "../util/logger.hpp"
@@ -38,22 +38,23 @@ TEST_CASE("External Legacy Legacy Links are Resolved", "[link_external_legacy_tr
     standardese::transformation::link_external_legacy_transformation{parsed.entities, options}.transform();
 
     // Verify that all links could be resolved.
-    struct visitor : model::visitor::recursive_visitor<true> {
-      void visit(link& link) override {
-        link.target.accept([](auto&& target) -> void {
-          using T = std::decay_t<decltype(target)>;
-          CAPTURE(boost::typeindex::type_id<T>().pretty_name());
-          if constexpr (std::is_same_v<T, model::link_target::uri_target>) {
-            REQUIRE(target.uri == R"(http://en.cppreference.com/mwiki/index.php?title=Special%3ASearch&search=std::vector)");
-          } else {
-            REQUIRE(false);
-          }
-        });
-      };
-    } visitor{};
-
     for (auto& document: parsed.entities)
-      document.accept(visitor);
+      model::visitor::visit([](auto&& link) {
+        using T = std::decay_t<decltype(link)>;
+        if constexpr (std::is_same_v<T, model::markup::link>) {
+          link.target.accept([](auto&& target) -> void {
+            using T = std::decay_t<decltype(target)>;
+            CAPTURE(boost::typeindex::type_id<T>().pretty_name());
+            if constexpr (std::is_same_v<T, model::link_target::uri_target>) {
+              REQUIRE(target.uri == R"(http://en.cppreference.com/mwiki/index.php?title=Special%3ASearch&search=std::vector)");
+            } else {
+              REQUIRE(false);
+            }
+          });
+        }
+
+        return model::visitor::recursion::RECURSE;
+      }, document);
   }
 }
 

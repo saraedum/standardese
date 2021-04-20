@@ -6,23 +6,21 @@
 #include <regex>
 
 #include "../../standardese/transformation/anchor_transformation.hpp"
-#include "../../standardese/model/visitor/recursive_visitor.hpp"
-#include "../../standardese/model/visitor/generic_visitor.hpp"
 #include "../../standardese/model/mixin/anchored.hpp"
 #include "../../standardese/model/unordered_entities.hpp"
+#include "../../standardese/model/visitor/visit.hpp"
 
 namespace standardese::transformation {
 
-namespace {
-struct visitor : public model::visitor::generic_visitor<visitor, model::visitor::recursive_visitor<false>> {
-  template <typename T>
-  void operator()(T& entity)
-  {
+void anchor_transformation::do_transform(model::entity& document) {
+  std::string path;
+
+  model::visitor::visit([&](auto&& entity) {
+    using T = std::decay_t<decltype(entity)>;
     if constexpr (std::is_base_of_v<model::document, T>) {
       // TODO
       // path = entity.path;
-    }
-    else if constexpr (std::is_base_of_v<model::mixin::anchored, T>) {
+    } else if constexpr (std::is_base_of_v<model::mixin::anchored, T>) {
       // TODO: We are using knowledge about mkdocs here. Instead we should
       // offer several implementations here:
       // * render a preceding <a>
@@ -36,17 +34,14 @@ struct visitor : public model::visitor::generic_visitor<visitor, model::visitor:
       if (entity.begin() != entity.end() && entity.begin()->template is<model::markup::heading>()) {
         auto& heading = entity.begin()->template as<model::markup::heading>();
 
-        struct as_text : model::visitor::recursive_visitor<true> {
-          void visit(const model::markup::text& node) override {
+        std::string inner;
+        model::visitor::visit([&](auto&& node) {
+          using T = std::decay_t<decltype(node)>;
+          if constexpr (std::is_same_v<T, model::markup::text>) {
             inner += node.value;
           }
-
-          std::string inner;
-        } as_text;
-
-        heading.accept(as_text);
-
-        std::string inner = as_text.inner;
+          return model::visitor::recursion::RECURSE;
+        }, heading);
         
         std::regex strip(R"([^\w\s-])");
         std::regex escape(R"([-\s]+)");
@@ -57,16 +52,9 @@ struct visitor : public model::visitor::generic_visitor<visitor, model::visitor:
         entity.id = inner;
       }
     }
-    model::visitor::recursive_visitor<false>::visit(entity);
-  }
 
-  std::string path;
-};
-}
-
-void anchor_transformation::do_transform(model::entity& entity) {
-  visitor v;
-  entity.accept(v);
+    return model::visitor::recursion::RECURSE;
+  }, document);
 }
 
 }

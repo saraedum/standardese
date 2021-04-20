@@ -12,18 +12,14 @@
 namespace standardese::model::visitor
 {
 
-template <typename ...Callbacks>
-auto visit(entity& entity, Callbacks&&... callbacks) {
-  using T = detail::visit_return_t<Callbacks...>;
-  using visitors = detail::partial_visitors<false, Callbacks...>;
-  return detail::functional_visitor<false, T, typename visitors::template visitor_t<Callbacks>...>(std::forward<Callbacks>(callbacks)...)(entity);
+template <typename T>
+auto visit(T&& lambda, model::entity& e) {
+  return detail::visit(std::forward<T>(lambda), e);
 }
 
-template <typename ...Callbacks>
-inline auto visit(const entity& entity, Callbacks&&... callbacks) {
-  using T = detail::visit_return_t<Callbacks...>;
-  using visitors = detail::partial_visitors<true, Callbacks...>;
-  return detail::functional_visitor<true, T, typename visitors::template visitor_t<Callbacks>...>(std::forward<Callbacks>(callbacks)...)(entity);
+template <typename T>
+auto visit(T&& lambda, const model::entity& e) {
+  return detail::visit(std::forward<T>(lambda), e);
 }
 
 }
