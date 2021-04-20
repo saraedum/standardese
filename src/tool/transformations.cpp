@@ -4,6 +4,7 @@
 // found in the top-level directory of this distribution.
 
 #include <stdexcept>
+#include <variant>
 
 #include "../../standardese/tool/transformations.hpp"
 #include "../../standardese/model/unordered_entities.hpp"
@@ -16,17 +17,11 @@
 #include "../../standardese/transformation/link_target_external_transformation.hpp"
 #include "../../standardese/transformation/link_target_unresolved_transformation.hpp"
 #include "../../standardese/transformation/link_href_internal_transformation.hpp"
-#include "../../standardese/transformation/link_href_sphinx_transformation.hpp"
+#include "../../standardese/transformation/link_sphinx_transformation.hpp"
 
 namespace standardese::tool {
 
-namespace {
-
-void transform_external_target(model::unordered_entities& documents, const struct transformations::options::external_link_options& external);
-
-void transform_external_href(model::unordered_entities& documents, const struct transformations::options::external_link_options& external);
-
-}
+template<class> inline constexpr bool always_false_v = false;
 
 transformations::transformations(struct options options) : options(options) {}
 
@@ -43,55 +38,25 @@ void transformations::transform(model::unordered_entities& documents, const pars
 
   // Resolve Links in Standardese Syntax to their Targets
   transformation::link_target_internal_transformation{documents, context}.transform();
-  for (auto& external : options.external_link_options)
-    transform_external_target(documents, external);
+  for (auto& option : options.external_link_options)
+    std::visit([&](const auto& external) {
+      using T = std::decay_t<decltype(external)>;
+      if constexpr (std::is_same_v<T, options::external_sphinx_options>) {
+        transformation::link_sphinx_transformation{documents, external.options, inventory::sphinx::documentation_set::parse(external.inventory.native())}.transform();
+      } else if constexpr (std::is_same_v<T, options::external_doxygen_options>) {
+        // TODO: implement me.
+        throw std::logic_error("not implemented: doxygen linking");
+      } else if constexpr (std::is_same_v<T, options::external_legacy_options>) {
+        transformation::link_external_legacy_transformation{documents, external.options}.transform();
+        throw std::logic_error("not implemented: legacy linking");
+      } else {
+        static_assert(always_false_v<T>, "unhandled external documentation link type");
+      }
+    }, option);
   transformation::link_target_unresolved_transformation{documents}.transform();
 
   // Resolve Links to the actual URLs
-  for (auto& external : options.external_link_options)
-    transform_external_href(documents, external);
   transformation::link_href_internal_transformation{documents}.transform();
-}
-
-namespace {
-
-void transform_external_target(model::unordered_entities& documents, const struct transformations::options::external_link_options& external) {
-  switch(external.kind) {
-    case transformations::options::external_link_options::kind::SPHINX:
-      {
-        // TODO: This is quite clumsy. Can we simplify the ownership questions
-        // here? Maybe the options should already contain the inventory? And
-        // the transformation take the inventory and not the options?
-        const auto inventory = inventory::sphinx::documentation_set::parse(external.inventory.native());
-        const auto symbols = inventory::symbols(inventory);
-        transformation::link_target_external_transformation{documents, &symbols}.transform();
-        break;
-      }
-    case transformations::options::external_link_options::kind::DOXYGEN:
-      // TODO: Implement me.
-      [[fallthrough]];
-    default:
-      throw std::logic_error("not implemented: cannot link to this kind of external documentation yet");
-  }
-}
-
-void transform_external_href(model::unordered_entities& documents, const struct transformations::options::external_link_options& external) {
-  switch(external.kind) {
-    case transformations::options::external_link_options::kind::SPHINX:
-      {
-        // TODO: Do we have to parse again here? We do not need the actual inventory.
-        const auto inventory = inventory::sphinx::documentation_set::parse(external.inventory.native());
-        transformation::link_href_sphinx_transformation{documents, inventory.project, inventory.version, external.url}.transform();
-        break;
-      }
-    case transformations::options::external_link_options::kind::DOXYGEN:
-      // TODO: Implement me.
-      [[fallthrough]];
-    default:
-      throw std::logic_error("not implemented: cannot link to this kind of external documentation yet");
-  }
-}
-
 }
 
 }

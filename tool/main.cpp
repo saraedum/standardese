@@ -332,24 +332,6 @@ standardese::entity_blacklist get_blacklist(const po::variables_map& options)
     return blacklist;
 }
 
-void register_external_documentations(standardese::linker& l, const po::variables_map& options)
-{
-    l.register_external("std", "http://en.cppreference.com/mwiki/"
-                               "index.php?title=Special%3ASearch&search=$$");
-
-    auto external = get_option<std::vector<std::string>>(options, "comment.external_doc").value();
-    for (auto& arg : external)
-    {
-        auto equal = arg.find('=');
-        if (equal == std::string::npos)
-            throw std::invalid_argument("invalid format for external doc '" + arg + "'");
-
-        auto ns_name = arg.substr(0, equal);
-        auto url     = arg.substr(equal + 1u);
-        l.register_external(std::move(ns_name), std::move(url));
-    }
-}
-
 //TODO: bring these parameters back  // clang-format off
 //TODO: bring these parameters back  po::options_description generic("Generic options", terminal_width), configuration("Configuration", terminal_width);
 //TODO: bring these parameters back  generic.add_options()
@@ -383,8 +365,6 @@ void register_external_documentations(standardese::linker& l, const po::variable
 //TODO: bring these parameters back       "character used to introduce special commands")
 //TODO: bring these parameters back      ("comment.command_pattern", po::value<std::vector<std::string>>()->default_value({}, ""),
 //TODO: bring these parameters back       "set the regular expression to detect a command, e.g., `--comment.command_pattern 'returns=RETURNS:'` or `'returns|=RETURNS:'` to also keep the original pattern.")
-//TODO: bring these parameters back      ("comment.external_doc", po::value<std::vector<std::string>>()->default_value({}, ""),
-//TODO: bring these parameters back       "syntax is namespace=url, supports linking to a different URL for entities in a certain namespace")
 //TODO: bring these parameters back      ("comment.free_file_comments", po::value<bool>()->implicit_value(true)->default_value(standardese::parser::config::options().free_file_comments),
 //TODO: bring these parameters back       "associate free comments to their entire file")
 //TODO: bring these parameters back      ("comment.group_uncommented", po::value<bool>()->implicit_value(true)->default_value(standardese::parser::config::options().group_uncommented),
@@ -441,7 +421,6 @@ void register_external_documentations(standardese::linker& l, const po::variable
             auto prefix  = get_option<std::string>(options, "output.prefix").value();
 
             standardese::linker linker;
-            register_external_documentations(linker, options);
 
             try
             {

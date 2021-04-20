@@ -22,11 +22,11 @@ set(tests
     model/markup/thematic_break.cpp
     transformation/link_target_internal_transformation.cpp
     transformation/link_target_external_transformation.cpp
+    transformation/link_external_legacy_transformation.cpp
     comment.cpp
     doc_entity.cpp
     documentation.cpp
     index.cpp
-    linker.cpp
     synopsis.cpp
     util/unindent.cpp
     util/cpp_file.cpp

@@ -20,6 +20,11 @@ namespace standardese::transformation
 class link_target_external_transformation : public transformation {
   public:
     struct options {
+      /// A URI schema to explicitly link to some external documentation such
+      /// as `std` to use `std://` to link to the standard library.
+      /// TODO: Implement this.
+      std::string schema;
+
       /// Whether no normal name lookups should be performed, e.g., for the
       /// standard library whether only `std://std::string` should resolve but
       /// not just `std::string`.
@@ -27,13 +32,13 @@ class link_target_external_transformation : public transformation {
       bool require_schema = false;
     };
 
-    link_target_external_transformation(model::unordered_entities& documents, const inventory::symbols*);
+    link_target_external_transformation(model::unordered_entities& documents, inventory::symbols symbols);
 
   protected:
     void do_transform(model::entity&) override;
 
   private:
-    const inventory::symbols& symbols;
+    const inventory::symbols symbols;
 };
 
 }

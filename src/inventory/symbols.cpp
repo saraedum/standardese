@@ -92,6 +92,8 @@ symbols::symbols(const inventory& inventory) {
   }
 }
 
+symbols::symbols(symbols&& value) : self(std::move(value.self)) {}
+
 symbols::~symbols() {}
 
 type_safe::optional<model::link_target> symbols::find(const std::string& name_) const {

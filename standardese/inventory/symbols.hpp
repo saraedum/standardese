@@ -33,6 +33,9 @@ class symbols {
  public:
   // TODO: Do we need to keep the inventory alive?
   explicit symbols(const inventory&);
+
+  symbols(symbols&&);
+
   ~symbols();
 
   // TODO: Maybe merge these two and add more optional args: entity, policy (i.e., actual lookup options), kind.

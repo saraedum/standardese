@@ -13,6 +13,8 @@
 #include "../transformation/exclude_uncommented_transformation.hpp"
 #include "../transformation/synopsis_transformation.hpp"
 #include "../transformation/link_target_external_transformation.hpp"
+#include "../transformation/link_external_legacy_transformation.hpp"
+#include "../transformation/link_sphinx_transformation.hpp"
 
 namespace standardese::tool {
 
@@ -28,31 +30,28 @@ class transformations {
     struct transformation::exclude_uncommented_transformation::options exclude_uncommented_options;
     struct transformation::synopsis_transformation::options synopsis_options;
 
-    /// How to establish links to external documentation.
-    struct external_link_options {
-      /// A URI schema to explicitly link to some external documentation such
-      /// as `std` to use `std://` to link to the standard library.
-      std::string schema;
-
-      /// The base URL of the external documentation.
-      /// Inventories usually give all paths relative to this base URL, e.g.,
-      /// `https://en.cppreference.com/w/` for the standard library.
-      std::string url;
-      
+    struct external_sphinx_options {
       /// The local path of the inventory file.
       boost::filesystem::path inventory;
 
-      struct transformation::link_target_external_transformation::options link_target_options;
-
-      enum class kind {
-        /// `inventory` is a doxygen tag file.
-        DOXYGEN,
-        /// `inventory` is a spinx inventory file.
-        SPHINX,
-      } kind;
+      struct transformation::link_sphinx_transformation::options options;
     };
 
-    std::vector<struct external_link_options> external_link_options;
+    struct external_doxygen_options {
+      /// The local path of the inventory file.
+      boost::filesystem::path inventory;
+
+      struct transformation::link_sphinx_transformation::options options;
+    };
+
+    struct external_legacy_options {
+      struct transformation::link_external_legacy_transformation::options options;
+    };
+
+    using external_link_option = std::variant<external_sphinx_options, external_doxygen_options, external_legacy_options>;
+
+    /// How to establish links to external documentation.
+    std::vector<external_link_option> external_link_options;
   };
 
   transformations(options);

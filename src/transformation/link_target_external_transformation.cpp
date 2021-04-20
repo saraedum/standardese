@@ -29,9 +29,9 @@ struct visitor : model::visitor::recursive_visitor<false> {
 
 }
 
-link_target_external_transformation::link_target_external_transformation(model::unordered_entities& documents, const inventory::symbols* symbols) :
+link_target_external_transformation::link_target_external_transformation(model::unordered_entities& documents, inventory::symbols symbols) :
   transformation(documents),
-  symbols(*symbols) {}
+  symbols(std::move(symbols)) {}
 
 void link_target_external_transformation::do_transform(model::entity& document) {
   visitor visitor{symbols};

@@ -127,6 +127,11 @@
   point out equivalent `find` commands that could be used instead to ease
   migration.
 
+* Symbols in the `std` namespace are not automatically linked to the
+  cppreference.com search page anymore. The `--comment.external_doc` switch
+  can still be used to get the old behavior. However, one should use
+  `--external` to get proper linking using their doxygen tagfile instead.
+
 **Fixed:**
 
 * Improve display of `--help` by autodetecting terminal width.

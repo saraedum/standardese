@@ -388,15 +388,15 @@ void options_parser::process_generic_options(po::variables_map& parsed) {
     switch(parsed.at("verbose").as<counter>().count) {
       case 1:
         logger::get().set_level(spdlog::level::info);
-        logger::get().info("info logging enabled");
+        logger::info("info logging enabled");
         break;
       case 2:
         logger::get().set_level(spdlog::level::debug);
-        logger::get().info("debug logging enabled");
+        logger::info("debug logging enabled");
         break;
       default:
         logger::get().set_level(spdlog::level::trace);
-        logger::get().info("trace logging enabled");
+        logger::info("trace logging enabled");
         break;
     }
   } else {
@@ -499,8 +499,8 @@ void options_parser::process_legacy_input_options(po::variables_map& parsed) {
         if (!force_blacklist)
           find = find + " FILES";
 
-        logger::get().error("Command line flags detected that are not supported by this version of {} anymore: {}", options.options_options.executable, fmt::join(unsupported_flags, " "));
-        logger::get().error("Please provide the input files explicitly or use a tool such as `find` to collect the files as in the following (overly complicated) command: {} OPTIONS {}", options.options_options.executable, find);
+        logger::error(fmt::format("Command line flags detected that are not supported by this version of {} anymore: {}", options.options_options.executable, fmt::join(unsupported_flags, " ")));
+        logger::error(fmt::format("Please provide the input files explicitly or use a tool such as `find` to collect the files as in the following (overly complicated) command: {} OPTIONS {}", options.options_options.executable, find));
       }
   }
 
@@ -511,7 +511,7 @@ void options_parser::process_legacy_input_options(po::variables_map& parsed) {
 
     auto& exclude = parsed.find("exclude")->second.as<std::vector<std::string>>();
     for (auto& name : parsed.find("input.blacklist_namespace")->second.as<std::vector<std::string>>()) {
-      logger::get().warn("--input.blacklist_namespace is deprecated, use --exclude='^{}$|(::)' instead.", name);
+      logger::warn(fmt::format("--input.blacklist_namespace is deprecated, use --exclude='^{}$|(::)' instead.", name));
       exclude.push_back("^" + name + "$|(::)");
     }
   }
@@ -536,7 +536,7 @@ void options_parser::process_legacy_input_options(po::variables_map& parsed) {
     if (privat.defaulted())
       privat.as<bool>() = value;
     if (privat.as<bool>() != value)
-      logger::get().error("Command line flags for --input.extract_private and --private are incompatible. Ignoring --input.extract_private.");
+      logger::error("Command line flags for --input.extract_private and --private are incompatible. Ignoring --input.extract_private.");
   }
 }
 
@@ -551,14 +551,32 @@ po::options_description options_parser::legacy_compilation_options() const {
 void options_parser::process_legacy_compilation_options(po::variables_map&) {}
 
 po::options_description options_parser::legacy_comment_options() const {
-  auto compiler = po::options_description("Legacy Compilation Options", options.options_options.columns);
+  auto legacy = po::options_description("Legacy Compilation Options", options.options_options.columns);
 
-  // TODO: Implement me
+  legacy.add_options()
+    ("comment.external_doc", po::value<std::vector<std::string>>()->value_name("namespace=url"), "Link entities in this namespace to a fixed URL prefix.");
 
-  return compiler;
+  return legacy;
 }
 
-void options_parser::process_legacy_comment_options(po::variables_map&) {}
+void options_parser::process_legacy_comment_options(po::variables_map& parsed) {
+  if (parsed.count("comment.external_doc")) {
+    for (const auto& external : parsed.find("comment.external_doc")->second.as<std::vector<std::string>>()) {
+      static std::regex syntax{R"(([^=]*)=(.*\$\$.*))"};
+
+      std::smatch match;
+      if (!std::regex_match(external, match, syntax)) {
+        logger::error(fmt::format("Ignoring malformed argument for --external. Must be `NAMESPACE=URL` and URL must contain $$ but found `{}`.", external));
+      } else {
+        transformations::options::external_legacy_options external_options;
+        external_options.options.namspace = match[1];
+        external_options.options.url = match[2];
+        options.transformation_options.external_link_options.push_back(external_options);
+      }
+    }
+    logger::warn(fmt::format("--comment.external_doc is deprecated. Use --external instead."));
+  }
+}
 
 po::options_description options_parser::legacy_output_options() const {
   auto legacy = po::options_description("Legacy Compilation Options", options.options_options.columns);
@@ -572,7 +590,7 @@ po::options_description options_parser::legacy_output_options() const {
 void options_parser::process_legacy_output_options(po::variables_map& parsed) {
   // Rewrite deprecated --output.directory as --outdir
   if (parsed.count("output.prefix")) {
-    logger::get().warn("--output.prefix is deprecated, use --outdir instead.");
+    logger::warn("--output.prefix is deprecated, use --outdir instead.");
     parsed.find("outdir")->second.as<boost::filesystem::path>() = parsed.find("output.prefix")->second.as<boost::filesystem::path>();
   }
 }
@@ -626,26 +644,26 @@ void options_parser::process_external_options(po::variables_map& parsed) {
       std::regex syntax{"([^:]*):([^:]*):([^=]*)=(.*)"};
       std::smatch match;
       if (!std::regex_match(external, match, syntax)) {
-        logger::get().error(fmt::format("Igroning malformed command line flag for --external. Must be of the form `KIND:SCHEMA:INVENTORY=URL` but found `{}`.", external));
+        logger::error(fmt::format("Igroning malformed command line flag for --external. Must be of the form `KIND:SCHEMA:INVENTORY=URL` but found `{}`.", external));
         continue;
       }
-
-      struct transformations::options::external_link_options entry;
 
       if (match[1] == "sphinx") {
-        entry.kind = transformations::options::external_link_options::kind::SPHINX;
+        transformations::options::external_sphinx_options entry;
+        entry.options.schema = match[2];
+        entry.inventory = match[3];
+        entry.options.url = match[4];
+        options.transformation_options.external_link_options.emplace_back(entry);
       } else if (match[1] == "doxygen") {
-        entry.kind = transformations::options::external_link_options::kind::DOXYGEN;
+        transformations::options::external_doxygen_options entry;
+        entry.options.schema = match[2];
+        entry.inventory = match[3];
+        entry.options.url = match[4];
+        options.transformation_options.external_link_options.emplace_back(entry);
       } else {
-        logger::get().error(fmt::format("Ignoring malformed command line flag for --external. Must start with one of `sphinx` or `doxygen` but found `{}`.", match[1].str()));
+        logger::error(fmt::format("Ignoring malformed command line flag for --external. Must start with one of `sphinx` or `doxygen` but found `{}`.", match[1].str()));
         continue;
       }
-
-      entry.schema = match[2];
-      entry.inventory = match[3];
-      entry.url = match[4];
-
-      options.transformation_options.external_link_options.emplace_back(entry);
     }
   }
 }
