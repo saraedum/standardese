@@ -87,8 +87,3 @@ target_link_libraries(standardese PUBLIC fmt)
 find_package(Boost COMPONENTS program_options filesystem iostreams REQUIRED)
 target_include_directories(standardese PUBLIC ${Boost_INCLUDE_DIR})
 target_link_libraries(standardese PUBLIC ${Boost_LIBRARIES})
-
-# install library: TODO
-#install(TARGETS standardese EXPORT standardese DESTINATION "${lib_dest}")
-#install(FILES ${header} DESTINATION "${include_dest}/standardese")
-#install(FILES ${detail_header} DESTINATION "${include_dest}/standardese/detail")
