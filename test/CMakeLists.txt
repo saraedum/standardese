@@ -12,6 +12,7 @@ set(tests
     model/document/entity_document.cpp
     model/document/index_document.cpp
     model/markup/code_block.cpp
+    model/visitor/visit.cpp
     model/documentation.cpp
     model/markup/heading.cpp
     model/markup/link.cpp

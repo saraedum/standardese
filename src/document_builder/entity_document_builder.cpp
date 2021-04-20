@@ -9,7 +9,6 @@
 
 #include "../../standardese/document_builder/entity_document_builder.hpp"
 #include "../../standardese/model/document.hpp"
-#include "../../standardese/model/visitor/recursive_visitor.hpp"
 #include "../../standardese/model/visitor/generic_visitor.hpp"
 #include "../../standardese/model/unordered_entities.hpp"
 #include "../../standardese/model/mixin/container.hpp"
@@ -26,7 +25,7 @@ namespace standardese::document_builder
 
 namespace {
 
-struct visitor : public model::visitor::generic_visitor<visitor, model::visitor::recursive_visitor<true>> {
+struct visitor : public model::visitor::generic_visitor<visitor> {
   visitor(model::mixin::container<>& root, const model::unordered_entities& entities) : root(&root), entities(entities) {}
 
   template <typename T>

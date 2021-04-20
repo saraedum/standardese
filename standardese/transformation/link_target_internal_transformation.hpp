@@ -22,7 +22,7 @@ class link_target_internal_transformation : public transformation {
     void do_transform(model::entity&) override;
 
   private:
-    inventory::cppast_inventory symbols;
+    inventory::cppast_inventory inventory;
     inventory::files files;
 };
 

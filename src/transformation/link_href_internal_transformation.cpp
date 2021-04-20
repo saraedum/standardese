@@ -11,46 +11,33 @@
 #include "../../standardese/model/visitor/visit.hpp"
 #include "../../standardese/model/markup/link.hpp"
 #include "../../standardese/model/cpp_entity_documentation.hpp"
-#include "../../standardese/model/visitor/recursive_visitor.hpp"
-#include "../../standardese/model/visitor/generic_visitor.hpp"
 #include "../../standardese/logger.hpp"
 
 // TODO: We need an additional transformation that optionally turns [target]() into [`target`]().
 
-// TODO: Move all the code to the bottom and declare and document types at the top.
-
 namespace standardese::transformation
 {
-
-namespace {
-
-// Collects all the entities that can be linked to in our documents.
-struct anchors : model::visitor::generic_visitor<anchors, model::visitor::recursive_visitor<true>> {
-  template <typename T>
-  void operator()(const T& entity)
-  {
-    if constexpr (std::is_base_of_v<model::document, T>) {
-      path = entity.path;
-    }
-    else if constexpr (std::is_base_of_v<model::cpp_entity_documentation, T>) {
-      a[&entity.entity()] = path + "/#" + entity.id;
-    }
-    model::visitor::recursive_visitor<true>::visit(entity);
-  }
-
-  std::string path;
-  std::unordered_map<const cppast::cpp_entity*, std::string> a;
-};
-
-}
 
 link_href_internal_transformation::link_href_internal_transformation(model::unordered_entities& documents) :
   transformation(documents),
   anchors([&]() {
-    struct anchors anchors{};
+    std::string path;
+    std::unordered_map<const cppast::cpp_entity*, std::string> a;
+
     for (const auto& document : documents)
-      document.accept(anchors);
-    return anchors.a;
+      model::visitor::visit([&](auto&& entity) {
+        using T = std::decay_t<decltype(entity)>;
+
+        if constexpr (std::is_base_of_v<model::document, T>) {
+          path = entity.path;
+        } else if constexpr (std::is_base_of_v<model::cpp_entity_documentation, T>) {
+          a[&entity.entity()] = path + "/#" + entity.id;
+        }
+
+        return model::visitor::recursion::RECURSE;
+      }, document);
+
+    return a;
   }()) {
 }
 

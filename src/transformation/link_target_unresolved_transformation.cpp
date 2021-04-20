@@ -12,40 +12,31 @@
 #include "../../standardese/transformation/link_target_unresolved_transformation.hpp"
 #include "../../standardese/model/visitor/visit.hpp"
 #include "../../standardese/model/markup/link.hpp"
-#include "../../standardese/model/visitor/recursive_visitor.hpp"
-#include "../../standardese/model/visitor/generic_visitor.hpp"
 #include "../../standardese/logger.hpp"
 
 namespace standardese::transformation {
 
-namespace {
-
-/// Reports all standardese links that could not be resolved.
-struct visitor : model::visitor::recursive_visitor<false> {
-  void visit(link& link) override {
-    link.target.accept([&](auto&& target) {
-      using T = std::decay_t<decltype(target)>;
-      if constexpr (std::is_same_v<T, model::link_target::standardese_target>) {
-        if (target.target == "") {
-          link.target = model::link_target::uri_target("");
-          return;
-        }
-
-        standardese::logger::warn(fmt::format("Could not resolve link target `{}`.", target.target));
-      }
-    });
-
-    model::visitor::recursive_visitor<false>::visit(link);
-  }
-};
-
-}
-
 link_target_unresolved_transformation::link_target_unresolved_transformation(model::unordered_entities& documents) : transformation(documents) {}
 
 void link_target_unresolved_transformation::do_transform(model::entity& document) {
-  visitor visitor{};
-  document.accept(visitor);
+  model::visitor::visit([](auto&& link) {
+    using T = std::decay_t<decltype(link)>;
+    if constexpr (std::is_same_v<T, model::markup::link>) {
+      link.target.accept([&](auto&& target) {
+        using T = std::decay_t<decltype(target)>;
+        if constexpr (std::is_same_v<T, model::link_target::standardese_target>) {
+          if (target.target == "") {
+            link.target = model::link_target::uri_target("");
+            return;
+          }
+
+          standardese::logger::warn(fmt::format("Could not resolve link target `{}`.", target.target));
+        }
+      });
+    }
+
+    return model::visitor::recursion::RECURSE;
+  }, document);
 }
 
 }
