@@ -34,7 +34,3 @@ endif()
 if (STANDARDESE_BUILD_TEST)
     add_subdirectory(test)
 endif()
-
-# install configuration
-#install(EXPORT standardese DESTINATION "${lib_dest}")
-#install(FILES standardese-config.cmake LICENSE DESTINATION "${lib_dest}")
