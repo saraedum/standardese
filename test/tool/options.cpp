@@ -3,6 +3,7 @@
 // found in the top-level directory of this distribution.
 
 #include <sstream>
+#include <boost/type_index.hpp>
 
 #include "../../external/catch/single_include/catch2/catch.hpp"
 #include "../../standardese/tool/options.hpp"
@@ -154,6 +155,27 @@ TEST_CASE("Parsing of Legacy --input.* Options", "[tool]") {
   }
 }
 
+TEST_CASE("Parsing of Legacy --comment.* Options", "[tool]") {
+  auto logstream = std::stringstream();
+  auto logger = util::logger::capturing_logger(logstream);
+
+  SECTION("--comment.external_doc") {
+    const char* argv[] = {"standardese", "--comment.external_doc", R"(std=http://en.cppreference.com/mwiki/index.php?title=Special%3ASearch&search=$$)", "header.h"};
+    auto options = options::parse(sizeof(argv)/sizeof(*argv), argv, {});
+
+    REQUIRE(options.transformation_options.external_link_options.size() == 1);
+    std::visit([&](const auto& option) {
+      using T = std::decay_t<decltype(option)>;
+      CAPTURE(boost::typeindex::type_id<T>().pretty_name());
+      if constexpr (std::is_same_v<T, standardese::tool::transformations::options::external_legacy_options>) {
+        REQUIRE(option.options.namspace == "std");
+      } else {
+        REQUIRE(false);
+      }
+    }, options.transformation_options.external_link_options[0]);
+  }
+}
+
 TEST_CASE("Parsing of Legacy --output.* Options", "[tool]") {
   auto logstream = std::stringstream();
   auto logger = util::logger::capturing_logger(logstream);
@@ -208,8 +230,15 @@ TEST_CASE("Parsing of External Linking Options") {
       auto options = options::parse(sizeof(argv)/sizeof(*argv), argv, {});
 
       REQUIRE(options.transformation_options.external_link_options.size() == 1);
-      REQUIRE(options.transformation_options.external_link_options[0].kind == standardese::tool::transformations::options::external_link_options::kind::SPHINX);
-      REQUIRE(options.transformation_options.external_link_options[0].schema == "py");
+      std::visit([&](const auto& option) {
+        using T = std::decay_t<decltype(option)>;
+        CAPTURE(boost::typeindex::type_id<T>().pretty_name());
+        if constexpr (std::is_same_v<T, standardese::tool::transformations::options::external_sphinx_options>) {
+          REQUIRE(option.options.schema == "py");
+        } else {
+          REQUIRE(false);
+        }
+      }, options.transformation_options.external_link_options[0]);
     }
 
     SECTION("Register Python 2 and Python 3 Documentation") { 
@@ -217,8 +246,24 @@ TEST_CASE("Parsing of External Linking Options") {
       auto options = options::parse(sizeof(argv)/sizeof(*argv), argv, {});
 
       REQUIRE(options.transformation_options.external_link_options.size() == 2);
-      REQUIRE(options.transformation_options.external_link_options[0].schema == "py");
-      REQUIRE(options.transformation_options.external_link_options[1].schema == "py2");
+      std::visit([&](const auto& option) {
+        using T = std::decay_t<decltype(option)>;
+        CAPTURE(boost::typeindex::type_id<T>().pretty_name());
+        if constexpr (std::is_same_v<T, standardese::tool::transformations::options::external_sphinx_options>) {
+          REQUIRE(option.options.schema == "py");
+        } else {
+          REQUIRE(false);
+        }
+      }, options.transformation_options.external_link_options[0]);
+      std::visit([&](const auto& option) {
+        using T = std::decay_t<decltype(option)>;
+        CAPTURE(boost::typeindex::type_id<T>().pretty_name());
+        if constexpr (std::is_same_v<T, standardese::tool::transformations::options::external_sphinx_options>) {
+          REQUIRE(option.options.schema == "py2");
+        } else {
+          REQUIRE(false);
+        }
+      }, options.transformation_options.external_link_options[1]);
     }
   }
 
@@ -228,8 +273,15 @@ TEST_CASE("Parsing of External Linking Options") {
       auto options = options::parse(sizeof(argv)/sizeof(*argv), argv, {});
 
       REQUIRE(options.transformation_options.external_link_options.size() == 1);
-      REQUIRE(options.transformation_options.external_link_options[0].kind == standardese::tool::transformations::options::external_link_options::kind::DOXYGEN);
-      REQUIRE(options.transformation_options.external_link_options[0].schema == "std");
+      std::visit([&](const auto& option) {
+        using T = std::decay_t<decltype(option)>;
+        CAPTURE(boost::typeindex::type_id<T>().pretty_name());
+        if constexpr (std::is_same_v<T, standardese::tool::transformations::options::external_doxygen_options>) {
+          REQUIRE(option.options.schema == "std");
+        } else {
+          REQUIRE(false);
+        }
+      }, options.transformation_options.external_link_options[0]);
     }
   }
 }

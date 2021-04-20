@@ -1,4 +1,5 @@
 ﻿# Copyright (C) 2016-2017 Jonathan Müller <jonathanmueller.dev@gmail.com>
+#                    2021 Julian Rüth <julian.rueth@fsfe.org>
 # This file is subject to the license terms in the LICENSE file
 # found in the top-level directory of this distribution.
 
@@ -27,9 +28,10 @@ set(src
     transformation/transformation.cpp
     transformation/link_target_internal_transformation.cpp
     transformation/link_target_external_transformation.cpp
+    transformation/link_external_legacy_transformation.cpp
     transformation/link_target_unresolved_transformation.cpp
     transformation/link_href_internal_transformation.cpp
-    transformation/link_href_sphinx_transformation.cpp
+    transformation/link_sphinx_transformation.cpp
     transformation/entity_heading_transformation.cpp
     transformation/synopsis_transformation.cpp
     transformation/exclude_uncommented_transformation.cpp

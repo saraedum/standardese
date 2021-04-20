@@ -1,4 +1,5 @@
-// Copyright (C) 2021 Julian Rüth <julian.rueth@fsfe.org>
+// Copyright (C) 2016-2019 Jonathan Müller <jonathanmueller.dev@gmail.com>
+//                    2021 Julian Rüth <julian.rueth@fsfe.org>
 // This file is subject to the license terms in the LICENSE file
 // found in the top-level directory of this distribution.
 
@@ -6,12 +7,9 @@
 
 #include "../../external/catch/single_include/catch2/catch.hpp"
 
-#include "../../standardese/transformation/link_target_external_transformation.hpp"
-#include "../../standardese/inventory/sphinx/documentation_set.hpp"
-#include "../../standardese/inventory/symbols.hpp"
+#include "../../standardese/transformation/link_external_legacy_transformation.hpp"
 #include "../../standardese/model/visitor/recursive_visitor.hpp"
 #include "../../standardese/model/markup/link.hpp"
-#include "../../standardese/output_generator/xml/xml_generator.hpp"
 
 #include "../util/logger.hpp"
 #include "../util/cpp_file.hpp"
@@ -20,24 +18,24 @@
 namespace standardese::test::transformation {
 
 using standardese::test::util::cpp_file;
+using standardese::transformation::link_external_legacy_transformation;
 
-TEST_CASE("Links to Sphinx Documentation Are Resolved", "[link_target_external_transformation]") {
+TEST_CASE("External Legacy Legacy Links are Resolved", "[link_external_legacy_transformation]") {
   auto logger = util::logger::throwing_logger();
   cpp_file header;
 
-  SECTION("A Link to a Sphinx Type") {
+  SECTION("A link to cppreference.com") {
     auto parsed = util::parsed_comments(header).add(header, R"(
       \file
-      [the C++ type X](<> "X")
-      [the fully qualified C++ type X](<> "::X")
+      [a vector](<> "std::vector")
+      [fully qualified vector](<> "::std::vector")
       )");
 
-    standardese::inventory::sphinx::documentation_set inventory;
-    inventory.entries.emplace_back("X", "c++", "type", 0," /X", "class X");
+    struct link_external_legacy_transformation::options options;
+    options.namspace = "std";
+    options.url = R"(http://en.cppreference.com/mwiki/index.php?title=Special%3ASearch&search=$$)";
 
-    standardese::transformation::link_target_external_transformation{parsed.entities, inventory::symbols{inventory}}.transform();
-
-    CAPTURE(output_generator::xml::xml_generator::render(parsed));
+    standardese::transformation::link_external_legacy_transformation{parsed.entities, options}.transform();
 
     // Verify that all links could be resolved.
     struct visitor : model::visitor::recursive_visitor<true> {
@@ -45,14 +43,18 @@ TEST_CASE("Links to Sphinx Documentation Are Resolved", "[link_target_external_t
         link.target.accept([](auto&& target) -> void {
           using T = std::decay_t<decltype(target)>;
           CAPTURE(boost::typeindex::type_id<T>().pretty_name());
-          REQUIRE(std::is_same_v<T, model::link_target::sphinx_target>);
+          if constexpr (std::is_same_v<T, model::link_target::uri_target>) {
+            REQUIRE(target.uri == R"(http://en.cppreference.com/mwiki/index.php?title=Special%3ASearch&search=std::vector)");
+          } else {
+            REQUIRE(false);
+          }
         });
       };
     } visitor{};
+
     for (auto& document: parsed.entities)
       document.accept(visitor);
   }
 }
 
 }
-

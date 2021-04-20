@@ -124,7 +124,8 @@ namespace standardese::transformation
 class link_target_internal_transformation;
 class link_target_external_transformation;
 class link_href_internal_transformation;
-class link_href_sphinx_transformation;
+class link_sphinx_transformation;
+class link_external_legacy_transformation;
 class anchor_transformation;
 class exclude_pattern_transformation;
 class exclude_access_transformation;
