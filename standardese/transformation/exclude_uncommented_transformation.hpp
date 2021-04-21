@@ -18,6 +18,8 @@ class exclude_uncommented_transformation : public transformation {
         exclude,
         /// Exclude this entity if uncommented and all its members are uncommented.
         exclude_if_empty,
+        /// Exclude this entity if uncommented but include the children of this entity.
+        skip,
         /// Include this entity even if uncommented.
         include,
       };
@@ -26,20 +28,7 @@ class exclude_uncommented_transformation : public transformation {
       mode exclude_file = mode::include;
 
       /// Whether to exclude namespaces without a comment on the namespace.
-      /// \note Namespaces are usually empty when this transformation is
-      /// applied, i.e., a structure such as:
-      /// ```
-      /// namespace N { struct X {}; }
-      /// ```
-      /// 
-      /// Has been essentially rewritten to:
-      /// ```
-      /// namespace N{}
-      /// struct N::X {};
-      /// ```
-      /// 
-      /// so excluding namespaces will not affect their children.
-      mode exclude_namespace = mode::include;
+      mode exclude_namespace = mode::skip;
 
       /// Whether to exclude uncommented structs and classes.
       mode exclude_class = mode::include;
@@ -52,12 +41,21 @@ class exclude_uncommented_transformation : public transformation {
 
       /// Whether to exclude uncommented variables.
       mode exclude_variable = mode::include;
+
+      /// Whether to exclude uncommented friends.
+      mode exclude_friend = mode::include;
+
+      /// Whether to exclude uncommented macro definitions.
+      mode exclude_macro = mode::include;
     };
 
-    using transformation::transformation;
+    explicit exclude_uncommented_transformation(model::unordered_entities& documents, struct options options);
 
   protected:
     void do_transform(model::entity& root) override;
+
+  private:
+    struct options options;
 };
 
 }
