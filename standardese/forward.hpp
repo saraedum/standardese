@@ -133,6 +133,12 @@ class synopsis_transformation;
 
 }
 
+namespace standardese::formatter {
+
+class inja_formatter;
+
+}
+
 namespace standardese::threading
 {
 
