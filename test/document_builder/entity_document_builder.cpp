@@ -408,6 +408,58 @@ TEST_CASE("Entity Documents can be Generated", "[entity_document_builder]")
         )*"));
     }
   }
+
+  SECTION("Entity Documents for Usings") {
+    SECTION("Entity Document for a Simple Alias") {
+      util::cpp_file header(R"(
+        using T = int;
+        )");
+
+      auto parsed = util::parsed_comments(header).add(header["T"], R"(
+        An alias for int.
+        )");
+
+      auto document = entity_document_builder{}.build(parsed["T"], parsed.entities);
+
+      CHECK(xml_generator::render(document) == unindent(R"*(
+        <?xml version="1.0"?>
+        <document name="doc_T">
+          <entity-documentation name="T">
+            <section name="Brief">
+              <paragraph>An alias for int.</paragraph>
+            </section>
+          </entity-documentation>
+        </document>
+        )*"));
+    }
+
+    SECTION("Entity Document for a Template Using") {
+      util::cpp_file header(R"(
+        template <typename T>
+        using U = int;
+        )");
+
+      auto parsed = util::parsed_comments(header).add(header["U"], R"(
+        A template using.
+        )");
+
+      auto document = entity_document_builder{}.build(parsed["U"], parsed.entities);
+
+      CHECK(xml_generator::render(document) == unindent(R"*(
+        <?xml version="1.0"?>
+        <document name="doc_U">
+          <entity-documentation name="U">
+            <section name="Brief">
+              <paragraph>A template using.</paragraph>
+            </section>
+            <section name="Requires">
+              <entity-documentation name="T" />
+            </section>
+          </entity-documentation>
+        </document>
+        )*"));
+    }
+  }
 }
 
 }
