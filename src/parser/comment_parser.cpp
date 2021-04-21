@@ -23,6 +23,7 @@
 #include <cppast/cpp_function.hpp>
 #include <cppast/cpp_function_template.hpp>
 #include <cppast/cpp_file.hpp>
+#include <cppast/cpp_preprocessor.hpp>
 
 #include "cmark-extension/cmark_extension.hpp"
 #include "command-extension/command_extension.hpp"
@@ -610,6 +611,10 @@ void comment_parser::add_uncommented_entities(model::unordered_entities& entitie
         }
         if (cppast::is_function(e.kind())) {
             for (const auto& param : static_cast<const cppast::cpp_function_base&>(e).parameters())
+                ensure_entity(param);
+        }
+        if (e.kind() == cppast::cpp_macro_definition::kind()) {
+            for (const auto& param : static_cast<const cppast::cpp_macro_definition&>(e).parameters())
                 ensure_entity(param);
         }
         if (e.kind() == cppast::cpp_class_template::kind()) {
