@@ -10,7 +10,7 @@ set(tests
     tool/options.cpp
     tool/parsers.cpp
     document_builder/entity_document_builder.cpp
-    model/document/index_document.cpp
+    document_builder/index_document_builder.cpp
     model/markup/code_block.cpp
     model/visitor/visit.cpp
     model/documentation.cpp

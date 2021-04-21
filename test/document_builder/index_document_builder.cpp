@@ -3,21 +3,19 @@
 // This file is subject to the license terms in the LICENSE file
 // found in the top-level directory of this distribution.
 
-#include "../../../external/catch/single_include/catch2/catch.hpp"
+#include "../../external/catch/single_include/catch2/catch.hpp"
 
-#include "../../../standardese/document_builder/index_document_builder.hpp"
-#include "../../../standardese/document_builder/entity_document_builder.hpp"
-#include "../../../standardese/model/document.hpp"
-#include "../../../standardese/output_generator/xml/xml_generator.hpp"
-#include "../../../standardese/transformation/link_href_internal_transformation.hpp"
-#include "../../../standardese/transformation/anchor_transformation.hpp"
+#include "../../standardese/document_builder/index_document_builder.hpp"
+#include "../../standardese/document_builder/entity_document_builder.hpp"
+#include "../../standardese/model/document.hpp"
+#include "../../standardese/output_generator/xml/xml_generator.hpp"
+#include "../../standardese/transformation/link_href_internal_transformation.hpp"
+#include "../../standardese/transformation/anchor_transformation.hpp"
 
-#include "../../util/parsed_comments.hpp"
-#include "../../util/cpp_file.hpp"
-#include "../../util/unindent.hpp"
-#include "../../util/logger.hpp"
-
-// TODO: This seems to be a test for the index builder not for the index entity.
+#include "../util/parsed_comments.hpp"
+#include "../util/cpp_file.hpp"
+#include "../util/unindent.hpp"
+#include "../util/logger.hpp"
 
 namespace standardese::test::model::document
 {
@@ -26,10 +24,10 @@ using util::unindent;
 using util::cpp_file;
 using standardese::output_generator::xml::xml_generator;
 
-TEST_CASE("Typical Index Files can be Generated", "[document]")
+TEST_CASE("Typical Index Files can be Generated", "[index_document_builder]")
 {
   auto logger = util::logger::throwing_logger();
-  document_builder::index_document_builder builder; 
+  document_builder::index_document_builder builder({}); 
 
   cpp_file header;
 
@@ -40,8 +38,7 @@ TEST_CASE("Typical Index Files can be Generated", "[document]")
 
   SECTION("Index of All Header Files")
   {
-    auto index = builder.build(document_builder::index_document_builder::is_header_file, parsed.entities);
-    index.name = "headers";
+    auto index = builder.build("headers", document_builder::index_document_builder::is_header_file, parsed.entities);
     
     SECTION("Links Cannot be Emitted Without a Header File Entity")
     {
@@ -52,22 +49,31 @@ TEST_CASE("Typical Index Files can be Generated", "[document]")
 
     SECTION("Links Can be Emitted With a Header File Entity")
     {
-      standardese::model::unordered_entities documents{std::vector{std::move(index), document_builder::entity_document_builder().build(parsed[header], parsed.entities)}};
+      auto header_documentation = document_builder::entity_document_builder().build(parsed[header], parsed.entities);
+      header_documentation.path = "doc_header";
+
+      standardese::model::unordered_entities documents{std::vector{std::move(index), std::move(header_documentation)}};
 
       transformation::anchor_transformation(documents).transform();
 
       transformation::link_href_internal_transformation(documents).transform();
 
-      /*
-      CHECK(xml_generator::render(*++documents.begin()) == "");
-      */
+      CHECK(xml_generator::render(*++documents.begin()) == unindent(R"(
+        <?xml version="1.0"?>
+        <document name="headers">
+          <unordered-list>
+            <list-item>
+              <link href="/doc_header#">header.hpp</link>
+            </list-item>
+          </unordered-list>
+        </document>
+        )"));
     }
   }
 
   SECTION("Index of All Modules")
   {
-    auto index = builder.build(document_builder::index_document_builder::is_module, parsed.entities);
-    index.name = "modules";
+    auto index = builder.build("modules", document_builder::index_document_builder::is_module, parsed.entities);
 
     CHECK(xml_generator::render(index) == unindent(R"(
       <?xml version="1.0"?>

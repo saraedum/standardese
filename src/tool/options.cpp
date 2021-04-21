@@ -5,6 +5,14 @@
 
 // TODO: Should we use std::filesystem everywhere?
 // TODO: Make sure that all the default values are automatically synchronized with all the variable default values in the option structs.
+// TODO: We should be more careful about throwing exceptions everywher. It
+// would be better to log and produce something reasonable instead in most
+// places. Or make sure that it's communicated that we throw (even not
+// implemented?) and make sure that our callers are aware of that.
+// TODO: Make sure that all the tool:: classes can recover from exceptions
+// somewhat.
+// TODO: Audit all the static casts. We should use some scheme that gives us
+// good error messages, mostly relevant when casting a cppast types.
 
 #include <cppast/forward.hpp>
 #include <iostream>

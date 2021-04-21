@@ -6,19 +6,39 @@
 #define STANDARDESE_OUTPUT_DOCUMENT_INDEX_DOCUMENT_BUILDER_HPP_INCLUDED
 
 #include <functional>
+#include <string>
 
-#include "../forward.hpp"
+#include "../formatter/inja_formatter.hpp"
 
 namespace standardese::document_builder
 {
 
+/// Generates indexes of entities, i.e., documents that essentially contain a
+/// list of all entities of a certain kind such as a list of all headers.
 class index_document_builder {
   public:
-    /// Create an index of all entities satisfying `predicate`.
-    model::document build(const std::function<bool(const model::entity&)> predicate, const model::unordered_entities&) const;
+    struct options {
+      options();
 
+      struct formatter::inja_formatter::options anchor_text_options;
+    };
+
+    explicit index_document_builder(options);
+
+    /// Create an index of all entities satisfying `predicate`.
+    /// \param name The name of the generated document, e.g., `headers`.
+    model::document build(const std::string& name, const std::function<bool(const model::entity&)> predicate, const model::unordered_entities&) const;
+
+    /// Return true if the argument is a module.
+    /// This predicate can be used in [build]() to generate an index of all modules.
     static bool is_module(const model::entity&);
+
+    /// Return true if the argument is a header file.
+    /// This predicate can be used in [build]() to generate an index of all header files.
     static bool is_header_file(const model::entity&);
+
+  private:
+    formatter::inja_formatter anchor_text_formatter;
 };
 
 }

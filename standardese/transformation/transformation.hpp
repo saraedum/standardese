@@ -9,6 +9,9 @@
 
 namespace standardese::transformation {
 
+// TODO: Should we call the namespace transformer for consistency? And then
+// call the classes transformer as well?
+
 class transformation {
   public:
     explicit transformation(model::unordered_entities& entities);

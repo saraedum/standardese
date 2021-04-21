@@ -31,7 +31,7 @@ link_href_internal_transformation::link_href_internal_transformation(model::unor
         if constexpr (std::is_base_of_v<model::document, T>) {
           path = entity.path;
         } else if constexpr (std::is_base_of_v<model::cpp_entity_documentation, T>) {
-          a[&entity.entity()] = path + "/#" + entity.id;
+          a[&entity.entity()] = path + "#" + entity.id;
         }
 
         return model::visitor::recursion::RECURSE;

@@ -37,6 +37,7 @@ set(src
     transformation/exclude_uncommented_transformation.cpp
     transformation/output_group_transformation.cpp
     transformation/anchor_transformation.cpp
+    formatter/inja_formatter.cpp
     output_generator/html/html_generator.cpp
     output_generator/markdown/markdown_generator.cpp
     output_generator/sphinx/inventory_generator.cpp
