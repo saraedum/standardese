@@ -129,17 +129,17 @@ void visitor::operator()(T&& documentation) {
       case cppast::cpp_entity_kind::base_class_t:
       case cppast::cpp_entity_kind::macro_definition_t:
       case cppast::cpp_entity_kind::enum_value_t:
+      case cppast::cpp_entity_kind::alias_template_t:
         add_entity(entity);
         break;
       case cppast::cpp_entity_kind::language_linkage_t:
         add_contents(entity, *root);
         break;
-      case cppast::cpp_entity_kind::include_directive_t:
       case cppast::cpp_entity_kind::using_directive_t:
+      case cppast::cpp_entity_kind::include_directive_t:
       case cppast::cpp_entity_kind::using_declaration_t:
       case cppast::cpp_entity_kind::access_specifier_t:
         // Ignore this entity.
-        // TODO: We should not ignore usings.
         break;
       default:
         throw std::logic_error(fmt::format("not implemented: cannot generate documentation for C++ entity `{}` of type `{}`", entity.name(), (long)entity.kind()));
