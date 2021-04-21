@@ -13,6 +13,12 @@
 namespace standardese::model
 {
 
+/// An unordered set of [entity]() instances.
+/// Note that [entity]() does not implement `operator==`, however, here
+/// we treat some entities as equal, namely:
+/// * two [cpp_entity_documentation]() instances if they describe the same C++ entity.
+/// * two [module]() instances if they describe modules with the same name.
+/// All other entities are only considered equal if they are identical objects.
 class unordered_entities {
     template <bool is_const>
     class unordered_iterator;
@@ -46,6 +52,10 @@ class unordered_entities {
     const_iterator find_module(const std::string&) const;
     iterator find_module(const std::string&);
 
+    /// Return the [model::entity]() describing [entity](), i.e., the
+    /// [cpp_entity_documentation]() for it.
+    /// This is identical to taking the first element of [find_cpp_entity]().
+    /// \throws [std::invalid_argument]() if there is not such entity.
     const model::entity& cpp_entity(const cppast::cpp_entity& entity) const;
     model::entity& cpp_entity(const cppast::cpp_entity& entity);
 
