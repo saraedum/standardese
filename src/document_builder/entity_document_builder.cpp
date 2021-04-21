@@ -189,7 +189,13 @@ void visitor::add_template_parameters(const cppast::cpp_template& entity) {
     auto& section = ensure_section(parent, parser::commands::section_command::requires);
 
     visitor v(section, entities);
-    entities.cpp_entity(tparam).accept(v);
+
+    const auto& search = entities.find_cpp_entity(tparam);
+    if (search == entities.end()) {
+      logger::warn(fmt::format("Ignoring template parameter `{}` of `{}` since no documentation entity could be found for it, not even an empty one.", tparam.name(), entity.name()));
+      continue;
+    }
+    search->accept(v);
   }
 }
 
@@ -199,7 +205,13 @@ void visitor::add_function_parameters(const cppast::cpp_function_base& entity) {
     auto& section = ensure_section(parent, parser::commands::section_command::parameters);
 
     visitor v(section, entities);
-    entities.cpp_entity(param).accept(v);
+
+    const auto& search = entities.find_cpp_entity(param);
+    if (search == entities.end()) {
+      logger::warn(fmt::format("Ignoring parameter `{}` of `{}` since no documentation entity could be found for it, not even an empty one.", param.name(), entity.name()));
+      continue;
+    }
+    search->accept(v);
   }
 }
 
@@ -209,7 +221,13 @@ void visitor::add_macro_parameters(const cppast::cpp_macro_definition& entity) {
     auto& section = ensure_section(parent, parser::commands::section_command::parameters);
 
     visitor v(section, entities);
-    entities.cpp_entity(param).accept(v);
+
+    const auto& search = entities.find_cpp_entity(param);
+    if (search == entities.end()) {
+      logger::warn(fmt::format("Ignoring macro parameter `{}` of `{}` since no documentation entity could be found for it, not even an empty one.", param.name(), entity.name()));
+      continue;
+    }
+    search->accept(v);
   }
 }
 
@@ -219,12 +237,23 @@ void visitor::add_bases(const cppast::cpp_entity& entity) {
     auto& section = ensure_section(parent, parser::commands::section_command::bases);
 
     visitor v(section, entities);
-    entities.cpp_entity(base).accept(v);
+
+    const auto& search = entities.find_cpp_entity(base);
+    if (search == entities.end()) {
+      logger::warn(fmt::format("Ignoring base `{}` of `{}` since no documentation entity could be found for it, not even an empty one.", base.name(), entity.name()));
+      continue;
+    }
+    search->accept(v);
   }
 }
 
 void visitor::add_entity(const cppast::cpp_entity& entity) {
-    root->add_child(entities.cpp_entity(entity));
+    const auto& search = entities.find_cpp_entity(entity);
+    if (search == entities.end()) {
+      logger::warn(fmt::format("Not adding `{}` to documentation since no documentation entity could be found for it, not even an empty one.", entity.name()));
+      return;
+    }
+    root->add_child(*search);
 }
 
 void visitor::add_container(const cppast::cpp_entity& container) {
@@ -252,9 +281,16 @@ void visitor::add_contents(const cppast::cpp_entity& container, model::mixin::co
           // preceding case. Continue the search.
           [[fallthrough]];
         case cppast::visitor_info::event_type::leaf_entity:
+        {
           // Process this entity and continue the visitor.
-          entities.cpp_entity(child).accept(v);
+          const auto& search = entities.find_cpp_entity(child);
+          if (search == entities.end()) {
+            logger::warn(fmt::format("Ignoring child `{}` of `{}` since no documentation entity could be found for it, not even an empty one.", child.name(), container.name()));
+          } else {
+            entities.cpp_entity(child).accept(v);
+          }
           return true;
+        }
         default:
             throw std::logic_error("visitor in unexpected state");
       }
