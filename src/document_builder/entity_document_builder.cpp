@@ -13,6 +13,7 @@
 #include <cppast/cpp_entity_kind.hpp>
 #include <cppast/cpp_class_template.hpp>
 #include <cppast/cpp_preprocessor.hpp>
+#include <cppast/cpp_friend.hpp>
 
 #include "../../standardese/document_builder/entity_document_builder.hpp"
 #include "../../standardese/model/document.hpp"
@@ -59,6 +60,9 @@ struct visitor : public model::visitor::generic_visitor<visitor> {
 
   /// Add documentation for the children of `container` to `under`.
   void add_contents(const cppast::cpp_entity& container, model::mixin::container<>& under);
+
+  /// Add documentation for a friend entity to `root`.
+  void add_friend(const cppast::cpp_friend& entity);
 
   model::mixin::container<>* root;
   const model::unordered_entities& entities;
@@ -123,6 +127,10 @@ void visitor::operator()(T&& documentation) {
       case cppast::cpp_entity_kind::function_parameter_t:
       case cppast::cpp_entity_kind::macro_parameter_t:
       case cppast::cpp_entity_kind::function_t:
+      case cppast::cpp_entity_kind::constructor_t:
+      case cppast::cpp_entity_kind::destructor_t:
+      case cppast::cpp_entity_kind::conversion_op_t:
+      case cppast::cpp_entity_kind::member_function_t:
       case cppast::cpp_entity_kind::type_alias_t:
       case cppast::cpp_entity_kind::member_variable_t:
       case cppast::cpp_entity_kind::variable_t:
@@ -139,10 +147,16 @@ void visitor::operator()(T&& documentation) {
       case cppast::cpp_entity_kind::include_directive_t:
       case cppast::cpp_entity_kind::using_declaration_t:
       case cppast::cpp_entity_kind::access_specifier_t:
-        // Ignore this entity.
+      case cppast::cpp_entity_kind::function_template_specialization_t:
+      case cppast::cpp_entity_kind::class_template_specialization_t:
+        // Ignore this entity. We might want to change this eventually and actually show these if they have explicit documentation.
+        break;
+      case cppast::cpp_entity_kind::friend_t:
+        add_friend(static_cast<const cppast::cpp_friend&>(entity));
         break;
       default:
-        throw std::logic_error(fmt::format("not implemented: cannot generate documentation for C++ entity `{}` of type `{}`", entity.name(), (long)entity.kind()));
+        logger::error(fmt::format("Not implemented: cannot generate documentation for entity `{}` of type `{}` yet.", entity.name(), (long)entity.kind()));
+        return;
     }
 
     // Create documentation for template parameters.
@@ -165,7 +179,10 @@ void visitor::operator()(T&& documentation) {
         add_function_parameters(static_cast<const cppast::cpp_function_template&>(entity).function());
         break;
       case cppast::cpp_entity_kind::function_t:
-        add_function_parameters(static_cast<const cppast::cpp_function&>(entity));
+      case cppast::cpp_entity_kind::member_function_t:
+      case cppast::cpp_entity_kind::constructor_t:
+      case cppast::cpp_entity_kind::destructor_t:
+        add_function_parameters(static_cast<const cppast::cpp_function_base&>(entity));
         break;
       case cppast::cpp_entity_kind::macro_definition_t:
         add_macro_parameters(static_cast<const cppast::cpp_macro_definition&>(entity));
@@ -254,6 +271,42 @@ void visitor::add_entity(const cppast::cpp_entity& entity) {
       return;
     }
     root->add_child(*search);
+}
+
+void visitor::add_friend(const cppast::cpp_friend& friend_entity) {
+  if (!friend_entity.entity().has_value())
+    // Ignore friend declarations that refer to existing types. We do not currently show these in the documentation.
+    return;
+
+  const auto& friended_entity = friend_entity.entity().value();
+
+  // Take the node documenting the `friend` entity as a new root node.
+  const auto& search = entities.find_cpp_entity(friend_entity);
+  if (search == entities.end()) {
+    logger::warn(fmt::format("Not adding friend `{}` to documentation since no documentation entity could be found for it, not even an empty one.", friended_entity.name()));
+    return;
+  }
+  model::cpp_entity_documentation root = search->as<cpp_entity_documentation>();
+
+  // Add the node describing the friended entity under this new root.
+  {
+    const auto& search = entities.find_cpp_entity(friended_entity);
+    if (search == entities.end()) {
+      logger::warn(fmt::format("Not adding friended `{}` to documentation since no documentation entity could be found for it, not even an empty one.", friended_entity.name()));
+      return;
+    }
+
+    visitor v(root, entities);
+    search->accept(v);
+  }
+
+  // We now move the contents of the friended entity to the friend, i.e., we
+  // drop the extra layer created by the friended entity itself.
+  this->root->add_child(root);
+  auto& frend = this->root->rbegin()->as<model::cpp_entity_documentation>();
+  frend.clear();
+  for (auto& child : root)
+    frend.add_child(child);
 }
 
 void visitor::add_container(const cppast::cpp_entity& container) {

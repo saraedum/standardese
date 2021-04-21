@@ -24,6 +24,7 @@
 #include <cppast/cpp_function_template.hpp>
 #include <cppast/cpp_file.hpp>
 #include <cppast/cpp_preprocessor.hpp>
+#include <cppast/cpp_friend.hpp>
 
 #include "cmark-extension/cmark_extension.hpp"
 #include "command-extension/command_extension.hpp"
@@ -602,9 +603,8 @@ void comment_parser::add_uncommented_entities(model::unordered_entities& entitie
           entities.insert(std::move(documentation));
         }
     };
-
-    cppast::visit(header, [&](const cppast::cpp_entity& e, auto info) {
-        ensure_entity(e);
+    const std::function<void(const cppast::cpp_entity&, cppast::visitor_info)> visitor = [&](const auto& e, auto info) {
+          ensure_entity(e);
         if (cppast::is_template(e.kind())) {
             for (const auto& param : static_cast<const cppast::cpp_template&>(e).parameters())
                 ensure_entity(param);
@@ -625,7 +625,14 @@ void comment_parser::add_uncommented_entities(model::unordered_entities& entitie
             for (const auto& base : static_cast<const cppast::cpp_class&>(e).bases())
                 ensure_entity(base);
         }
-    });
+        if (e.kind() == cppast::cpp_friend::kind()) {
+            auto frend = static_cast<const cppast::cpp_friend&>(e).entity();
+            if (frend.has_value())
+              cppast::visit(frend.value(), visitor);
+        }
+    };
+
+    cppast::visit(header, visitor);
 }
 
 void comment_parser::add_uncommented_modules(model::unordered_entities& entities) const {
