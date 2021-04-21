@@ -28,9 +28,9 @@ link_href_internal_transformation::link_href_internal_transformation(model::unor
       model::visitor::visit([&](auto&& entity) {
         using T = std::decay_t<decltype(entity)>;
 
-        if constexpr (std::is_base_of_v<model::document, T>) {
+        if constexpr (std::is_same_v<T, model::document>) {
           path = entity.path;
-        } else if constexpr (std::is_base_of_v<model::cpp_entity_documentation, T>) {
+        } else if constexpr (std::is_same_v<T, model::cpp_entity_documentation>) {
           a[&entity.entity()] = path + "#" + entity.id;
         }
 

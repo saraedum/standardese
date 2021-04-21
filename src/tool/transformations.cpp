@@ -30,9 +30,9 @@ void transformations::transform(model::unordered_entities& documents, const pars
 
   // TODO: Use parallel worker pool.
 
+  transformation::exclude_uncommented_transformation{documents, options.exclude_uncommented_options}.transform();
   transformation::synopsis_transformation{documents}.transform();
   transformation::entity_heading_transformation{documents}.transform();;
-  transformation::exclude_uncommented_transformation{documents}.transform();
   transformation::output_group_transformation{documents}.transform();
   transformation::anchor_transformation{documents}.transform();
 

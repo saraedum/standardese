@@ -7,7 +7,6 @@
 #include <stack>
 
 #include "../../standardese/transformation/output_group_transformation.hpp"
-#include "../../standardese/model/visitor/recursive_visitor.hpp"
 #include "../../standardese/model/visitor/generic_visitor.hpp"
 #include "../../standardese/model/entity.hpp"
 #include "../../standardese/model/cpp_entity_documentation.hpp"
@@ -16,14 +15,16 @@ namespace standardese::transformation {
 namespace {
 
 // TODO: Move implementation to the bottom and only define the class here.
-struct visitor : public model::visitor::generic_visitor<visitor, model::visitor::recursive_visitor<false>> {
+struct visitor : model::visitor::generic_visitor<visitor, model::visitor::visitor<false>> {
   visitor() {
     containers.push({});
   }
 
   template <typename T>
   void operator()(T& entity) {
-    if constexpr (std::is_base_of_v<model::cpp_entity_documentation, T>) {
+    static_assert(std::is_same_v<T, std::decay_t<T>>);
+
+    if constexpr (std::is_same_v<T, model::cpp_entity_documentation>) {
       if (entity.output_section.has_value() && !containers.empty()) {
         // TODO: Don't assume that each entity starts with a heading here.
         int level = entity.begin()->template as<model::markup::heading>().level + delta - has_output_section.top();
@@ -36,7 +37,7 @@ struct visitor : public model::visitor::generic_visitor<visitor, model::visitor:
       }
     }
 
-    if constexpr (std::is_base_of_v<model::markup::heading, T>) {
+    if constexpr (std::is_same_v<T, model::markup::heading>) {
       // TODO: Cap at 5 in a separate transformation.
       entity.level += delta;
     }

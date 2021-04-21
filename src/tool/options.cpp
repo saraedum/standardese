@@ -714,27 +714,33 @@ void options_parser::process_output_options(po::variables_map& parsed) {
         [[fallthrough]];
       case 1:
         options.transformation_options.exclude_uncommented_options.exclude_file = mode::include;
-        options.transformation_options.exclude_uncommented_options.exclude_namespace = mode::exclude_if_empty;
+        options.transformation_options.exclude_uncommented_options.exclude_namespace = mode::skip;
         options.transformation_options.exclude_uncommented_options.exclude_class = mode::exclude_if_empty;
         options.transformation_options.exclude_uncommented_options.exclude_alias = mode::exclude;
         options.transformation_options.exclude_uncommented_options.exclude_function = mode::exclude;
         options.transformation_options.exclude_uncommented_options.exclude_variable = mode::exclude;
+        options.transformation_options.exclude_uncommented_options.exclude_friend = mode::exclude;
+        options.transformation_options.exclude_uncommented_options.exclude_macro = mode::exclude;
         break;
       case 3:
         options.transformation_options.exclude_uncommented_options.exclude_file = mode::include;
-        options.transformation_options.exclude_uncommented_options.exclude_namespace = mode::exclude_if_empty;
+        options.transformation_options.exclude_uncommented_options.exclude_namespace = mode::skip;
         options.transformation_options.exclude_uncommented_options.exclude_class = mode::exclude;
         options.transformation_options.exclude_uncommented_options.exclude_alias = mode::exclude;
         options.transformation_options.exclude_uncommented_options.exclude_function = mode::exclude;
         options.transformation_options.exclude_uncommented_options.exclude_variable = mode::exclude;
+        options.transformation_options.exclude_uncommented_options.exclude_friend = mode::exclude;
+        options.transformation_options.exclude_uncommented_options.exclude_macro = mode::exclude;
         break;
       default:
         options.transformation_options.exclude_uncommented_options.exclude_file = mode::exclude;
-        options.transformation_options.exclude_uncommented_options.exclude_namespace = mode::exclude_if_empty;
+        options.transformation_options.exclude_uncommented_options.exclude_namespace = mode::skip;
         options.transformation_options.exclude_uncommented_options.exclude_class = mode::exclude;
         options.transformation_options.exclude_uncommented_options.exclude_alias = mode::exclude;
         options.transformation_options.exclude_uncommented_options.exclude_function = mode::exclude;
         options.transformation_options.exclude_uncommented_options.exclude_variable = mode::exclude;
+        options.transformation_options.exclude_uncommented_options.exclude_friend = mode::exclude;
+        options.transformation_options.exclude_uncommented_options.exclude_macro = mode::exclude;
         break;
     }
   }
