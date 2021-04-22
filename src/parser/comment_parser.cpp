@@ -89,7 +89,7 @@ model::document comment_parser::parse(const std::string& comment) {
     cmark_parser_feed(parser.get(), comment.c_str(), comment.size());
     auto root = unique_node(cmark_parser_finish(parser.get()));
 
-    model::document doc{""};
+    model::document doc{"ignored", "ignored"};
     visit_children(root.get(), [&](cmark_node* child) { doc.add_child(parse(child)); });
 
     return doc;

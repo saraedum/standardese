@@ -20,7 +20,6 @@ namespace standardese::tool {
 output_generators::output_generators(struct options options) : options(options) {}
 
 void output_generators::emit(model::unordered_entities& documents) {
-  // TODO: Make this configurable.
   /*
   for (auto& document : documents) {
     std::ofstream out("TODO.xml");

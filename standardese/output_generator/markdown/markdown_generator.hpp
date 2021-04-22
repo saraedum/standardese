@@ -14,7 +14,24 @@ namespace standardese::output_generator::markdown
 
 class markdown_generator : public stream_generator<markdown_generator> {
   public:
-    markdown_generator(std::ostream& os);
+    struct options {
+      options();
+
+      enum class anchors {
+        /// Do not emit anything not covered by the CommonMark standard. We
+        /// rely on the MarkDown postprocessors such as jekyll to turn headings
+        /// into something that can be linked to. (And produce `name`/`id`
+        /// attributes that are compatible with the links we generated.)
+        plain,
+        /// Explicitly emit `<a>` tags next to all headings.
+        html,
+      };
+
+      /// How to emit entities that can be linked to.
+      anchors anchors = anchors::plain;
+    };
+
+    markdown_generator(std::ostream& os, options = {});
 
     void visit(block_quote&) override;
     void visit(code&) override;
@@ -36,6 +53,8 @@ class markdown_generator : public stream_generator<markdown_generator> {
     ~markdown_generator() override;
 
   private:
+    struct options options;
+
     std::unique_ptr<cmark_node, std::integral_constant<std::decay_t<decltype(cmark_node_free)>, cmark_node_free>> root;
     cmark_node* top;
 };

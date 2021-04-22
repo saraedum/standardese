@@ -42,7 +42,9 @@ cmark_node* prepend_child(cmark_node* top, cmark_node_type type) {
 
 }
 
-markdown_generator::markdown_generator(std::ostream& os) : stream_generator<markdown_generator>(os), root(cmark_node_new(CMARK_NODE_DOCUMENT)), top(root.get()) {
+markdown_generator::options::options() {}
+
+markdown_generator::markdown_generator(std::ostream& os, struct options options) : stream_generator<markdown_generator>(os), options(std::move(options)), root(cmark_node_new(CMARK_NODE_DOCUMENT)), top(root.get()) {
   auto* node = cmark_node_new(CMARK_NODE_TEXT);
   cmark_node_set_literal(node, "HELLO");
   cmark_node_append_child(root.get(), node);
@@ -178,4 +180,3 @@ void markdown_generator::visit(thematic_break& thematic_break) {
 }
 
 }
-

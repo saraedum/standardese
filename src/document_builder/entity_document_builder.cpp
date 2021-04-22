@@ -71,6 +71,7 @@ struct visitor : public model::visitor::generic_visitor<visitor> {
 }
 
 model::document entity_document_builder::build(const model::entity& entity, const model::unordered_entities& entities) const {
+  // TODO: This should not live here.
   std::string name = model::visitor::visit([](auto&& documentation) {
     std::string name;
 
@@ -93,9 +94,8 @@ model::document entity_document_builder::build(const model::entity& entity, cons
     return name;
   }, entity);
 
-  auto document = model::document(name);
   // TODO: Set the path properly.
-  document.path = document.name;
+  auto document = model::document(name, name);
 
   visitor v(document, entities);
   entity.accept(v);

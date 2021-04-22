@@ -14,7 +14,7 @@
 
 namespace standardese::tool {
 
-document_builders::document_builders(struct options) {}
+document_builders::document_builders(struct options options) : options(std::move(options)) {}
 
 model::unordered_entities document_builders::create(model::unordered_entities& parsed) {
   // TODO: Make configurable. We presently only build for header files in fixed formats.
