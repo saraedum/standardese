@@ -17,7 +17,7 @@ void link_sphinx_transformation::transform(threading::pool::factory workers) {
 }
 
 void link_sphinx_transformation::do_transform(model::entity& document) {
-  model::visitor::visit([&](auto&& link) {
+  model::visitor::visit([&](auto&& link, auto&& recurse) {
     using T = std::decay_t<decltype(link)>;
     if constexpr (std::is_same_v<T, model::markup::link>) {
       link.target.accept([&](auto&& target) {
@@ -29,7 +29,7 @@ void link_sphinx_transformation::do_transform(model::entity& document) {
       });
     }
 
-    return model::visitor::recursion::RECURSE;
+    recurse();
   }, document);
 }
 

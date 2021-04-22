@@ -222,7 +222,7 @@ model::entity synopsis(const cppast::cpp_entity& entity) {
 }
 
 void synopsis_transformation::do_transform(model::entity& document) {
-  model::visitor::visit([&](auto&& documentation) {
+  model::visitor::visit([&](auto&& documentation, auto&& recurse) {
     using T = std::decay_t<decltype(documentation)>;
 
     if constexpr (std::is_same_v<T, model::cpp_entity_documentation>) {
@@ -244,7 +244,7 @@ void synopsis_transformation::do_transform(model::entity& document) {
       }
     }
 
-    return model::visitor::recursion::RECURSE;
+    recurse();
   }, document);
 }
 

@@ -20,6 +20,7 @@
 #include "../../standardese/inventory/symbols.hpp"
 #include "../../standardese/inventory/cppast_inventory.hpp"
 #include "../../standardese/inventory/sphinx/documentation_set.hpp"
+#include "../../standardese/logger.hpp"
 
 // TODO: We do not handle friend declarations correctly here. A class can
 // declare a friend function that then lives in the surrounding namespace of
@@ -311,7 +312,7 @@ bool symbols::impl::cppast_symbols::matches(const cppast::cpp_entity& entity, co
       return false;
 
   if (entity.kind() == cppast::cpp_friend::kind())
-      throw std::logic_error("not implemented: cannot match friends yet");
+      logger::error("not implemented: cannot match friends yet");
   
   const auto name = boost::erase_all_copy(entity.name(), " ");
   const auto temp = template_parameters(entity);

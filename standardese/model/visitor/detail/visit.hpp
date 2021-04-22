@@ -13,7 +13,6 @@
 
 #include "../recursive_visitor.hpp"
 #include "../generic_visitor.hpp"
-#include "../recursion.hpp"
 
 namespace standardese::model::visitor::detail {
 
@@ -36,8 +35,9 @@ struct visitor : T, storage<R>, model::visitor::generic_visitor<visitor<T, is_co
   template <typename E>
   void operator()(E&& e) {
     if constexpr (is_recursive) {
-      if (T::operator()(std::forward<E>(e)) == recursion::RECURSE)
+      T::operator()(std::forward<E>(e), [&]() {
         model::visitor::recursive_visitor<is_const>::visit(e);
+      });
     } else if constexpr (std::is_same_v<R, void>) {
       T::operator()(std::forward<E>(e));
     } else {
@@ -49,13 +49,13 @@ struct visitor : T, storage<R>, model::visitor::generic_visitor<visitor<T, is_co
 template <typename T,
           typename E,
           bool is_const = std::is_const_v<std::remove_reference_t<E>>,
-          typename R = typename std::invoke_result<T, model::markup::text>::type,
-          bool is_recursive = std::is_same_v<std::decay_t<R>, recursion>,
-          typename RR = std::conditional_t<is_recursive, void, R>>
+          typename M = model::markup::text,
+          bool is_recursive = std::is_invocable_v<T, M&, std::function<void()>>,
+          typename R = typename std::conditional<is_recursive, std::invoke_result<T, M&, std::function<void()>>, std::invoke_result<T, M>>::type::type>
 auto visit(T&& lambda, E&& e) {
-  visitor<T, is_const, is_recursive, RR> visitor{std::forward<T>(lambda)};
+  visitor<T, is_const, is_recursive, R> visitor{std::forward<T>(lambda)};
   e.accept(visitor);
-  if constexpr (!std::is_same_v<RR, void>)
+  if constexpr (!std::is_same_v<R, void>)
     return std::move(visitor.value);
 }
 

@@ -40,7 +40,7 @@ TEST_CASE("Links to Header Files are Resolved", "[link_target_internal_transform
 
     // Verify that all link could be resolved to C++ entities, namely the header file.
     for (auto& document: parsed.entities)
-      model::visitor::visit([](auto&& link) {
+      model::visitor::visit([](auto&& link, auto&& recurse) {
         using T = std::decay_t<decltype(link)>;
         if constexpr (std::is_same_v<T, model::markup::link>) {
           link.target.accept([](auto&& target) -> void {
@@ -50,7 +50,7 @@ TEST_CASE("Links to Header Files are Resolved", "[link_target_internal_transform
           });
         }
 
-        return model::visitor::recursion::RECURSE;
+        recurse();
       }, document);
   }
 }

@@ -26,11 +26,11 @@ link_target_internal_transformation::link_target_internal_transformation(model::
     std::vector<const cppast::cpp_entity*> entities;
 
     for (const auto& document : documents) {
-      model::visitor::visit([&](auto&& entity) {
+      model::visitor::visit([&](auto&& entity, auto&& recurse) {
         using T = std::decay_t<decltype(entity)>;
         if constexpr (std::is_base_of_v<model::cpp_entity_documentation, T>)
           entities.push_back(&entity.entity());
-        return model::visitor::recursion::RECURSE;
+        recurse();
       }, document);
     }
 
@@ -41,13 +41,13 @@ link_target_internal_transformation::link_target_internal_transformation(model::
     std::vector<const cppast::cpp_file*> headers;
 
     for (const auto& document : documents) {
-      model::visitor::visit([&](auto&& entity) {
+      model::visitor::visit([&](auto&& entity, auto&& recurse) {
         using T = std::decay_t<decltype(entity)>;
         if constexpr (std::is_base_of_v<model::cpp_entity_documentation, T>) {
           if (entity.entity().kind() == cppast::cpp_file::kind())
             headers.push_back(static_cast<const cppast::cpp_file*>(&entity.entity()));
         }
-        return model::visitor::recursion::RECURSE;
+        recurse();
       }, document);
     }
 
@@ -57,9 +57,18 @@ link_target_internal_transformation::link_target_internal_transformation(model::
 
 void link_target_internal_transformation::do_transform(model::entity& document) {
   inventory::symbols symbols{inventory};
-  model::visitor::visit([&](auto&& link) {
-    using E = std::decay_t<decltype(link)>;
-    if constexpr (std::is_same_v<E, model::markup::link>) {
+  std::stack<type_safe::object_ref<const cppast::cpp_entity>> relative;
+
+  model::visitor::visit([&](auto& link, auto&& recurse) {
+    using T = std::decay_t<decltype(link)>;
+    if constexpr (std::is_same_v<T, model::cpp_entity_documentation>) {
+      relative.push(type_safe::ref(link.entity()));
+      recurse();
+      relative.pop();
+      return;
+    }
+
+    if constexpr (std::is_same_v<T, model::markup::link>) {
       link.target.accept([&](auto&& target) {
         using T = std::decay_t<decltype(target)>;
         if constexpr (std::is_same_v<T, model::link_target::standardese_target>) {
@@ -93,19 +102,23 @@ void link_target_internal_transformation::do_transform(model::entity& document) 
           }
 
           // TODO: Handle \unique_name
-          // TODO: Perform relative lookup.
           {
-            auto entity = symbols.find(target.target);
+            logger::warn("searching for " + target.target);
+            auto entity = relative.size() ?
+              symbols.find(target.target, *relative.top()) :
+              symbols.find(target.target);
+
             if (entity.has_value()) {
               link.target = std::move(entity.value());
               return;
-            }
+            } else
+              logger::warn("not found " + target.target);
           }
         }
       });
     }
 
-    return model::visitor::recursion::RECURSE;
+    recurse();
   }, document);
 }
 

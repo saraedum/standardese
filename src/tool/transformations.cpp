@@ -30,14 +30,10 @@ void transformations::transform(model::unordered_entities& documents, const pars
 
   // TODO: Use parallel worker pool.
 
-  transformation::exclude_uncommented_transformation{documents, options.exclude_uncommented_options}.transform();
-  transformation::synopsis_transformation{documents}.transform();
-  transformation::entity_heading_transformation{documents}.transform();;
-  transformation::output_group_transformation{documents}.transform();
-  transformation::anchor_transformation{documents}.transform();
-
-  // Resolve Links in Standardese Syntax to their Targets
+  // Resolve Links in Standardese Syntax to Internal Targets
   transformation::link_target_internal_transformation{documents, context}.transform();
+
+  // Resolve Links in Standardese Syntax to External Targets
   for (auto& option : options.external_link_options)
     std::visit([&](const auto& external) {
       using T = std::decay_t<decltype(external)>;
@@ -54,6 +50,12 @@ void transformations::transform(model::unordered_entities& documents, const pars
       }
     }, option);
   transformation::link_target_unresolved_transformation{documents}.transform();
+
+  transformation::exclude_uncommented_transformation{documents, options.exclude_uncommented_options}.transform();
+  transformation::synopsis_transformation{documents}.transform();
+  transformation::entity_heading_transformation{documents}.transform();;
+  transformation::output_group_transformation{documents}.transform();
+  transformation::anchor_transformation{documents}.transform();
 
   // Resolve Links to the actual URLs
   transformation::link_href_internal_transformation{documents}.transform();

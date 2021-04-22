@@ -39,7 +39,7 @@ TEST_CASE("External Legacy Legacy Links are Resolved", "[link_external_legacy_tr
 
     // Verify that all links could be resolved.
     for (auto& document: parsed.entities)
-      model::visitor::visit([](auto&& link) {
+      model::visitor::visit([](auto&& link, auto&& recurse) {
         using T = std::decay_t<decltype(link)>;
         if constexpr (std::is_same_v<T, model::markup::link>) {
           link.target.accept([](auto&& target) -> void {
@@ -53,7 +53,7 @@ TEST_CASE("External Legacy Legacy Links are Resolved", "[link_external_legacy_tr
           });
         }
 
-        return model::visitor::recursion::RECURSE;
+        recurse();
       }, document);
   }
 }

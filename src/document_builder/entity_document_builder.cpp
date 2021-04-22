@@ -94,6 +94,8 @@ model::document entity_document_builder::build(const model::entity& entity, cons
   }, entity);
 
   auto document = model::document(name);
+  // TODO: Set the path properly.
+  document.path = document.name;
 
   visitor v(document, entities);
   entity.accept(v);
