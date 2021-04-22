@@ -40,7 +40,8 @@ document index_document_builder::build(const std::string& name, const std::funct
         }
       }, entity);
 
-  return document(name, std::move(list));
+  // TODO: Set name & path properly.
+  return document(name, name, std::move(list));
 }
 
 bool index_document_builder::is_header_file(const model::entity& entity) {

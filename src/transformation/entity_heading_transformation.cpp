@@ -44,6 +44,8 @@ struct visitor : public model::visitor::recursive_visitor<false> {
   }
 
   model::markup::paragraph title(const model::cpp_entity_documentation& documentation) {
+    // TODO: Eliminate the brief section if it is already used in the heading.
+
     const auto& entity = documentation.entity();
 
     std::string format;

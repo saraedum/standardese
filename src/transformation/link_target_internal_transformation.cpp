@@ -103,16 +103,12 @@ void link_target_internal_transformation::do_transform(model::entity& document) 
 
           // TODO: Handle \unique_name
           {
-            logger::warn("searching for " + target.target);
             auto entity = relative.size() ?
               symbols.find(target.target, *relative.top()) :
               symbols.find(target.target);
 
-            if (entity.has_value()) {
+            if (entity.has_value())
               link.target = std::move(entity.value());
-              return;
-            } else
-              logger::warn("not found " + target.target);
           }
         }
       });

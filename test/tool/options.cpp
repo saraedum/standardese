@@ -4,6 +4,7 @@
 
 #include <sstream>
 #include <boost/type_index.hpp>
+#include <boost/algorithm/string.hpp>
 
 #include "../../external/catch/single_include/catch2/catch.hpp"
 #include "../../standardese/tool/options.hpp"
@@ -25,7 +26,7 @@ TEST_CASE("Parsing of Generic Command Line Options", "[tool]")
       const char* argv[] = {"standardese", "--verbose"};
       options::parse(sizeof(argv)/sizeof(*argv), argv, {});
 
-      CAPTURE(logstream.str());
+      CHECK(logstream.str() != "");
       CHECK(logstream.str().find("info") != std::string::npos);
     }
 
@@ -33,7 +34,7 @@ TEST_CASE("Parsing of Generic Command Line Options", "[tool]")
       const char* argv[] = {"standardese", "-v", "-v"};
       options::parse(sizeof(argv)/sizeof(*argv), argv, {});
 
-      CAPTURE(logstream.str());
+      CHECK(logstream.str() != "");
       CHECK(logstream.str().find("debug") != std::string::npos);
     }
 
@@ -41,7 +42,7 @@ TEST_CASE("Parsing of Generic Command Line Options", "[tool]")
       const char* argv[] = {"standardese", "-v", "-v", "-v"};
       options::parse(sizeof(argv)/sizeof(*argv), argv, {});
 
-      CAPTURE(logstream.str());
+      CHECK(logstream.str() != "");
       CHECK(logstream.str().find("trace") != std::string::npos);
     }
 
@@ -49,7 +50,7 @@ TEST_CASE("Parsing of Generic Command Line Options", "[tool]")
       const char* argv[] = {"standardese", "-v", "-v", "-v", "-v"};
       options::parse(sizeof(argv)/sizeof(*argv), argv, {});
 
-      CAPTURE(logstream.str());
+      CHECK(logstream.str() != "");
       CHECK(logstream.str().find("trace") != std::string::npos);
     }
   }
@@ -63,7 +64,7 @@ TEST_CASE("Parsing of Legacy --input.* Options", "[tool]") {
     const char* argv[] = {"standardese", "--input.source_ext", ".h", "--input.source_ext", ".hpp", "directory"};
     options::parse(sizeof(argv)/sizeof(*argv), argv, {});
 
-    CAPTURE(logstream.str());
+    CHECK(logstream.str() != "");
     CHECK(logstream.str().find("standardese OPTIONS `find DIRECTORIES -type f '(' -iname '*.h' -o -iname '*.hpp' ')' '!' -name '.*'` FILES") != std::string::npos);
   }
 
@@ -71,7 +72,7 @@ TEST_CASE("Parsing of Legacy --input.* Options", "[tool]") {
     const char* argv[] = {"standardese", "--input.blacklist_ext", ".md", "directory"};
     options::parse(sizeof(argv)/sizeof(*argv), argv, {});
 
-    CAPTURE(logstream.str());
+    CHECK(logstream.str() != "");
     CHECK(logstream.str().find("standardese OPTIONS `find DIRECTORIES -type f '(' -iname '*.h' -o -iname '*.hpp' -o -iname '*.h++' -o -iname '*.hxx' ')' '!' -iname '*.md' '!' -name '.*'` FILES") != std::string::npos);
   }
 
@@ -79,7 +80,7 @@ TEST_CASE("Parsing of Legacy --input.* Options", "[tool]") {
     const char* argv[] = {"standardese", "--input.blacklist_file", "generated.h", "directory"};
     options::parse(sizeof(argv)/sizeof(*argv), argv, {});
 
-    CAPTURE(logstream.str());
+    CHECK(logstream.str() != "");
     CHECK(logstream.str().find("standardese OPTIONS `find DIRECTORIES -type f '(' -iname '*.h' -o -iname '*.hpp' -o -iname '*.h++' -o -iname '*.hxx' ')' '!' '(' -name 'generated.h' -type f ')' '!' -name '.*'` FILES") != std::string::npos);
   }
 
@@ -87,7 +88,7 @@ TEST_CASE("Parsing of Legacy --input.* Options", "[tool]") {
     const char* argv[] = {"standardese", "--input.blacklist_dir", "external", "directory"};
     options::parse(sizeof(argv)/sizeof(*argv), argv, {});
 
-    CAPTURE(logstream.str());
+    CHECK(logstream.str() != "");
     CHECK(logstream.str().find("standardese OPTIONS `find DIRECTORIES '!' '(' -name 'external' -type d -prune -true ')' -type f '(' -iname '*.h' -o -iname '*.hpp' -o -iname '*.h++' -o -iname '*.hxx' ')' '!' -name '.*'` FILES") != std::string::npos);
   }
 
@@ -95,7 +96,7 @@ TEST_CASE("Parsing of Legacy --input.* Options", "[tool]") {
     const char* argv[] = {"standardese", "--input.blacklist_dotfiles", "true", "directory"};
     options::parse(sizeof(argv)/sizeof(*argv), argv, {});
 
-    CAPTURE(logstream.str());
+    CHECK(logstream.str() != "");
     CHECK(logstream.str().find("standardese OPTIONS `find DIRECTORIES -type f '(' -iname '*.h' -o -iname '*.hpp' -o -iname '*.h++' -o -iname '*.hxx' ')' '!' -name '.*'` FILES") != std::string::npos);
   }
 
@@ -103,7 +104,7 @@ TEST_CASE("Parsing of Legacy --input.* Options", "[tool]") {
     const char* argv[] = {"standardese", "--input.blacklist_dotfiles=0", "directory"};
     options::parse(sizeof(argv)/sizeof(*argv), argv, {});
 
-    CAPTURE(logstream.str());
+    CHECK(logstream.str() != "");
     CHECK(logstream.str().find("standardese OPTIONS `find DIRECTORIES -type f '(' -iname '*.h' -o -iname '*.hpp' -o -iname '*.h++' -o -iname '*.hxx' ')'` FILES") != std::string::npos);
   }
 
@@ -111,7 +112,7 @@ TEST_CASE("Parsing of Legacy --input.* Options", "[tool]") {
     const char* argv[] = {"standardese", "--input.force_blacklist=on", "directory"};
     options::parse(sizeof(argv)/sizeof(*argv), argv, {});
 
-    CAPTURE(logstream.str());
+    CHECK(logstream.str() != "");
     CHECK(logstream.str().find("standardese OPTIONS `find DIRECTORIES_AND_FILES -type f '(' -iname '*.h' -o -iname '*.hpp' -o -iname '*.h++' -o -iname '*.hxx' ')' '!' -name '.*'`") != std::string::npos);
   }
 
@@ -119,7 +120,7 @@ TEST_CASE("Parsing of Legacy --input.* Options", "[tool]") {
     const char* argv[] = {"standardese", "--input.force_blacklist=off", "directory"};
     options::parse(sizeof(argv)/sizeof(*argv), argv, {});
 
-    CAPTURE(logstream.str());
+    CHECK(logstream.str() != "");
     CHECK(logstream.str().find("standardese OPTIONS `find DIRECTORIES -type f '(' -iname '*.h' -o -iname '*.hpp' -o -iname '*.h++' -o -iname '*.hxx' ')' '!' -name '.*'` FILES") != std::string::npos);
   }
   
@@ -131,6 +132,7 @@ TEST_CASE("Parsing of Legacy --input.* Options", "[tool]") {
     const char* argv[] = {"standardese", "--input.blacklist_namespace", "standardese::detail", "header.h"};
     auto options = options::parse(sizeof(argv)/sizeof(*argv), argv, {});
 
+    CHECK(logstream.str() != "");
     CHECK(options.transformation_options.exclude_pattern_options.excluded.size() == 1);
   }
 
@@ -141,6 +143,7 @@ TEST_CASE("Parsing of Legacy --input.* Options", "[tool]") {
     const char* argv[] = {"standardese", "--input.require_comment", "true", "header.h"};
     auto options = options::parse(sizeof(argv)/sizeof(*argv), argv, {});
 
+    CHECK(logstream.str() != "");
     CHECK(options.transformation_options.synopsis_options.exclude_uncommented);
   }
 
@@ -151,8 +154,10 @@ TEST_CASE("Parsing of Legacy --input.* Options", "[tool]") {
     const char* argv[] = {"standardese", "--input.extract_private", "1", "header.h"};
     auto options = options::parse(sizeof(argv)/sizeof(*argv), argv, {});
 
+    CHECK(logstream.str() != "");
     CHECK(!options.transformation_options.exclude_access_options.exclude_private);
   }
+
 }
 
 TEST_CASE("Parsing of Legacy --comment.* Options", "[tool]") {
@@ -184,10 +189,71 @@ TEST_CASE("Parsing of Legacy --output.* Options", "[tool]") {
     const char* argv[] = {"standardese", "--output.prefix", "outdir", "header.hpp"};
     auto options = options::parse(sizeof(argv)/sizeof(*argv), argv, {});
 
-    CAPTURE(logstream.str());
+    CHECK(logstream.str() != "");
     CHECK(options.output_generator_options.output_directory == "outdir");
   }
 
+  SECTION("--output.format") {
+    SECTION("HTML Output") {
+      const char* argv[] = {"standardese", "--output.format", "html", "header.hpp"};
+      auto options = options::parse(sizeof(argv)/sizeof(*argv), argv, {});
+
+      CHECK(logstream.str() != "");
+      CHECK(options.output_generator_options.primary_format == standardese::tool::output_generators::options::output_format::html);
+    }
+
+    SECTION("XML Output") {
+      const char* argv[] = {"standardese", "--output.format", "xml", "header.hpp"};
+      auto options = options::parse(sizeof(argv)/sizeof(*argv), argv, {});
+
+      CHECK(logstream.str() != "");
+      CHECK(options.output_generator_options.primary_format == standardese::tool::output_generators::options::output_format::xml);
+    }
+
+    SECTION("MarkDown Output") {
+      const char* argv[] = {"standardese", "--output.format", "commonmark", "header.hpp"};
+      auto options = options::parse(sizeof(argv)/sizeof(*argv), argv, {});
+
+      CHECK(logstream.str() != "");
+      CHECK(options.output_generator_options.primary_format == standardese::tool::output_generators::options::output_format::markdown);
+      CHECK(options.output_generator_options.markdown_options.anchors == output_generator::markdown::markdown_generator::options::anchors::plain);
+    }
+
+    SECTION("MarkDown+HTML Output") {
+      const char* argv[] = {"standardese", "--output.format", "commonmark_html", "header.hpp"};
+      auto options = options::parse(sizeof(argv)/sizeof(*argv), argv, {});
+
+      CHECK(logstream.str() != "");
+      CHECK(options.output_generator_options.primary_format == standardese::tool::output_generators::options::output_format::markdown);
+      CHECK(options.output_generator_options.markdown_options.anchors == output_generator::markdown::markdown_generator::options::anchors::html);
+    }
+
+    SECTION("Text Output") {
+      const char* argv[] = {"standardese", "--output.format", "text", "header.hpp"};
+      auto options = options::parse(sizeof(argv)/sizeof(*argv), argv, {});
+
+      CHECK(logstream.str() != "");
+      CHECK(options.output_generator_options.primary_format == standardese::tool::output_generators::options::output_format::text);
+    }
+  }
+
+  SECTION("--output.link_extension") {
+    const char* argv[] = {"standardese", "--output.link_extension", "html", "header.hpp"};
+    auto options = options::parse(sizeof(argv)/sizeof(*argv), argv, {});
+
+    CHECK(logstream.str() != "");
+    CAPTURE(options.document_builder_options.path);
+    CHECK(boost::algorithm::ends_with(options.document_builder_options.path, ".html"));
+  }
+
+  SECTION("--output.link_prefix") {
+    const char* argv[] = {"standardese", "--output.link_prefix", "/docs/", "header.hpp"};
+    auto options = options::parse(sizeof(argv)/sizeof(*argv), argv, {});
+
+    CHECK(logstream.str() != "");
+    CAPTURE(options.document_builder_options.path);
+    CHECK(boost::algorithm::starts_with(options.document_builder_options.path, "/docs/"));
+  }
 }
 
 TEST_CASE("Parsing of Parser Options", "[tool]") {
@@ -331,6 +397,57 @@ TEST_CASE("Parsing of Composition Options", "[tool]") {
     auto options = options::parse(sizeof(argv)/sizeof(*argv), argv, {});
 
     CHECK(!options.transformation_options.exclude_access_options.exclude_private);
+  }
+}
+
+TEST_CASE("Parsing of MarkDown Output Options", "[tool]") {
+  auto logger = util::logger::throwing_logger();
+
+  SECTION("MarkDown Output is the Default") {
+    const char* argv[] = {"standardese", "header.h"};
+    auto options = options::parse(sizeof(argv)/sizeof(*argv), argv, {});
+  
+    CHECK(options.output_generator_options.primary_format == standardese::tool::output_generators::options::output_format::markdown);
+  }
+
+  SECTION("--md") {
+    const char* argv[] = {"standardese", "--md", "header.h"};
+    auto options = options::parse(sizeof(argv)/sizeof(*argv), argv, {});
+  
+    CHECK(options.output_generator_options.primary_format == standardese::tool::output_generators::options::output_format::markdown);
+  }
+}
+
+TEST_CASE("Parsing of HTML Output Options", "[tool]") {
+  auto logger = util::logger::throwing_logger();
+
+  SECTION("--html") {
+    const char* argv[] = {"standardese", "--html", "header.h"};
+    auto options = options::parse(sizeof(argv)/sizeof(*argv), argv, {});
+  
+    CHECK(options.output_generator_options.primary_format == standardese::tool::output_generators::options::output_format::html);
+  }
+}
+
+TEST_CASE("Parsing of XML Output Options", "[tool]") {
+  auto logger = util::logger::throwing_logger();
+
+  SECTION("--xml") {
+    const char* argv[] = {"standardese", "--xml", "header.h"};
+    auto options = options::parse(sizeof(argv)/sizeof(*argv), argv, {});
+  
+    CHECK(options.output_generator_options.primary_format == standardese::tool::output_generators::options::output_format::xml);
+  }
+}
+
+TEST_CASE("Parsing of Plain Text Output Options", "[tool]") {
+  auto logger = util::logger::throwing_logger();
+
+  SECTION("--text") {
+    const char* argv[] = {"standardese", "--text", "header.h"};
+    auto options = options::parse(sizeof(argv)/sizeof(*argv), argv, {});
+  
+    CHECK(options.output_generator_options.primary_format == standardese::tool::output_generators::options::output_format::text);
   }
 }
 

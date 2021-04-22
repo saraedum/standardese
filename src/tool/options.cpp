@@ -17,6 +17,7 @@
 #include <cppast/forward.hpp>
 #include <iostream>
 #include <cstdlib>
+#include <regex>
 #include <stdexcept>
 #include <boost/program_options.hpp>
 #include <boost/filesystem.hpp>
@@ -186,8 +187,26 @@ struct options_parser {
     /// Process the generic formatting options.
     void process_output_options(po::variables_map&);
 
+    /// Return the options that control the rendering of outputs in MarkDown.
+    po::options_description markdown_options() const;
+
+    /// Process options controlling the MarkDown rendering.
+    void process_markdown_options(po::variables_map&);
+
+    /// Return the options that control the rendering of outputs as HTML.
+    po::options_description html_options() const;
+
+    /// Process options controlling the HTML rendering.
+    void process_html_options(po::variables_map&);
+
     /// Return the options that control the rendering of outputs as XML.
     po::options_description xml_options() const;
+
+    /// Process options controlling the plain text format rendering.
+    void process_text_options(po::variables_map&);
+
+    /// Return the options that control the rendering of outputs in plain text format.
+    po::options_description text_options() const;
 
     /// Process options controlling the XML rendering.
     void process_xml_options(po::variables_map&);
@@ -196,20 +215,8 @@ struct options_parser {
     /// Tagfiles](https://www.doxygen.nl/manual/config.html#cfg_tagfiles).
     po::options_description doxygen_options() const;
 
-    /// Process options controlling the rendering of Doxygen tags.
+    /// Process options controlling the rendering of Doxygen tagfiles.
     void process_doxygen_options(po::variables_map&);
-
-    /// Return the options that control the rendering of outputs in MarkDown.
-    po::options_description markdown_options() const;
-
-    /// Process options controlling the MarkDown rendering.
-    void process_markdown_options(po::variables_map&);
-
-    /// Return the options that control the rendering of outputs in YAML.
-    po::options_description yaml_options() const;
-
-    /// Process options controlling the YAML rendering.
-    void process_yaml_options(po::variables_map&);
 
     /// Return the options that control the rendering of outputs for
     /// [intersphinx](https://www.sphinx-doc.org/en/master/usage/extensions/intersphinx.html).
@@ -224,6 +231,12 @@ struct options_parser {
 
     /// Process the positional options, i.e., the header files to process.
     void process_positional_options(po::variables_map&);
+
+    /// Helper function to specify the principal output format.
+    void select_output_format(po::variables_map& parsed, const std::string& key, output_generators::options::output_format format);
+
+    /// Return `input` with all inja-specific markup escaped.
+    static std::string escape_inja(const std::string& input);
 };
 
 /// Enables counting flags in boost, see https://stackoverflow.com/a/31697869/812379
@@ -271,10 +284,11 @@ void options_parser::parse(int argc, const char* argv[]) {
   descriptions.add(external_options());
   descriptions.add(composition_options());
   descriptions.add(output_options());
-  descriptions.add(xml_options());
-  descriptions.add(doxygen_options());
   descriptions.add(markdown_options());
-  descriptions.add(yaml_options());
+  descriptions.add(html_options());
+  descriptions.add(xml_options());
+  descriptions.add(text_options());
+  descriptions.add(doxygen_options());
   descriptions.add(intersphinx_options());
   descriptions.add(positional_options());
 
@@ -298,10 +312,11 @@ void options_parser::parse(int argc, const char* argv[]) {
     process_external_options(parsed);
     process_composition_options(parsed);
     process_output_options(parsed);
-    process_xml_options(parsed);
-    process_doxygen_options(parsed);
     process_markdown_options(parsed);
-    process_yaml_options(parsed);
+    process_html_options(parsed);
+    process_xml_options(parsed);
+    process_text_options(parsed);
+    process_doxygen_options(parsed);
     process_intersphinx_options(parsed);
     process_positional_options(parsed);
   } catch(std::exception& e) {
@@ -331,10 +346,11 @@ void options_parser::usage() const {
     std::cerr << std::endl << external_options();
     std::cerr << std::endl << composition_options();
     std::cerr << std::endl << output_options();
-    std::cerr << std::endl << xml_options();
-    std::cerr << std::endl << doxygen_options();
     std::cerr << std::endl << markdown_options();
-    std::cerr << std::endl << yaml_options();
+    std::cerr << std::endl << html_options();
+    std::cerr << std::endl << xml_options();
+    std::cerr << std::endl << text_options();
+    std::cerr << std::endl << doxygen_options();
     std::cerr << std::endl << intersphinx_options();
 }
 
@@ -378,7 +394,7 @@ po::options_description options_parser::generic_options() const {
 
 void options_parser::process_generic_options(po::variables_map& parsed) {
   if (parsed.count("config"))
-    parse_config_file(parsed.find("config")->second.as<fs::path>(), parsed);
+    parse_config_file(parsed.at("config").as<fs::path>(), parsed);
 
   if (options.options_options.include_cli_options) {
     if (parsed.count("help")) {
@@ -411,7 +427,7 @@ void options_parser::process_generic_options(po::variables_map& parsed) {
     logger::get().set_level(spdlog::level::warn);
   }
 
-  if (parsed.find("warn-as-error")->second.as<bool>()) {
+  if (parsed.at("warn-as-error").as<bool>()) {
     logger::warn_as_error();
   }
 }
@@ -447,27 +463,27 @@ void options_parser::process_legacy_input_options(po::variables_map& parsed) {
 
       if (parsed.count("input.source_ext")) {
         unsupported_flags.push_back("--input.source_ext");
-        source_ext = parsed.find("input.source_ext")->second.as<std::vector<std::string>>();
+        source_ext = parsed.at("input.source_ext").as<std::vector<std::string>>();
       }
       if (parsed.count("input.blacklist_ext")) {
         unsupported_flags.push_back("--input.blacklist_ext");
-        blacklist_ext = parsed.find("input.blacklist_ext")->second.as<std::vector<std::string>>();
+        blacklist_ext = parsed.at("input.blacklist_ext").as<std::vector<std::string>>();
       }
       if (parsed.count("input.blacklist_file")) {
         unsupported_flags.push_back("--input.blacklist_file");
-        blacklist_file = parsed.find("input.blacklist_file")->second.as<std::vector<std::string>>();
+        blacklist_file = parsed.at("input.blacklist_file").as<std::vector<std::string>>();
       }
       if (parsed.count("input.blacklist_dir")) {
         unsupported_flags.push_back("--input.blacklist_dir");
-        blacklist_dir = parsed.find("input.blacklist_dir")->second.as<std::vector<std::string>>();
+        blacklist_dir = parsed.at("input.blacklist_dir").as<std::vector<std::string>>();
       }
-      if (!parsed.find("input.blacklist_dotfiles")->second.defaulted()) {
+      if (!parsed.at("input.blacklist_dotfiles").defaulted()) {
         unsupported_flags.push_back("--input.blacklist_dotfiles");
-        blacklist_dotfiles = parsed.find("input.blacklist_dotfiles")->second.as<bool>();
+        blacklist_dotfiles = parsed.at("input.blacklist_dotfiles").as<bool>();
       }
-      if (!parsed.find("input.force_blacklist")->second.defaulted()) {
+      if (!parsed.at("input.force_blacklist").defaulted()) {
         unsupported_flags.push_back("--input.force_blacklist");
-        force_blacklist = parsed.find("input.force_blacklist")->second.as<bool>();
+        force_blacklist = parsed.at("input.force_blacklist").as<bool>();
       }
 
       if (unsupported_flags.size()) {
@@ -517,29 +533,33 @@ void options_parser::process_legacy_input_options(po::variables_map& parsed) {
     if (!parsed.count("exclude"))
       parsed.insert({"exclude", {boost::any(std::vector<std::string>()), false}});
 
-    auto& exclude = parsed.find("exclude")->second.as<std::vector<std::string>>();
-    for (auto& name : parsed.find("input.blacklist_namespace")->second.as<std::vector<std::string>>()) {
+    auto& exclude = parsed.at("exclude").as<std::vector<std::string>>();
+    for (auto& name : parsed.at("input.blacklist_namespace").as<std::vector<std::string>>()) {
       logger::warn(fmt::format("--input.blacklist_namespace is deprecated, use --exclude='^{}$|(::)' instead.", name));
       exclude.push_back("^" + name + "$|(::)");
     }
   }
 
   // Rewrite deprecated --input.require_comment as --exclude-uncommented --exclude-uncommented
-  if (!parsed.find("input.require_comment")->second.defaulted()) {
+  if (!parsed.at("input.require_comment").defaulted()) {
+    logger::warn("--input.require_comment is deprecated, use --exclude-uncommented instead.");
+
     if (!parsed.count("exclude-uncommented"))
       parsed.insert({"exclude-uncommented", {boost::any(counter()), false}});
 
-    auto& count = parsed.find("exclude-uncommented")->second.as<counter>().count;
+    auto& count = parsed.at("exclude-uncommented").as<counter>().count;
     if (count < 2) count = 2;
   }
 
   // Rewrite deprecated --input.extract_private as --private
-  if (!parsed.find("input.extract_private")->second.defaulted()) {
-    auto value = parsed.find("input.extract_private")->second.as<bool>();
+  if (!parsed.at("input.extract_private").defaulted()) {
+    logger::warn("--input.extract_private is deprecated, use --private instead.");
+
+    auto value = parsed.at("input.extract_private").as<bool>();
 
     if (!parsed.count("private"))
       parsed.insert({"private", {boost::any(value), false}});
-    auto& privat = parsed.find("private")->second;
+    auto& privat = parsed.at("private");
 
     if (privat.defaulted())
       privat.as<bool>() = value;
@@ -569,7 +589,7 @@ po::options_description options_parser::legacy_comment_options() const {
 
 void options_parser::process_legacy_comment_options(po::variables_map& parsed) {
   if (parsed.count("comment.external_doc")) {
-    for (const auto& external : parsed.find("comment.external_doc")->second.as<std::vector<std::string>>()) {
+    for (const auto& external : parsed.at("comment.external_doc").as<std::vector<std::string>>()) {
       static std::regex syntax{R"(([^=]*)=(.*\$\$.*))"};
 
       std::smatch match;
@@ -587,19 +607,64 @@ void options_parser::process_legacy_comment_options(po::variables_map& parsed) {
 }
 
 po::options_description options_parser::legacy_output_options() const {
-  auto legacy = po::options_description("Legacy Compilation Options", options.options_options.columns);
+  auto legacy = po::options_description("Legacy Output Options", options.options_options.columns);
 
   legacy.add_options()
+    ("output.format", po::value<std::vector<std::string>>(), "Format of output files, one of html, commonmark, commonmark_html, xml, text.")
+    ("output.link_extension", po::value<std::string>(), "File extension (without the leading .) that links should point to.")
+    ("output.link_prefix", po::value<std::string>(), "A prefix that will be added to all links.")
     ("output.prefix", po::value<boost::filesystem::path>(), "Output directory for generated files.");
 
   return legacy;
 }
 
 void options_parser::process_legacy_output_options(po::variables_map& parsed) {
-  // Rewrite deprecated --output.directory as --outdir
+  // Rewrite deprecated --output.format.
+  if (parsed.count("output.format")) {
+    for (const auto& format: parsed.at("output.format").as<std::vector<std::string>>()) {
+      if (format == "html") {
+        logger::warn("--output-format=html is deprecated. Use --html instead.");
+
+        parsed.at("html").value() = true;
+      } else if (format == "xml") {
+        logger::warn("--output.format=xml is deprecated. Use --xml instead.");
+
+        parsed.at("xml").value() = true;
+      } else if (format == "commonmark") {
+        logger::warn("--output.format=commonmark is deprecated. Use --md instead.");
+
+        parsed.at("md").value() = true;
+      } else if (format == "commonmark_html") {
+        logger::warn("--output.format=commonmark_html is deprecated. Use --md --md-anchors=html instead.");
+
+        parsed.at("md").value() = true;
+        parsed.at("md-anchors").value() = std::string("html");
+      } else if (format == "text") {
+        logger::warn("--output.format=text is deprecated. Use --text instead.");
+
+        parsed.at("text").value() = true;
+      } else {
+        logger::error(fmt::format("Ignoring unsupported output format `{}`.", format));
+      }
+    }
+  }
+
+  // Rewrite deprecated --output.prefix as --outdir.
   if (parsed.count("output.prefix")) {
     logger::warn("--output.prefix is deprecated, use --outdir instead.");
-    parsed.find("outdir")->second.as<boost::filesystem::path>() = parsed.find("output.prefix")->second.as<boost::filesystem::path>();
+    parsed.at("outdir").as<boost::filesystem::path>() = parsed.at("output.prefix").as<boost::filesystem::path>();
+  }
+
+  // Rewrite deprecated --output.link_prefix and --output.link_extension to --vpath.
+  if (parsed.count("output.link_prefix")) {
+    logger::warn("--output.link_prefix is deprecated, use --vpath instead.");
+
+    options.document_builder_options.path = escape_inja(parsed.at("output.link_prefix").as<std::string>()) + options.document_builder_options.path;
+  }
+  if (parsed.count("output.link_extension")) {
+    logger::warn("--output.link_extension is deprecated, use --vpath instead.");
+
+    options.document_builder_options.path = options.document_builder_options.path + "." + escape_inja(parsed.at("output.link_extension").as<std::string>());
   }
 }
 
@@ -616,16 +681,16 @@ po::options_description options_parser::cpp_parser_options() const {
 
 void options_parser::process_cpp_parser_options(po::variables_map& parsed) {
   if (parsed.count("-I")) {
-    for (const auto& dir: parsed.find("-I")->second.as<std::vector<std::string>>())
+    for (const auto& dir: parsed.at("-I").as<std::vector<std::string>>())
       options.parser_options.cppast_options.clang_config.add_include_dir(dir);
   }
 
   if (parsed.count("std")) {
-    options.parser_options.cppast_options.clang_config.set_flags(parsed.find("std")->second.as<cppast::cpp_standard>());
+    options.parser_options.cppast_options.clang_config.set_flags(parsed.at("std").as<cppast::cpp_standard>());
   }
 
   if (parsed.count("free-file-comments"))
-    options.parser_options.comment_parser_options.free_file_comments = parsed.find("free-file-comments")->second.as<bool>();
+    options.parser_options.comment_parser_options.free_file_comments = parsed.at("free-file-comments").as<bool>();
 }
 
 po::options_description options_parser::markdown_parser_options() const {
@@ -648,7 +713,7 @@ po::options_description options_parser::composition_options() const {
 
 void options_parser::process_external_options(po::variables_map& parsed) {
   if (parsed.count("external")) {
-    for (auto external: parsed.find("external")->second.as<std::vector<std::string>>()) {
+    for (auto external: parsed.at("external").as<std::vector<std::string>>()) {
       std::regex syntax{"([^:]*):([^:]*):([^=]*)=(.*)"};
       std::smatch match;
       if (!std::regex_match(external, match, syntax)) {
@@ -701,7 +766,7 @@ po::options_description options_parser::output_options() const {
 
 void options_parser::process_output_options(po::variables_map& parsed) {
   if (parsed.count("exclude")) {
-    for (auto& pattern : parsed.find("exclude")->second.as<std::vector<std::string>>())
+    for (auto& pattern : parsed.at("exclude").as<std::vector<std::string>>())
       options.transformation_options.exclude_pattern_options.excluded.emplace_back(pattern);
   }
 
@@ -746,23 +811,77 @@ void options_parser::process_output_options(po::variables_map& parsed) {
   }
 
   if (parsed.count("private")) {
-    options.transformation_options.exclude_access_options.exclude_private = !parsed.find("private")->second.as<bool>();
+    options.transformation_options.exclude_access_options.exclude_private = !parsed.at("private").as<bool>();
   }
 
   if (parsed.count("outdir")) {
-    options.output_generator_options.output_directory = parsed.find("outdir")->second.as<boost::filesystem::path>();
+    options.output_generator_options.output_directory = parsed.at("outdir").as<boost::filesystem::path>();
   }
+}
+
+po::options_description options_parser::markdown_options() const {
+  auto markdown = po::options_description("MarkDown Rendering Options", options.options_options.columns);
+
+  markdown.add_options()
+    ("md", po::value<bool>()->default_value(true)->implicit_value(true)->zero_tokens(), "Emit documentation in MarkDown format; enabled by default.")
+    ("md-anchors", po::value<std::string>()->default_value("plain")->value_name("format"), "How linkable entities are emitted, one of\n`plain`: emit plain CommonMark MarkDown\n`html`: emit explicit <a> tags");
+
+  return markdown;
+}
+
+void options_parser::process_markdown_options(po::variables_map& parsed) {
+  select_output_format(parsed, "md", output_generators::options::output_format::markdown);
+
+  if (parsed.count("md-anchors")) {
+    const auto value = parsed.at("md-anchors").as<std::string>();
+    if (value == "plain") {
+      options.output_generator_options.markdown_options.anchors = output_generator::markdown::markdown_generator::options::anchors::plain;
+    } else if (value == "html") {
+      options.output_generator_options.markdown_options.anchors = output_generator::markdown::markdown_generator::options::anchors::html;
+    } else {
+      logger::error(fmt::format("Ignoring malformed --md-anchors. Expected one of `plain`, `html` but found `{}`.", value));
+    }
+  }
+}
+
+po::options_description options_parser::html_options() const {
+  auto html = po::options_description("HTML Rendering Options", options.options_options.columns);
+
+  html.add_options()
+    ("html", po::value<bool>()->default_value(false)->implicit_value(true)->zero_tokens(), "Emit documentation in HTML format.");
+
+  return html;
+}
+
+void options_parser::process_html_options(po::variables_map& parsed) {
+  select_output_format(parsed, "html", output_generators::options::output_format::html);
 }
 
 po::options_description options_parser::xml_options() const {
   auto xml = po::options_description("XML Rendering Options", options.options_options.columns);
 
-  // TODO: Implement me
+  xml.add_options()
+    ("xml", po::value<bool>()->default_value(false)->implicit_value(true)->zero_tokens(), "Emit documentation in XML format.");
 
   return xml;
 }
 
-void options_parser::process_xml_options(po::variables_map&) {}
+void options_parser::process_xml_options(po::variables_map& parsed) {
+  select_output_format(parsed, "xml", output_generators::options::output_format::xml);
+}
+
+po::options_description options_parser::text_options() const {
+  auto text = po::options_description("Plain Text Rendering Options", options.options_options.columns);
+
+  text.add_options()
+    ("text", po::value<bool>()->default_value(false)->implicit_value(true)->zero_tokens(), "Emit documentation in plain text format.");
+
+  return text;
+}
+
+void options_parser::process_text_options(po::variables_map& parsed) {
+  select_output_format(parsed, "text", output_generators::options::output_format::text);
+}
 
 po::options_description options_parser::doxygen_options() const {
   auto doxygen = po::options_description("Doxygen Tag File Rendering Options", options.options_options.columns);
@@ -773,26 +892,6 @@ po::options_description options_parser::doxygen_options() const {
 }
 
 void options_parser::process_doxygen_options(po::variables_map&) {}
-
-po::options_description options_parser::markdown_options() const {
-  auto markdown = po::options_description("MarkDown Rendering Options", options.options_options.columns);
-
-  // TODO: Implement me
-
-  return markdown;
-}
-
-void options_parser::process_markdown_options(po::variables_map&) {}
-
-po::options_description options_parser::yaml_options() const {
-  auto yaml = po::options_description("YAML Rendering Options", options.options_options.columns);
-
-  // TODO: Implement me
-
-  return yaml;
-}
-
-void options_parser::process_yaml_options(po::variables_map&) {}
 
 po::options_description options_parser::intersphinx_options() const {
   auto intersphinx = po::options_description("Intersphinx Inventory Rendering Options", options.options_options.columns);
@@ -814,7 +913,7 @@ po::options_description options_parser::positional_options() const {
 
 void options_parser::process_positional_options(po::variables_map& parsed) {
   if (parsed.count("input-files"))
-    options.parser_options.sources = parsed.find("input-files")->second.as<std::vector<fs::path>>();
+    options.parser_options.sources = parsed.at("input-files").as<std::vector<fs::path>>();
 }
 
 void options_parser::parse_config_file(const fs::path& path, po::variables_map& parsed) {
@@ -833,15 +932,38 @@ void options_parser::parse_config_file(const fs::path& path, po::variables_map& 
   descriptions.add(external_options());
   descriptions.add(composition_options());
   descriptions.add(output_options());
-  descriptions.add(xml_options());
-  descriptions.add(doxygen_options());
   descriptions.add(markdown_options());
-  descriptions.add(yaml_options());
+  descriptions.add(html_options());
+  descriptions.add(xml_options());
+  descriptions.add(text_options());
+  descriptions.add(doxygen_options());
   descriptions.add(intersphinx_options());
   descriptions.add(positional_options());
+
   auto result = po::parse_config_file(config, descriptions, false);
   po::store(result, parsed);
   po::notify(parsed);
+}
+
+void options_parser::select_output_format(po::variables_map& parsed, const std::string& key, output_generators::options::output_format format) {
+  if (parsed.count(key)) {
+    const bool enable = parsed.at(key).as<bool>();
+    if (enable) {
+      options.output_generator_options.primary_format = format;
+      if (!parsed.at(key).defaulted()) {
+        if (parsed.count("primary-format")) {
+          logger::error(fmt::format("Cannot emit output files in more than one primary format. Only emitting in output format `{}`.", parsed.at("primary-format").as<std::string>()));
+        } else {
+          parsed.insert({"primary-format", {boost::any(key), false}});
+        }
+      }
+    }
+  }
+}
+
+std::string options_parser::escape_inja(const std::string& input) {
+  static std::regex control{"[{}]"};
+  return std::regex_replace(input, control, R"({{ "$&" }})");
 }
 
 }

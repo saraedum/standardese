@@ -369,17 +369,6 @@ standardese::entity_blacklist get_blacklist(const po::variables_map& options)
 //TODO: bring these parameters back       "associate free comments to their entire file")
 //TODO: bring these parameters back      ("comment.group_uncommented", po::value<bool>()->implicit_value(true)->default_value(standardese::parser::config::options().group_uncommented),
 //TODO: bring these parameters back       "group undocumented members with preceding commented members")
-//TODO: bring these parameters back
-//TODO: bring these parameters back      ("output.prefix",
-//TODO: bring these parameters back       po::value<std::string>()->default_value(""),
-//TODO: bring these parameters back       "a prefix that will be added to all output files")
-//TODO: bring these parameters back      ("output.format",
-//TODO: bring these parameters back       po::value<std::vector<std::string>>()->default_value(std::vector<std::string>{"commonmark"}, "{commonmark}"),
-//TODO: bring these parameters back       "the output format used (html, commonmark, commonmark_html, xml, text)")
-//TODO: bring these parameters back      ("output.link_extension", po::value<std::string>(),
-//TODO: bring these parameters back       "the file extension of the links to entities, useful if you convert standardese output to a different format and change the extension")
-//TODO: bring these parameters back      ("output.link_prefix", po::value<std::string>(),
-//TODO: bring these parameters back      "a prefix that will be added to all links, if not specified they'll be relative links")
 //TODO: bring these parameters back      ("output.entity_index_order", po::value<std::string>()->default_value("namespace_inline_sorted"),
 //TODO: bring these parameters back       "how the namespaces are handled in the entity index: namespace_inline_sorted (sorted inline with all others), "
 //TODO: bring these parameters back       "namespace_external (namespaces in top-level list only, sorted by the end position in the source file)")
