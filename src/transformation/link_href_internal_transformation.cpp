@@ -25,7 +25,7 @@ link_href_internal_transformation::link_href_internal_transformation(model::unor
     std::unordered_map<const cppast::cpp_entity*, std::string> a;
 
     for (const auto& document : documents)
-      model::visitor::visit([&](auto&& entity) {
+      model::visitor::visit([&](auto&& entity, auto&& recurse) {
         using T = std::decay_t<decltype(entity)>;
 
         if constexpr (std::is_same_v<T, model::document>) {
@@ -34,7 +34,7 @@ link_href_internal_transformation::link_href_internal_transformation(model::unor
           a[&entity.entity()] = path + "#" + entity.id;
         }
 
-        return model::visitor::recursion::RECURSE;
+        recurse();
       }, document);
 
     return a;

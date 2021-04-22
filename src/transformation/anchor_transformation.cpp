@@ -15,7 +15,7 @@ namespace standardese::transformation {
 void anchor_transformation::do_transform(model::entity& document) {
   std::string path;
 
-  model::visitor::visit([&](auto&& entity) {
+  model::visitor::visit([&](auto&& entity, auto&& recurse) {
     using T = std::decay_t<decltype(entity)>;
     if constexpr (std::is_base_of_v<model::document, T>) {
       // TODO
@@ -35,12 +35,12 @@ void anchor_transformation::do_transform(model::entity& document) {
         auto& heading = entity.begin()->template as<model::markup::heading>();
 
         std::string inner;
-        model::visitor::visit([&](auto&& node) {
+        model::visitor::visit([&](auto&& node, auto&& recurse) {
           using T = std::decay_t<decltype(node)>;
           if constexpr (std::is_same_v<T, model::markup::text>) {
             inner += node.value;
           }
-          return model::visitor::recursion::RECURSE;
+          recurse();
         }, heading);
         
         std::regex strip(R"([^\w\s-])");
@@ -53,7 +53,7 @@ void anchor_transformation::do_transform(model::entity& document) {
       }
     }
 
-    return model::visitor::recursion::RECURSE;
+    recurse();
   }, document);
 }
 

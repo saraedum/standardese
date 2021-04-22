@@ -41,7 +41,7 @@ TEST_CASE("Links to Sphinx Documentation Are Resolved", "[link_target_external_t
 
     // Verify that all links could be resolved.
     for (auto& document: parsed.entities)
-      model::visitor::visit([](auto&& link) {
+      model::visitor::visit([](auto&& link, auto&& recurse) {
         using T = std::decay_t<decltype(link)>;
         if constexpr (std::is_same_v<T, model::markup::link>) {
           link.target.accept([](auto&& target) -> void {
@@ -50,7 +50,8 @@ TEST_CASE("Links to Sphinx Documentation Are Resolved", "[link_target_external_t
             REQUIRE(std::is_same_v<T, model::link_target::sphinx_target>);
           });
         }
-        return model::visitor::recursion::RECURSE;
+
+        recurse();
       }, document);
   }
 }

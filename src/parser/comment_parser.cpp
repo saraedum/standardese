@@ -57,6 +57,7 @@
 #include "../../standardese/model/markup/image.hpp"
 #include "../../standardese/model/visitor/visit.hpp"
 #include "../../standardese/model/document.hpp"
+#include "../../standardese/logger.hpp"
 
 // TODO: Better error reporting. It's a bit silly to report errors with XML that nobody understands?
 
@@ -604,7 +605,8 @@ void comment_parser::add_uncommented_entities(model::unordered_entities& entitie
         }
     };
     const std::function<void(const cppast::cpp_entity&, cppast::visitor_info)> visitor = [&](const auto& e, auto info) {
-          ensure_entity(e);
+        ensure_entity(e);
+
         if (cppast::is_template(e.kind())) {
             for (const auto& param : static_cast<const cppast::cpp_template&>(e).parameters())
                 ensure_entity(param);
@@ -616,10 +618,6 @@ void comment_parser::add_uncommented_entities(model::unordered_entities& entitie
         if (e.kind() == cppast::cpp_macro_definition::kind()) {
             for (const auto& param : static_cast<const cppast::cpp_macro_definition&>(e).parameters())
                 ensure_entity(param);
-        }
-        if (e.kind() == cppast::cpp_class_template::kind()) {
-            for (const auto& base : static_cast<const cppast::cpp_class_template&>(e).class_().bases())
-                ensure_entity(base);
         }
         if (e.kind() == cppast::cpp_class::kind()) {
             for (const auto& base : static_cast<const cppast::cpp_class&>(e).bases())

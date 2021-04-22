@@ -58,25 +58,25 @@ TEST_CASE("Visitors Created from Lambdas", "[visitor]") {
   SECTION("Recursive Visitor") {
     int visits = 0;
 
-    visit([&](auto&&) {
+    visit([&](auto&&, auto&& recurse) {
       visits++;
-      return standardese::model::visitor::recursion::RECURSE;
+      recurse();
     }, root);
-    visit([&](auto&&) {
+    visit([&](auto&&, auto&& recurse) {
       visits++;
-      return standardese::model::visitor::recursion::RECURSE;
+      recurse();
     }, croot);
 
     REQUIRE(visits == 8);
   }
 
   SECTION("Non-Const Visitors") {
-    visit([&](auto&& entity) {
+    visit([&](auto&& entity, auto&& recurse) {
       using T = std::decay_t<decltype(entity)>; 
       if constexpr (std::is_same_v<T, standardese::model::markup::text>) {
         REQUIRE(entity.value != "modified text");
       }
-      return standardese::model::visitor::recursion::RECURSE;
+      recurse();
     }, croot);
 
     SECTION("Non-Const Non-Recursive Void Visitor") {
@@ -100,21 +100,21 @@ TEST_CASE("Visitors Created from Lambdas", "[visitor]") {
     }
 
     SECTION("Non-Const Recursive Visitor") {
-      visit([&](auto&& entity) {
+      visit([&](auto&& entity, auto&& recurse) {
         using T = std::decay_t<decltype(entity)>; 
         if constexpr (std::is_same_v<T, standardese::model::markup::text>) {
           entity.value = "modified text";
         }
-        return standardese::model::visitor::recursion::RECURSE;
+        recurse();
       }, root);
     }
 
-    visit([&](auto&& entity) {
+    visit([&](auto&& entity, auto&& recurse) {
       using T = std::decay_t<decltype(entity)>; 
       if constexpr (std::is_same_v<T, standardese::model::markup::text>) {
         REQUIRE(entity.value == "modified text");
       }
-      return standardese::model::visitor::recursion::RECURSE;
+      recurse();
     }, croot);
   }
 }
