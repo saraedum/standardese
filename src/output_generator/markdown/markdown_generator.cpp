@@ -22,6 +22,9 @@ namespace standardese::output_generator::markdown
 
 namespace {
 
+template <typename T, auto free>
+using unique_cmark = std::unique_ptr<T, std::integral_constant<decltype(free), free>>;
+
 cmark_node* append_child(cmark_node* top, cmark_node_type type) {
   // TODO: Use the safe cmark wrapper from the extensions here.
   auto node = cmark_node_new(type);
@@ -51,7 +54,8 @@ markdown_generator::markdown_generator(std::ostream& os, struct options options)
 }
 
 markdown_generator::~markdown_generator() {
-  std::unique_ptr<char> str{cmark_render_commonmark(root.get(), CMARK_OPT_NOBREAKS, 0)};
+  using unique_string = unique_cmark<char, free>;
+  unique_string str{cmark_render_commonmark(root.get(), CMARK_OPT_NOBREAKS, 0)};
   out_ << str.get();
 }
 

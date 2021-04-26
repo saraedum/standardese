@@ -27,7 +27,9 @@ class index_document_builder {
 
     /// Create an index of all entities satisfying `predicate`.
     /// \param name The name of the generated document, e.g., `headers`.
-    model::document build(const std::string& name, const std::function<bool(const model::entity&)> predicate, const model::unordered_entities&) const;
+    /// \param path The eventual path of the final output generated from the
+    /// document for linking, typically the same as [name]().
+    model::document build(const std::string& name, const std::string& path, const std::function<bool(const model::entity&)> predicate, const model::unordered_entities&) const;
 
     /// Return true if the argument is a module.
     /// This predicate can be used in [build]() to generate an index of all modules.

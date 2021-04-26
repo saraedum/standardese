@@ -70,32 +70,8 @@ struct visitor : public model::visitor::generic_visitor<visitor> {
 
 }
 
-model::document entity_document_builder::build(const model::entity& entity, const model::unordered_entities& entities) const {
-  // TODO: This should not live here.
-  std::string name = model::visitor::visit([](auto&& documentation) {
-    std::string name;
-
-    using T = std::decay_t<decltype(documentation)>;
-    if constexpr (std::is_same_v<T, model::cpp_entity_documentation>) {
-      name = documentation.output_name;
-      if (name.empty()) {
-        name = "doc_" + documentation.entity().name();
-
-        if (documentation.entity().kind() == cppast::cpp_file::kind())
-          name = "doc_" + boost::filesystem::path(documentation.entity().name()).filename().native();
-      }
-    } else {
-      throw std::logic_error("not implemented: cannot determine output name for entities which are not C++ entities");
-    }
-
-    static std::regex erased{R"(\W+)"};
-    name = std::regex_replace(name, erased, "_");
-
-    return name;
-  }, entity);
-
-  // TODO: Set the path properly.
-  auto document = model::document(name, name);
+model::document entity_document_builder::build(const std::string& name, const std::string& path, const model::entity& entity, const model::unordered_entities& entities) const {
+  auto document = model::document(name, path);
 
   visitor v(document, entities);
   entity.accept(v);

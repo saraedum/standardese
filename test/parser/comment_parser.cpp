@@ -1038,7 +1038,7 @@ TEST_CASE("Standardese Commands", "[comment_parser]")
             // This syntax allows us to have a group name including whitespace
             // so we drop the heading completely. (And there is also no way to
             // use a separate heading with this approach unfortunately.)
-            parser::comment_parser_options options('\\', {"group|=== ((?:.(?!==))+)() =="});
+            parser::comment_parser::comment_parser_options options('\\', {"group|=== ((?:.(?!==))+)() =="});
 
             const auto parsed = parsed_comments(header).add(header["f"], R"(
                 == Method Group ==
@@ -1299,7 +1299,7 @@ TEST_CASE("Standardese Commands", "[comment_parser]")
         }
         SECTION(R"(The \param Command can be Changed Through Configuration)")
         {
-            parser::comment_parser_options options('\\', {"param|=:param ([^:]+):"});
+            parser::comment_parser::comment_parser_options options('\\', {"param|=:param ([^:]+):"});
 
             const auto parsed = parsed_comments(header).add(header["f"], R"(
                 \param arg This is the brief of the parameter arg.
@@ -1454,7 +1454,7 @@ TEST_CASE("Standardese Commands", "[comment_parser]")
         }
         SECTION(R"(The \tparam Command can be Changed Through Configuration)")
         {
-            parser::comment_parser_options options('\\', {"tparam|=:tparam ([^:]+):"});
+            parser::comment_parser::comment_parser_options options('\\', {"tparam|=:tparam ([^:]+):"});
 
             const auto parsed = parsed_comments(header).add(header["swap"], R"(
                 :tparam T: This is the brief of the parameter T.

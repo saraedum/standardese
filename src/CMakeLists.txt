@@ -14,6 +14,7 @@ set(src
     parser/command-extension/user_data.cpp
     parser/cmark-extension/cmark_extension.hpp
     parser/cmark-extension/cmark_extension.cpp
+    parser/markdown_parser.cpp
     parser/comment_parser.cpp
     parser/comment_parser_options.cpp
     parser/cppast_parser.cpp

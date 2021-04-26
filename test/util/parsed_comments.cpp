@@ -14,7 +14,7 @@ namespace standardese::test::util {
 
 parsed_comments::parsed_comments(const cpp_file& header) : header(header) {}
 
-parsed_comments&& parsed_comments::add(const cppast::cpp_entity& target, const std::string& comment, parser::comment_parser_options options) && {
+parsed_comments&& parsed_comments::add(const cppast::cpp_entity& target, const std::string& comment, parser::comment_parser::comment_parser_options options) && {
   const auto resolve = [&](const std::string& name) -> type_safe::optional_ref<const cppast::cpp_entity> {
       return inventory::cppast_inventory::find(name, target, header);
   };

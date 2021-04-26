@@ -2,6 +2,7 @@
 // This file is subject to the license terms in the LICENSE file
 // found in the top-level directory of this distribution.
 
+#include <fmt/format.h>
 #include <cppast/cpp_file.hpp>
 
 #include "../../standardese/document_builder/index_document_builder.hpp"
@@ -14,6 +15,8 @@
 #include "../../standardese/model/markup/list_item.hpp"
 #include "../../standardese/model/unordered_entities.hpp"
 #include "../../standardese/model/module.hpp"
+#include "../../standardese/logger.hpp"
+#include "../../standardese/output_generator/xml/xml_generator.hpp"
 
 using standardese::model::document;
 
@@ -24,24 +27,44 @@ index_document_builder::options::options() {}
 
 index_document_builder::index_document_builder(options options) : anchor_text_formatter(options.anchor_text_options) {}
 
-document index_document_builder::build(const std::string& name, const std::function<bool(const model::entity&)> predicate, const model::unordered_entities& entities) const {
+document index_document_builder::build(const std::string& name, const std::string& path, const std::function<bool(const model::entity&)> predicate, const model::unordered_entities& entities) const {
   auto list = model::markup::list(false);
   
   for (auto& entity : entities)
     if (predicate(entity))
       model::visitor::visit([&](auto&& documentation) {
         using T = std::decay_t<decltype(documentation)>;
-        if constexpr (std::is_same_v<T, model::cpp_entity_documentation>) {
-          list.add_child(model::markup::list_item(model::markup::link(documentation.entity(), "", anchor_text_formatter.format(documentation.entity()))));
-        } else if constexpr (std::is_same_v<T, model::module>) {
-          list.add_child(model::markup::list_item(model::markup::link(model::link_target::module_target(documentation.name), "", anchor_text_formatter.format(documentation))));
+
+        if constexpr (std::is_same_v<T, model::cpp_entity_documentation> || std::is_same_v<T, model::module>) {
+          model::link_target target("");
+          if constexpr (std::is_same_v<T, model::cpp_entity_documentation>) {
+            target = documentation.entity();
+          } else {
+            target = model::link_target::module_target(documentation.name);
+          }
+
+          auto link = model::markup::link(target, "");
+
+          // TODO: This is not a good default (for non-headers).
+          // TODO: Make configurable.
+          for (const auto& paragraph: anchor_text_formatter.build("{{ filename(name) }}", documentation)) {
+            if (!paragraph.template is<model::markup::paragraph>()) {
+              logger::error(fmt::format("Expected anchor to render as a single paragraph but {} rendered as {} instead.", output_generator::xml::xml_generator::render(documentation), output_generator::xml::xml_generator::render(paragraph)));
+              continue;
+            }
+
+            for (auto& child : paragraph.template as<model::markup::paragraph>()) {
+              link.add_child(std::move(child));
+            }
+          }
+
+          list.add_child(model::markup::list_item(link));
         } else {
           throw std::logic_error("unexpected entity in index document builder");
         }
       }, entity);
 
-  // TODO: Set name & path properly.
-  return document(name, name, std::move(list));
+  return document(name, path, std::move(list));
 }
 
 bool index_document_builder::is_header_file(const model::entity& entity) {

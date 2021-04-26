@@ -64,12 +64,20 @@ cpp_file::operator const cppast::cpp_file*() const {
   return &*files.at(key()).first;
 }
 
+cpp_file::operator const cppast::cpp_entity&() const {
+  return *files.at(key()).first;
+}
+
+cpp_file::operator const cppast::cpp_entity*() const {
+  return &*files.at(key()).first;
+}
+
 cpp_file::operator const parser::cpp_context&() const {
   return files.at(key()).second;
 }
 
 boost::filesystem::path cpp_file::path() const {
-  return name;
+  return boost::filesystem::path(static_cast<const cppast::cpp_file&>(*this).name());
 }
 
 cpp_file::cache_key cpp_file::key() const {

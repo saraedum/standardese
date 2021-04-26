@@ -8,13 +8,14 @@
 
 #include <optional>
 #include <functional>
+#include <regex>
 
 #include <cmark-gfm.h>
 
-#include "../../../standardese/parser/comment_parser_options.hpp"
 #include "../../../standardese/parser/commands/special_command.hpp"
 #include "../../../standardese/parser/commands/section_command.hpp"
 #include "../../../standardese/parser/commands/inline_command.hpp"
+#include "../../../standardese/parser/comment_parser.hpp"
 
 #include "../cmark-extension/cmark_extension.hpp"
 
@@ -31,7 +32,7 @@ namespace standardese::parser::command_extension
         /// Return a reference to the created extension; to deallocate the
         /// extension, call cmark_syntax_extension_free() before
         /// cmark_parser_free()ing the parser itself.
-        static command_extension& create(cmark_parser* parser, const struct comment_parser_options::command_extension_options&);
+        static command_extension& create(cmark_parser* parser, const struct comment_parser::comment_parser_options::command_extension_options&);
 
         /// Return the type for an extension node where `T` is either
         /// * `command_type`, for a special command such as `\exclude`
@@ -44,7 +45,7 @@ namespace standardese::parser::command_extension
         ~command_extension();
 
       private:
-        command_extension(const struct comment_parser_options::command_extension_options&, cmark_syntax_extension*);
+        command_extension(const struct comment_parser::comment_parser_options::command_extension_options&, cmark_syntax_extension*);
 
         /// Return a string representation of the node that was created by this
         /// extension. Only relevant for extension debugging.
@@ -145,7 +146,7 @@ namespace standardese::parser::command_extension
         const std::regex& command_pattern(commands::inline_command) const;
 
 
-        const struct comment_parser_options::command_extension_options& options;
+        const struct comment_parser::comment_parser_options::command_extension_options& options;
 
         /// The underlying cmark extension that provides the C interface to this class.
         cmark_syntax_extension* extension;

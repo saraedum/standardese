@@ -17,20 +17,18 @@ namespace standardese::tool {
 class document_builders {
  public:
   struct options {
-    // TODO: Implement me
     /// The name of the output file (without the suffix).
     /// The default is to take a cleaned-up name of what we are documenting.
     /// If that name is not unique a suffix will be added automatically.
-    std::string name = "doc_{{ as_filename(name) }}";
+    std::string document_name = "doc_{{ sanitize_basename(name) }}";
 
-    // TODO: Implement me
     /// The name of the final rendered (HTML) document.
     /// Links to this document will assume that this is the eventual (absolute)
     /// path of this document.
-    /// The default is to just take the [name]() from above and assume that
-    /// everything lives under the same document root without extensions such as
-    /// `.html`.
-    std::string path = "{{ document_name }}";
+    /// The default is configured just like [name]() from above and assume that
+    /// everything lives under the same document root without extensions such
+    /// as `.html`.
+    std::string document_path = "doc_{{ sanitize_basename(name) }}";
   };
 
   document_builders(struct options);

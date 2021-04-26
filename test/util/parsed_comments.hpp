@@ -19,7 +19,7 @@ class parsed_comments {
     explicit parsed_comments(const cpp_file&);
 
     /// Register `comment` as documenting `target`.
-    parsed_comments&& add(const cppast::cpp_entity& target, const std::string& comment, parser::comment_parser_options = {}) &&;
+    parsed_comments&& add(const cppast::cpp_entity& target, const std::string& comment, parser::comment_parser::comment_parser_options = {}) &&;
 
     /// Return the result of parsing for a C++ entity (assuming that there is a unique one.)
     model::cpp_entity_documentation as_documentation() const;

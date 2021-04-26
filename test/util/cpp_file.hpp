@@ -31,7 +31,13 @@ class cpp_file {
     operator const cppast::cpp_file&() const;
 
     /// Return the main `cppast::cpp_file` entity.
+    operator const cppast::cpp_entity&() const;
+
+    /// Return the main `cppast::cpp_file` entity.
     operator const cppast::cpp_file*() const;
+
+    /// Return the main `cppast::cpp_file` entity.
+    operator const cppast::cpp_entity*() const;
 
     /// Return the compilation context which can be used to resolve type references.
     operator const parser::cpp_context&() const;
