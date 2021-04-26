@@ -21,7 +21,7 @@ class parsers {
 
     struct parser::comment_collector::options comment_collector_options;
 
-    struct parser::comment_parser_options comment_parser_options;
+    struct parser::comment_parser::comment_parser_options comment_parser_options;
 
     /// C++ header files to parse.
     std::vector<boost::filesystem::path> sources;

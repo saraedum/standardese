@@ -236,6 +236,7 @@ struct options_parser {
     void select_output_format(po::variables_map& parsed, const std::string& key, output_generators::options::output_format format);
 
     /// Return `input` with all inja-specific markup escaped.
+    // TODO: Move to inja_formatter.
     static std::string escape_inja(const std::string& input);
 };
 
@@ -659,12 +660,12 @@ void options_parser::process_legacy_output_options(po::variables_map& parsed) {
   if (parsed.count("output.link_prefix")) {
     logger::warn("--output.link_prefix is deprecated, use --vpath instead.");
 
-    options.document_builder_options.path = escape_inja(parsed.at("output.link_prefix").as<std::string>()) + options.document_builder_options.path;
+    options.document_builder_options.document_path = escape_inja(parsed.at("output.link_prefix").as<std::string>()) + options.document_builder_options.document_path;
   }
   if (parsed.count("output.link_extension")) {
     logger::warn("--output.link_extension is deprecated, use --vpath instead.");
 
-    options.document_builder_options.path = options.document_builder_options.path + "." + escape_inja(parsed.at("output.link_extension").as<std::string>());
+    options.document_builder_options.document_path = options.document_builder_options.document_path + "." + escape_inja(parsed.at("output.link_extension").as<std::string>());
   }
 }
 
@@ -962,6 +963,7 @@ void options_parser::select_output_format(po::variables_map& parsed, const std::
 }
 
 std::string options_parser::escape_inja(const std::string& input) {
+  // TODO: Also escape `##` at the start of a line.
   static std::regex control{"[{}]"};
   return std::regex_replace(input, control, R"({{ "$&" }})");
 }

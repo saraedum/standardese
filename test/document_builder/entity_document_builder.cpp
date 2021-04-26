@@ -45,7 +45,7 @@ TEST_CASE("Entity Documents can be Generated", "[entity_document_builder]")
 
     SECTION("Entity Document for a Header Lists all Members")
     {
-      auto document = entity_document_builder{}.build(parsed[header], parsed.entities);
+      auto document = entity_document_builder{}.build("doc_header", "doc_header", parsed[header], parsed.entities);
       document.name = "header.hpp";
 
       CHECK(xml_generator::render(document) == unindent(R"*(
@@ -77,7 +77,7 @@ TEST_CASE("Entity Documents can be Generated", "[entity_document_builder]")
 
     SECTION("Entity Document for a Non-Header")
     {
-      auto document = entity_document_builder{}.build(parsed["std::swap"], parsed.entities);
+      auto document = entity_document_builder{}.build("doc_swap", "doc_swap", parsed["std::swap"], parsed.entities);
 
       CHECK(xml_generator::render(document) == unindent(R"*(
         <?xml version="1.0"?>
@@ -111,7 +111,7 @@ TEST_CASE("Entity Documents can be Generated", "[entity_document_builder]")
 
       auto parsed = util::parsed_comments(header).add(header["X"], "A class.");
 
-      auto document = entity_document_builder{}.build(parsed["X"], parsed.entities);
+      auto document = entity_document_builder{}.build("doc_X", "doc_X", parsed["X"], parsed.entities);
 
       CHECK(xml_generator::render(document) == unindent(R"*(
         <?xml version="1.0"?>
@@ -138,7 +138,7 @@ TEST_CASE("Entity Documents can be Generated", "[entity_document_builder]")
       SECTION("Private Class Members") {
         auto parsed = util::parsed_comments(header).add(header["X.a"], "The a of X.");
 
-        auto document = entity_document_builder{}.build(parsed["X.a"], parsed.entities);
+        auto document = entity_document_builder{}.build("doc_a", "doc_a", parsed["X.a"], parsed.entities);
 
         CHECK(xml_generator::render(document) == unindent(R"*(
           <?xml version="1.0"?>
@@ -155,7 +155,7 @@ TEST_CASE("Entity Documents can be Generated", "[entity_document_builder]")
       SECTION("Public Class Members") {
         auto parsed = util::parsed_comments(header).add(header["X.b"], "The b of X.");
 
-        auto document = entity_document_builder{}.build(parsed["X.b"], parsed.entities);
+        auto document = entity_document_builder{}.build("doc_b", "doc_b", parsed["X.b"], parsed.entities);
 
         CHECK(xml_generator::render(document) == unindent(R"*(
           <?xml version="1.0"?>
@@ -178,7 +178,7 @@ TEST_CASE("Entity Documents can be Generated", "[entity_document_builder]")
 
       auto parsed = util::parsed_comments(header).add(header["X"], "A class template.");
 
-      auto document = entity_document_builder{}.build(parsed["X"], parsed.entities);
+      auto document = entity_document_builder{}.build("doc_X", "doc_X", parsed["X"], parsed.entities);
 
       CHECK(xml_generator::render(document) == unindent(R"*(
         <?xml version="1.0"?>
@@ -212,7 +212,7 @@ TEST_CASE("Entity Documents can be Generated", "[entity_document_builder]")
         \base Y<T> Inherits from Y.
         )");
 
-      auto document = entity_document_builder{}.build(parsed["Z"], parsed.entities);
+      auto document = entity_document_builder{}.build("doc_Z", "doc_Z", parsed["Z"], parsed.entities);
 
       CHECK(xml_generator::render(document) == unindent(R"*(
         <?xml version="1.0"?>
@@ -258,7 +258,7 @@ TEST_CASE("Entity Documents can be Generated", "[entity_document_builder]")
           \base Y<T> Inherits from Y.
           )");
 
-      auto document = entity_document_builder{}.build(parsed["Z"], parsed.entities);
+      auto document = entity_document_builder{}.build("doc_Z", "doc_Z", parsed["Z"], parsed.entities);
 
       CHECK(xml_generator::render(document) == unindent(R"*(
           <?xml version="1.0"?>
@@ -299,7 +299,7 @@ TEST_CASE("Entity Documents can be Generated", "[entity_document_builder]")
         \param b The parameter b.
         )");
 
-      auto document = entity_document_builder{}.build(parsed["MACRO"], parsed.entities);
+      auto document = entity_document_builder{}.build("doc_MACRO", "doc_MACRO", parsed["MACRO"], parsed.entities);
 
       CHECK(xml_generator::render(document) == unindent(R"*(
           <?xml version="1.0"?>
@@ -338,7 +338,7 @@ TEST_CASE("Entity Documents can be Generated", "[entity_document_builder]")
         An enum.
         )");
 
-      auto document = entity_document_builder{}.build(parsed["ENUM"], parsed.entities);
+      auto document = entity_document_builder{}.build("doc_ENUM", "doc_ENUM", parsed["ENUM"], parsed.entities);
 
       CHECK(xml_generator::render(document) == unindent(R"*(
         <?xml version="1.0"?>
@@ -366,7 +366,7 @@ TEST_CASE("Entity Documents can be Generated", "[entity_document_builder]")
         An enum.
         )");
 
-      auto document = entity_document_builder{}.build(parsed["ENUM"], parsed.entities);
+      auto document = entity_document_builder{}.build("doc_ENUM", "doc_ENUM", parsed["ENUM"], parsed.entities);
 
       CHECK(xml_generator::render(document) == unindent(R"*(
         <?xml version="1.0"?>
@@ -394,7 +394,7 @@ TEST_CASE("Entity Documents can be Generated", "[entity_document_builder]")
         The A value of ENUM.
         )");
 
-      auto document = entity_document_builder{}.build(parsed["ENUM.A"], parsed.entities);
+      auto document = entity_document_builder{}.build("doc_A", "doc_A", parsed["ENUM.A"], parsed.entities);
 
       CHECK(xml_generator::render(document) == unindent(R"*(
         <?xml version="1.0"?>
@@ -419,7 +419,7 @@ TEST_CASE("Entity Documents can be Generated", "[entity_document_builder]")
         An alias for int.
         )");
 
-      auto document = entity_document_builder{}.build(parsed["T"], parsed.entities);
+      auto document = entity_document_builder{}.build("doc_T", "doc_T", parsed["T"], parsed.entities);
 
       CHECK(xml_generator::render(document) == unindent(R"*(
         <?xml version="1.0"?>
@@ -443,7 +443,7 @@ TEST_CASE("Entity Documents can be Generated", "[entity_document_builder]")
         A template using.
         )");
 
-      auto document = entity_document_builder{}.build(parsed["U"], parsed.entities);
+      auto document = entity_document_builder{}.build("doc_U", "doc_U", parsed["U"], parsed.entities);
 
       CHECK(xml_generator::render(document) == unindent(R"*(
         <?xml version="1.0"?>

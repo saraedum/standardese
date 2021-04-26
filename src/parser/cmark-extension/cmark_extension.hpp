@@ -28,6 +28,9 @@ namespace standardese::parser::cmark_extension
         static void cmark_node_append_child(cmark_node* node, cmark_node* child);
 
         /// Call cmark's function of the same name and throw an exception if it reported an error.
+        static void cmark_node_set_literal(cmark_node* node, const char*);
+
+        /// Call cmark's function of the same name and throw an exception if it reported an error.
         static const char* cmark_node_get_literal(cmark_node* node);
 
         /// Call cmark's function of the same name and throw an exception if it reported an error.

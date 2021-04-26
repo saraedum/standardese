@@ -10,6 +10,7 @@
 #include "../../standardese/model/cpp_entity_documentation.hpp"
 #include "../../standardese/document_builder/entity_document_builder.hpp"
 #include "../../standardese/model/document.hpp"
+#include "../../standardese/formatter/inja_formatter.hpp"
 #include "../../standardese/logger.hpp"
 
 namespace standardese::tool {
@@ -23,11 +24,16 @@ model::unordered_entities document_builders::create(model::unordered_entities& p
 
   model::unordered_entities documents;
 
+  formatter::inja_formatter formatter{{}};
+
   for (const auto& entity : parsed) {
     if (entity.is<model::cpp_entity_documentation>()) {
       auto& documentation = entity.as<model::cpp_entity_documentation>();
       if (cppast::cpp_file::kind() == documentation.entity().kind()) {
-        documents.insert(builder.build(entity, parsed));
+        const std::string name = formatter.format(options.document_name, documentation);
+        const std::string path = formatter.format(options.document_path, documentation);
+
+        documents.insert(builder.build(name, path, entity, parsed));
       }
     }
     if (entity.is<model::document>()) {
@@ -35,8 +41,9 @@ model::unordered_entities document_builders::create(model::unordered_entities& p
     }
   }
 
+  // TODO: Build index files.
+
   // TODO: Make sure document names/paths are unique.
-  // TODO: Set document paths.
 
   return documents;
 }

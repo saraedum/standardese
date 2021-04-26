@@ -14,6 +14,8 @@
 namespace standardese::model::mixin
 {
     /// A base class for entities that are containers.
+    /// \tparam T the kinds of entities stored in this container.
+    /// Currently, this is almost always just [entity]().
     template <typename T = entity>
     class container
     {

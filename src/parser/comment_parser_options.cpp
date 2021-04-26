@@ -3,11 +3,13 @@
 // This file is subject to the license terms in the LICENSE file
 // found in the top-level directory of this distribution.
 
-#include "../../standardese/parser/comment_parser_options.hpp"
+#include <cassert>
+#include <string>
+
 #include "../../standardese/parser/commands/special_command.hpp"
 #include "../../standardese/parser/commands/section_command.hpp"
 #include "../../standardese/parser/commands/inline_command.hpp"
-#include <cassert>
+#include "../../standardese/parser/comment_parser.hpp"
 
 namespace standardese::parser {
 
@@ -198,7 +200,7 @@ std::string default_command_pattern(char command_character, commands::inline_com
 
 }
 
-comment_parser_options::comment_parser_options(char command_character, const std::vector<std::string>& command_patterns) {
+comment_parser::comment_parser_options::comment_parser_options(char command_character, const std::vector<std::string>& command_patterns) {
     const auto pattern = [&](const auto command) {
         const std::string name = command_name(command);
         const auto fallback = default_command_pattern(command_character, command);

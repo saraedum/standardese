@@ -86,6 +86,7 @@ struct unmatched_doc_comment;
 
 namespace standardese::parser
 {
+class markdown_parser;
 class comment_parser;
 class parse_error;
 class cpp_context;

@@ -32,6 +32,11 @@ void cmark_extension::cmark_node_append_child(cmark_node* node, cmark_node* chil
       throw std::logic_error("Child node " + to_xml(child) + " not allowed in parent " + to_xml(node));
 }
 
+void cmark_extension::cmark_node_set_literal(cmark_node* node, const char* literal) {
+  if (::cmark_node_set_literal(node, literal) == 0)
+      throw std::logic_error("Literal `" + std::string(literal) + "` not allowed in parent " + to_xml(node));
+}
+
 const char* cmark_extension::cmark_node_get_literal(cmark_node* node) {
   const char* literal = ::cmark_node_get_literal(node);
   if (literal == nullptr)
@@ -64,6 +69,7 @@ std::string cmark_extension::to_xml(cmark_node* node) {
     if (node == nullptr)
         return "nullptr";
 
+    // TODO: Use unique_ptr.
     cmark_mem* memory = cmark_get_default_mem_allocator();
     char* xml = cmark_render_xml_with_mem(node, 0, memory);
     std::string ret = xml;

@@ -79,7 +79,7 @@ struct visitor : public model::visitor::recursive_visitor<false> {
     );
 
     // TODO: Use a MarkDown parser without the command extension instead.
-    auto options = parser::comment_parser_options{};
+    auto options = parser::comment_parser::comment_parser_options{};
     options.free_file_comments = true;
     auto parser = parser::comment_parser(options, documentation.context()); 
     auto entities = parser.parse(formatted, entity, [](const std::string&) -> type_safe::optional_ref<const cppast::cpp_entity> {

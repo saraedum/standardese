@@ -2,13 +2,6 @@
 // This file is subject to the license terms in the LICENSE file
 // found in the top-level directory of this distribution.
 
-#include "command_extension.hpp"
-#include "user_data.hpp"
-#include "../../util/enum_values.hpp"
-#include "../../../standardese/parser/commands/special_command.hpp"
-#include "../../../standardese/parser/commands/section_command.hpp"
-#include "../../../standardese/parser/commands/inline_command.hpp"
-
 #include <type_traits>
 #include <cassert>
 #include <fmt/format.h>
@@ -16,10 +9,18 @@
 #include <cmark-gfm.h>
 #include <cmark-gfm-extension_api.h>
 
+#include "command_extension.hpp"
+#include "user_data.hpp"
+#include "../../util/enum_values.hpp"
+#include "../../../standardese/parser/comment_parser.hpp"
+#include "../../../standardese/parser/commands/special_command.hpp"
+#include "../../../standardese/parser/commands/section_command.hpp"
+#include "../../../standardese/parser/commands/inline_command.hpp"
+
 namespace standardese::parser::command_extension
 {
 
-command_extension::command_extension(const class comment_parser_options::command_extension_options& options, cmark_syntax_extension* extension) : options(options), extension(extension)
+command_extension::command_extension(const class comment_parser::comment_parser_options::command_extension_options& options, cmark_syntax_extension* extension) : options(options), extension(extension)
 {
     cmark_syntax_extension_set_get_type_string_func(extension, command_extension::cmark_get_type_string);
     cmark_syntax_extension_set_can_contain_func(extension, command_extension::cmark_can_contain);
@@ -486,7 +487,7 @@ cmark_node* command_extension::postprocess_inline_command(cmark_node* command) c
     return more;
 }
 
-command_extension& command_extension::create(cmark_parser* parser, const struct comment_parser_options::command_extension_options& options)
+command_extension& command_extension::create(cmark_parser* parser, const struct comment_parser::comment_parser_options::command_extension_options& options)
 {
     auto* cmark_extension = cmark_syntax_extension_new("standardese_commands");
     auto* extension = new command_extension(options, cmark_extension);
