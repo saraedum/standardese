@@ -27,6 +27,7 @@ set(src
     inventory/sphinx/entry.cpp
     inventory/sphinx/documentation_set.cpp
     transformation/transformation.cpp
+    transformation/link_text_transformation.cpp
     transformation/link_target_internal_transformation.cpp
     transformation/link_target_external_transformation.cpp
     transformation/link_external_legacy_transformation.cpp

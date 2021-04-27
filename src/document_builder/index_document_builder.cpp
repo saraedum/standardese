@@ -43,21 +43,10 @@ document index_document_builder::build(const std::string& name, const std::strin
             target = model::link_target::module_target(documentation.name);
           }
 
+          // We create a link with a target but no "text". A transformation
+          // such as the anchor_text_transformation will fill in that text.
           auto link = model::markup::link(target, "");
-
-          // TODO: This is not a good default (for non-headers).
-          // TODO: Make configurable.
-          for (const auto& paragraph: anchor_text_formatter.build("{{ filename(name) }}", documentation)) {
-            if (!paragraph.template is<model::markup::paragraph>()) {
-              logger::error(fmt::format("Expected anchor to render as a single paragraph but {} rendered as {} instead.", output_generator::xml::xml_generator::render(documentation), output_generator::xml::xml_generator::render(paragraph)));
-              continue;
-            }
-
-            for (auto& child : paragraph.template as<model::markup::paragraph>()) {
-              link.add_child(std::move(child));
-            }
-          }
-
+          
           list.add_child(model::markup::list_item(link));
         } else {
           throw std::logic_error("unexpected entity in index document builder");

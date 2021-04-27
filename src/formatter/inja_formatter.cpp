@@ -89,6 +89,9 @@ inja_formatter::environment::environment(const model::cpp_entity_documentation& 
   });
 }
 
+inja_formatter::environment::environment(const model::link_target& target) : environment() {
+}
+
 inja_formatter::environment::environment(const model::module& context) : environment() {
   self->data["name"] = context.name;
 

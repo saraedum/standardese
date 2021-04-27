@@ -10,6 +10,7 @@
 
 namespace standardese::transformation {
 
+// TODO: This should be called identifier transformation. Clean up the mess we made with the "anchor" term. We should not use it. Use link instead.
 class anchor_transformation : public transformation {
   public:
     using transformation::transformation;

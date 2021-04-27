@@ -115,7 +115,7 @@ void markdown_generator::visit(link& link) {
       } else if (link.target.href().has_value()) {
         cmark_node_set_url(top, link.target.href().value().c_str());
       } else if constexpr (std::is_same_v<T, model::link_target::cppast_target>) {
-        logger::error(fmt::format("Cannot render link to `{}` as MarkDown since it has not been resolved to a URL.", target.target->name()));
+        logger::error(fmt::format("Cannot render link to `{}`. MarkDown does not know about C/C++ entities and this target has no actual URL attached to it.", target.target->name()));
       } else {
         logger::error("Cannot render this kind of link as MarkDown yet.");
       }
