@@ -63,7 +63,7 @@ TEST_CASE("Typical Index Files can be Generated", "[index_document_builder]")
         <document name="headers">
           <unordered-list>
             <list-item>
-              <link href="/doc_header#">header.hpp</link>
+              <link href="/doc_header#" />
             </list-item>
           </unordered-list>
         </document>
@@ -80,7 +80,7 @@ TEST_CASE("Typical Index Files can be Generated", "[index_document_builder]")
       <document name="modules">
         <unordered-list>
           <list-item>
-            <link target-module="M">M</link>
+            <link target-module="M" />
           </list-item>
         </unordered-list>
       </document>

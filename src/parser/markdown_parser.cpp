@@ -10,7 +10,6 @@
 #include <fmt/format.h>
 #include <regex>
 #include <boost/algorithm/string/trim.hpp>
-#include <iostream> // TODO
 
 #include "cmark-extension/cmark_extension.hpp"
 
@@ -103,6 +102,8 @@ model::entity markdown_parser::parse(cmark_node* node) const
           //       * when there is standardese:// do an exact lookup
           //       * when there is standardese://kind/* do a fuzzy lookup with a fixed type.
           //       * when there is standardese://kind/ do a lookup with a fixed type.
+          // TODO: Leave the text empty for links with [entity]() syntax. The
+          // anchor_text_transformation will fill the text in.
 
           std::string target = std::string(cmark_node_get_url(node));
           std::string title = std::string(cmark_node_get_title(node));

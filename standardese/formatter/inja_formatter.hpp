@@ -16,20 +16,15 @@
 
 namespace standardese::formatter {
 
+// TODO: We probably need something with two steps here. An argument and a
+// context, one being what is actually rendered and one telling us which names
+// can be considered local.
+
 /// Renders C++ entities using the Inja templating engine.
 class inja_formatter {
  public:
   struct options {
     options();
-
-    // TODO: Do we need something like this?
-    /*
-    std::string file_format = "{{ filename(path) }}";
-    std::string function_format = "{{ name }}";
-    std::string type_alias_format = "{{ name }}";
-    std::string class_format = "{{ name }}";
-    std::string member_variable_format = "{{ name }}";
-    */
   };
 
   class environment {
@@ -37,6 +32,7 @@ class inja_formatter {
     environment();
     environment(const model::cpp_entity_documentation& context);
     environment(const model::module& context);
+    environment(const model::link_target& context);
     ~environment();
 
    private:

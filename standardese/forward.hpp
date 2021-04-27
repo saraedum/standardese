@@ -54,6 +54,7 @@ enum class exclude_mode;
 class module;
 class unordered_entities;
 class section;
+class link_target;
 
 }
 
