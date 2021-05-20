@@ -19,8 +19,8 @@ namespace standardese::model::markup
     class link final: public mixin::visitable<link>, public mixin::container<>
     {
     public:
-      template <typename ...Args>
-      link(link_target target, std::string title, Args&&... args) : target(target), title(title), mixin::container<>(std::forward<Args>(args)...) {
+      template <typename T, typename ...Args>
+      link(T target, std::string title, Args&&... args) : target(target), title(title), mixin::container<>(std::forward<Args>(args)...) {
       }
 
       /// The title which will usually be shown as a tooltip. Note that links

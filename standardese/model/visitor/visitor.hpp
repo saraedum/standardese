@@ -27,6 +27,7 @@ class visitor
     using code_block = conditional_const<model::markup::code_block>;
     using emphasis = conditional_const<model::markup::emphasis>;
     using cpp_entity_documentation = conditional_const<model::cpp_entity_documentation>;
+    using group_documentation = conditional_const<model::group_documentation>;
     using hard_break = conditional_const<model::markup::hard_break>;
     using heading = conditional_const<model::markup::heading>;
     using link = conditional_const<model::markup::link>;
@@ -48,6 +49,7 @@ class visitor
     virtual void visit(code_block&) = 0;
     virtual void visit(emphasis&) = 0;
     virtual void visit(cpp_entity_documentation&) = 0;
+    virtual void visit(group_documentation&) = 0;
     virtual void visit(hard_break&) = 0;
     virtual void visit(heading&) = 0;
     virtual void visit(link&) = 0;

@@ -11,6 +11,7 @@
 #include "../../standardese/model/visitor/visit.hpp"
 #include "../../standardese/model/markup/link.hpp"
 #include "../../standardese/model/cpp_entity_documentation.hpp"
+#include "../../standardese/model/group_documentation.hpp"
 #include "../../standardese/logger.hpp"
 
 // TODO: We need an additional transformation that optionally turns [target]() into [`target`]().
@@ -32,6 +33,10 @@ link_href_internal_transformation::link_href_internal_transformation(model::unor
           path = entity.path;
         } else if constexpr (std::is_same_v<T, model::cpp_entity_documentation>) {
           a[&entity.entity()] = path + "#" + entity.id;
+        } else if constexpr (std::is_same_v<T, model::group_documentation>) {
+          for (const auto& member : entity.entities) {
+            a[&member.entity()] = path + "#" + entity.id;
+          }
         }
 
         recurse();
@@ -55,7 +60,8 @@ void link_href_internal_transformation::do_transform(model::entity& document) {
           auto resolved = inventory.find(&*target.target);
           if (resolved == inventory.end()) {
               // TODO: Write a proper name for target.
-              logger::error(fmt::format("Could not resolve link to `{}`.", target.target->name()));
+              // TODO: Include kind in message.
+              logger::error(fmt::format("Could not create URL for link to `{}`. Target was not found in inventory of C++ entities which are linkable.", target.target->name()));
               return;
           }
 

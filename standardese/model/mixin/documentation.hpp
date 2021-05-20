@@ -6,12 +6,14 @@
 #define STANDARDESE_MODEL_MIXIN_DOCUMENTATION_HPP
 
 #include <type_safe/optional.hpp>
+#include <type_safe/optional_ref.hpp>
 #include <type_safe/reference.hpp>
 
 #include <cppast/forward.hpp>
 
 #include "anchored_container.hpp"
 #include "../markup/code_block.hpp"
+#include "../section.hpp"
 #include "../exclude_mode.hpp"
 
 namespace standardese::model::mixin
@@ -19,10 +21,17 @@ namespace standardese::model::mixin
 
 /// Documentation for something in the C++ source code such as a file, a class,
 /// a parameter, or a module.
-class documentation : public anchored_container<entity>
+class documentation : public anchored_container<>
 {
 public:
     using anchored_container<entity>::anchored_container;
+
+    type_safe::optional_ref<model::section> section(parser::commands::section_command type) {
+        for (auto& child : *this)
+            if (child.is<model::section>() && child.as<model::section>().type == type)
+                return type_safe::ref(child.as<model::section>());
+        return type_safe::nullopt;
+    }
 
     /// The explicit synopsis override if specified by the user.
     type_safe::optional<std::string> synopsis;

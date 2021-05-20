@@ -25,7 +25,6 @@ TEST_CASE("Entity Documents can be Generated", "[entity_document_builder]")
 {
   auto logger = util::logger::throwing_logger();
 
-
   SECTION("Entity Documents for Templated Functions") {
     util::cpp_file header(R"(
       #include <type_traits>

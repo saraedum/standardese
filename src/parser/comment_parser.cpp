@@ -59,7 +59,18 @@
 #include "../../standardese/model/document.hpp"
 #include "../../standardese/logger.hpp"
 
-// TODO: Better error reporting. It's a bit silly to report errors with XML that nobody understands?
+// TODO: Better error reporting. It's a bit silly to report errors with XML
+// that nobody understands? Generally, it would be nice to always report
+// errors with some context, i.e., the source file (and location) responsible
+// and the component of standardese that produced the message. The latter is
+// maybe not necessary with enough verbosity. Anyway, we might want to have a
+// threa-static context stack that's somehow built with RAII. Additionally,
+// complex values should always be pushed to following lines, i.e., `Could not
+// find {} in xml tree {}.` should only inline the variables if they are short
+// and in particular single line. Otherwise, there should be [references] that
+// are then resolved later. We could maybe even throw something like
+// https://stackoverflow.com/questions/3899870/print-call-stack-in-c-or-c into
+// the mix if enabled through a parameter.
 
 namespace standardese::parser
 {
@@ -74,7 +85,8 @@ std::vector<model::entity> comment_parser::parse(const std::string& comment, con
     using unique_parser = unique_cmark<cmark_parser, cmark_parser_free_with_extensions>;
     auto parser = unique_parser(cmark_parser_new(CMARK_OPT_SMART));
 
-    verbatim_extension::verbatim_extension::create(parser.get());
+    // TODO: Fix verbatim parser.
+    // verbatim_extension::verbatim_extension::create(parser.get());
     ignore_html_extension::ignore_html_extension::create(parser.get());
     command_extension::command_extension::create(parser.get(), options.command_extension_options);
 
@@ -377,6 +389,7 @@ void comment_parser::apply_command(cmark_node* node, T& model) const
           }
 
           model.group = name;
+          // TODO: Why should a group use an output section? Should this not rather be a "heading" for the group?
           if (!heading.empty())
               model.output_section = heading;
           return;

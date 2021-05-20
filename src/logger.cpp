@@ -2,6 +2,7 @@
 // This file is subject to the license terms in the LICENSE file
 // found in the top-level directory of this distribution.
 
+#include <spdlog/common.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/spdlog.h>
 #include <mutex>
@@ -71,8 +72,18 @@ void debug(const std::string& msg) {
   get().debug(msg);
 }
 
+void debug(const std::function<std::string()>& msg) {
+  if (get().should_log(spdlog::level::debug))
+    debug(msg());
+}
+
 void trace(const std::string& msg) { 
   get().trace(msg);
+}
+
+void trace(const std::function<std::string()>& msg) {
+  if (get().should_log(spdlog::level::trace))
+    trace(msg());
 }
 
 void warn_as_error() {

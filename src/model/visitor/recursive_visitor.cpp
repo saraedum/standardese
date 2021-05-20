@@ -9,6 +9,7 @@
 #include "../../../standardese/model/section.hpp"
 #include "../../../standardese/model/markup/emphasis.hpp"
 #include "../../../standardese/model/cpp_entity_documentation.hpp"
+#include "../../../standardese/model/group_documentation.hpp"
 #include "../../../standardese/model/markup/hard_break.hpp"
 #include "../../../standardese/model/markup/heading.hpp"
 #include "../../../standardese/model/markup/link.hpp"
@@ -43,6 +44,7 @@ template<bool is_const> void recursive_visitor<is_const>::visit(typename visitor
 template<bool is_const> void recursive_visitor<is_const>::visit(typename visitor<is_const>::section& entity) { visit_children(entity, *this); }
 template<bool is_const> void recursive_visitor<is_const>::visit(typename visitor<is_const>::emphasis& entity) { visit_children(entity, *this); }
 template<bool is_const> void recursive_visitor<is_const>::visit(typename visitor<is_const>::cpp_entity_documentation& entity) { visit_children(entity, *this); }
+template<bool is_const> void recursive_visitor<is_const>::visit(typename visitor<is_const>::group_documentation& entity) { visit_children(entity, *this); }
 template<bool is_const> void recursive_visitor<is_const>::visit(typename visitor<is_const>::hard_break& entity) {}
 template<bool is_const> void recursive_visitor<is_const>::visit(typename visitor<is_const>::heading& entity) { visit_children(entity, *this); }
 template<bool is_const> void recursive_visitor<is_const>::visit(typename visitor<is_const>::link& entity) { visit_children(entity, *this); }

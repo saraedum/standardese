@@ -54,6 +54,7 @@ unordered_entities::const_iterator unordered_entities::find_cpp_entity(const cpp
 
   struct equality {
     bool operator()(const cppast::cpp_entity& lhs, const struct entity& rhs) const {
+      // TODO: Search group_documentation?
       return rhs.is<cpp_entity_documentation>() && &rhs.as<cpp_entity_documentation>().entity() == &lhs;
     }
   };
@@ -204,6 +205,7 @@ std::conditional_t<is_const, const entity*, entity*> unordered_entities::unorder
 size_t unordered_entities::impl::hash::operator()(const entity& self) const {
   return visitor::visit([&](auto&& entity) {
     using T = std::decay_t<decltype(entity)>;
+    // TODO: Handle group_documentation?
     if constexpr (std::is_same_v<T, model::cpp_entity_documentation>) {
       return reinterpret_cast<size_t>(&entity.entity());
     } else if constexpr (std::is_same_v<T, model::module>) {
@@ -217,6 +219,7 @@ size_t unordered_entities::impl::hash::operator()(const entity& self) const {
 bool unordered_entities::impl::equality::operator()(const entity& lhs, const entity& rhs) const {
   return visitor::visit([&](auto&& lentity) {
       using T = std::decay_t<decltype(lentity)>;
+      // TODO: Handle group_documentation?
       if constexpr (std::is_same_v<T, model::cpp_entity_documentation>) {
         return visitor::visit([&](auto&& rentity) {
           using S = std::decay_t<decltype(rentity)>;

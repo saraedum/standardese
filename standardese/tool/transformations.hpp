@@ -15,6 +15,9 @@
 #include "../transformation/link_target_external_transformation.hpp"
 #include "../transformation/link_external_legacy_transformation.hpp"
 #include "../transformation/link_sphinx_transformation.hpp"
+#include "../transformation/group_uncommented_transformation.hpp"
+#include "../transformation/group_transformation.hpp"
+#include "../transformation/entity_heading_transformation.hpp"
 
 namespace standardese::tool {
 
@@ -25,10 +28,13 @@ namespace standardese::tool {
 class transformations {
  public:
   struct options {
+    struct transformation::group_uncommented_transformation::group_uncommented_options group_uncommented_options;
+    struct transformation::group_transformation::group_options group_options;
     struct transformation::exclude_pattern_transformation::options exclude_pattern_options;
     struct transformation::exclude_access_transformation::options exclude_access_options;
     struct transformation::exclude_uncommented_transformation::options exclude_uncommented_options;
     struct transformation::synopsis_transformation::options synopsis_options;
+    struct transformation::entity_heading_transformation::entity_heading_transformation_options entity_heading_options;
 
     struct external_sphinx_options {
       /// The local path of the inventory file.

@@ -136,6 +136,8 @@ visitor::exclusion visitor::exclude(exclude_uncommented_transformation::options:
     case exclude_uncommented_transformation::options::mode::include:
       return exclusion::include;;
   }
+
+  throw std::logic_error("not implemented: unhandled exclusion mode.");
 }
 
 void visitor::push() {

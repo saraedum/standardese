@@ -15,7 +15,6 @@
 namespace standardese::output_generator
 {
 
-template <typename G>
 class stream_generator : public model::visitor::recursive_visitor<true>
 {
 public:
@@ -25,6 +24,7 @@ public:
     
     virtual ~stream_generator() {}
 
+    template <typename G>
     static std::string render(const model::entity& root)
     {
         std::stringstream s;

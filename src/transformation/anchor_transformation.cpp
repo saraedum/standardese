@@ -30,6 +30,8 @@ void anchor_transformation::do_transform(model::entity& document) {
 
       // TODO: Anyway, what mkdocs does is not a bad strategy in general: https://github.com/Python-Markdown/markdown/blob/master/markdown/extensions/toc.py#L26
       
+      // TODO: Complain when the anchor is not unique (and offer a solution?)
+
       // TODO: What can we do when there is no heading?
       if (entity.begin() != entity.end() && entity.begin()->template is<model::markup::heading>()) {
         auto& heading = entity.begin()->template as<model::markup::heading>();
@@ -48,6 +50,7 @@ void anchor_transformation::do_transform(model::entity& document) {
         inner = std::regex_replace(inner, strip, "");
         std::transform(inner.begin(), inner.end(), inner.begin(), [](unsigned char c){ return std::tolower(c); });
         inner = std::regex_replace(inner, escape, "-");
+        // TODO: Additionally, mkdocs sometimes adds _number to make things unique.
 
         entity.id = inner;
       }

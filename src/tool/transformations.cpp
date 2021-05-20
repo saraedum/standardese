@@ -18,6 +18,8 @@
 #include "../../standardese/transformation/link_target_unresolved_transformation.hpp"
 #include "../../standardese/transformation/link_href_internal_transformation.hpp"
 #include "../../standardese/transformation/link_sphinx_transformation.hpp"
+#include "../../standardese/transformation/group_uncommented_transformation.hpp"
+#include "../../standardese/transformation/group_transformation.hpp"
 
 namespace standardese::tool {
 
@@ -51,9 +53,13 @@ void transformations::transform(model::unordered_entities& documents, const pars
     }, option);
   transformation::link_target_unresolved_transformation{documents}.transform();
 
+  transformation::group_uncommented_transformation{documents, options.group_uncommented_options}.transform();
+
+  transformation::group_transformation{documents, options.group_options}.transform();
+
   transformation::exclude_uncommented_transformation{documents, options.exclude_uncommented_options}.transform();
   transformation::synopsis_transformation{documents}.transform();
-  transformation::entity_heading_transformation{documents}.transform();;
+  transformation::entity_heading_transformation{documents, options.entity_heading_options}.transform();;
   transformation::output_group_transformation{documents}.transform();
   transformation::anchor_transformation{documents}.transform();
 

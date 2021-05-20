@@ -13,6 +13,7 @@ namespace standardese::model
     /// An output file, e.g., the description of a header file.
     class document final : public mixin::visitable<document>, public mixin::anchored_container<> {
       public:
+        // TODO: Since we are using unnamed documents as containers frequently, it might make sense to have an explicit default constructor as well.
         template <typename ...Args>
         document(std::string name, std::string path, Args&&... args) : name(std::move(name)), path(std::move(path)), mixin::anchored_container<>(std::forward<Args>(args)...) {}
 

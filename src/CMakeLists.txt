@@ -27,6 +27,8 @@ set(src
     inventory/sphinx/entry.cpp
     inventory/sphinx/documentation_set.cpp
     transformation/transformation.cpp
+    transformation/group_uncommented_transformation.cpp
+    transformation/group_transformation.cpp
     transformation/link_text_transformation.cpp
     transformation/link_target_internal_transformation.cpp
     transformation/link_target_external_transformation.cpp
@@ -40,8 +42,42 @@ set(src
     transformation/output_group_transformation.cpp
     transformation/anchor_transformation.cpp
     formatter/inja_formatter.cpp
+    formatter/inja_formatter.build.cpp
+    formatter/inja_formatter.json.cpp
+    formatter/inja_formatter.format.cpp
+    formatter/inja_formatter.add_callback.cpp
+    formatter/inja_formatter.name.cpp
+    formatter/inja_formatter.md.cpp
+    formatter/inja_formatter.path.cpp
+    formatter/inja_formatter.filename.cpp
+    formatter/inja_formatter.sanitize_basename.cpp
+    formatter/inja_formatter.code_escape.cpp
+    formatter/inja_formatter.md_escape.cpp
+    formatter/inja_formatter.reject.cpp
+    formatter/inja_formatter.join.cpp
+    formatter/inja_formatter.declaration_specifiers.cpp
+    formatter/inja_formatter.target.cpp
+    formatter/inja_formatter.parameters.cpp
+    formatter/inja_formatter.const_qualification.cpp
+    formatter/inja_formatter.volatile_qualification.cpp
+    formatter/inja_formatter.ref_qualification.cpp
+    formatter/inja_formatter.cppast_kind.cpp
+    formatter/inja_formatter.kind.cpp
+    formatter/inja_formatter.synopsis.cpp
+    formatter/inja_formatter.code.cpp
+    formatter/inja_formatter.option.cpp
+    formatter/inja_formatter.return_type.cpp
+    formatter/inja_formatter.type.cpp
+    formatter/inja_formatter.arguments.cpp
+    formatter/inja_formatter.entity.cpp
+    formatter/inja_formatter.text.cpp
+    formatter/inja_formatter.replace.cpp
+    formatter/synopsis_formatter.cpp
+    formatter/code_formatter.cpp
+    output_generator/cmark_generator.cpp
     output_generator/html/html_generator.cpp
     output_generator/markdown/markdown_generator.cpp
+    output_generator/text/text_generator.cpp
     output_generator/sphinx/inventory_generator.cpp
     output_generator/xml/xml_generator.cpp
     document_builder/index_document_builder.cpp

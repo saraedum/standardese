@@ -6,6 +6,7 @@
 
 #include "../../../standardese/output_generator/sphinx/inventory_generator.hpp"
 #include "../../../standardese/model/cpp_entity_documentation.hpp"
+#include "../../../standardese/model/group_documentation.hpp"
 #include "../../../standardese/model/document.hpp"
 
 // TODO: Create a parser::intersphinx::document_set here and then dump it out.
@@ -13,7 +14,7 @@
 namespace standardese::output_generator::sphinx
 {
 
-inventory_generator::inventory_generator(std::ostream& os) : stream_generator<inventory_generator>(os) {}
+inventory_generator::inventory_generator(std::ostream& os) : stream_generator(os) {}
 
 inventory_generator::~inventory_generator() {
   out_ << inventory << std::flush;
@@ -22,7 +23,7 @@ inventory_generator::~inventory_generator() {
 void inventory_generator::visit(document& document) {
   path = document.path;
 
-  stream_generator<inventory_generator>::visit(document);
+  stream_generator::visit(document);
 }
 
 void inventory_generator::visit(cpp_entity_documentation& documentation) {
@@ -32,7 +33,17 @@ void inventory_generator::visit(cpp_entity_documentation& documentation) {
   
   inventory.entries.emplace_back(name(entity), domain, type, priority(entity), path + "/#" + documentation.id, display_name(entity));
 
-  stream_generator<inventory_generator>::visit(documentation);
+  stream_generator::visit(documentation);
+}
+
+void inventory_generator::visit(group_documentation& documentation) {
+  for (const auto& entity : documentation.entities) {
+    const auto [domain, type] = domain_type(entity.entity());
+    
+    inventory.entries.emplace_back(name(entity.entity()), domain, type, priority(entity.entity()), path + "/#" + documentation.id, display_name(entity.entity()));
+
+    stream_generator::visit(documentation);
+  }
 }
 
 int inventory_generator::priority(const cppast::cpp_entity& entity) const {

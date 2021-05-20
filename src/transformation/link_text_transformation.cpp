@@ -4,6 +4,7 @@
 // found in the top-level directory of this distribution.
 
 #include <fmt/format.h>
+#include <nlohmann/json.hpp>
 
 #include "../../standardese/transformation/link_text_transformation.hpp"
 #include "../../standardese/model/visitor/visit.hpp"
@@ -20,21 +21,21 @@ void link_text_transformation::do_transform(model::entity& root) {
   model::visitor::visit([&](auto& link, auto&& recurse) {
     using T = std::decay_t<decltype(link)>;
 
-    formatter::inja_formatter formatter({});
-
     if constexpr (std::is_same_v<T, model::markup::link>) {
       if (link.begin() == link.end()) {
         link.target.accept([&](auto&& target) {
           using T = std::decay_t<decltype(target)>;
 
-          const auto apply = [&](const std::string& format, auto&& env) {
-            formatter::inja_formatter::environment environment = env;
+          const auto apply = [&](const std::string& format, auto&& data) {
+            formatter::inja_formatter inja({});
+            inja.data().merge_patch(inja.to_json(data));
 
-            auto rendered = formatter.build(format, environment);
+            auto rendered = inja.build(format);
 
             auto paragraph = rendered.begin();
 
             if (paragraph == rendered.end()) {
+              // Format string produced an empty markup tree.
               return;
             }
 

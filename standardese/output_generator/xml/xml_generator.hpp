@@ -13,7 +13,7 @@ namespace standardese::output_generator::xml
 {
 
 /// Renders a tree of entities as XML.
-class xml_generator : public stream_generator<xml_generator> {
+class xml_generator : public stream_generator {
   public:
     xml_generator(std::ostream&);
 
@@ -25,6 +25,7 @@ class xml_generator : public stream_generator<xml_generator> {
     void visit(section&) override;
     void visit(emphasis&) override;
     void visit(cpp_entity_documentation&) override;
+    void visit(group_documentation&) override;
     void visit(hard_break&) override;
     void visit(heading&) override;
     void visit(link&) override;
@@ -38,6 +39,8 @@ class xml_generator : public stream_generator<xml_generator> {
     void visit(thematic_break&) override;
     void visit(document&) override;
     void visit(image&) override;
+
+    static std::string render(const model::entity& root);
 
   private:
     /// The root of the output XML document.

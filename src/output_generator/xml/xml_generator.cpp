@@ -16,11 +16,14 @@
 #include "../../../standardese/model/markup/heading.hpp"
 #include "../../../standardese/model/document.hpp"
 #include "../../../standardese/model/cpp_entity_documentation.hpp"
+#include "../../../standardese/model/group_documentation.hpp"
+
+// TODO: Can we somehow disable the XML document type for error messages and testing?
 
 namespace standardese::output_generator::xml
 {
 
-xml_generator::xml_generator(std::ostream& os) : stream_generator<xml_generator>(os), xml_document(), top(xml_document) {}
+xml_generator::xml_generator(std::ostream& os) : stream_generator(os), xml_document(), top(xml_document) {}
 
 void xml_generator::visit(block_quote& block_quote) {
     top = top.append_child("block-quote");
@@ -111,6 +114,16 @@ void xml_generator::visit(cpp_entity_documentation& entity_documentation) {
         top.append_attribute("synopsis").set_value(entity_documentation.synopsis.value().c_str());
 
     stream_generator::visit(entity_documentation);
+    top = top.parent();
+}
+
+void xml_generator::visit(group_documentation& group_documentation) {
+    top = top.append_child("group-documentation");
+
+    if (group_documentation.synopsis)
+        top.append_attribute("synopsis").set_value(group_documentation.synopsis.value().c_str());
+
+    stream_generator::visit(group_documentation);
     top = top.parent();
 }
 
@@ -220,6 +233,10 @@ void xml_generator::visit(image& image) {
       top.append_attribute("title").set_value(image.title.c_str());
     stream_generator::visit(image);
     top = top.parent();
+}
+
+std::string xml_generator::render(const model::entity& root) {
+  return stream_generator::render<xml_generator>(root);
 }
 
 xml_generator::~xml_generator() {

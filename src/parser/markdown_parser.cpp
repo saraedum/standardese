@@ -19,7 +19,6 @@
 #include "../../standardese/model/markup/block_quote.hpp"
 #include "../../standardese/model/markup/code.hpp"
 #include "../../standardese/model/markup/emphasis.hpp"
-#include "../../standardese/model/cpp_entity_documentation.hpp"
 #include "../../standardese/model/markup/hard_break.hpp"
 #include "../../standardese/model/markup/heading.hpp"
 #include "../../standardese/model/markup/link.hpp"

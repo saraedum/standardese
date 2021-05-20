@@ -311,8 +311,10 @@ bool symbols::impl::cppast_symbols::matches(const cppast::cpp_entity& entity, co
       // We do not want to match with C++ header files here. They are handled separately.
       return false;
 
+  /* TODO
   if (entity.kind() == cppast::cpp_friend::kind())
       logger::error("not implemented: cannot match friends yet");
+  */
   
   const auto name = boost::erase_all_copy(entity.name(), " ");
   const auto temp = template_parameters(entity);

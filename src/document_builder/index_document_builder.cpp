@@ -38,7 +38,7 @@ document index_document_builder::build(const std::string& name, const std::strin
         if constexpr (std::is_same_v<T, model::cpp_entity_documentation> || std::is_same_v<T, model::module>) {
           model::link_target target("");
           if constexpr (std::is_same_v<T, model::cpp_entity_documentation>) {
-            target = documentation.entity();
+            target = model::link_target(documentation.entity());
           } else {
             target = model::link_target::module_target(documentation.name);
           }

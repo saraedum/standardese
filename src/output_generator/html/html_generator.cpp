@@ -7,7 +7,7 @@
 namespace standardese::output_generator::html
 {
 
-html_generator::html_generator(std::ostream& os) : stream_generator<html_generator>(os) {}
+html_generator::html_generator(std::ostream& os) : stream_generator(os) {}
 
 }
 

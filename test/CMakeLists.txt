@@ -24,7 +24,10 @@ set(tests
     transformation/link_target_internal_transformation.cpp
     transformation/link_target_external_transformation.cpp
     transformation/link_external_legacy_transformation.cpp
+    transformation/link_text_transformation.cpp
+    transformation/entity_heading_transformation.cpp
     formatter/inja_formatter.cpp
+    formatter/code_formatter.cpp
     comment.cpp
     doc_entity.cpp
     documentation.cpp

@@ -67,6 +67,11 @@ namespace standardese::model::mixin
             children_.clear();
         }
 
+        void erase(iterator& it)
+        {
+            children_.erase(it);
+        }
+
         /// \returns An iterator to the first child entity.
         iterator begin()
         {
@@ -116,7 +121,10 @@ namespace standardese::model::mixin
         }
 
     private:
-        // TODO: Should we just make this public? So we do not need all this glue anymore?
+        // TODO: Should we just make this public? So we do not need all this
+        // glue anymore? Or should we instead expose the entire vector
+        // interface here and check NDEBUG that children are of expected
+        // types? Such as, lists contain only list items...
         std::vector<T> children_;
     };
 }
