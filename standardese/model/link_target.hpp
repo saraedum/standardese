@@ -59,13 +59,13 @@ class link_target {
     };
 
     /// Create a link from input in MarkDown with standardese syntax.
-    link_target(std::string target);
+    explicit link_target(std::string target);
 
     /// Create a link to the module `module`.
     link_target(module_target module);
 
     /// Create a link to the C++ entity `entity`.
-    link_target(const cppast::cpp_entity& entity);
+    explicit link_target(const cppast::cpp_entity& entity);
 
     /// Create a link to external documentation generated with sphinx.
     link_target(sphinx_target target);

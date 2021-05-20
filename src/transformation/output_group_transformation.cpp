@@ -2,37 +2,46 @@
 // This file is subject to the license terms in the LICENSE file
 // found in the top-level directory of this distribution.
 
-#include <cppast/code_generator.hpp>
 #include <cppast/cpp_class.hpp>
 #include <stack>
 
 #include "../../standardese/transformation/output_group_transformation.hpp"
-#include "../../standardese/model/visitor/generic_visitor.hpp"
+#include "../../standardese/model/visitor/visit.hpp"
 #include "../../standardese/model/entity.hpp"
-#include "../../standardese/model/cpp_entity_documentation.hpp"
+#include "../../standardese/model/mixin/documentation.hpp"
+#include "../../standardese/parser/markdown_parser.hpp"
+#include "../../standardese/model/document.hpp"
 
 namespace standardese::transformation {
-namespace {
 
-// TODO: Move implementation to the bottom and only define the class here.
-struct visitor : model::visitor::generic_visitor<visitor, model::visitor::visitor<false>> {
-  visitor() {
-    containers.push({});
-  }
+void output_group_transformation::do_transform(model::entity& document) {
+  std::stack<std::vector<model::entity>> containers;
+  containers.push({});
 
-  template <typename T>
-  void operator()(T& entity) {
-    static_assert(std::is_same_v<T, std::decay_t<T>>);
+  std::stack<bool> has_output_section;
 
-    if constexpr (std::is_same_v<T, model::cpp_entity_documentation>) {
-      if (entity.output_section.has_value() && !containers.empty()) {
-        // TODO: Don't assume that each entity starts with a heading here.
-        int level = entity.begin()->template as<model::markup::heading>().level + delta - has_output_section.top();
+  int delta = 0;
 
+  std::stack<int> level;
+  level.push(1);
+
+  model::visitor::visit([&](auto&& entity, auto&& recurse) {
+    using T = std::decay_t<decltype(entity)>;
+
+    if constexpr (std::is_base_of_v<model::mixin::documentation, T>) {
+      // TODO: Make configurable
+      if (entity.output_section.has_value() && !entity.group.has_value()) {
         if (!has_output_section.top())
           delta++;
 
-        containers.top().emplace_back(model::markup::heading(level, "", entity.output_section.value()));
+        auto heading = model::markup::heading(level.top());
+        auto title = parser::markdown_parser{}.parse(entity.output_section.value()).begin()->template as<model::markup::paragraph>();
+        // TODO: We do this a lot: Parse and treat it as inline.
+        for (auto& child : title) {
+          heading.add_child(std::move(child));
+        }
+
+        containers.top().emplace_back(heading);
         has_output_section.top() = true;
       }
     }
@@ -40,16 +49,20 @@ struct visitor : model::visitor::generic_visitor<visitor, model::visitor::visito
     if constexpr (std::is_same_v<T, model::markup::heading>) {
       // TODO: Cap at 5 in a separate transformation.
       entity.level += delta;
+      if (!has_output_section.top())
+        level.top() = entity.level + 1;
     }
 
     if constexpr (std::is_base_of_v<model::mixin::container<>, T>) {
       containers.push({});
       has_output_section.push(false);
+      level.push(level.top());
 
-      for (auto& child : entity) child.accept(*this);
+      recurse();
 
       if (has_output_section.top())
         delta--;
+      level.pop();
       has_output_section.pop();
 
       entity.clear();
@@ -59,18 +72,7 @@ struct visitor : model::visitor::generic_visitor<visitor, model::visitor::visito
     }
 
     containers.top().emplace_back(entity);
-  }
-
-  int delta = 0;
-  std::stack<std::vector<model::entity>> containers;
-  std::stack<bool> has_output_section;
-};
-
-}
-
-void output_group_transformation::do_transform(model::entity& entity) {
-  visitor v{};
-  entity.accept(v);
+  }, document);
 }
 
 }

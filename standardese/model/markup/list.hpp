@@ -17,7 +17,7 @@ namespace standardese::model::markup
     {
     public:
         template <typename ...Args>
-        explicit list(bool ordered, Args&&... children) : ordered(ordered), mixin::container<list_item>(std::forward<Args>(children)...) {}
+        explicit list(bool ordered=false, Args&&... children) : ordered(ordered), mixin::container<list_item>(std::forward<Args>(children)...) {}
 
         bool ordered;
     };

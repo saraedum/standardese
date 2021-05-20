@@ -3,7 +3,9 @@
 // This file is subject to the license terms in the LICENSE file
 // found in the top-level directory of this distribution.
 
+#include <fmt/format.h>
 #include <cppast/cpp_file.hpp>
+#include <nlohmann/json.hpp>
 
 #include "../../standardese/tool/document_builders.hpp"
 #include "../../standardese/model/unordered_entities.hpp"
@@ -26,12 +28,19 @@ model::unordered_entities document_builders::create(model::unordered_entities& p
 
   formatter::inja_formatter formatter{{}};
 
-  for (const auto& entity : parsed) {
+  logger::info("Creating entity documents.");
+  for (auto& entity : parsed) {
     if (entity.is<model::cpp_entity_documentation>()) {
       auto& documentation = entity.as<model::cpp_entity_documentation>();
+
+      formatter::inja_formatter inja{{}};
+      inja.data().merge_patch(inja.to_json(documentation.entity()));
+
       if (cppast::cpp_file::kind() == documentation.entity().kind()) {
-        const std::string name = formatter.format(options.document_name, documentation);
-        const std::string path = formatter.format(options.document_path, documentation);
+        logger::debug(fmt::format("Creating document for entity {}.", documentation.entity().name()));
+
+        const std::string name = inja.format(options.document_name);
+        const std::string path = inja.format(options.document_path);
 
         documents.insert(builder.build(name, path, entity, parsed));
       }

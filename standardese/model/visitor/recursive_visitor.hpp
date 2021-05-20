@@ -19,6 +19,7 @@ class recursive_visitor : public visitor<is_const>
     virtual void visit(typename visitor<is_const>::code_block&) override;
     virtual void visit(typename visitor<is_const>::emphasis&) override;
     virtual void visit(typename visitor<is_const>::cpp_entity_documentation&) override;
+    virtual void visit(typename visitor<is_const>::group_documentation&) override;
     virtual void visit(typename visitor<is_const>::hard_break&) override;
     virtual void visit(typename visitor<is_const>::heading&) override;
     virtual void visit(typename visitor<is_const>::link&) override;

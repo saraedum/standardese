@@ -81,6 +81,8 @@ std::ostream& operator<<(std::ostream& os, const cpp_standard& std) {
     case cpp_standard::cpp_1z:
       return os << "c++17";
   }
+
+  throw std::logic_error("not implemented: unsupported C++ standard");
 }
 
 }
@@ -583,6 +585,8 @@ po::options_description options_parser::legacy_comment_options() const {
   auto legacy = po::options_description("Legacy Compilation Options", options.options_options.columns);
 
   legacy.add_options()
+    // TODO: Test & Mark as Deprecated (use --command-pattern instead.)
+    ("comment.command_character", po::value<char>()->default_value('\\'), "character used to introduce special commands")
     ("comment.external_doc", po::value<std::vector<std::string>>()->value_name("namespace=url"), "Link entities in this namespace to a fixed URL prefix.");
 
   return legacy;
@@ -624,7 +628,7 @@ void options_parser::process_legacy_output_options(po::variables_map& parsed) {
   if (parsed.count("output.format")) {
     for (const auto& format: parsed.at("output.format").as<std::vector<std::string>>()) {
       if (format == "html") {
-        logger::warn("--output-format=html is deprecated. Use --html instead.");
+        logger::warn("--output.format=html is deprecated. Use --html instead.");
 
         parsed.at("html").value() = true;
       } else if (format == "xml") {
@@ -675,6 +679,8 @@ po::options_description options_parser::cpp_parser_options() const {
   compiler.add_options()
     (",I", po::value<std::vector<std::string>>()->value_name("dir"), "Add directory to be searched for header files.")
     ("std", po::value<cppast::cpp_standard>()->default_value(cppast::cpp_standard::cpp_14), "The C++ standard to use for parsing.")
+    // Note that this is handled in process_markdown_parser_options() because
+    // it actually does not affect the C++ parser.
     ("free-file-comments", po::value<bool>()->default_value(false)->implicit_value(true)->zero_tokens(), "Associate free comments to their header file.");
 
   return compiler;
@@ -689,25 +695,33 @@ void options_parser::process_cpp_parser_options(po::variables_map& parsed) {
   if (parsed.count("std")) {
     options.parser_options.cppast_options.clang_config.set_flags(parsed.at("std").as<cppast::cpp_standard>());
   }
-
-  if (parsed.count("free-file-comments"))
-    options.parser_options.comment_parser_options.free_file_comments = parsed.at("free-file-comments").as<bool>();
 }
 
 po::options_description options_parser::markdown_parser_options() const {
   auto markdown = po::options_description("Comment Parser Options", options.options_options.columns);
 
-  // TODO: Implement me
+  markdown.add_options()
+    // TODO: Test
+    ("command-pattern,p", po::value<std::vector<std::string>>()->default_value({}, ""), "set the regular expression to detect a command, e.g., `--command-pattern 'returns=RETURNS:'`, or `'returns|=RETURNS:'` to also keep the default pattern.");
 
   return markdown;
 }
 
-void options_parser::process_markdown_parser_options(po::variables_map&) {}
+void options_parser::process_markdown_parser_options(po::variables_map& parsed) {
+  if (parsed.count("command-pattern")) {
+    options.parser_options.comment_parser_options = { parsed.at("comment.command_character").as<char>(), parsed.at("command-pattern").as<std::vector<std::string>>() };
+  }
+
+  if (parsed.count("free-file-comments"))
+    options.parser_options.comment_parser_options.free_file_comments = parsed.at("free-file-comments").as<bool>();
+}
 
 po::options_description options_parser::composition_options() const {
   auto composition = po::options_description("Compsition Options", options.options_options.columns);
 
   // TODO: Implement me
+  composition.add_options()
+    ("format,f", po::value<std::vector<std::string>>()->default_value({}, ""), "TODO");
 
   return composition;
 }
@@ -751,7 +765,37 @@ po::options_description options_parser::external_options() const {
   return external;
 }
 
-void options_parser::process_composition_options(po::variables_map&) {}
+void options_parser::process_composition_options(po::variables_map& parsed) {
+  // TODO: Test
+  if (parsed.count("format")) {
+    for (const auto& option: parsed.at("format").as<std::vector<std::string>>()) {
+      const auto split = option.find("=");
+      if (split == std::string::npos || split == 0) {
+        logger::error(fmt::format("Ignoring malformed command line flag for --format. Must be of the form `name=template` but `{}` is not.", option));
+        continue;
+      }
+
+      const auto name = option.substr(0, split);
+      const auto format = option.substr(split + 1);
+
+      if (name == "type") {
+        // TODO: Can we make this more convenient? Or should we rather expose a
+        // variable in the template to understand in which context we are
+        // formatting?
+        options.transformation_options.entity_heading_options.inja_formatter_options.type_format = format;
+        options.transformation_options.entity_heading_options.inja_formatter_options.return_type_format = format;
+        options.transformation_options.entity_heading_options.inja_formatter_options.parameter_type_format = format;
+      } else if (name == "return_type") { 
+        options.transformation_options.entity_heading_options.inja_formatter_options.return_type_format = format;
+      } else if (name == "parameter_type") { 
+        options.transformation_options.entity_heading_options.inja_formatter_options.parameter_type_format = format;
+      } else {
+        // TODO
+        logger::error(fmt::format("Ignoring malformed command line flag for --format. Unknown name `{}`.", name));
+      }
+    }
+  }
+}
 
 po::options_description options_parser::output_options() const {
   auto format = po::options_description("Output Options", options.options_options.columns);
@@ -760,7 +804,9 @@ po::options_description options_parser::output_options() const {
     ("exclude", po::value<std::vector<std::string>>()->value_name("regex"), "Exclude C/C++ entities whose full name matches this regular expression.")
     ("exclude-uncommented,X", po::value<counter>()->zero_tokens(), "No output for uncommented C/C++ entities, can be specified multiple times.\n-XXXX no output at all.\n-XXX do not apply this to files.\n-XX also do not apply to parents with commented members.\n-X also show uncommented members in their parent's synopsis.")
     ("private", po::value<bool>()->default_value(false)->implicit_value(true)->zero_tokens(), "Include private members and base classes.")
-    ("outdir,O", po::value<boost::filesystem::path>()->value_name("dir")->default_value((struct output_generators::options){}.output_directory), "Output directory for generated files.");
+    ("outdir,O", po::value<boost::filesystem::path>()->value_name("dir")->default_value((struct output_generators::options){}.output_directory), "Output directory for generated files.")
+    // TODO: Document & Test
+    ("vpath", po::value<std::string>()->default_value(options.document_builder_options.document_path, "")->value_name("template"));
 
   return format;
 }
@@ -818,6 +864,10 @@ void options_parser::process_output_options(po::variables_map& parsed) {
   if (parsed.count("outdir")) {
     options.output_generator_options.output_directory = parsed.at("outdir").as<boost::filesystem::path>();
   }
+
+  if (parsed.count("vpath") && !parsed.at("vpath").defaulted()) {
+    options.document_builder_options.document_path = parsed.at("vpath").as<std::string>();
+  }
 }
 
 po::options_description options_parser::markdown_options() const {
@@ -836,9 +886,9 @@ void options_parser::process_markdown_options(po::variables_map& parsed) {
   if (parsed.count("md-anchors")) {
     const auto value = parsed.at("md-anchors").as<std::string>();
     if (value == "plain") {
-      options.output_generator_options.markdown_options.anchors = output_generator::markdown::markdown_generator::options::anchors::plain;
+      options.output_generator_options.markdown_options.anchors = output_generator::markdown::markdown_generator::markdown_generator_options::anchors::plain;
     } else if (value == "html") {
-      options.output_generator_options.markdown_options.anchors = output_generator::markdown::markdown_generator::options::anchors::html;
+      options.output_generator_options.markdown_options.anchors = output_generator::markdown::markdown_generator::markdown_generator_options::anchors::html;
     } else {
       logger::error(fmt::format("Ignoring malformed --md-anchors. Expected one of `plain`, `html` but found `{}`.", value));
     }

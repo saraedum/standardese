@@ -174,6 +174,7 @@ model::entity synopsis(const cppast::cpp_entity& entity) {
       show_complex_noexcept,     //< If set, complex noexcept conditions will be shown.
   */
 
+  // TODO: Use the synopsis_formatter instead.
   struct generator : public cppast::code_generator {
     void do_indent() override {
       // TODO: This used to be configurable:

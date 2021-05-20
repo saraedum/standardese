@@ -16,6 +16,8 @@ namespace standardese::parser {
 namespace
 {
 
+// TODO: Move this into comment_parser.cpp
+
 // Return command_character, e.g., '\', as something that can be used in a
 // regular expression, e.g., '\\'.
 std::string command_character_escaped(char command_character) {

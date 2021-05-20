@@ -12,14 +12,9 @@
 namespace standardese::model::visitor
 {
 
-template <typename T>
-auto visit(T&& lambda, model::entity& e) {
-  return detail::visit(std::forward<T>(lambda), e);
-}
-
-template <typename T>
-auto visit(T&& lambda, const model::entity& e) {
-  return detail::visit(std::forward<T>(lambda), e);
+template <typename T, typename E>
+auto visit(T&& lambda, E&& e) {
+  return detail::visit(std::forward<T>(lambda), std::forward<E>(e));
 }
 
 }

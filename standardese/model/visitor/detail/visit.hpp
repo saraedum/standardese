@@ -14,6 +14,7 @@
 #include "../recursive_visitor.hpp"
 #include "../generic_visitor.hpp"
 
+// TODO: Since there is nothing here anymore, we should move this back to visit.hpp.
 namespace standardese::model::visitor::detail {
 
 template <typename T>

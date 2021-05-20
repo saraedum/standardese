@@ -49,13 +49,19 @@ namespace standardese::model
 
 class document;
 class entity;
+class group_documentation;
 class cpp_entity_documentation;
 enum class exclude_mode;
+// TODO: Should we call this module_documentation?
 class module;
 class unordered_entities;
 class section;
 class link_target;
 
+}
+
+namespace standardese::model::mixin {
+class documentation;
 }
 
 namespace standardese::model::visitor
@@ -162,7 +168,6 @@ class output_generators;
 
 namespace standardese::output_generator {
 
-template <typename G>
 class stream_generator;
 
 }

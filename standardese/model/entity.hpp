@@ -18,6 +18,7 @@ namespace standardese::model
 
 class entity {
   public:
+    // TODO: This implicit cast is maybe not such a great idea. It can be quite confusing when it happens. And it implies a copy being created.
     template <typename E, std::enable_if_t<std::is_base_of_v<mixin::ivisitable, std::decay_t<E>>, bool> Enabled = true>
     entity(E&& e) : value(new std::decay_t<E>(std::forward<E>(e))) {}
 

@@ -3,17 +3,15 @@
 // This file is subject to the license terms in the LICENSE file
 // found in the top-level directory of this distribution.
 
-#ifndef STANDARDESE_MODEL_CPPAST_DOCUMENTATION_HPP_INCLUDED
-#define STANDARDESE_MODEL_CPPAST_DOCUMENTATION_HPP_INCLUDED
+#ifndef STANDARDESE_MODEL_CPP_ENTITY_DOCUMENTATION_HPP_INCLUDED
+#define STANDARDESE_MODEL_CPP_ENTITY_DOCUMENTATION_HPP_INCLUDED
 
 #include <cppast/cpp_entity.hpp>
 #include <cppast/cpp_entity_kind.hpp>
 
 #include <type_safe/reference.hpp>
-#include <type_safe/optional.hpp>
 
 #include "mixin/documentation.hpp"
-#include "section.hpp"
 
 #include "../parser/commands/section_command.hpp"
 #include "../parser/cpp_context.hpp"
@@ -32,13 +30,6 @@ namespace standardese::model
         const cppast::cpp_entity& entity() const { return *entity_; }
 
         const parser::cpp_context& context() const { return context_; }
-
-        type_safe::optional_ref<model::section> section(parser::commands::section_command type) {
-            for (auto& child : *this)
-                if (child.is<model::section>() && child.as<model::section>().type == type)
-                    return type_safe::ref(child.as<model::section>());
-            return type_safe::nullopt;
-        }
 
         /// The base name of the generated documentation file in the output,
         /// e.g., `header` for `header.hpp`.

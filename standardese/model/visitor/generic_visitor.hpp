@@ -13,6 +13,7 @@
 #include "../section.hpp"
 #include "../markup/emphasis.hpp"
 #include "../cpp_entity_documentation.hpp"
+#include "../group_documentation.hpp"
 #include "../markup/hard_break.hpp"
 #include "../markup/heading.hpp"
 #include "../markup/link.hpp"
@@ -38,6 +39,7 @@ class generic_visitor : public Base {
     virtual void visit(typename Base::code_block& e) { static_cast<T&>(*this)(e); }
     virtual void visit(typename Base::emphasis& e) { static_cast<T&>(*this)(e); }
     virtual void visit(typename Base::cpp_entity_documentation& e) { static_cast<T&>(*this)(e); }
+    virtual void visit(typename Base::group_documentation& e) { static_cast<T&>(*this)(e); }
     virtual void visit(typename Base::hard_break& e) { static_cast<T&>(*this)(e); }
     virtual void visit(typename Base::heading& e) { static_cast<T&>(*this)(e); }
     virtual void visit(typename Base::link& e) { static_cast<T&>(*this)(e); }

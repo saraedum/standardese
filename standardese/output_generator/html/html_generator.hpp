@@ -10,9 +10,11 @@
 namespace standardese::output_generator::html
 {
 
-class html_generator : public stream_generator<html_generator> {
-    public:
+class html_generator : public stream_generator {
+  public:
     html_generator(std::ostream& os);
+
+    static std::string render(const model::entity& root);
 };
 
 }

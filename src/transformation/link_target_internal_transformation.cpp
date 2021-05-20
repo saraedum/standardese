@@ -79,7 +79,7 @@ void link_target_internal_transformation::do_transform(model::entity& document) 
             const static std::regex entity_pattern{"^standardese://@([0-9]*)$"};
             std::smatch match;
             if (std::regex_match(target.target, match, entity_pattern)) {
-              link.target = *static_cast<const cppast::cpp_entity*>((void*)atol(match[1].str().c_str()));
+              link.target = model::link_target(*static_cast<const cppast::cpp_entity*>((void*)atol(match[1].str().c_str())));
               return;
             }
           }
@@ -88,7 +88,7 @@ void link_target_internal_transformation::do_transform(model::entity& document) 
           {
             const auto entity = files.find_header(target.target);
             if (entity) {
-              link.target = std::move(entity.value());
+              link.target = model::link_target(std::move(entity.value()));
               return;
             }
           }

@@ -13,11 +13,12 @@
 namespace standardese::output_generator::sphinx
 {
 
-class inventory_generator : public stream_generator<inventory_generator> {
+class inventory_generator : public stream_generator {
   public:
     inventory_generator(std::ostream& os);
 
     void visit(cpp_entity_documentation&) override;
+    void visit(group_documentation&) override;
     void visit(document&) override;
 
     ~inventory_generator() override;

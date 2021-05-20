@@ -43,7 +43,7 @@ class output_generators {
     std::string doxygen_tagfile = "tagfile.xml";
 
     /// Options affecting MarkDown output if [primary_format]() is set to `markdown`.
-    struct output_generator::markdown::markdown_generator::options markdown_options; 
+    output_generator::markdown::markdown_generator::markdown_generator_options markdown_options; 
 
     // TODO: Implement me
     /// Directory the hierarchy of output files is built in.

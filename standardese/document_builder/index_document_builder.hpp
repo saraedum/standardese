@@ -20,7 +20,7 @@ class index_document_builder {
     struct options {
       options();
 
-      struct formatter::inja_formatter::options anchor_text_options;
+      struct formatter::inja_formatter::inja_formatter_options anchor_text_options;
     };
 
     explicit index_document_builder(options);
