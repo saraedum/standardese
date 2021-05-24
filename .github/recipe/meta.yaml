@@ -1,5 +1,5 @@
 {% set name = "standardese" %}
-{% set version = "0.5.0" %}
+{% set version = "0.6.0" %}
 
 package:
   name: {{ name|lower }}
@@ -9,7 +9,7 @@ source:
   path: ../../
 
 build:
-  number: 0
+  number: 3
   skip: true  # [win and vc<14]
   run_exports:
     # standardese uses semantic versioning
@@ -20,8 +20,11 @@ requirements:
     - {{ compiler('cxx') }}
     - cmake
   host:
-    - boost-cpp
+    # Pin from https://github.com/conda-forge/conda-forge-pinning-feedstock/blob/master/recipe/conda_build_config.yaml to be compatible with conda-forge.
+    - boost-cpp 1.74.0
+    # Pulls in llvmdev (llvm-config) and provides the libclang headers that are not in libclang-cpp
     - clangdev
+    - libclang
     - fmt
     - nlohmann_json
     - pugixml
@@ -29,13 +32,16 @@ requirements:
     - spdlog
   run:
     - {{ pin_compatible('libclang') }}
-    - {{ pin_compatible('clangxx') }}
-    - boost-cpp
+    # The preprocessor invoked by cppast
+    - clangxx
+    # For boost-program-options
+    - boost-cpp 1.74.0
 
 test:
   files:
     - sample.h
   requires:
+    # To resolve #include statements in sample.h
     - {{ compiler('cxx') }}
   commands:
     - standardese sample.h
