@@ -531,13 +531,17 @@ inja_formatter::impl::variant inja_formatter::impl::from_json(const nlohmann::js
       if (kind != standardese->end() && kind->is_string()) {
         const auto& kind_ref = kind->get_ref<const nlohmann::json::string_t&>();
         if (kind_ref == "cpp_entity") {
-          const auto value = standardese->find("value");
-          if (value != standardese->end() && value->is_string())
-            return from_string<cppast::cpp_entity>(value->get_ptr<const nlohmann::json::string_t*>());
+          const auto v = standardese->find("value");
+          if (v != standardese->end() && v->is_string())
+            return from_string<cppast::cpp_entity>(v->get_ptr<const nlohmann::json::string_t*>());
+          else
+            logger::warn(fmt::format("Unsupported value in {}", nlohmann::to_string(value)));
         } else if (kind_ref == "module") {
-          const auto value = standardese->find("name");
-          if (value != standardese->end() && value->is_string())
-            return model::module(value->get<std::string>());
+          const auto name = standardese->find("name");
+          if (name != standardese->end() && name->is_string())
+            return model::module(name->get<std::string>());
+          else
+            logger::warn(fmt::format("Unsupported name in {}", nlohmann::to_string(value)));
         } else if (kind_ref == "link_target") {
           const auto target = standardese->find("target");
           if (target != standardese->end() && target->is_object()) {
@@ -552,9 +556,13 @@ inja_formatter::impl::variant inja_formatter::impl::from_json(const nlohmann::js
             }, from_json(*target));
           }
         } else if (kind_ref == "cpp_type") {
-          const auto value = standardese->find("value");
-          if (value != standardese->end() && value->is_string())
-            return from_string<cppast::cpp_type>(value->get_ptr<const nlohmann::json::string_t*>());
+          const auto v = standardese->find("value");
+          if (v != standardese->end() && v->is_string())
+            return from_string<cppast::cpp_type>(v->get_ptr<const nlohmann::json::string_t*>());
+          else
+            logger::warn(fmt::format("Unsupported value in {}", nlohmann::to_string(value)));
+        } else {
+          logger::warn(fmt::format("Unsupported kind in {}", nlohmann::to_string(value)));
         }
       }
     }

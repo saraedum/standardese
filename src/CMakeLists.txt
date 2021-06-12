@@ -72,6 +72,7 @@ set(src
     formatter/inja_formatter.entity.cpp
     formatter/inja_formatter.text.cpp
     formatter/inja_formatter.replace.cpp
+    formatter/inja_formatter.to_string.cpp
     formatter/synopsis_formatter.cpp
     formatter/code_formatter.cpp
     output_generator/cmark_generator.cpp
