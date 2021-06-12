@@ -36,6 +36,9 @@ struct inja_formatter::impl {
 
   static variant from_json(const nlohmann::json&);
 
+  /// Return a string representation of this JSON for debug/logging purposes.
+  std::string to_string(const nlohmann::json&) const;
+
   inja_formatter_options options;
   inja::Environment env;
   json data;
