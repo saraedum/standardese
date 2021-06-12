@@ -50,14 +50,16 @@ class inja_formatter {
     /// This includes member functions, constructors, destructors, operators.
     /// See https://en.cppreference.com/w/cpp/language/function.
     std::string function_format = R"({%
-        if cppast_kind in ["constructor", "destructor"] %}{{
+        if cppast_kind in ["constructor", "destructor", "conversion operator"] %}{{
           format(option("function_declarator_format"))
        }}{% else %}{{
         join(" ` ` ", reject("empty",list(
           format(option("declaration_specifiers_format")),
           format(option("return_type_format"), return_type),
           format(option("function_declarator_format")))))
-      }}{% endif %} `(` {{ format(option("function_parameters_format")) }} `)` {% 
+      }}{% endif %} `(` {%
+        if cppast_kind in ["destructor", "conversion operator"] %}{% else %}{{
+        format(option("function_parameters_format")) }}{% endif %} `)` {% 
         set suffix = join(" ` ` ", reject("empty", list(
           format(option("const_qualification_format")),
           format(option("volatile_qualification_format")),
