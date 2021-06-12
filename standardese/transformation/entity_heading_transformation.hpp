@@ -20,7 +20,7 @@ class entity_heading_transformation : public transformation {
 
       // TODO: Read from CLI and reset the default to standardese 0-5-0 equivalent.
       std::string format = R"({% if cppast_kind == "file" %}# {{ join(" — ", reject("whitespace", list(md_escape(name), md(section("brief"))))) }}{{ drop_section("brief") }}
-        {%- else if cppast_kind in ["function", "member function", "conversion op", "constructor", "destructor", "function template", "friend"] %}# {{ md(synopsis) }}
+        {%- else if cppast_kind in ["function", "member function", "conversion operator", "constructor", "destructor", "function template", "friend"] %}# {{ md(synopsis) }}
         {%- else if cppast_kind == "function_parameter" %}###### `{{ code_escape(name) }}` {{ md(section("brief")) }}{{ drop_section("brief") }}
         {%- else %}# {{ md_escape(kind) }} `{{ code_escape(name) }}`
         {%- endif %})";
