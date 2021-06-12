@@ -10,6 +10,7 @@
 #include "../../standardese/model/cpp_entity_documentation.hpp"
 #include "../../standardese/model/module.hpp"
 #include "../../standardese/model/visitor/visit.hpp"
+#include "../../standardese/logger.hpp"
 
 namespace standardese::model {
 

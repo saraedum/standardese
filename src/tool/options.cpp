@@ -957,7 +957,7 @@ void options_parser::process_intersphinx_options(po::variables_map&) {}
 po::options_description options_parser::positional_options() const {
   auto positional = po::options_description("Positional Options", options.options_options.columns);
 
-  positional.add_options()("input-files", po::value<std::vector<fs::path>>(), "Header files to process.");
+  positional.add_options()("input-files", po::value<std::vector<fs::path>>(), "Input files to process.");
 
   return positional;
 }

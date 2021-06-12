@@ -57,7 +57,8 @@ std::string inventory_generator::display_name(const cppast::cpp_entity& entity) 
 }
 
 std::string inventory_generator::name(const cppast::cpp_entity& entity) const {
-  // TODO: Fully qualified name
+  // TODO: Fully qualified name.
+  // TODO: Shorten header names.
   return entity.name();
 }
 

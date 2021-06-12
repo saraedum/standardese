@@ -23,7 +23,7 @@ class parsers {
 
     struct parser::comment_parser::comment_parser_options comment_parser_options;
 
-    /// C++ header files to parse.
+    /// Header and MarkDown files to parse.
     std::vector<boost::filesystem::path> sources;
 
     /// The number of worker threads to run in parallel.
