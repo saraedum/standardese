@@ -41,8 +41,9 @@ unordered_entities& unordered_entities::operator=(unordered_entities&& rhs) noex
   return *this;
 }
 
-void unordered_entities::insert(value_type value) {
-  impl_->items.insert(value);
+bool unordered_entities::insert(value_type value) {
+  auto [pos, inserted] = impl_->items.insert(value);
+  return inserted;
 }
 
 unordered_entities::const_iterator unordered_entities::find_cpp_entity(const cppast::cpp_entity& entity) const {
