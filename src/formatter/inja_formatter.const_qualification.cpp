@@ -43,7 +43,8 @@ std::string inja_formatter::const_qualification_callback(const nlohmann::json& d
 std::string inja_formatter::const_qualification(const cppast::cpp_entity& entity) const {
   switch(entity.kind()) {
     case cppast::cpp_entity_kind::member_function_t:
-      return to_string(static_cast<const cppast::cpp_member_function&>(entity).cv_qualifier());
+    case cppast::cpp_entity_kind::conversion_op_t:
+      return to_string(static_cast<const cppast::cpp_member_function_base&>(entity).cv_qualifier());
     default:
       return std::string{};
   }
