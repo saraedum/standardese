@@ -44,7 +44,7 @@ class unordered_entities {
         insert(*begin);
     }
 
-    void insert(value_type value);
+    bool insert(value_type value);
 
     const_iterator find_cpp_entity(const cppast::cpp_entity& entity) const;
     iterator find_cpp_entity(const cppast::cpp_entity& entity);

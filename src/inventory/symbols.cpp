@@ -4,6 +4,7 @@
 
 #include <regex>
 
+#include <fmt/format.h>
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/algorithm/string/erase.hpp>
 #include <cppast/cpp_entity.hpp>
@@ -20,6 +21,7 @@
 #include "../../standardese/inventory/symbols.hpp"
 #include "../../standardese/inventory/cppast_inventory.hpp"
 #include "../../standardese/inventory/sphinx/documentation_set.hpp"
+#include "../../standardese/formatter/inja_formatter.hpp"
 #include "../../standardese/logger.hpp"
 
 // TODO: We do not handle friend declarations correctly here. A class can
@@ -134,11 +136,18 @@ type_safe::optional<model::link_target> symbols::impl::find(const std::string& n
 symbols::impl::cppast_symbols::cppast_symbols(const cppast_inventory& inventory) : inventory(inventory) {}
 
 type_safe::optional<model::link_target> symbols::impl::cppast_symbols::find(const std::string& name) const {
+  type_safe::optional_ref<const cppast::cpp_entity> found;
   for (auto* root : inventory.roots) {
-      auto search = descendant(*root, name);
-      if (search)
-          return search.value();
+    auto search = descendant(*root, name);
+    if (search) {
+      // TODO: The definition here and elsewhere feels hacky. Should we really do it like this?
+      if (!found || is_definition(search.value()))
+        found = search;
+    }
   }
+
+  if (found)
+    return found.value();
       
   return type_safe::nullopt;
 }
@@ -238,9 +247,6 @@ type_safe::optional_ref<const cppast::cpp_entity> symbols::impl::cppast_symbols:
       // A linkage does not create a naming scope and we never want to link to it.
       return true;
 
-    if (matches(entity, name))
-        child = type_safe::ref(entity);
-
     switch(info.event) {
       case cppast::visitor_info::event_type::container_entity_enter:
           // Do not consider the children of this container. Here we are only
@@ -251,15 +257,16 @@ type_safe::optional_ref<const cppast::cpp_entity> symbols::impl::cppast_symbols:
           // preceding case. Continue the search.
           [[fallthrough]];
       case cppast::visitor_info::event_type::leaf_entity:
-          if (child)
-              // Abort the search.
-              return false;
-          // Continue the search.
-          return true;
+          break;
       default:
           throw std::logic_error("visitor in unexpected state");
     }
 
+    if (matches(entity, name) && (!child.has_value() || is_definition(entity)))
+      child = type_safe::ref(entity);
+
+    // Continue the search.
+    return true;
   });
 
   // It is customary to write `typedef struct S {} S;` or `typedef struct {}

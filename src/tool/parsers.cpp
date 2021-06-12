@@ -102,14 +102,14 @@ std::pair<model::unordered_entities, parser::cpp_context> parsers::parse() {
       std::ifstream in(md.native());
       std::string raw(std::istreambuf_iterator<char>(in), {});
       auto doc = markdown_parser.parse(raw);
+
       // TODO: This is a hack.
-      /*
       doc.name = md.native();
       if (doc.name.find_last_of('/') != std::string::npos)
         doc.name = doc.name.substr(doc.name.find_last_of('/') + 1);
       if (doc.name.find_first_of('.') != std::string::npos)
         doc.name = doc.name.substr(0, doc.name.find_first_of('.'));
-      */
+
       return type_safe::optional<model::entity>(doc);
   });
 

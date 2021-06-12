@@ -47,36 +47,29 @@ link_href_internal_transformation::link_href_internal_transformation(model::unor
 }
 
 void link_href_internal_transformation::do_transform(model::entity& document) {
-  struct visitor : model::visitor::recursive_visitor<false> {
-    visitor(const std::unordered_map<const cppast::cpp_entity*, std::string>& inventory) : inventory(inventory) {}
-
-    void visit(link& link) override {
-      link.target.accept([&](auto&& target) -> void {
+  model::visitor::visit([&](auto&& entity, auto&& recurse) {
+    using T = std::decay_t<decltype(entity)>;
+    if constexpr (std::is_same_v<T, model::markup::link>) {
+      entity.target.accept([&](auto&& target) -> void {
         using T = std::decay_t<decltype(target)>;
         if constexpr (std::is_same_v<T, model::link_target::module_target>) {
           throw std::logic_error("not implemented: resolve_module_target");
         } else if constexpr (std::is_same_v<T, model::link_target::cppast_target>) {
           // TODO: Use cppast ids instead?
-          auto resolved = inventory.find(&*target.target);
-          if (resolved == inventory.end()) {
-              // TODO: Write a proper name for target.
-              // TODO: Include kind in message.
-              logger::error(fmt::format("Could not create URL for link to `{}`. Target was not found in inventory of C++ entities which are linkable.", target.target->name()));
+          auto resolved = anchors.find(&*target.target);
+          if (resolved == anchors.end()) {
+              logger::error(fmt::format("Could not create URL for link to the {} `{}` from `{}`. Found the reference `{}`. Target was not found in inventory of C++ entities which are linkable.", formatter::inja_formatter{{}}.kind(*target.target), target.target->name(), formatter::inja_formatter{{}}.path(*target.target), output_generator::xml::xml_generator::render(document)));
               return;
           }
 
           // TODO: Make relative
-          link.target = model::link_target::uri_target("/" + resolved->second);
+          entity.target = model::link_target::uri_target("/" + resolved->second);
         }
       });
-
-      model::visitor::recursive_visitor<false>::visit(link);
     }
 
-    const std::unordered_map<const cppast::cpp_entity*, std::string>& inventory;
-  } visitor(anchors);
-
-  document.accept(visitor);
+    recurse();
+  }, document);
 }
 
 }
