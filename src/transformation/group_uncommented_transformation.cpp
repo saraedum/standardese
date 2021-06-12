@@ -26,6 +26,7 @@ bool groups(cppast::cpp_entity_kind kind) {
     case cppast::cpp_entity_kind::member_function_t:
     case cppast::cpp_entity_kind::conversion_op_t:
     case cppast::cpp_entity_kind::constructor_t:
+    case cppast::cpp_entity_kind::friend_t:
       return true;
     case cppast::cpp_entity_kind::destructor_t:
       // Do not automatically group the destructor as it
@@ -55,7 +56,6 @@ bool groups(cppast::cpp_entity_kind kind) {
     case cppast::cpp_entity_kind::variable_t:
     case cppast::cpp_entity_kind::bitfield_t:
     case cppast::cpp_entity_kind::function_parameter_t:
-    case cppast::cpp_entity_kind::friend_t:
     case cppast::cpp_entity_kind::template_type_parameter_t:
     case cppast::cpp_entity_kind::non_type_template_parameter_t:
     case cppast::cpp_entity_kind::template_template_parameter_t:
