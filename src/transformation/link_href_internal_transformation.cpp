@@ -8,10 +8,13 @@
 #include <cstdlib>
 
 #include "../../standardese/transformation/link_href_internal_transformation.hpp"
+#include "../../standardese/formatter/inja_formatter.hpp"
 #include "../../standardese/model/visitor/visit.hpp"
 #include "../../standardese/model/markup/link.hpp"
 #include "../../standardese/model/cpp_entity_documentation.hpp"
 #include "../../standardese/model/group_documentation.hpp"
+#include "../../standardese/output_generator/xml/xml_generator.hpp"
+#include "../../standardese/formatter/inja_formatter.hpp"
 #include "../../standardese/logger.hpp"
 
 // TODO: We need an additional transformation that optionally turns [target]() into [`target`]().

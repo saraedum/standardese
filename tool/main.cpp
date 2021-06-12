@@ -17,7 +17,7 @@ int main(int argc, const char* argv[])
     auto options = standardese::tool::options::parse(argc, argv, {});
 
     if (options.parser_options.sources.empty()) {
-      standardese::logger::warn("No input header files.");
+      standardese::logger::warn("No input files.");
     }
     
     // Parse source code.

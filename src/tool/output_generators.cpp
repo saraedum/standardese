@@ -4,6 +4,7 @@
 // found in the top-level directory of this distribution.
 
 #include <boost/filesystem/operations.hpp>
+#include <fmt/format.h>
 #include <stdexcept>
 #include <fstream>
 
@@ -28,7 +29,10 @@ void output_generators::emit(model::unordered_entities& documents) {
   }
   */
 
+  logger::info("Rendering output documents.");
+
   const auto open = [&](const boost::filesystem::path& path) {
+    logger::info(fmt::format("Writing {}.", path.native()));
     boost::filesystem::create_directories(path.parent_path());
     return std::ofstream{path};
   };
