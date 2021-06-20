@@ -14,6 +14,13 @@
 #include "../../standardese/model/visitor/visit.hpp"
 #include "../../standardese/logger.hpp"
 
+// TODO: This does not work in this case currently:
+// ==* GROUP *==
+// void f();
+// void g();
+//
+// Since the first entry is already uncommented.
+
 namespace standardese::transformation {
 
 namespace {
