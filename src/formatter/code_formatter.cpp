@@ -33,9 +33,7 @@ code_formatter::code_formatter_options::code_formatter_options() {}
 code_formatter::code_formatter(code_formatter_options options) : options(options) {}
 
 model::document code_formatter::build(const cppast::cpp_entity& entity, const model::mixin::documentation& context) const {
-  // TODO
-  logger::error(fmt::format("not implemented: build() for `{}`.", entity.name()));
-  return model::document{"", ""};
+  return inja_formatter{options, context}.code(entity);
 }
 
 model::document code_formatter::build(const cppast::cpp_type& type, const model::mixin::documentation& context) const {
@@ -47,9 +45,7 @@ model::document code_formatter::build(const cppast::cpp_template_argument& argum
 }
 
 model::document code_formatter::build(const std::string& format, const cppast::cpp_entity& entity, const model::mixin::documentation& context) const {
-  inja_formatter inja{options, context};
-
-  return inja.code(format, entity);
+  return inja_formatter{options, context}.code(format, entity);
 }
 
 model::document code_formatter::build(const std::string& format, const cppast::cpp_type& type, const model::mixin::documentation& context) const {

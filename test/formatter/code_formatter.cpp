@@ -114,7 +114,8 @@ TEST_CASE("Functions can be Formatted", "[code_formatter]") {
         <?xml version="1.0"?>
         <document>
           <paragraph>
-            <code>std::vector&lt;int&gt;</code> f()</paragraph>
+            <code>std::vector&lt;int&gt; f()</code>
+          </paragraph>
         </document>
         )"));
     }
