@@ -70,8 +70,8 @@ class inja_formatter {
     std::string friend_format = R"(`friend` ` ` {{ md(code(entity)) }})";
 
     std::string type_format = R"({% if target != "" %}[{% endif
-      %}{% if cppast_kind == "template instantiation" %}`{{ name }}` `<` {% if isString(arguments) %}`{{ arguments }}`{% else %}`TODO`{% endif %} `>`
-      {%- else if cppast_kind == "reference" %}{{ format(option("type_format"), type) }}{{ format(option("ref_qualification_format"))
+      %}{% if cppast_kind == "template instantiation" %}`{{ name }}` `<` {% if isString(arguments) %}`{{ arguments }}`{% else %}`TODO`{% endif %} `>` {%-
+      else if cppast_kind == "reference" %}{{ format(option("type_format"), type) }}{{ format(option("ref_qualification_format"))
       }}{%- else if cppast_kind == "cv-qualified" %}{{ join(" ` ` ", reject("empty", list(format(option("const_qualification_format")), format(option("type_format"), type))))
       }}{%- else %} `{{ code_escape(name) }}` {% endif %}{% if target != "" %}]({{ target }}){% endif %})";
 
