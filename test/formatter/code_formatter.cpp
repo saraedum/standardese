@@ -62,8 +62,6 @@ TEST_CASE("Functions can be Formatted", "[code_formatter]") {
           )"));
       }
 
-      // TODO
-      /*
       SECTION("Omitting all namespaces") {
         code_formatter::code_formatter_options options;
         options.namespace_display_options = formatter::code_formatter::code_formatter_options::namespace_display_options::hidden;
@@ -76,11 +74,11 @@ TEST_CASE("Functions can be Formatted", "[code_formatter]") {
           <?xml version="1.0"?>
           <document>
             <paragraph>
-              <code>nullptr_t</code> f()</paragraph>
+              <code>nullptr_t f()</code>
+            </paragraph>
           </document>
           )"));
       }
-      */
     }
 
     // TODO: The other builtins.
