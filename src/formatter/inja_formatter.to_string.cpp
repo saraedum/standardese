@@ -11,6 +11,7 @@ namespace standardese::formatter {
 
 template<class> inline constexpr bool always_false_v = false;
 
+// TODO: Use everywhere for better error messages.
 std::string inja_formatter::impl::to_string(const nlohmann::json& data) const {
   return std::visit([&](auto&& entity) {
     using T = std::decay_t<decltype(entity)>;

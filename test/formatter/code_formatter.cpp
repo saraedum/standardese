@@ -299,7 +299,53 @@ TEST_CASE("Functions can be Formatted", "[code_formatter]") {
   }
 
   SECTION("CV Qualified Types") {
-    // TODO
+    SECTION("Const Type") {
+      util::cpp_file header(R"(const int a = 0;)");
+      auto formatted = code_formatter{{}}.build(
+        header["a"],
+        model::cpp_entity_documentation(header, header));
+
+      REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
+        <?xml version="1.0"?>
+        <document>
+          <paragraph>
+            <code>const int a</code>
+          </paragraph>
+        </document>
+        )"));
+    }
+
+    SECTION("Volatile Type") {
+      util::cpp_file header(R"(volatile int a;)");
+      auto formatted = code_formatter{{}}.build(
+        header["a"],
+        model::cpp_entity_documentation(header, header));
+
+      REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
+        <?xml version="1.0"?>
+        <document>
+          <paragraph>
+            <code>volatile int a</code>
+          </paragraph>
+        </document>
+        )"));
+    }
+
+    SECTION("Const Volatile Type") {
+      util::cpp_file header(R"(const volatile int a = 0;)");
+      auto formatted = code_formatter{{}}.build(
+        header["a"],
+        model::cpp_entity_documentation(header, header));
+
+      REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
+        <?xml version="1.0"?>
+        <document>
+          <paragraph>
+            <code>const volatile int a</code>
+          </paragraph>
+        </document>
+        )"));
+    }
   }
 
   SECTION("Template Instantiation Type") {

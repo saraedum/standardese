@@ -67,12 +67,14 @@ class inja_formatter {
           format(option("noexcept_specification_format")))))
       %} {% if length(suffix) %}` `{% endif %} {{ suffix }})";
 
+    std::string variable_format = R"({{ format(option("type_format"), variable_type) }} ` ` `{{ name }}`)";
+
     std::string friend_format = R"(`friend` ` ` {{ md(code(entity)) }})";
 
     std::string type_format = R"({% if target != "" %}[{% endif
       %}{% if cppast_kind == "template instantiation" %}`{{ name }}` `<` {% if isString(arguments) %}`{{ arguments }}`{% else %}`TODO`{% endif %} `>` {%-
       else if cppast_kind == "reference" %}{{ format(option("type_format"), type) }}{{ format(option("ref_qualification_format"))
-      }}{%- else if cppast_kind == "cv-qualified" %}{{ join(" ` ` ", reject("empty", list(format(option("const_qualification_format")), format(option("type_format"), type))))
+      }}{%- else if cppast_kind == "cv-qualified" %}{{ join(" ` ` ", reject("empty", list(format(option("const_qualification_format")), format(option("volatile_qualification_format")), format(option("type_format"), type))))
       }}{%- else %} `{{ code_escape(name) }}` {% endif %}{% if target != "" %}]({{ target }}){% endif %})";
 
     /// Formatting rule for a function's return type.
@@ -209,6 +211,8 @@ class inja_formatter {
 
   std::string volatile_qualification(const cppast::cpp_entity&) const;
 
+  std::string volatile_qualification(const cppast::cpp_type&) const;
+
   std::string ref_qualification(const cppast::cpp_entity&) const;
 
   std::string ref_qualification(const cppast::cpp_type&) const;
@@ -228,6 +232,8 @@ class inja_formatter {
   std::string option(const std::string& key) const;
 
   const cppast::cpp_type& return_type(const cppast::cpp_entity&) const;
+
+  const cppast::cpp_type& variable_type(const cppast::cpp_entity&) const;
 
   /// Return the template arguments of this type.
   /// Normally, this returns a vector of arguments. However, when the
@@ -272,6 +278,7 @@ class inja_formatter {
   nlohmann::json code_callback(const nlohmann::json&, const nlohmann::json&) const;
   std::string option_callback(const nlohmann::json&) const;
   nlohmann::json return_type_callback(const nlohmann::json&) const;
+  nlohmann::json variable_type_callback(const nlohmann::json&) const;
   nlohmann::json arguments_callback(const nlohmann::json&) const;
   nlohmann::json type_callback(const nlohmann::json&) const;
   nlohmann::json entity_callback(const nlohmann::json&) const;

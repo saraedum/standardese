@@ -46,6 +46,7 @@ std::string inja_formatter::const_qualification(const cppast::cpp_entity& entity
     case cppast::cpp_entity_kind::conversion_op_t:
       return to_string(static_cast<const cppast::cpp_member_function_base&>(entity).cv_qualifier());
     default:
+      // TODO:
       return std::string{};
   }
 }
@@ -55,6 +56,7 @@ std::string inja_formatter::const_qualification(const cppast::cpp_type& type) co
     case cppast::cpp_type_kind::cv_qualified_t:
       return to_string(static_cast<const cppast::cpp_cv_qualified_type&>(type).cv_qualifier());
     default:
+      // TODO:
       return std::string{};
 }
 

@@ -67,6 +67,7 @@ set(src
     formatter/inja_formatter.code.cpp
     formatter/inja_formatter.option.cpp
     formatter/inja_formatter.return_type.cpp
+    formatter/inja_formatter.variable_type.cpp
     formatter/inja_formatter.type.cpp
     formatter/inja_formatter.arguments.cpp
     formatter/inja_formatter.entity.cpp

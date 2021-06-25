@@ -199,6 +199,14 @@ inja_formatter::inja_formatter(struct inja_formatter_options options) : self(std
       return nlohmann::json{};
     return return_type_callback(*args[0]);
   });
+  add_callback("variable_type", [&]() {
+    return variable_type_callback(data());
+  });
+  add_callback("variable_type", [&](const std::vector<const nlohmann::json*>& args) {
+    if (!check_arg_count("variable_type", args, 1))
+      return nlohmann::json{};
+    return variable_type_callback(*args[0]);
+  });
   add_callback("type", [&]() {
     return type_callback(data());
   });
