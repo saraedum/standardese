@@ -116,9 +116,12 @@ model::document inja_formatter::code(const cppast::cpp_entity& entity) const {
       return code(self->options.function_format, entity);
     case cppast::cpp_entity_kind::friend_t:
       return code(self->options.friend_format, entity);
+    case cppast::cpp_entity_kind::variable_t:
+    case cppast::cpp_entity_kind::member_variable_t:
+      return code(self->options.variable_format, entity);
     default:
       // TODO
-      logger::info(fmt::format("not implemented: code() for `{}`.", name(entity)));
+      logger::error(fmt::format("not implemented: code() for `{}`.", name(entity)));
       return model::document{"", ""};
   }
 }

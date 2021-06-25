@@ -69,8 +69,10 @@ std::string inja_formatter::kind(const cppast::cpp_entity& entity) const {
           return "Struct";
         case cppast::cpp_class_kind::union_t:
           return "Union";
+        default:
+          // TODO
+          throw std::logic_error("not implemented");
       }
-      break;
     case cppast::cpp_entity_kind::access_specifier_t:
       return "Access Specifier";
     case cppast::cpp_entity_kind::base_class_t:
@@ -105,6 +107,9 @@ std::string inja_formatter::kind(const cppast::cpp_entity& entity) const {
       return "Unexposed Entity";
     case cppast::cpp_entity_kind::count:
       throw std::logic_error("Unsupported entity kind.");
+    default:
+      // TODO:
+      throw std::logic_error("not implemented");
   }
 }
 

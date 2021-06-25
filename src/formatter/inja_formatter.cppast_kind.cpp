@@ -64,6 +64,9 @@ std::string inja_formatter::cppast_kind(const cppast::cpp_type& type) const {
       return "dependent";
     case cppast::cpp_type_kind::unexposed_t:
       return "unexposed";
+    default:
+      // TODO
+      throw std::logic_error("not implemented");
   }
 }
 
