@@ -183,11 +183,119 @@ TEST_CASE("Functions can be Formatted", "[code_formatter]") {
   }
 
   SECTION("Pointer Types") {
-    // TODO
+    SECTION("Pointer to Builtin Type") {
+      util::cpp_file header(R"(void* f();)");
+      auto formatted = code_formatter{{}}.build(
+        header["f"],
+        model::cpp_entity_documentation(header, header));
+
+      REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
+        <?xml version="1.0"?>
+        <document>
+          <paragraph>
+            <code>void* f()</code>
+          </paragraph>
+        </document>
+        )"));
+    }
+
+    SECTION("Pointer to Unexposed Type") {
+      util::cpp_file header(R"(
+        #include <string>
+
+        std::string* f();
+      )");
+      auto formatted = code_formatter{{}}.build(
+        header["f"],
+        model::cpp_entity_documentation(header, header));
+
+      REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
+        <?xml version="1.0"?>
+        <document>
+          <paragraph>
+            <code>std::string* f()</code>
+          </paragraph>
+        </document>
+        )"));
+    }
+
+    SECTION("Pointer to User-Defined Type") {
+      util::cpp_file header(R"(
+        class X {};
+
+        X* f();
+      )");
+      auto formatted = code_formatter{{}}.build(
+        header["f"],
+        model::cpp_entity_documentation(header, header));
+
+      REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
+        <?xml version="1.0"?>
+        <document>
+          <paragraph>
+            <code>X* f()</code>
+          </paragraph>
+        </document>
+        )"));
+    }
   }
 
   SECTION("Reference Types") {
-    // TODO
+    SECTION("Pointer to Builtin Type") {
+      util::cpp_file header(R"(int& f();)");
+      auto formatted = code_formatter{{}}.build(
+        header["f"],
+        model::cpp_entity_documentation(header, header));
+
+      REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
+        <?xml version="1.0"?>
+        <document>
+          <paragraph>
+            <code>int&amp; f()</code>
+          </paragraph>
+        </document>
+        )"));
+    }
+
+    SECTION("Reference to Unexposed Type") {
+      util::cpp_file header(R"(
+        #include <string>
+
+        const std::string& f();
+      )");
+      auto formatted = code_formatter{{}}.build(
+        header["f"],
+        model::cpp_entity_documentation(header, header));
+
+      REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
+        <?xml version="1.0"?>
+        <document>
+          <paragraph>
+            <code>const std::string&amp; f()</code>
+          </paragraph>
+        </document>
+        )"));
+    }
+
+    SECTION("Reference to User-Defined Type") {
+      util::cpp_file header(R"(
+        class X {};
+
+        X& f();
+      )");
+      auto formatted = code_formatter{{}}.build(
+        header["f"],
+        model::cpp_entity_documentation(header, header));
+
+      REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
+        <?xml version="1.0"?>
+        <document>
+          <paragraph>
+            <code>X&amp; f()</code>
+          </paragraph>
+        </document>
+        )"));
+    }
   }
 
   SECTION("CV Qualified Types") {
