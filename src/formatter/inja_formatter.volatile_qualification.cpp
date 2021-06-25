@@ -47,7 +47,8 @@ std::string inja_formatter::volatile_qualification(const cppast::cpp_entity& ent
     case cppast::cpp_entity_kind::conversion_op_t:
       return to_string(static_cast<const cppast::cpp_member_function_base&>(entity).cv_qualifier());
     default:
-      // TODO
+      // No other entity can be "volatile". All the other "volatile" keywords
+      // refer to types. (Or are we missing something here?)
       return std::string{};
 
   }
@@ -58,7 +59,6 @@ std::string inja_formatter::volatile_qualification(const cppast::cpp_type& type)
     case cppast::cpp_type_kind::cv_qualified_t:
       return to_string(static_cast<const cppast::cpp_cv_qualified_type&>(type).cv_qualifier());
     default:
-      // TODO:
       return std::string{};
   }
 }
