@@ -1,4 +1,4 @@
-# This file lists the dependencies needed to build and test all of standerdese.
+# This file lists the dependencies needed to build and test all of standardese.
 # Create a conda environment with these dependencies preinstalled with:
 # conda env create -f environment.yml
 name: standardese-build
@@ -12,3 +12,5 @@ dependencies:
   - coreutils
   - cxx-compiler
   - make
+  - fmt
+  - inja
