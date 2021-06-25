@@ -81,7 +81,105 @@ TEST_CASE("Functions can be Formatted", "[code_formatter]") {
       }
     }
 
-    // TODO: The other builtins.
+    SECTION("Integer Types") {
+      SECTION("int") {
+        util::cpp_file header(R"(int f();)");
+        auto formatted = code_formatter{{}}.build(
+          header["f"],
+          model::cpp_entity_documentation(header, header));
+
+        REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
+          <?xml version="1.0"?>
+          <document>
+            <paragraph>
+              <code>int f()</code>
+            </paragraph>
+          </document>
+          )"));
+      }
+
+      SECTION("unsigned long long") {
+        util::cpp_file header(R"(unsigned long long f();)");
+        auto formatted = code_formatter{{}}.build(
+          header["f"],
+          model::cpp_entity_documentation(header, header));
+
+        REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
+          <?xml version="1.0"?>
+          <document>
+            <paragraph>
+              <code>unsigned long long f()</code>
+            </paragraph>
+          </document>
+          )"));
+      }
+
+      SECTION("Some Trivial Modifiers are Dropped") {
+        util::cpp_file header(R"(signed long long int f();)");
+        auto formatted = code_formatter{{}}.build(
+          header["f"],
+          model::cpp_entity_documentation(header, header));
+
+        REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
+          <?xml version="1.0"?>
+          <document>
+            <paragraph>
+              <code>long long f()</code>
+            </paragraph>
+          </document>
+          )"));
+      }
+    }
+
+    SECTION("bool") {
+      util::cpp_file header(R"(bool f();)");
+      auto formatted = code_formatter{{}}.build(
+        header["f"],
+        model::cpp_entity_documentation(header, header));
+
+      REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
+        <?xml version="1.0"?>
+        <document>
+          <paragraph>
+            <code>bool f()</code>
+          </paragraph>
+        </document>
+        )"));
+    }
+
+    SECTION("Float Pointing Types") {
+      SECTION("float") {
+        util::cpp_file header(R"(float f();)");
+        auto formatted = code_formatter{{}}.build(
+          header["f"],
+          model::cpp_entity_documentation(header, header));
+
+        REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
+          <?xml version="1.0"?>
+          <document>
+            <paragraph>
+              <code>float f()</code>
+            </paragraph>
+          </document>
+          )"));
+      }
+
+      SECTION("double") {
+        util::cpp_file header(R"(double f();)");
+        auto formatted = code_formatter{{}}.build(
+          header["f"],
+          model::cpp_entity_documentation(header, header));
+
+        REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
+          <?xml version="1.0"?>
+          <document>
+            <paragraph>
+              <code>double f()</code>
+            </paragraph>
+          </document>
+          )"));
+      }
+    }
   }
 
   SECTION("Pointer Types") {
