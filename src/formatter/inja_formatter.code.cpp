@@ -3,6 +3,8 @@
 // found in the top-level directory of this distribution.
 
 #include <fmt/format.h>
+#include <cppast/cpp_type.hpp>
+#include <cppast/cpp_template_parameter.hpp>
 
 #include "inja_formatter.impl.hpp"
 #include "../../standardese/logger.hpp"
@@ -80,6 +82,10 @@ nlohmann::json inja_formatter::code_callback(const nlohmann::json& data) const {
     using T = std::decay_t<decltype(entity)>;
     if constexpr (std::is_same_v<T, const cppast::cpp_entity*>) {
       return to_json(code(*entity));
+    } else if constexpr (std::is_same_v<T, const cppast::cpp_type*>) {
+      return to_json(code(*entity));
+    } else if constexpr (std::is_same_v<T, const cppast::cpp_template_argument*>) {
+      return to_json(code(*entity));
     } else if constexpr (std::is_same_v<T, const nlohmann::json::string_t*>) {
       return code_callback(data, this->data());
     }
@@ -95,6 +101,10 @@ nlohmann::json inja_formatter::code_callback(const nlohmann::json& format, const
     using S = std::decay_t<decltype(cpp_entity)>;
     if constexpr (std::is_same_v<T, const nlohmann::json::string_t*>) {
       if constexpr (std::is_same_v<S, const cppast::cpp_entity&>) {
+        return to_json(code(*format_string, *cpp_entity));
+      } else if constexpr (std::is_same_v<S, const cppast::cpp_type&>) {
+        return to_json(code(*format_string, *cpp_entity));
+      } else if constexpr (std::is_same_v<S, const cppast::cpp_template_argument&>) {
         return to_json(code(*format_string, *cpp_entity));
       } else {
         logger::error(fmt::format("Template callback `code` not valid here. Cannot produce code for {}.", nlohmann::to_string(entity)));
@@ -130,6 +140,21 @@ model::document inja_formatter::code(const std::string& format, const cppast::cp
   auto finally = impl::savepoint(const_cast<inja_formatter::impl&>(*this->self));
   const_cast<inja_formatter*>(this)->data() = to_json(entity);
   return simplify_code(build(format));
+}
+
+model::document inja_formatter::code(const cppast::cpp_type& entity) const {
+  return code(self->options.type_format, entity);
+}
+
+model::document inja_formatter::code(const std::string& format, const cppast::cpp_type& entity) const {
+  auto finally = impl::savepoint(const_cast<inja_formatter::impl&>(*this->self));
+  const_cast<inja_formatter*>(this)->data() = to_json(entity);
+  return simplify_code(build(format));
+}
+
+model::document inja_formatter::code(const std::string& format, const cppast::cpp_template_argument& entity) const {
+  // TODO
+  throw std::logic_error("not implemented: code(template_argument)");
 }
 
 }

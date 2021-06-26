@@ -32,34 +32,52 @@ code_formatter::code_formatter_options::code_formatter_options() {}
 
 code_formatter::code_formatter(code_formatter_options options, parser::cpp_context context) : options(std::move(options)), cpp_context(std::move(context)) {}
 
+model::document code_formatter::build(const cppast::cpp_entity& entity) const {
+  return inja_formatter{options, cpp_context}.code(entity);
+}
+
 model::document code_formatter::build(const cppast::cpp_entity& entity, const model::mixin::documentation& context) const {
   return inja_formatter{options, cpp_context, context}.code(entity);
+}
+
+model::document code_formatter::build(const cppast::cpp_type& type) const {
+  return build(options.type_format, type);
 }
 
 model::document code_formatter::build(const cppast::cpp_type& type, const model::mixin::documentation& context) const {
   return build(options.type_format, type, context);
 }
 
+model::document code_formatter::build(const cppast::cpp_template_argument& argument) const {
+  return build(options.template_argument_format, argument);
+}
+
 model::document code_formatter::build(const cppast::cpp_template_argument& argument, const model::mixin::documentation& context) const {
   return build(options.template_argument_format, argument, context);
+}
+
+model::document code_formatter::build(const std::string& format, const cppast::cpp_entity& entity) const {
+  return inja_formatter{options, cpp_context}.code(format, entity);
 }
 
 model::document code_formatter::build(const std::string& format, const cppast::cpp_entity& entity, const model::mixin::documentation& context) const {
   return inja_formatter{options, cpp_context, context}.code(format, entity);
 }
 
-model::document code_formatter::build(const std::string& format, const cppast::cpp_type& type, const model::mixin::documentation& context) const {
-  inja_formatter inja{options, cpp_context, context};
+model::document code_formatter::build(const std::string& format, const cppast::cpp_type& type) const {
+  return inja_formatter{options, cpp_context}.code(format, type);
+}
 
-  // TODO:
-  throw std::logic_error("not implemented: code_formatter::build(format, type, context");
+model::document code_formatter::build(const std::string& format, const cppast::cpp_type& type, const model::mixin::documentation& context) const {
+  return inja_formatter{options, cpp_context, context}.code(format, type);
+}
+
+model::document code_formatter::build(const std::string& format, const cppast::cpp_template_argument& argument) const {
+  return inja_formatter{options, cpp_context}.code(format, argument);
 }
 
 model::document code_formatter::build(const std::string& format, const cppast::cpp_template_argument& argument, const model::mixin::documentation& context) const {
-  inja_formatter inja{options, cpp_context, context};
-
-  // TODO
-  throw std::logic_error("not implemented: code_formatter::build(format, template parameter, context");
+  return inja_formatter{options, cpp_context, context}.code(format, argument);
 }
 
 }
