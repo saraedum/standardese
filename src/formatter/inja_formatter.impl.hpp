@@ -30,7 +30,7 @@ struct inja_formatter::impl {
 
   impl(inja_formatter_options options, parser::cpp_context cpp_context);
 
-  static std::string href_schema;
+  static const std::string& href_schema();
 
   using json = nlohmann::json;
   using variant = std::variant<std::nullptr_t, const cppast::cpp_entity*, const cppast::cpp_type*, model::link_target, model::module, const json::array_t*, json::boolean_t, json::number_float_t, const json::object_t*, const json::string_t*>;

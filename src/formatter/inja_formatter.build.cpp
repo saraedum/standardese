@@ -25,14 +25,14 @@ model::document inja_formatter::build(const std::string &format) const {
       if (entity.target.href().has_value()) {
         std::string href = entity.target.href().value();
 
-        if (href.rfind(self->href_schema) == 0)
+        if (href.rfind(impl::href_schema()) == 0)
           std::visit([&](auto&& parsed) {
             using T = std::decay_t<decltype(parsed)>;
             if constexpr (std::is_same_v<T, model::link_target>)
               entity.target = parsed;
             else
               logger::error(fmt::format("Could not parse link target `{}` which is not of a supported kind.", href));
-          }, impl::from_json(nlohmann::json::parse(href.substr(self->href_schema.size()))));
+          }, impl::from_json(nlohmann::json::parse(href.substr(impl::href_schema().size()))));
       }
     }
 
@@ -42,7 +42,9 @@ model::document inja_formatter::build(const std::string &format) const {
   return parsed;
 }
 
-// TODO: Randomize
-std::string inja_formatter::impl::href_schema = "json://";
+const std::string& inja_formatter::impl::href_schema() {
+  static std::string schema = "json://";
+  return schema;
+}
 
 }
