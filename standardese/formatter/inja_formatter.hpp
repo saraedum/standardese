@@ -220,8 +220,16 @@ class inja_formatter {
 
   std::string ref_qualification(const cppast::cpp_type&) const;
 
+  /// Return a short name describing of which kind this entity is, e.g.,
+  /// "class" for a class.
+  /// This method can be invoked in inja templates as `{{ cppast_kind }}` or
+  /// `{{ cppast_kind(entity) }}`.
   std::string cppast_kind(const cppast::cpp_entity&) const;
 
+  /// Return a short name describing of which kind this type is, e.g.,
+  /// "user-defined" for a user-defined class.
+  /// This method can be invoked in inja templates as `{{ cppast_kind }}` or
+  /// `{{ cppast_kind(type) }}`.
   std::string cppast_kind(const cppast::cpp_type&) const;
 
   std::string kind(const cppast::cpp_entity&) const;

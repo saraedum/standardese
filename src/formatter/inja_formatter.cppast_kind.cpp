@@ -65,8 +65,7 @@ std::string inja_formatter::cppast_kind(const cppast::cpp_type& type) const {
     case cppast::cpp_type_kind::unexposed_t:
       return "unexposed";
     default:
-      // TODO
-      throw std::logic_error("not implemented");
+      throw std::logic_error(fmt::format("not implemented: template callback `cppast_kind` cannot be applied to unexpected type `{}` yet.", name(type)));
   }
 }
 

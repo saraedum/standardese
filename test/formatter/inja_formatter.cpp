@@ -3,6 +3,7 @@
 // found in the top-level directory of this distribution.
 
 #include <nlohmann/json.hpp>
+#include <cppast/cpp_function.hpp>
 
 #include "../../standardese/formatter/inja_formatter.hpp"
 #include "../../standardese/model/cpp_entity_documentation.hpp"
@@ -73,9 +74,28 @@ TEST_CASE("Strings from Inja Templates", "[inja_formatter]") {
     }
   }
 
-  SECTION("`md_escape Callback") {
+  SECTION("`md_escape` Callback") {
     REQUIRE(inja.format(R"({{ md_escape("`code`") }})") == R"(\`code\`)");
     REQUIRE(inja.format(R"({{ md_escape("A`B`C") }})") == R"(A\`B\`C)");
+  }
+
+  SECTION("`cppast_kind` Callback") {
+    SECTION("`cppast_kind` of a File") {
+      inja.data().merge_patch(inja.to_json(header));
+
+      REQUIRE(inja.cppast_kind(header) == "file");
+      REQUIRE(inja.format("{{ cppast_kind }}") == "file");
+    }
+
+    SECTION("For a cpp_type") {
+      util::cpp_file header(R"(void f();)");
+      auto inja = inja_formatter({}, header);
+
+      REQUIRE(inja.cppast_kind(static_cast<const cppast::cpp_function&>(header["f"]).return_type()) == "builtin");
+
+      inja.data() = inja.to_json(header["f"]);
+      REQUIRE(inja.format(R"({{ cppast_kind(return_type) }})") == "builtin");
+    }
   }
 }
 
