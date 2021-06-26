@@ -367,6 +367,24 @@ TEST_CASE("Functions can be Formatted", "[code_formatter]") {
   }
 
   SECTION("External User Defined Return Types") {
+    util::cpp_file header(R"(
+      #include <string>
+
+      std::string f();
+      )");
+
+      auto formatted = code_formatter{{}, header}.build(
+        header["f"],
+        model::cpp_entity_documentation(header, header));
+
+    REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
+      <?xml version="1.0"?>
+      <document>
+        <paragraph>
+          <code>std::string f()</code>
+        </paragraph>
+      </document>
+      )"));
   }
 }
 
