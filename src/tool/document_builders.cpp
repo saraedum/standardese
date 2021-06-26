@@ -19,21 +19,21 @@ namespace standardese::tool {
 
 document_builders::document_builders(struct options options) : options(std::move(options)) {}
 
-model::unordered_entities document_builders::create(model::unordered_entities& parsed) {
+model::unordered_entities document_builders::create(model::unordered_entities& parsed, parser::cpp_context context) {
   // TODO: Make configurable. We presently only build for header files in fixed formats.
 
   auto builder = document_builder::entity_document_builder();
 
   model::unordered_entities documents;
 
-  formatter::inja_formatter formatter{{}};
+  formatter::inja_formatter formatter{{}, context};
 
   logger::info("Creating entity documents.");
   for (auto& entity : parsed) {
     if (entity.is<model::cpp_entity_documentation>()) {
       auto& documentation = entity.as<model::cpp_entity_documentation>();
 
-      formatter::inja_formatter inja{{}};
+      formatter::inja_formatter inja{{}, context};
       inja.data().merge_patch(inja.to_json(documentation.entity()));
 
       if (cppast::cpp_file::kind() == documentation.entity().kind()) {

@@ -9,6 +9,7 @@
 #include <string>
 
 #include "../model/unordered_entities.hpp"
+#include "../parser/cpp_context.hpp"
 
 namespace standardese::tool {
 
@@ -31,10 +32,10 @@ class document_builders {
     std::string document_path = "doc_{{ sanitize_basename(name) }}";
   };
 
-  document_builders(struct options);
+  explicit document_builders(struct options);
 
   /// Create the documents from the parsed source code.
-  model::unordered_entities create(model::unordered_entities& parsed);
+  model::unordered_entities create(model::unordered_entities& parsed, parser::cpp_context);
 
  private:
   struct options options;

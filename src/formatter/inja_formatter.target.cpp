@@ -3,6 +3,7 @@
 // found in the top-level directory of this distribution.
 
 #include <fmt/format.h>
+#include <cppast/cpp_type.hpp>
 
 #include "inja_formatter.impl.hpp"
 #include "../../standardese/logger.hpp"
@@ -29,8 +30,20 @@ std::string inja_formatter::target(const cppast::cpp_entity& entity) const {
 }
 
 std::string inja_formatter::target(const cppast::cpp_type& type) const {
-  // TODO
-  return std::string{};
+  switch(type.kind()) {
+    case cppast::cpp_type_kind::user_defined_t:
+      {
+        const auto declaration = self->cpp_context.index().lookup(*static_cast<const cppast::cpp_user_defined_type&>(type).entity().id().begin());
+        if (declaration.has_value()) {
+          return target(declaration.value());
+        } else {
+          return std::string{};
+        }
+      }
+    default:
+      // TODO
+      return std::string{};
+  }
 }
 
 }

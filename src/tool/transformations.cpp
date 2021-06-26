@@ -59,12 +59,12 @@ void transformations::transform(model::unordered_entities& documents, const pars
 
   transformation::exclude_uncommented_transformation{documents, options.exclude_uncommented_options}.transform();
   transformation::synopsis_transformation{documents}.transform();
-  transformation::entity_heading_transformation{documents, options.entity_heading_options}.transform();;
+  transformation::entity_heading_transformation{documents, context, options.entity_heading_options}.transform();;
   transformation::output_group_transformation{documents}.transform();
   transformation::anchor_transformation{documents}.transform();
 
   // Resolve Links to the actual URLs
-  transformation::link_href_internal_transformation{documents}.transform();
+  transformation::link_href_internal_transformation{documents, context}.transform();
 }
 
 }

@@ -32,11 +32,11 @@ namespace standardese::transformation {
 namespace {
 
 template <typename T>
-model::document heading(T& documentation, const entity_heading_transformation::entity_heading_transformation_options&);
+model::document heading(T& documentation, parser::cpp_context, const entity_heading_transformation::entity_heading_transformation_options&);
 
 }
 
-entity_heading_transformation::entity_heading_transformation(model::unordered_entities& entities, struct entity_heading_transformation_options options) : transformation(entities), options(options) {}
+entity_heading_transformation::entity_heading_transformation(model::unordered_entities& entities, parser::cpp_context cpp_context, struct entity_heading_transformation_options options) : transformation(entities), options(options), cpp_context(std::move(cpp_context)) {}
 
 entity_heading_transformation::entity_heading_transformation_options::entity_heading_transformation_options(formatter::inja_formatter::inja_formatter_options inja_formatter_options) : inja_formatter_options(std::move(inja_formatter_options)) {}
 
@@ -47,7 +47,7 @@ void entity_heading_transformation::do_transform(model::entity& document) {
     using T = std::decay_t<decltype(entity)>;
 
     if constexpr (std::is_base_of_v<model::mixin::documentation, T>) {
-      auto doc = heading(entity, options);
+      auto doc = heading(entity, cpp_context, options);
       bool has_scope = doc.begin() != doc.end() && doc.begin()->template is<model::markup::heading>();
       for (auto paragraph = doc.rbegin(); paragraph != doc.rend(); ++paragraph) {
         if (paragraph->template is<model::markup::heading>())
@@ -71,8 +71,8 @@ void entity_heading_transformation::do_transform(model::entity& document) {
 namespace {
 
 template <typename T>
-model::document heading(T& documentation, const entity_heading_transformation::entity_heading_transformation_options& options) {
-  formatter::inja_formatter inja{options.inja_formatter_options, documentation};
+model::document heading(T& documentation, parser::cpp_context context, const entity_heading_transformation::entity_heading_transformation_options& options) {
+  formatter::inja_formatter inja{options.inja_formatter_options, context, documentation};
  inja.data().merge_patch(inja.to_json(documentation));
 
   // TODO:

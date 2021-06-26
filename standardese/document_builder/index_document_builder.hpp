@@ -23,7 +23,7 @@ class index_document_builder {
       struct formatter::inja_formatter::inja_formatter_options anchor_text_options;
     };
 
-    explicit index_document_builder(options);
+    index_document_builder(options, parser::cpp_context);
 
     /// Create an index of all entities satisfying `predicate`.
     /// \param name The name of the generated document, e.g., `headers`.

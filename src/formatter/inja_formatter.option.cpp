@@ -26,7 +26,7 @@ std::string inja_formatter::option(const std::string& key) const {
 
   const auto colon = key.find(':');
   if (colon != std::string::npos && key.substr(0, colon) == "default")
-    return inja_formatter({}).option(key.substr(colon + 1));
+    return inja_formatter({}, self->cpp_context).option(key.substr(colon + 1));
 
   if (key == "function_format") return options.function_format;
   else if (key == "type_format") return options.type_format;

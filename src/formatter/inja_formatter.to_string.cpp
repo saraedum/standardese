@@ -16,9 +16,9 @@ std::string inja_formatter::impl::to_string(const nlohmann::json& data) const {
   return std::visit([&](auto&& entity) {
     using T = std::decay_t<decltype(entity)>;
     if constexpr (std::is_same_v<T, const cppast::cpp_entity*>) {
-      return fmt::format("{} {}, i.e., {}", inja_formatter{{}}.kind(*entity), inja_formatter{{}}.name(*entity), nlohmann::to_string(data));
+      return fmt::format("{} {}, i.e., {}", inja_formatter{{}, cpp_context}.kind(*entity), inja_formatter{{}, cpp_context}.name(*entity), nlohmann::to_string(data));
     } else if constexpr (std::is_same_v<T, const cppast::cpp_type*>) {
-      return fmt::format("type {}, i.e., {}", inja_formatter{{}}.name(*entity), nlohmann::to_string(data));
+      return fmt::format("type {}, i.e., {}", inja_formatter{{}, cpp_context}.name(*entity), nlohmann::to_string(data));
     } else if constexpr (std::is_same_v<T, std::nullptr_t>) {
       return std::string{"null"};
     } else if constexpr (std::is_same_v<T, model::link_target>) {

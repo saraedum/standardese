@@ -10,6 +10,7 @@
 #include <cppast/forward.hpp>
 
 #include "inja_formatter.hpp"
+#include "../parser/cpp_context.hpp"
 
 namespace standardese::formatter {
 
@@ -20,7 +21,7 @@ class code_formatter {
     code_formatter_options();
   };
 
-  explicit code_formatter(code_formatter_options);
+  code_formatter(code_formatter_options, parser::cpp_context);
 
   // TODO: Make the context more flexible. It could be any kind of documentation.
 
@@ -56,6 +57,7 @@ class code_formatter {
 
  private:
   code_formatter_options options;
+  parser::cpp_context cpp_context;
 };
 
 }

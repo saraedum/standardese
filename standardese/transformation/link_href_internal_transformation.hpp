@@ -10,6 +10,7 @@
 
 #include "transformation.hpp"
 #include "../model/unordered_entities.hpp"
+#include "../parser/cpp_context.hpp"
 
 namespace standardese::transformation
 {
@@ -17,13 +18,14 @@ namespace standardese::transformation
 /// Rewrites MarkDown links that target a C++ entity as a link to an actual URL.
 class link_href_internal_transformation : public transformation {
   public:
-    link_href_internal_transformation(model::unordered_entities& documents);
+    link_href_internal_transformation(model::unordered_entities& documents, parser::cpp_context);
 
   protected:
     void do_transform(model::entity&) override;
 
   private:
     std::unordered_map<const cppast::cpp_entity*, std::string> anchors;
+    parser::cpp_context context;
 };
 
 }

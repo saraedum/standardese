@@ -30,10 +30,10 @@ namespace standardese::formatter {
 
 code_formatter::code_formatter_options::code_formatter_options() {}
 
-code_formatter::code_formatter(code_formatter_options options) : options(options) {}
+code_formatter::code_formatter(code_formatter_options options, parser::cpp_context context) : options(std::move(options)), cpp_context(std::move(context)) {}
 
 model::document code_formatter::build(const cppast::cpp_entity& entity, const model::mixin::documentation& context) const {
-  return inja_formatter{options, context}.code(entity);
+  return inja_formatter{options, cpp_context, context}.code(entity);
 }
 
 model::document code_formatter::build(const cppast::cpp_type& type, const model::mixin::documentation& context) const {
@@ -45,18 +45,18 @@ model::document code_formatter::build(const cppast::cpp_template_argument& argum
 }
 
 model::document code_formatter::build(const std::string& format, const cppast::cpp_entity& entity, const model::mixin::documentation& context) const {
-  return inja_formatter{options, context}.code(format, entity);
+  return inja_formatter{options, cpp_context, context}.code(format, entity);
 }
 
 model::document code_formatter::build(const std::string& format, const cppast::cpp_type& type, const model::mixin::documentation& context) const {
-  inja_formatter inja{options, context};
+  inja_formatter inja{options, cpp_context, context};
 
   // TODO:
   throw std::logic_error("not implemented: code_formatter::build(format, type, context");
 }
 
 model::document code_formatter::build(const std::string& format, const cppast::cpp_template_argument& argument, const model::mixin::documentation& context) const {
-  inja_formatter inja{options, context};
+  inja_formatter inja{options, cpp_context, context};
 
   // TODO
   throw std::logic_error("not implemented: code_formatter::build(format, template parameter, context");

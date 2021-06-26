@@ -7,6 +7,7 @@
 #define STANDARDESE_TRANSFORMATION_ANCHOR_TEXT_TRANSFORMATION_HPP_INCLUDED
 
 #include "transformation.hpp"
+#include "../parser/cpp_context.hpp"
 
 namespace standardese::transformation {
 
@@ -47,13 +48,14 @@ class link_text_transformation : public transformation {
       std::string uri_format = "";
     };
 
-    link_text_transformation(model::unordered_entities& documents, link_text_transformation_options options = {});
+    link_text_transformation(model::unordered_entities& documents, parser::cpp_context, link_text_transformation_options options = {});
 
   protected:
     void do_transform(model::entity& root) override;
 
   private:
     link_text_transformation_options options;
+    parser::cpp_context context;
 };
 
 }

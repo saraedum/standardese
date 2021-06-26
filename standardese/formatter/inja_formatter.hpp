@@ -104,10 +104,11 @@ class inja_formatter {
     std::string noexcept_specification_format = "";
   };
 
-  explicit inja_formatter(inja_formatter_options);
-  ~inja_formatter();
+  inja_formatter(inja_formatter_options, parser::cpp_context);
+  inja_formatter(inja_formatter_options, parser::cpp_context, const model::mixin::documentation& context);
+  inja_formatter(inja_formatter_options, const model::cpp_entity_documentation& context);
 
-  inja_formatter(inja_formatter_options, const model::mixin::documentation& context);
+  ~inja_formatter();
 
   /// Render the inja template `format`.
   std::string format(const std::string& format) const;
