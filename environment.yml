@@ -15,3 +15,4 @@ dependencies:
   - fmt
   - inja
   - pugixml
+  - spdlog
