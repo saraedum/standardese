@@ -37,7 +37,7 @@ bool check_arg_count(const std::string& name, const std::vector<const nlohmann::
 
 inja_formatter::inja_formatter_options::inja_formatter_options() {}
 
-inja_formatter::inja_formatter(struct inja_formatter_options options) : self(std::make_unique<impl>(std::move(options))) {
+inja_formatter::inja_formatter(struct inja_formatter_options options, parser::cpp_context cpp_context) : self(std::make_unique<impl>(std::move(options), std::move(cpp_context))) {
   add_callback("name", [&]() {
     return name_callback(self->data);
   });
@@ -248,11 +248,11 @@ inja_formatter::inja_formatter(struct inja_formatter_options options) : self(std
   });
 }
 
-inja_formatter::inja_formatter(struct inja_formatter_options options, const model::mixin::documentation& context) : inja_formatter(std::move(options)) {
+inja_formatter::inja_formatter(struct inja_formatter_options options, parser::cpp_context cpp_context, const model::mixin::documentation& context) : inja_formatter(std::move(options), std::move(cpp_context)) {
   self->context = type_safe::ref(context);
 }
 
-inja_formatter::impl::impl(inja_formatter_options options) : options(std::move(options)) {}
+inja_formatter::impl::impl(inja_formatter_options options, parser::cpp_context cpp_context) : options(std::move(options)), cpp_context(std::move(cpp_context)) {}
 
 inja_formatter::~inja_formatter() {}
 

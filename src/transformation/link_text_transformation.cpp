@@ -17,6 +17,9 @@ template<class> inline constexpr bool always_false_v = false;
 
 namespace standardese::transformation {
 
+  link_text_transformation::link_text_transformation(model::unordered_entities& documents, parser::cpp_context context, link_text_transformation_options options) : transformation(documents), options(std::move(options)), context(std::move(context)) {
+}
+
 void link_text_transformation::do_transform(model::entity& root) {
   model::visitor::visit([&](auto& link, auto&& recurse) {
     using T = std::decay_t<decltype(link)>;
@@ -27,7 +30,7 @@ void link_text_transformation::do_transform(model::entity& root) {
           using T = std::decay_t<decltype(target)>;
 
           const auto apply = [&](const std::string& format, auto&& data) {
-            formatter::inja_formatter inja({});
+            formatter::inja_formatter inja({}, context);
             inja.data().merge_patch(inja.to_json(data));
 
             auto rendered = inja.build(format);

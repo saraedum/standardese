@@ -25,7 +25,7 @@ namespace standardese::document_builder
 
 index_document_builder::options::options() {}
 
-index_document_builder::index_document_builder(options options) : anchor_text_formatter(options.anchor_text_options) {}
+index_document_builder::index_document_builder(options options, parser::cpp_context context) : anchor_text_formatter(options.anchor_text_options, std::move(context)) {}
 
 document index_document_builder::build(const std::string& name, const std::string& path, const std::function<bool(const model::entity&)> predicate, const model::unordered_entities& entities) const {
   auto list = model::markup::list(false);

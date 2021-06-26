@@ -8,6 +8,7 @@
 
 #include "transformation.hpp"
 #include "../formatter/inja_formatter.hpp"
+#include "../parser/cpp_context.hpp"
 
 namespace standardese::transformation {
 
@@ -33,13 +34,14 @@ class entity_heading_transformation : public transformation {
       formatter::inja_formatter::inja_formatter_options inja_formatter_options;
     };
 
-    entity_heading_transformation(model::unordered_entities& entities, entity_heading_transformation_options = {});
+    entity_heading_transformation(model::unordered_entities& entities, parser::cpp_context, entity_heading_transformation_options = {});
 
   protected:
     void do_transform(model::entity& root) override;
 
   private:
     struct entity_heading_transformation_options options;
+    parser::cpp_context cpp_context;
 };
 
 }

@@ -15,7 +15,7 @@ namespace standardese::formatter {
 
 synopsis_formatter::synopsis_formatter_options::synopsis_formatter_options() {}
 
-synopsis_formatter::synopsis_formatter(synopsis_formatter_options options) : options(options) {}
+synopsis_formatter::synopsis_formatter(synopsis_formatter_options options, parser::cpp_context context) : options(options), cpp_context(std::move(context)) {}
 
 model::document synopsis_formatter::build(const model::cpp_entity_documentation& documentation) const {
   /*
@@ -132,7 +132,7 @@ model::document synopsis_formatter::build(const model::cpp_entity_documentation&
   code_formatter::code_formatter_options options;
   static_cast<inja_formatter::inja_formatter_options&>(options) = this->options;
 
-  return code_formatter{options}.build(documentation.entity(), documentation);
+  return code_formatter{options, cpp_context}.build(documentation.entity(), documentation);
 }
 
 }

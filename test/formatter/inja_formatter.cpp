@@ -24,11 +24,11 @@ using standardese::formatter::inja_formatter;
 
 TEST_CASE("Strings from Inja Templates", "[inja_formatter]") {
   auto logger = util::logger::throwing_logger();
-  auto inja = inja_formatter({});
+  util::cpp_file header;
+  auto inja = inja_formatter({}, header);
 
   SECTION("`filename()` and `path` Callbacks") {
     SECTION("`path` Provides the Path of the Defining Header File") {
-      util::cpp_file header;
       inja.data().merge_patch(inja.to_json(header));
 
       REQUIRE(inja.format("{{ path }}") == header.path());
@@ -45,8 +45,6 @@ TEST_CASE("Strings from Inja Templates", "[inja_formatter]") {
 
   SECTION("`name` Callback") {
     SECTION("`name` of a C++ Entity Provides the (Shortened) cppast Name of the Entity") {
-      util::cpp_file header;
-
       inja.data().merge_patch(inja.to_json(header));
 
       REQUIRE(inja.format("{{ name }}") == "header.hpp");
@@ -83,7 +81,8 @@ TEST_CASE("Strings from Inja Templates", "[inja_formatter]") {
 
 TEST_CASE("Markup Entities from Inja Templates", "[inja_formatter]") {
   auto logger = util::logger::throwing_logger();
-  auto inja = inja_formatter({});
+  util::cpp_file header;
+  auto inja = inja_formatter({}, header);
 
   SECTION("MarkDown is Supported") {
     const auto node = inja.build("`code`");

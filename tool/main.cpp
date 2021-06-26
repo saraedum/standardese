@@ -24,7 +24,7 @@ int main(int argc, const char* argv[])
     auto [parsed, context] = standardese::tool::parsers(options.parser_options).parse();
     
     // Create output document outlines.
-    auto documents = standardese::tool::document_builders(options.document_builder_options).create(parsed);
+    auto documents = standardese::tool::document_builders(options.document_builder_options).create(parsed, context);
 
     // Apply transformations to output documents.
     standardese::tool::transformations(options.transformation_options).transform(documents, context);

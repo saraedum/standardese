@@ -27,9 +27,9 @@ using standardese::output_generator::xml::xml_generator;
 TEST_CASE("Typical Index Files can be Generated", "[index_document_builder]")
 {
   auto logger = util::logger::throwing_logger();
-  document_builder::index_document_builder builder({}); 
-
   cpp_file header;
+
+  document_builder::index_document_builder builder({}, header); 
 
   auto parsed = util::parsed_comments(header).add(header, R"(
     \file
@@ -44,7 +44,7 @@ TEST_CASE("Typical Index Files can be Generated", "[index_document_builder]")
     {
       standardese::model::unordered_entities documents{std::vector{std::move(index)}};
 
-      CHECK_THROWS(transformation::link_href_internal_transformation(documents).transform());
+      CHECK_THROWS(transformation::link_href_internal_transformation(documents, header).transform());
     }
 
     SECTION("Links Can be Emitted With a Header File Entity")
@@ -56,7 +56,7 @@ TEST_CASE("Typical Index Files can be Generated", "[index_document_builder]")
 
       transformation::anchor_transformation(documents).transform();
 
-      transformation::link_href_internal_transformation(documents).transform();
+      transformation::link_href_internal_transformation(documents, header).transform();
 
       CHECK(xml_generator::render(*++documents.begin()) == unindent(R"(
         <?xml version="1.0"?>

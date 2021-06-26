@@ -9,6 +9,7 @@
 #include <string>
 
 #include "inja_formatter.hpp"
+#include "../parser/cpp_context.hpp"
 
 namespace standardese::formatter {
 
@@ -22,7 +23,7 @@ class synopsis_formatter {
     synopsis_formatter_options();
   };
 
-  explicit synopsis_formatter(synopsis_formatter_options);
+  synopsis_formatter(synopsis_formatter_options, parser::cpp_context);
 
   model::document build(const model::cpp_entity_documentation&) const;
 
@@ -30,6 +31,7 @@ class synopsis_formatter {
 
  private:
   synopsis_formatter_options options;
+  parser::cpp_context cpp_context;
 };
 
 }

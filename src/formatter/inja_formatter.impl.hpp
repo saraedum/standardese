@@ -13,6 +13,7 @@
 #include "../../standardese/formatter/inja_formatter.hpp"
 #include "../../standardese/forward.hpp"
 #include "../../standardese/model/module.hpp"
+#include "../../standardese/parser/cpp_context.hpp"
 
 namespace standardese::formatter {
 
@@ -27,7 +28,7 @@ struct inja_formatter::impl {
     nlohmann::json backup;
   };
 
-  explicit impl(inja_formatter_options options);
+  impl(inja_formatter_options options, parser::cpp_context cpp_context);
 
   static std::string href_schema;
 
@@ -43,6 +44,7 @@ struct inja_formatter::impl {
   inja::Environment env;
   json data;
   type_safe::optional_ref<const model::mixin::documentation> context;
+  parser::cpp_context cpp_context;
 };
 
 }
