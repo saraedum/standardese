@@ -28,7 +28,17 @@ class code_formatter {
   /// Return `entity` written in C++ syntax.
   /// The returned document contains a single block such as a paragraph or a
   /// code block that contains the markup for the entity.
+  model::document build(const cppast::cpp_entity& entity) const;
+
+  /// Return `entity` written in C++ syntax.
+  /// The returned document contains a single block such as a paragraph or a
+  /// code block that contains the markup for the entity.
   model::document build(const cppast::cpp_entity& entity, const model::mixin::documentation& context) const;
+
+  /// Return `entity` written in C++ syntax according to `format`.
+  /// The returned document contains a single block such as a paragraph or a
+  /// code block that contains the markup for the entity.
+  model::document build(const std::string& format, const cppast::cpp_entity& entity) const;
 
   /// Return `entity` written in C++ syntax according to `format`.
   /// The returned document contains a single block such as a paragraph or a
@@ -38,8 +48,17 @@ class code_formatter {
   /// Return `type` written in C++ syntax.
   /// The returned document contains a single block such as a paragraph or a
   /// code block that contains the markup for the type.
+  model::document build(const cppast::cpp_type& type) const;
+
+  /// Return `type` written in C++ syntax.
+  /// The returned document contains a single block such as a paragraph or a
+  /// code block that contains the markup for the type.
   model::document build(const cppast::cpp_type& type, const model::mixin::documentation& context) const;
 
+  /// Return `type` written in C++ syntax according to `format`.
+  /// The returned document contains a single block such as a paragraph or a
+  /// code block that contains the markup for the type.
+  model::document build(const std::string& format, const cppast::cpp_type& type) const;
   /// Return `type` written in C++ syntax according to `format`.
   /// The returned document contains a single block such as a paragraph or a
   /// code block that contains the markup for the type.
@@ -48,7 +67,17 @@ class code_formatter {
   /// Return `argument` written in C++ syntax.
   /// The returned document contains a single block such as a paragraph or a
   /// code block that contains the markup for the argument.
+  model::document build(const cppast::cpp_template_argument& argument) const;
+
+  /// Return `argument` written in C++ syntax.
+  /// The returned document contains a single block such as a paragraph or a
+  /// code block that contains the markup for the argument.
   model::document build(const cppast::cpp_template_argument& argument, const model::mixin::documentation& context) const;
+
+  /// Return `argument` written in C++ syntax according to `format`.
+  /// The returned document contains a single block such as a paragraph or a
+  /// code block that contains the markup for the argument.
+  model::document build(const std::string& format, const cppast::cpp_template_argument& argument) const;
 
   /// Return `argument` written in C++ syntax according to `format`.
   /// The returned document contains a single block such as a paragraph or a

@@ -129,6 +129,8 @@ class inja_formatter {
 
   nlohmann::json to_json(const cppast::cpp_type&) const;
 
+  nlohmann::json to_json(const cppast::cpp_template_argument&) const;
+
   nlohmann::json to_json(const model::link_target&) const;
 
   nlohmann::json to_json(const model::entity&) const;
@@ -226,9 +228,35 @@ class inja_formatter {
 
   model::document synopsis(const cppast::cpp_entity&) const;
 
+  /// Return a short C++ representation of this entity.
+  /// This method can be invoked in inja templates as `{{ code }}` or `{{
+  /// code(entity) }}`.
   model::document code(const cppast::cpp_entity&) const;
 
+  /// Return a short C++ representation of this entity.
+  /// This method can be invoked in inja templates as `{{ code }}` or `{{
+  /// code(entity) }}`.
   model::document code(const std::string& format, const cppast::cpp_entity&) const;
+
+  /// Return a short C++ representation of this type.
+  /// This method can be invoked in inja templates as `{{ code }}` or `{{
+  /// code(type) }}`.
+  model::document code(const cppast::cpp_type&) const;
+
+  /// Return a short C++ representation of this type.
+  /// This method can be invoked in inja templates as `{{ code }}` or `{{
+  /// code(type) }}`.
+  model::document code(const std::string& format, const cppast::cpp_type&) const;
+
+  /// Return a short C++ representation of this argument.
+  /// This method can be invoked in inja templates as `{{ code }}` or `{{
+  /// code(argument) }}`.
+  model::document code(const cppast::cpp_template_argument&) const;
+
+  /// Return a short C++ representation of this argument.
+  /// This method can be invoked in inja templates as `{{ code }}` or `{{
+  /// code(argument) }}`.
+  model::document code(const std::string& format, const cppast::cpp_template_argument&) const;
 
   std::string option(const std::string& key) const;
 
