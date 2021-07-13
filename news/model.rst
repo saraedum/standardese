@@ -93,7 +93,7 @@
   `--exclude-uncommented`/`-X` which hides uncommented entities from member
   lists and indexes if they do not have any commented children. Giving the
   flag twice also hides them from the synopsis of their parent. Giving the flag
-  three times, hides them even if they hav ecommented children (this used to be
+  three times, hides them even if they have commented children (this used to be
   the default behaviour before.) Giving the argument four times, applies these
   rules even to files and namespaces, i.e., members of namespaces/files that
   have no comments will not show up.
