@@ -36,7 +36,7 @@ model::document code_formatter::build(const cppast::cpp_entity& entity) const {
   return inja_formatter{options, cpp_context}.code(entity);
 }
 
-model::document code_formatter::build(const cppast::cpp_entity& entity, const model::mixin::documentation& context) const {
+model::document code_formatter::build(const cppast::cpp_entity& entity, const cppast::cpp_entity& context) const {
   return inja_formatter{options, cpp_context, context}.code(entity);
 }
 
@@ -44,7 +44,7 @@ model::document code_formatter::build(const cppast::cpp_type& type) const {
   return build(options.type_format, type);
 }
 
-model::document code_formatter::build(const cppast::cpp_type& type, const model::mixin::documentation& context) const {
+model::document code_formatter::build(const cppast::cpp_type& type, const cppast::cpp_entity& context) const {
   return build(options.type_format, type, context);
 }
 
@@ -52,7 +52,7 @@ model::document code_formatter::build(const cppast::cpp_template_argument& argum
   return build(options.template_argument_format, argument);
 }
 
-model::document code_formatter::build(const cppast::cpp_template_argument& argument, const model::mixin::documentation& context) const {
+model::document code_formatter::build(const cppast::cpp_template_argument& argument, const cppast::cpp_entity& context) const {
   return build(options.template_argument_format, argument, context);
 }
 
@@ -60,7 +60,7 @@ model::document code_formatter::build(const std::string& format, const cppast::c
   return inja_formatter{options, cpp_context}.code(format, entity);
 }
 
-model::document code_formatter::build(const std::string& format, const cppast::cpp_entity& entity, const model::mixin::documentation& context) const {
+model::document code_formatter::build(const std::string& format, const cppast::cpp_entity& entity, const cppast::cpp_entity& context) const {
   return inja_formatter{options, cpp_context, context}.code(format, entity);
 }
 
@@ -68,7 +68,7 @@ model::document code_formatter::build(const std::string& format, const cppast::c
   return inja_formatter{options, cpp_context}.code(format, type);
 }
 
-model::document code_formatter::build(const std::string& format, const cppast::cpp_type& type, const model::mixin::documentation& context) const {
+model::document code_formatter::build(const std::string& format, const cppast::cpp_type& type, const cppast::cpp_entity& context) const {
   return inja_formatter{options, cpp_context, context}.code(format, type);
 }
 
@@ -76,7 +76,7 @@ model::document code_formatter::build(const std::string& format, const cppast::c
   return inja_formatter{options, cpp_context}.code(format, argument);
 }
 
-model::document code_formatter::build(const std::string& format, const cppast::cpp_template_argument& argument, const model::mixin::documentation& context) const {
+model::document code_formatter::build(const std::string& format, const cppast::cpp_template_argument& argument, const cppast::cpp_entity& context) const {
   return inja_formatter{options, cpp_context, context}.code(format, argument);
 }
 

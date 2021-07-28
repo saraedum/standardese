@@ -246,9 +246,25 @@ inja_formatter::inja_formatter(struct inja_formatter_options options, parser::cp
       return std::string{};
     return replace_callback(*args[0], *args[1], *args[2]);
   });
+  add_callback("namespace", [&]() {
+    return namespace_callback(data());
+  });
+  add_callback("namespace", [&](const std::vector<const nlohmann::json*>& args) {
+    if (!check_arg_count("namespace", args, 1))
+      return std::string{};
+    return namespace_callback(*args[0]);
+  });
+  add_callback("scope", [&]() {
+    return scope_callback(data());
+  });
+  add_callback("scope", [&](const std::vector<const nlohmann::json*>& args) {
+    if (!check_arg_count("scope", args, 1))
+      return std::string{};
+    return scope_callback(*args[0]);
+  });
 }
 
-inja_formatter::inja_formatter(struct inja_formatter_options options, parser::cpp_context cpp_context, const model::mixin::documentation& context) : inja_formatter(std::move(options), std::move(cpp_context)) {
+inja_formatter::inja_formatter(struct inja_formatter_options options, parser::cpp_context cpp_context, const cppast::cpp_entity& context) : inja_formatter(std::move(options), std::move(cpp_context)) {
   self->context = type_safe::ref(context);
 }
 

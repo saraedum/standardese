@@ -23,8 +23,9 @@ class inja_formatter {
   struct inja_formatter_options {
     inja_formatter_options();
     
+    /// Controls how the `namespace` callback renders namespaces.
     enum class namespace_display_options {
-      /// Show all entities with full namespace qualification.
+      /// Show the full namespace.
       /// This is the default behaviour.
       full,
 
@@ -46,6 +47,20 @@ class inja_formatter {
       hidden,
     } namespace_display_options;
 
+    /// Controls how the `scope` callback renders the defining type scope of an
+    /// entity.
+    enum class scope_display_options {
+      /// Show the full type scope.
+      /// This is the default behaviour.
+      full,
+
+      /// Omit the type scope that the documented entity is in.
+      relative,
+
+      /// Completely hide all type scope.
+      hidden,
+    } scope_display_options;
+
     /// Formatting rule for functions.
     /// This includes member functions, constructors, destructors, operators.
     /// See https://en.cppreference.com/w/cpp/language/function.
@@ -53,7 +68,7 @@ class inja_formatter {
         if cppast_kind in ["constructor", "destructor", "conversion operator"] %}{{
           format(option("function_declarator_format"))
        }}{% else %}{{
-        join(" ` ` ", reject("empty",list(
+        join(" ` ` ", reject("empty", list(
           format(option("declaration_specifiers_format")),
           format(option("return_type_format"), return_type),
           format(option("function_declarator_format")))))
@@ -72,10 +87,10 @@ class inja_formatter {
     std::string friend_format = R"(`friend` ` ` {{ md(code(entity)) }})";
 
     std::string type_format = R"({% if target != "" %}[{% endif
-      %}{% if cppast_kind == "template instantiation" %}`{{ name }}` `<` {% if isString(arguments) %}`{{ arguments }}`{% else %}`TODO`{% endif %} `>` {%-
+      %}{% if cppast_kind == "template instantiation" %}{{ format(option("type_declarator_format")) }} `<` {% if isString(arguments) %}`{{ arguments }}`{% else %}`TODO`{% endif %} `>` {%-
       else if cppast_kind == "reference" %}{{ format(option("type_format"), type) }}{{ format(option("ref_qualification_format"))
       }}{%- else if cppast_kind == "cv-qualified" %}{{ join(" ` ` ", reject("empty", list(format(option("const_qualification_format")), format(option("volatile_qualification_format")), format(option("type_format"), type))))
-      }}{%- else %} `{{ code_escape(name) }}` {% endif %}{% if target != "" %}]({{ target }}){% endif %})";
+      }}{%- else %}{{ format(option("type_declarator_format")) }}{% endif %}{% if target != "" %}]({{ target }}){% endif %})";
 
     /// Formatting rule for a function's return type.
     /// This controls the formatting of a function's return type with its
@@ -84,11 +99,14 @@ class inja_formatter {
 
     std::string parameter_type_format = type_format;
 
+    std::string type_declarator_format = R"( `{{ join("::", reject("empty", list(namespace, scope, name))) }}` )";
+
+    // TODO
     std::string template_argument_format = "template-argument";
 
     std::string declaration_specifiers_format = R"({% if length(declaration_specifiers) != 0 %} `{{ join(" ", declaration_specifiers) }}` {% endif %})";
 
-    std::string function_declarator_format = " `{{ name }}` ";
+    std::string function_declarator_format = R"( `{{ join("::", reject("empty", list(namespace, scope, name))) }}` )";
 
     std::string function_parameters_format = R"({% for param in parameters %}{% if not loop.is_first %} `, ` {% endif %} {{ format(option("function_parameter_format"), param) }} {% endfor %})";
 
@@ -105,7 +123,7 @@ class inja_formatter {
   };
 
   inja_formatter(inja_formatter_options, parser::cpp_context);
-  inja_formatter(inja_formatter_options, parser::cpp_context, const model::mixin::documentation& context);
+  inja_formatter(inja_formatter_options, parser::cpp_context, const cppast::cpp_entity& context);
   inja_formatter(inja_formatter_options, const model::cpp_entity_documentation& context);
 
   ~inja_formatter();
@@ -146,6 +164,12 @@ class inja_formatter {
   /// Return the name of this module.
   /// This method can be invoked in inja templates as `{{ name }}` or as `{{ name(entity) }}`.
   std::string name(const model::module&) const;
+
+  /// Return the name of this C++ entity with any namespace:: and scope:: removed.
+  /// This method is just a heuristic. Use the other `name` overloads instead
+  /// as they can actually use knowledge about the C++ entities in the source
+  /// code.
+  std::string name(const std::string& name) const;
 
   /// Render the entity as MarkDown.
   /// The returned string might contain inja-formatter specific MarkDown to
@@ -290,6 +314,40 @@ class inja_formatter {
 
   std::string replace(const std::string&, const std::string& pattern, const std::string& replacement) const;
 
+  /// Return the namespace of this entity.
+  /// See [namespace_display_options]() for ways to influence the returned value.
+  std::string namespaze(const cppast::cpp_entity&) const;
+
+  /// Return the namespace of this type.
+  /// See [namespace_display_options]() for ways to influence the returned scope.
+  std::string namespaze(const cppast::cpp_type&) const;
+
+  /// Return the namespace of this entity.
+  /// This method is just a heuristic. Use the other `namespaze` overloads
+  /// instead as they can actually use knowledge about the C++ entities in the
+  /// source code.
+  std::string namespaze(const std::string&) const;
+
+  // TODO: Document and hook up callbacks.
+  std::vector<std::string> namespaces(const cppast::cpp_entity&) const;
+
+  // TODO: Document and hook up callbacks.
+  type_safe::optional<std::vector<std::string>> namespaces(const cppast::cpp_type&) const;
+
+  /// Return the name of the defining type scope of this entity.
+  /// See [scope_display_options]() for ways to influence the returned scope.
+  std::string scope(const cppast::cpp_entity&) const;
+
+  /// Return the name of the defining type scope of this type.
+  /// See [scope_display_options]() for ways to influence the returned scope.
+  std::string scope(const cppast::cpp_type&) const;
+
+  /// Return the name of the defining type scope of this entity.
+  /// This method exists for symmetry with the `name` and `namespace`
+  /// callbacks. It always returns the empty string currently, since we cannot
+  /// decide this without knowdledge of the underlying C++ source code.
+  std::string scope(const std::string&) const;
+
  private:
   std::string name_callback(const nlohmann::json&) const;
   std::string md_callback(const nlohmann::json&) const;
@@ -321,6 +379,8 @@ class inja_formatter {
   nlohmann::json entity_callback(const nlohmann::json&) const;
   std::string text_callback(const nlohmann::json&) const;
   std::string replace_callback(const nlohmann::json&, const nlohmann::json&, const nlohmann::json&) const;
+  std::string namespace_callback(const nlohmann::json&) const;
+  std::string scope_callback(const nlohmann::json&) const;
 
   struct impl;
   std::unique_ptr<struct impl> self;

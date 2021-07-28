@@ -72,8 +72,8 @@ namespace {
 
 template <typename T>
 model::document heading(T& documentation, parser::cpp_context context, const entity_heading_transformation::entity_heading_transformation_options& options) {
-  formatter::inja_formatter inja{options.inja_formatter_options, context, documentation};
- inja.data().merge_patch(inja.to_json(documentation));
+  formatter::inja_formatter inja{options.inja_formatter_options, context};
+  inja.data().merge_patch(inja.to_json(documentation));
 
   // TODO:
   // logger::debug([&]() { return fmt::format("Generating heading for {} `{}`.", cppast::to_string(documentation.entity().kind()), inja.name(documentation.entity())); });

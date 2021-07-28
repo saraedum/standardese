@@ -10,8 +10,6 @@
 #include <cppast/cpp_decltype_type.hpp>
 #include <cppast/cpp_function_type.hpp>
 #include <cppast/cpp_template.hpp>
-#include <cppast/forward.hpp>
-#include <cppast/cpp_namespace.hpp>
 #include <fmt/format.h>
 #include <boost/filesystem/path.hpp>
 #include <boost/algorithm/string.hpp>
@@ -23,75 +21,6 @@
 
 namespace standardese::formatter {
 
-namespace {
-
-std::string format_namespaces(std::string name, type_safe::optional_ref<const model::mixin::documentation> context, inja_formatter::inja_formatter_options& options) {
-  // TODO: Make this overridable with an optional parameter.
-  // TODO: Think of some scheme so that the primary, e.g., the
-  // function declarator can have a different option than things such
-  // as parameter types.
-  switch(options.namespace_display_options) {
-    case inja_formatter::inja_formatter_options::namespace_display_options::full:
-      // Nothing to do, name() is already fully qualified.
-      break;
-    case inja_formatter::inja_formatter_options::namespace_display_options::relative:
-    {
-      // Construct the namespace sequence containing `context`.
-      std::stack<const cppast::cpp_namespace*> containing_namespaces; 
-
-      // TODO: Check whether .entity() exists in the contxet.
-      /*
-      if (context.has_value()) {
-        const cppast::cpp_entity* walk = &context.value().entity();
-        while (walk->parent().has_value()) {
-          walk = &walk->parent().value();
-          if (walk->kind() == cppast::cpp_namespace::kind())
-            containing_namespaces.push(static_cast<const cppast::cpp_namespace*>(walk));
-        }
-
-        // Drop the shared prefix of this entity and `context`.
-        while (!containing_namespaces.empty()) {
-          const std::string prefix = containing_namespaces.top()->name() + "::";
-
-          if (boost::algorithm::starts_with(name, prefix))
-            name = name.substr(prefix.size());
-
-          containing_namespaces.pop();
-        }
-      }
-      */
-
-      break;
-    }
-    case inja_formatter::inja_formatter_options::namespace_display_options::hidden:
-      // cppast does not tell us in which namespace this entity is
-      // defined. However, we would have to figure out which of the
-      // leading `name::` bits are namespaces and which are not
-      // (because they are e.g. classes.) We can also not ask cppast,
-      // which namespaces exist so there seems to be no safe way to
-      // find out currently; apart from that, that would not be correct
-      // in general: A namespace in one translation unit can be
-      // something else in another translation unit.
-
-      // Instead we just drop namespaces defined in the standard library. (It's
-      // hopefully illegal to create a class `::std` and even if it is not,
-      // people will not be surprised if this breaks things.)
-      for (const std::string ns : { "std::" }) {
-        if (boost::algorithm::starts_with(name, ns)) {
-          name = name.substr(ns.size());
-          break;
-        }
-      }
-
-
-      break;
-  }
-
-  return name;
-}
-
-}
-
 std::string inja_formatter::name_callback(const nlohmann::json& data) const {
   return std::visit([&](auto&& entity) {
     using T = std::decay_t<decltype(entity)>;
@@ -100,6 +29,8 @@ std::string inja_formatter::name_callback(const nlohmann::json& data) const {
     } else if constexpr (std::is_same_v<T, model::module>) {
       return name(entity);
     } else if constexpr (std::is_same_v<T, const cppast::cpp_type*>) {
+      return name(*entity);
+    } else if constexpr (std::is_same_v<T, const nlohmann::json::string_t*>) {
       return name(*entity);
     }
 
@@ -160,13 +91,72 @@ std::string inja_formatter::name(const cppast::cpp_type& type) const {
     case cppast::cpp_type_kind::template_parameter_t:
       return static_cast<const cppast::cpp_template_parameter_type&>(type).entity().name();
     case cppast::cpp_type_kind::unexposed_t:
-      return format_namespaces(static_cast<const cppast::cpp_unexposed_type&>(type).name(), self->context, self->options);
+      return name(static_cast<const cppast::cpp_unexposed_type&>(type).name());
     case cppast::cpp_type_kind::user_defined_t:
-      return format_namespaces(static_cast<const cppast::cpp_user_defined_type&>(type).entity().name(), self->context, self->options);
+      // TDOO: We can probably do better here, cf. scope()/namespaze().
+      return name(static_cast<const cppast::cpp_user_defined_type&>(type).entity().name());
     default:
       // TODO
-      throw std::logic_error("not implemented: unexpected type");
+      throw std::logic_error("not implemented: name for unexpected type");
   }
+}
+
+/// Remove any leading `scope::` from `name`.
+/// It is tricky to get this right in general. We could assume that no name
+/// starts with `::` which is hopefully what libclang provides us with. This
+/// allows us to decide whether `>` ends a template arguments list or is a
+/// comparison operator. However, there's still no easy way to decide the
+/// corresopnding question for `<`.
+/// Instead, we only get this right in trivial cases.
+std::string inja_formatter::name(const std::string& name) const {
+  {
+    // The nesting depth of the `<`.
+    int depth = 0;
+
+    // Walk the name from the front, searching for a top-level ::.
+    for (size_t prefix = 0; prefix + 1 < name.size(); prefix++) {
+      if (depth == 0 && name[prefix] == ':' && name[prefix + 1] == ':')
+        return this->name(name.substr(prefix + 2));
+      if (name[prefix] == '<')
+        depth++;
+      if (name[prefix] == '>')
+        depth--;
+
+      if (depth < 0) {
+        logger::error(fmt::format("Failed to strip scope from {}. Found an unexpected sequence of < and >.", name));
+        break;
+      }
+
+      if (depth >= 2)
+        // Sequence of < and > too complicated for us to safely decide how things are nested.
+        break;
+    }
+  }
+
+  {
+    int depth = 0;
+
+    // Walk the name from the back, searching for a top-level ::.
+    for (size_t suffix = name.size() - 1; suffix >= 1; suffix--) {
+      if (depth == 0 && name[suffix] == ':' && name[suffix - 1] == ':')
+        return name.substr(suffix + 1);
+      if (name[suffix] == '>')
+        depth++;
+      if (name[suffix] == '<')
+        depth--;
+
+      if (depth < 0) {
+        logger::error(fmt::format("Failed to strip scope from {}. Found an unexpected sequence of < and >.", name));
+        break;
+      }
+
+      if (depth >= 2)
+        // Sequence of < and > too complicated for us to safely decide how things are nested.
+        break;
+    }
+  }
+
+  return name;
 }
 
 std::string inja_formatter::name(const model::module& module) const {

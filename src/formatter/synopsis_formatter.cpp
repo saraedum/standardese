@@ -132,7 +132,7 @@ model::document synopsis_formatter::build(const model::cpp_entity_documentation&
   code_formatter::code_formatter_options options;
   static_cast<inja_formatter::inja_formatter_options&>(options) = this->options;
 
-  return code_formatter{options, cpp_context}.build(documentation.entity(), documentation);
+  return code_formatter{options, cpp_context}.build(documentation.entity(), documentation.entity());
 }
 
 }

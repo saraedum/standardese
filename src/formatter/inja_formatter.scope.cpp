@@ -1,0 +1,148 @@
+// Copyright (C) 2021 Julian Rüth <julian.rueth@fsfe.org>
+// This file is subject to the license terms in the LICENSE file
+// found in the top-level directory of this distribution.
+
+#include <cppast/cpp_type.hpp>
+#include <cppast/cpp_array_type.hpp>
+#include <cppast/cpp_decltype_type.hpp>
+#include <cppast/cpp_function_type.hpp>
+#include <cppast/cpp_template.hpp>
+#include <cppast/cpp_namespace.hpp>
+#include <boost/algorithm/string.hpp>
+#include <fmt/format.h>
+
+#include "inja_formatter.impl.hpp"
+#include "../../standardese/logger.hpp"
+
+namespace standardese::formatter {
+
+namespace {
+
+std::vector<const cppast::cpp_entity*> scopes(const cppast::cpp_entity& entity) {
+  const auto& parent = entity.parent();
+  if (!parent.has_value())
+    return {&entity};
+
+  switch(parent.value().kind()) {
+    case cppast::cpp_entity_kind::namespace_t:
+    case cppast::cpp_entity_kind::file_t:
+      return {&entity};
+    default:
+      auto parent_scopes = scopes(parent.value());
+      parent_scopes.push_back(&entity);
+      return parent_scopes;
+  }
+}
+
+type_safe::optional<std::vector<const cppast::cpp_entity*>> parent_scopes(const cppast::cpp_type& type) {
+  std::vector<const cppast::cpp_entity*> ret;
+
+  switch (type.kind()) {
+    case cppast::cpp_type_kind::array_t:
+      return parent_scopes(static_cast<const cppast::cpp_array_type&>(type).value_type());
+    case cppast::cpp_type_kind::auto_t:
+    case cppast::cpp_type_kind::builtin_t:
+    case cppast::cpp_type_kind::decltype_auto_t:
+    case cppast::cpp_type_kind::decltype_t:
+    case cppast::cpp_type_kind::function_t:
+    case cppast::cpp_type_kind::member_function_t:
+    case cppast::cpp_type_kind::member_object_t:
+    case cppast::cpp_type_kind::template_parameter_t:
+      return ret;
+    case cppast::cpp_type_kind::template_instantiation_t:
+      // TODO: Can we do better here?
+      return type_safe::nullopt;
+    case cppast::cpp_type_kind::cv_qualified_t:
+      return parent_scopes(static_cast<const cppast::cpp_cv_qualified_type&>(type).type());
+    case cppast::cpp_type_kind::dependent_t:
+      // TODO: Can we do better here?
+      return type_safe::nullopt;
+    case cppast::cpp_type_kind::pointer_t:
+    case cppast::cpp_type_kind::reference_t:
+      return parent_scopes(static_cast<const cppast::cpp_pointer_type&>(type).pointee());
+    case cppast::cpp_type_kind::unexposed_t:
+      return type_safe::nullopt;
+    case cppast::cpp_type_kind::user_defined_t:
+      // TODO: We can probably do better here by invoking scope(cpp_entity) sometimes, cf. name()/namespaze().
+      return type_safe::nullopt;
+    default:
+      // TODO
+      throw std::logic_error("not implemented: parent_scopes() for unexpected type");
+  }
+}
+
+std::string render_scope(std::vector<const cppast::cpp_entity*> self, std::optional<std::vector<const cppast::cpp_entity*>> context, std::function<std::string(const cppast::cpp_entity&)> name, enum inja_formatter::inja_formatter_options::scope_display_options options) {
+  switch (options) {
+    case inja_formatter::inja_formatter_options::scope_display_options::hidden:
+      return std::string{};
+    case inja_formatter::inja_formatter_options::scope_display_options::full:
+      context = {};
+      break;
+    case inja_formatter::inja_formatter_options::scope_display_options::relative:
+      break;
+  }
+
+  std::string ret;
+
+  for (int i = 0; i < self.size(); i++) {
+    if (context.has_value() && i < context->size() && context.value()[i] == self[i])
+      continue;
+    if (ret.size())
+      ret += "::";
+    ret += name(*self[i]);
+  }
+
+  return ret;
+}
+
+}
+
+std::string inja_formatter::scope_callback(const nlohmann::json& data) const {
+  return std::visit([&](auto&& entity) {
+    using T = std::decay_t<decltype(entity)>;
+    if constexpr (std::is_same_v<T, const cppast::cpp_entity*>) {
+      return scope(*entity);
+    } else if constexpr (std::is_same_v<T, const cppast::cpp_type*>) {
+      return scope(*entity);
+    } else if constexpr (std::is_same_v<T, const nlohmann::json::string_t*>) {
+      return scope(*entity);
+    }
+
+    logger::error(fmt::format("Template callback `scope` not valid here. Cannot determine scope of {}.", nlohmann::to_string(data)));
+    return std::string{};
+  }, self->from_json(data));
+}
+
+std::string inja_formatter::scope(const cppast::cpp_entity& entity) const {
+  auto entity_scopes = scopes(entity);
+
+  entity_scopes.pop_back();
+
+  const auto name = [&](const cppast::cpp_entity& type) { return this->name(type); };
+
+  if (self->context.has_value())
+    return render_scope(entity_scopes, scopes(self->context.value()), name, self->options.scope_display_options);
+  return render_scope(entity_scopes, {}, name, self->options.scope_display_options);
+}
+
+std::string inja_formatter::scope(const cppast::cpp_type& type) const {
+  const auto type_scopes = parent_scopes(type);
+
+  if (!type_scopes.has_value())
+    return std::string{};
+
+  const auto name = [&](const cppast::cpp_entity& type) { return this->name(type); };
+
+  if (self->context.has_value())
+    return render_scope(type_scopes.value(), scopes(self->context.value()), name, self->options.scope_display_options);
+  return render_scope(type_scopes.value(), {}, name, self->options.scope_display_options);
+}
+
+std::string inja_formatter::scope(const std::string& name) const {
+  // We cannot really know what of name is scope and what is namespace, so we
+  // just assume that everything is namespace. We could probably do better here
+  // by looking at the context's scope and finding a shared prefix.
+  return std::string{};
+}
+
+}

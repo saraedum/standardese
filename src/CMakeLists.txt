@@ -47,8 +47,10 @@ set(src
     formatter/inja_formatter.format.cpp
     formatter/inja_formatter.add_callback.cpp
     formatter/inja_formatter.name.cpp
+    formatter/inja_formatter.namespace.cpp
     formatter/inja_formatter.md.cpp
     formatter/inja_formatter.path.cpp
+    formatter/inja_formatter.scope.cpp
     formatter/inja_formatter.filename.cpp
     formatter/inja_formatter.sanitize_basename.cpp
     formatter/inja_formatter.code_escape.cpp

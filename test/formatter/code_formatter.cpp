@@ -19,13 +19,84 @@ using standardese::formatter::code_formatter;
 using output_generator::xml::xml_generator;
 
 TEST_CASE("Functions can be Formatted", "[code_formatter]") {
+  SECTION("Top-Level Functions") {
+    util::cpp_file header(R"(void f();)");
+    auto formatted = code_formatter{{}, header}.build(header["f"], header);
+
+    REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
+      <?xml version="1.0"?>
+      <document>
+        <paragraph>
+          <code>void f()</code>
+        </paragraph>
+      </document>
+      )"));
+  }
+
+  SECTION("Member Functions") {
+    util::cpp_file header(R"(class C { void f(); };)");
+
+    SECTION("In the Class Context") {
+      auto formatted = code_formatter{{}, header}.build(header["C::f"], header["C"]);
+
+      REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
+        <?xml version="1.0"?>
+        <document>
+          <paragraph>
+            <code>void f()</code>
+          </paragraph>
+        </document>
+        )"));
+    }
+
+    SECTION("Outside the Class Context") {
+      auto formatted = code_formatter{{}, header}.build(header["C::f"], header);
+
+      REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
+        <?xml version="1.0"?>
+        <document>
+          <paragraph>
+            <code>void C::f()</code>
+          </paragraph>
+        </document>
+        )"));
+    }
+
+    SECTION("Without any Context") {
+      auto formatted = code_formatter{{}, header}.build(header["C::f"]);
+
+      REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
+        <?xml version="1.0"?>
+        <document>
+          <paragraph>
+            <code>void C::f()</code>
+          </paragraph>
+        </document>
+        )"));
+    }
+  }
+
+  SECTION("Constructors") {
+    // TODO
+  }
+
+  SECTION("Destructors") {
+    // TODO
+  }
+
+  SECTION("Conversion Operators") {
+    // TODO
+  }
+
+  SECTION("Friend Functions") {
+    // TODO
+  }
+
   // https://en.cppreference.com/w/cpp/language/types
   SECTION("Fundamental Return Types") {
     SECTION("void") {
       util::cpp_file header(R"(void f();)");
-      auto formatted = code_formatter{{}, header}.build(
-        header["f"],
-        model::cpp_entity_documentation(header, header));
+      auto formatted = code_formatter{{}, header}.build(header["f"]);
 
       REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
         <?xml version="1.0"?>
@@ -48,9 +119,7 @@ TEST_CASE("Functions can be Formatted", "[code_formatter]") {
       )");
 
       SECTION("With std namespace") {
-        auto formatted = code_formatter{{}, header}.build(
-          header["f"],
-          model::cpp_entity_documentation(header, header));
+        auto formatted = code_formatter{{}, header}.build(header["f"]);
 
         REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
           <?xml version="1.0"?>
@@ -66,9 +135,7 @@ TEST_CASE("Functions can be Formatted", "[code_formatter]") {
         code_formatter::code_formatter_options options;
         options.namespace_display_options = formatter::code_formatter::code_formatter_options::namespace_display_options::hidden;
 
-        auto formatted = code_formatter{options, header}.build(
-          header["f"],
-          model::cpp_entity_documentation(header, header));
+        auto formatted = code_formatter{options, header}.build(header["f"]);
 
         REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
           <?xml version="1.0"?>
@@ -84,9 +151,7 @@ TEST_CASE("Functions can be Formatted", "[code_formatter]") {
     SECTION("Integer Types") {
       SECTION("int") {
         util::cpp_file header(R"(int f();)");
-        auto formatted = code_formatter{{}, header}.build(
-          header["f"],
-          model::cpp_entity_documentation(header, header));
+        auto formatted = code_formatter{{}, header}.build(header["f"]);
 
         REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
           <?xml version="1.0"?>
@@ -100,9 +165,7 @@ TEST_CASE("Functions can be Formatted", "[code_formatter]") {
 
       SECTION("unsigned long long") {
         util::cpp_file header(R"(unsigned long long f();)");
-        auto formatted = code_formatter{{}, header}.build(
-          header["f"],
-          model::cpp_entity_documentation(header, header));
+        auto formatted = code_formatter{{}, header}.build(header["f"]);
 
         REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
           <?xml version="1.0"?>
@@ -116,9 +179,7 @@ TEST_CASE("Functions can be Formatted", "[code_formatter]") {
 
       SECTION("Some Trivial Modifiers are Dropped") {
         util::cpp_file header(R"(signed long long int f();)");
-        auto formatted = code_formatter{{}, header}.build(
-          header["f"],
-          model::cpp_entity_documentation(header, header));
+        auto formatted = code_formatter{{}, header}.build(header["f"]);
 
         REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
           <?xml version="1.0"?>
@@ -133,9 +194,7 @@ TEST_CASE("Functions can be Formatted", "[code_formatter]") {
 
     SECTION("bool") {
       util::cpp_file header(R"(bool f();)");
-      auto formatted = code_formatter{{}, header}.build(
-        header["f"],
-        model::cpp_entity_documentation(header, header));
+      auto formatted = code_formatter{{}, header}.build(header["f"]);
 
       REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
         <?xml version="1.0"?>
@@ -150,9 +209,7 @@ TEST_CASE("Functions can be Formatted", "[code_formatter]") {
     SECTION("Float Pointing Types") {
       SECTION("float") {
         util::cpp_file header(R"(float f();)");
-        auto formatted = code_formatter{{}, header}.build(
-          header["f"],
-          model::cpp_entity_documentation(header, header));
+        auto formatted = code_formatter{{}, header}.build(header["f"]);
 
         REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
           <?xml version="1.0"?>
@@ -166,9 +223,7 @@ TEST_CASE("Functions can be Formatted", "[code_formatter]") {
 
       SECTION("double") {
         util::cpp_file header(R"(double f();)");
-        auto formatted = code_formatter{{}, header}.build(
-          header["f"],
-          model::cpp_entity_documentation(header, header));
+        auto formatted = code_formatter{{}, header}.build(header["f"]);
 
         REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
           <?xml version="1.0"?>
@@ -185,9 +240,7 @@ TEST_CASE("Functions can be Formatted", "[code_formatter]") {
   SECTION("Pointer Return Types") {
     SECTION("Pointer to Builtin Type") {
       util::cpp_file header(R"(void* f();)");
-      auto formatted = code_formatter{{}, header}.build(
-        header["f"],
-        model::cpp_entity_documentation(header, header));
+      auto formatted = code_formatter{{}, header}.build(header["f"]);
 
       REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
         <?xml version="1.0"?>
@@ -205,9 +258,7 @@ TEST_CASE("Functions can be Formatted", "[code_formatter]") {
 
         std::string* f();
       )");
-      auto formatted = code_formatter{{}, header}.build(
-        header["f"],
-        model::cpp_entity_documentation(header, header));
+      auto formatted = code_formatter{{}, header}.build(header["f"]);
 
       REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
         <?xml version="1.0"?>
@@ -225,9 +276,7 @@ TEST_CASE("Functions can be Formatted", "[code_formatter]") {
 
         X* f();
       )");
-      auto formatted = code_formatter{{}, header}.build(
-        header["f"],
-        model::cpp_entity_documentation(header, header));
+      auto formatted = code_formatter{{}, header}.build(header["f"]);
 
       REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
         <?xml version="1.0"?>
@@ -243,9 +292,7 @@ TEST_CASE("Functions can be Formatted", "[code_formatter]") {
   SECTION("Reference Return Types") {
     SECTION("Pointer to Builtin Type") {
       util::cpp_file header(R"(int& f();)");
-      auto formatted = code_formatter{{}, header}.build(
-        header["f"],
-        model::cpp_entity_documentation(header, header));
+      auto formatted = code_formatter{{}, header}.build(header["f"]);
 
       REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
         <?xml version="1.0"?>
@@ -263,9 +310,7 @@ TEST_CASE("Functions can be Formatted", "[code_formatter]") {
 
         const std::string& f();
       )");
-      auto formatted = code_formatter{{}, header}.build(
-        header["f"],
-        model::cpp_entity_documentation(header, header));
+      auto formatted = code_formatter{{}, header}.build(header["f"]);
 
       REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
         <?xml version="1.0"?>
@@ -283,9 +328,7 @@ TEST_CASE("Functions can be Formatted", "[code_formatter]") {
 
         X& f();
       )");
-      auto formatted = code_formatter{{}, header}.build(
-        header["f"],
-        model::cpp_entity_documentation(header, header));
+      auto formatted = code_formatter{{}, header}.build(header["f"]);
 
       REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
         <?xml version="1.0"?>
@@ -306,9 +349,7 @@ TEST_CASE("Functions can be Formatted", "[code_formatter]") {
         std::vector<int> f();
       )");
 
-      auto formatted = code_formatter{{}, header}.build(
-        header["f"],
-        model::cpp_entity_documentation(header, header));
+      auto formatted = code_formatter{{}, header}.build(header["f"]);
 
       REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
         <?xml version="1.0"?>
@@ -330,9 +371,7 @@ TEST_CASE("Functions can be Formatted", "[code_formatter]") {
         X<int> f();
       )");
 
-      auto formatted = code_formatter{{}, header}.build(
-        header["f"],
-        model::cpp_entity_documentation(header, header));
+      auto formatted = code_formatter{{}, header}.build(header["f"]);
 
       REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
         <?xml version="1.0"?>
@@ -352,15 +391,13 @@ TEST_CASE("Functions can be Formatted", "[code_formatter]") {
       };
       )");
 
-    auto formatted = code_formatter{{}, header}.build(
-        header["C::clone"],
-        model::cpp_entity_documentation(header, header));
+    auto formatted = code_formatter{{}, header}.build(header["C::clone"]);
 
     REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
       <?xml version="1.0"?>
       <document>
         <paragraph>
-          <link target-entity="C"> <code>C</code> </link> <code>clone()</code>
+          <link target-entity="C"> <code>C</code> </link> <code>C::clone()</code>
         </paragraph>
       </document>
       )"));
@@ -373,9 +410,7 @@ TEST_CASE("Functions can be Formatted", "[code_formatter]") {
       std::string f();
       )");
 
-      auto formatted = code_formatter{{}, header}.build(
-        header["f"],
-        model::cpp_entity_documentation(header, header));
+      auto formatted = code_formatter{{}, header}.build(header["f"]);
 
     REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
       <?xml version="1.0"?>
@@ -392,9 +427,7 @@ TEST_CASE("Variables can be Formatted", "[code_formatter]") {
   SECTION("CV Qualified Types") {
     SECTION("Const Type") {
       util::cpp_file header(R"(const int a = 0;)");
-      auto formatted = code_formatter{{}, header}.build(
-        header["a"],
-        model::cpp_entity_documentation(header, header));
+      auto formatted = code_formatter{{}, header}.build(header["a"]);
 
       REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
         <?xml version="1.0"?>
@@ -408,9 +441,7 @@ TEST_CASE("Variables can be Formatted", "[code_formatter]") {
 
     SECTION("Volatile Type") {
       util::cpp_file header(R"(volatile int a;)");
-      auto formatted = code_formatter{{}, header}.build(
-        header["a"],
-        model::cpp_entity_documentation(header, header));
+      auto formatted = code_formatter{{}, header}.build(header["a"]);
 
       REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
         <?xml version="1.0"?>
@@ -424,9 +455,7 @@ TEST_CASE("Variables can be Formatted", "[code_formatter]") {
 
     SECTION("Const Volatile Type") {
       util::cpp_file header(R"(const volatile int a = 0;)");
-      auto formatted = code_formatter{{}, header}.build(
-        header["a"],
-        model::cpp_entity_documentation(header, header));
+      auto formatted = code_formatter{{}, header}.build(header["a"]);
 
       REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
         <?xml version="1.0"?>

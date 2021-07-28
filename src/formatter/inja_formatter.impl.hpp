@@ -43,7 +43,7 @@ struct inja_formatter::impl {
   inja_formatter_options options;
   inja::Environment env;
   json data;
-  type_safe::optional_ref<const model::mixin::documentation> context;
+  type_safe::optional_ref<const cppast::cpp_entity> context;
   parser::cpp_context cpp_context;
 };
 
