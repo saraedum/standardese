@@ -77,11 +77,89 @@ TEST_CASE("Functions can be Formatted", "[code_formatter]") {
   }
 
   SECTION("Constructors") {
-    // TODO
+    util::cpp_file header(R"(class C { C(); };)");
+
+    SECTION("In the Class Context") {
+      auto formatted = code_formatter{{}, header}.build(header["C::C"], header["C"]);
+
+      REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
+        <?xml version="1.0"?>
+        <document>
+          <paragraph>
+            <code>C()</code>
+          </paragraph>
+        </document>
+        )"));
+    }
+
+    SECTION("Outside the Class Context") {
+      auto formatted = code_formatter{{}, header}.build(header["C::C"], header);
+
+      REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
+        <?xml version="1.0"?>
+        <document>
+          <paragraph>
+            <code>C::C()</code>
+          </paragraph>
+        </document>
+        )"));
+    }
+
+    SECTION("Without any Context") {
+      auto formatted = code_formatter{{}, header}.build(header["C::C"]);
+
+      REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
+        <?xml version="1.0"?>
+        <document>
+          <paragraph>
+            <code>C::C()</code>
+          </paragraph>
+        </document>
+        )"));
+    }
   }
 
   SECTION("Destructors") {
-    // TODO
+    util::cpp_file header(R"(class C { ~C(); };)");
+
+    SECTION("In the Class Context") {
+      auto formatted = code_formatter{{}, header}.build(header["C::~C"], header["C"]);
+
+      REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
+        <?xml version="1.0"?>
+        <document>
+          <paragraph>
+            <code>~C()</code>
+          </paragraph>
+        </document>
+        )"));
+    }
+
+    SECTION("Outside the Class Context") {
+      auto formatted = code_formatter{{}, header}.build(header["C::~C"], header);
+
+      REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
+        <?xml version="1.0"?>
+        <document>
+          <paragraph>
+            <code>C::~C()</code>
+          </paragraph>
+        </document>
+        )"));
+    }
+
+    SECTION("Without any Context") {
+      auto formatted = code_formatter{{}, header}.build(header["C::~C"]);
+
+      REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
+        <?xml version="1.0"?>
+        <document>
+          <paragraph>
+            <code>C::~C()</code>
+          </paragraph>
+        </document>
+        )"));
+    }
   }
 
   SECTION("Conversion Operators") {
