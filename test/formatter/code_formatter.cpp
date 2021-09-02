@@ -163,7 +163,89 @@ TEST_CASE("Functions can be Formatted", "[code_formatter]") {
   }
 
   SECTION("Conversion Operators") {
-    // TODO
+    util::cpp_file header(R"(struct C { operator int(); };)");
+
+    SECTION("In the Struct Context") {
+      auto formatted = code_formatter{{}, header}.build(header["C::operator int"], header["C"]);
+
+      REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
+        <?xml version="1.0"?>
+        <document>
+          <paragraph>
+            <code>operator int()</code>
+          </paragraph>
+        </document>
+        )"));
+    }
+
+    SECTION("Outside the Struct Context") {
+      auto formatted = code_formatter{{}, header}.build(header["C::operator int"], header);
+
+      REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
+        <?xml version="1.0"?>
+        <document>
+          <paragraph>
+            <code>C::operator int()</code>
+          </paragraph>
+        </document>
+        )"));
+    }
+
+    SECTION("Without any Context") {
+      auto formatted = code_formatter{{}, header}.build(header["C::operator int"]);
+
+      REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
+        <?xml version="1.0"?>
+        <document>
+          <paragraph>
+            <code>C::operator int()</code>
+          </paragraph>
+        </document>
+        )"));
+    }
+  }
+
+  SECTION("Operators") {
+    util::cpp_file header(R"(class C { C& operator+=(const C&); };)");
+
+    SECTION("In the Class Context") {
+      auto formatted = code_formatter{{}, header}.build(header["C::operator+="], header["C"]);
+
+      REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
+        <?xml version="1.0"?>
+        <document>
+          <paragraph>
+            <link target-entity="C"> <code>C</code> </link> <code>&amp; operator+=(const </code> <link target-entity="C"> <code>C</code> </link> <code>&amp;)</code>
+          </paragraph>
+        </document>
+        )"));
+    }
+
+    SECTION("Outside the Class Context") {
+      auto formatted = code_formatter{{}, header}.build(header["C::operator+="], header);
+
+      REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
+        <?xml version="1.0"?>
+        <document>
+          <paragraph>
+            <link target-entity="C"> <code>C</code> </link> <code>&amp; C::operator+=(const </code> <link target-entity="C"> <code>C</code> </link> <code>&amp;)</code>
+          </paragraph>
+        </document>
+        )"));
+    }
+
+    SECTION("Without any Context") {
+      auto formatted = code_formatter{{}, header}.build(header["C::operator+="]);
+
+      REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
+        <?xml version="1.0"?>
+        <document>
+          <paragraph>
+            <link target-entity="C"> <code>C</code> </link> <code>&amp; C::operator+=(const </code> <link target-entity="C"> <code>C</code> </link> <code>&amp;)</code>
+          </paragraph>
+        </document>
+        )"));
+    }
   }
 
   SECTION("Friend Functions") {
