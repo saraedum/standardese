@@ -2,6 +2,9 @@
 // This file is subject to the license terms in the LICENSE file
 // found in the top-level directory of this distribution.
 
+#include <cppast/cpp_entity_kind.hpp>
+#include <cppast/cpp_file.hpp>
+#include <cppast/cpp_friend.hpp>
 #include <cppast/cpp_type.hpp>
 #include <cppast/cpp_array_type.hpp>
 #include <cppast/cpp_decltype_type.hpp>
@@ -20,13 +23,42 @@ namespace {
 
 std::vector<const cppast::cpp_entity*> scopes(const cppast::cpp_entity& entity) {
   const auto& parent = entity.parent();
-  if (!parent.has_value())
+
+  if (!parent.has_value()) {
+    if (entity.kind() != cppast::cpp_file::kind())
+      throw std::logic_error("unexpected root scope: must be a file");
     return {&entity};
+  }
+
+  if (entity.kind() == cppast::cpp_entity_kind::friend_t) {
+    auto declaration = static_cast<const cppast::cpp_friend&>(parent.value()).entity();
+    if (!declaration.has_value()) {
+      logger::warn("Template callback `scope` not implemented for type friends. Returning trivial scope.");
+      return {};
+    }
+    if (declaration.value().name().find("::") != std::string::npos) {
+      // A friend function declaration lives in the containing namespace unless it has any explicit scope, i.e.,
+      // namespace A { class B { friend void f(); } }
+      // declares a function A::f. It cannot refer to a function ::f.
+      // However, when we write
+      // namespace A { class B { friend void C::f(); } }
+      // this could refer to lots of things such as A::C::f() or ::C::f().
+      // Since cppast does not tell us and it usually does not matter since
+      // this does not declare the function itself, we give up in this case.
+      logger::warn(fmt::format("Template callback `scope` not implemented for scoped friends. Returning trivial scope for friend declaration {}.", declaration.value().name()));
+      return {};
+    }
+
+    // A friend function declaration lives in the containing namespace, i.e., no scope.
+    return {};
+  }
 
   switch(parent.value().kind()) {
     case cppast::cpp_entity_kind::namespace_t:
     case cppast::cpp_entity_kind::file_t:
       return {&entity};
+    case cppast::cpp_entity_kind::language_linkage_t:
+      return scopes(parent.value());
     default:
       auto parent_scopes = scopes(parent.value());
       parent_scopes.push_back(&entity);

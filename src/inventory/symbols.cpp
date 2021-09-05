@@ -16,7 +16,9 @@
 #include <cppast/cpp_type_alias.hpp>
 #include <cppast/cpp_friend.hpp>
 #include <cppast/cpp_preprocessor.hpp>
+#include <cppast/cpp_namespace.hpp>
 #include <cppast/visitor.hpp>
+#include <type_safe/optional.hpp>
 
 #include "../../standardese/inventory/symbols.hpp"
 #include "../../standardese/inventory/cppast_inventory.hpp"
@@ -55,6 +57,7 @@ class symbols::impl::generic_symbols : public symbols::impl {
   virtual type_safe::optional_ref<const T> parameter(const T&, const std::string& name) const = 0;
   virtual type_safe::optional_ref<const T> template_parameter(const T&, const std::string& name) const = 0;
   virtual type_safe::optional_ref<const T> base_class(const T&, const std::string& name) const = 0;
+  virtual type_safe::optional_ref<const T> frend(const T&, const std::string& name) const = 0;
 };
 
 class symbols::impl::cppast_symbols : public symbols::impl::generic_symbols<cppast::cpp_entity> {
@@ -68,6 +71,7 @@ class symbols::impl::cppast_symbols : public symbols::impl::generic_symbols<cppa
   type_safe::optional_ref<const cppast::cpp_entity> parameter(const cppast::cpp_entity&, const std::string& name) const override;
   type_safe::optional_ref<const cppast::cpp_entity> template_parameter(const cppast::cpp_entity&, const std::string& name) const override;
   type_safe::optional_ref<const cppast::cpp_entity> base_class(const cppast::cpp_entity&, const std::string& name) const override;
+  type_safe::optional_ref<const cppast::cpp_entity> frend(const cppast::cpp_entity&, const std::string& name) const override;
 
  private:
   bool matches(const cppast::cpp_entity& entity, const std::string& search) const;
@@ -237,7 +241,7 @@ type_safe::optional_ref<const cppast::cpp_entity> symbols::impl::cppast_symbols:
   if (cppast::is_template(root->kind()))
       root = &(*static_cast<const cppast::cpp_template&>(*root).begin());
 
-  type_safe::optional_ref<const cppast::cpp_entity> child;  
+  type_safe::optional_ref<const cppast::cpp_entity> child;
   cppast::visit(*root, [&](const auto& entity, auto info) {
     if (&entity == root)
       // Enter the root container and abort when leaving it.
@@ -281,7 +285,85 @@ type_safe::optional_ref<const cppast::cpp_entity> symbols::impl::cppast_symbols:
     }
   }
 
+  if (!child) {
+    // TODO: Do we handle this case correctly?
+    // * Search for A in the context of B.
+    // * Search for f in the context of A.
+    //
+    // namespace NS {
+    //   class A;
+    // }
+    // namespace NS {
+    //   class B {
+    //     friend void f();
+    //   }
+    // }
+
+    // When entity is a namespace, check all the friends declared by classes in
+    // this namespace.
+    child = this->frend(*root, name);
+  }
+
   return child;
+}
+
+type_safe::optional_ref<const cppast::cpp_entity> symbols::impl::cppast_symbols::frend(const cppast::cpp_entity& root_, const std::string& name_) const {
+  const cppast::cpp_entity* root = &root_; 
+  std::string name = name_;
+
+  boost::erase_all(name, " ");
+
+  switch(root->kind()) {
+    case cppast::cpp_entity_kind::file_t:
+    case cppast::cpp_entity_kind::namespace_t:
+      // We only search for friends declared by types in a (possibly global) namespaces.
+      break;
+    default:
+    return type_safe::nullopt;
+  }
+
+  type_safe::optional_ref<const cppast::cpp_entity> frend;
+  cppast::visit(*root, [&](const auto& entity, auto info) {
+    if (frend.has_value())
+      return false;
+
+    if (&entity == root)
+      // Enter the root container and abort when leaving it.
+      return true;
+
+    if (entity.kind() == cppast::cpp_language_linkage::kind())
+      // Ignore linkage scopes and enter them transparently.
+      return true;
+
+    if (entity.kind() == cppast::cpp_namespace::kind())
+      // Do not search for friends in nested namepaces unless their unnamed.
+      return static_cast<const cppast::cpp_namespace&>(entity).is_anonymous();
+
+    switch(info.event) {
+      case cppast::visitor_info::event_type::container_entity_enter:
+      case cppast::visitor_info::event_type::container_entity_exit:
+        // Search inside any (nested) types defined in this namespaces.
+        return true;
+      case cppast::visitor_info::event_type::leaf_entity:
+          break;
+      default:
+          throw std::logic_error("visitor in unexpected state");
+    }
+
+    if (entity.kind() == cppast::cpp_entity_kind::friend_t) {
+      const auto declaration = static_cast<const cppast::cpp_friend&>(entity).entity();
+      if (declaration.has_value() && matches(declaration.value(), name)) {
+        frend = type_safe::ref(declaration.value());
+        // Abort the search.
+        return false;
+      }
+    }
+    
+    // Continue the search.
+    return true;
+  });
+
+  return frend;
 }
 
 type_safe::optional_ref<const cppast::cpp_entity> symbols::impl::cppast_symbols::base_class(const cppast::cpp_entity& root_, const std::string& name_) const {
@@ -315,14 +397,14 @@ type_safe::optional_ref<const cppast::cpp_entity> symbols::impl::cppast_symbols:
 
 bool symbols::impl::cppast_symbols::matches(const cppast::cpp_entity& entity, const std::string& search) const {
   if (entity.kind() == cppast::cpp_file::kind())
-      // We do not want to match with C++ header files here. They are handled separately.
-      return false;
+    // We do not want to match with C++ header files here. They are handled separately.
+    return false;
 
-  /* TODO
   if (entity.kind() == cppast::cpp_friend::kind())
-      logger::error("not implemented: cannot match friends yet");
-  */
-  
+    // We do not want to match with friend declarations but only with what they
+    // are declaring (in their scope.)
+    return false;
+
   const auto name = boost::erase_all_copy(entity.name(), " ");
   const auto temp = template_parameters(entity);
   const auto sig = boost::erase_all_copy(signature(entity), " ");

@@ -248,8 +248,83 @@ TEST_CASE("Functions can be Formatted", "[code_formatter]") {
     }
   }
 
-  SECTION("Friend Functions") {
-    // TODO
+  SECTION("Friends") {
+    SECTION("Friend Operators") {
+      util::cpp_file header(util::unindent(R"(
+        #include <ostream>
+
+        namespace A {
+          class C { friend std::ostream& operator<<(std::ostream&, const C&); };
+        }
+      )"));
+
+      SECTION("In the Class Context") {
+        auto formatted = code_formatter{{}, header}.build(header["A::operator<<"], header["A::C"]);
+
+        REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
+          <?xml version="1.0"?>
+          <document>
+            <paragraph>
+              <code>std::ostream&amp; operator&lt;&lt;(std::ostream&amp;, const </code> <link target-entity="C"> <code>C</code> </link> <code>&amp;)</code>
+            </paragraph>
+          </document>
+          )"));
+      }
+
+      SECTION("Outside the Class Context") {
+        auto formatted = code_formatter{{}, header}.build(header["A::operator<<"], header);
+
+        REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
+          <?xml version="1.0"?>
+          <document>
+            <paragraph>
+              <code>std::ostream&amp; A::operator&lt;&lt;(std::ostream&amp;, const </code> <link target-entity="C"> <code>A::C</code> </link> <code>&amp;)</code>
+            </paragraph>
+          </document>
+          )"));
+      }
+
+      SECTION("Without any Context") {
+        auto formatted = code_formatter{{}, header}.build(header["A::operator<<"]);
+
+        REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
+          <?xml version="1.0"?>
+          <document>
+            <paragraph>
+              <code>std::ostream&amp; A::operator&lt;&lt;(std::ostream&amp;, const </code> <link target-entity="C"> <code>A::C</code> </link> <code>&amp;)</code>
+            </paragraph>
+          </document>
+          )"));
+      }
+    }
+
+    SECTION("Template Friend Operators") {
+      // TODO
+    }
+
+    SECTION("Friend Constructors") {
+      // TODO
+    }
+
+    SECTION("Template Friend Constructors") {
+      // TODO
+    }
+
+    SECTION("Friend Methods") {
+      // TODO
+    }
+
+    SECTION("Template Friend Methods") {
+      // TODO
+    }
+
+    SECTION("Friend Functions") {
+      // TODO
+    }
+
+    SECTION("Template Friend Functions") {
+      // TODO
+    }
   }
 
   // https://en.cppreference.com/w/cpp/language/types
