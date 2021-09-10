@@ -132,6 +132,8 @@ model::document inja_formatter::code(const cppast::cpp_entity& entity) const {
     case cppast::cpp_entity_kind::file_t:
       logger::error(fmt::format("not implemented: cannot render code() for file `{}`.", name(entity)));
       return model::document{"", ""};
+    case cppast::cpp_entity_kind::function_template_t:
+      return code(self->options.template_function_format, entity);
     default:
       // TODO
       logger::error(fmt::format("not implemented: code() for `{}`.", name(entity)));

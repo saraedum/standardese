@@ -21,13 +21,13 @@ namespace standardese::formatter {
 
 namespace {
 
+/// Return the scopes this entity is defined in. From the outermost top-level
+/// scope to the innermost scope such as a function scope.
 std::vector<const cppast::cpp_entity*> scopes(const cppast::cpp_entity& entity) {
   const auto& parent = entity.parent();
 
   if (!parent.has_value()) {
-    if (entity.kind() != cppast::cpp_file::kind())
-      throw std::logic_error("unexpected root scope: must be a file");
-    return {&entity};
+    return {};
   }
 
   if (entity.kind() == cppast::cpp_entity_kind::friend_t) {
@@ -53,16 +53,26 @@ std::vector<const cppast::cpp_entity*> scopes(const cppast::cpp_entity& entity) 
     return {};
   }
 
+  if (cppast::is_template(parent.value().kind())) {
+    return scopes(parent.value());
+  }
+
   switch(parent.value().kind()) {
     case cppast::cpp_entity_kind::namespace_t:
     case cppast::cpp_entity_kind::file_t:
-      return {&entity};
+      return {};
     case cppast::cpp_entity_kind::language_linkage_t:
+    case cppast::cpp_entity_kind::friend_t:
       return scopes(parent.value());
-    default:
+    case cppast::cpp_entity_kind::class_t:
+    {
       auto parent_scopes = scopes(parent.value());
-      parent_scopes.push_back(&entity);
+      parent_scopes.push_back(&parent.value());
       return parent_scopes;
+    }
+    default:
+      logger::warn(fmt::format("Template callback `scope` not implemented for the {} parent {} of the {} {}. Returning trivial scope.", cppast::to_string(parent.value().kind()), parent.value().name(), cppast::to_string(entity.kind()), entity.name()));
+      return {};
   }
 }
 
@@ -148,12 +158,14 @@ std::string inja_formatter::scope_callback(const nlohmann::json& data) const {
 std::string inja_formatter::scope(const cppast::cpp_entity& entity) const {
   auto entity_scopes = scopes(entity);
 
-  entity_scopes.pop_back();
-
   const auto name = [&](const cppast::cpp_entity& type) { return this->name(type); };
 
-  if (self->context.has_value())
-    return render_scope(entity_scopes, scopes(self->context.value()), name, self->options.scope_display_options);
+  if (self->context.has_value()) {
+    // TODO: Do not add context to scope if it does not define a scope.
+    auto context_scopes = scopes(self->context.value());
+    context_scopes.push_back(&self->context.value());
+    return render_scope(entity_scopes, context_scopes, name, self->options.scope_display_options);
+  }
   return render_scope(entity_scopes, {}, name, self->options.scope_display_options);
 }
 
@@ -165,8 +177,13 @@ std::string inja_formatter::scope(const cppast::cpp_type& type) const {
 
   const auto name = [&](const cppast::cpp_entity& type) { return this->name(type); };
 
-  if (self->context.has_value())
-    return render_scope(type_scopes.value(), scopes(self->context.value()), name, self->options.scope_display_options);
+  if (self->context.has_value()) {
+    // TODO: Deduplicate with the above.
+    // TODO: Do not add context to scope if it does not define a scope.
+    auto context_scopes = scopes(self->context.value());
+    context_scopes.push_back(&self->context.value());
+    return render_scope(type_scopes.value(), context_scopes, name, self->options.scope_display_options);
+  }
   return render_scope(type_scopes.value(), {}, name, self->options.scope_display_options);
 }
 

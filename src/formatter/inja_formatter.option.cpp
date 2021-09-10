@@ -32,6 +32,8 @@ std::string inja_formatter::option(const std::string& key) const {
   else if (key == "type_format") return options.type_format;
   else if (key == "return_type_format") return options.return_type_format;
   else if (key == "parameter_type_format") return options.parameter_type_format;
+  else if (key == "template_parameters_format") return options.template_parameters_format;
+  else if (key == "template_parameter_format") return options.template_parameter_format;
   else if (key == "template_argument_format") return options.template_argument_format;
   else if (key == "declaration_specifiers_format") return options.declaration_specifiers_format;
   else if (key == "function_declarator_format") return options.function_declarator_format;

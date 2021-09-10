@@ -4,6 +4,7 @@
 
 #include <fmt/format.h>
 #include <cppast/cpp_type.hpp>
+#include <cppast/cpp_class_template.hpp>
 
 #include "inja_formatter.impl.hpp"
 #include "../../standardese/logger.hpp"
@@ -34,16 +35,22 @@ std::string inja_formatter::target(const cppast::cpp_type& type) const {
     case cppast::cpp_type_kind::user_defined_t:
       {
         const auto declaration = self->cpp_context.index().lookup(*static_cast<const cppast::cpp_user_defined_type&>(type).entity().id().begin());
-        if (declaration.has_value()) {
+        if (declaration.has_value())
           return target(declaration.value());
-        } else {
-          return std::string{};
-        }
+        break;
+      }
+    case cppast::cpp_type_kind::template_instantiation_t:
+      {
+        const auto declaration = static_cast<const cppast::cpp_template_instantiation_type&>(type).primary_template().get(self->cpp_context.index());
+        if (declaration.begin() != declaration.end())
+          return target(declaration.begin()->get());
+        break;
       }
     default:
       // TODO
-      return std::string{};
+      ;
   }
+  return std::string{};
 }
 
 }

@@ -82,6 +82,8 @@ class inja_formatter {
           format(option("noexcept_specification_format")))))
       %} {% if length(suffix) %}` `{% endif %} {{ suffix }})";
 
+    std::string template_function_format = R"(`template<` {{ format(option("template_parameters_format")) }} `>` ` ` {{ format(option("function_format"), entity) }})";
+
     std::string variable_format = R"({{ format(option("type_format"), variable_type) }} ` ` `{{ name }}`)";
 
     std::string friend_format = R"(`friend` ` ` {{ md(code(entity)) }})";
@@ -100,6 +102,11 @@ class inja_formatter {
     std::string parameter_type_format = type_format;
 
     std::string type_declarator_format = R"( `{{ join("::", reject("empty", list(namespace, scope, name))) }}` )";
+
+    std::string template_parameters_format = R"({% for param in parameters %}{% if not loop.is_first %} `, ` {% endif %} {{ format(option("template_parameter_format"), param) }} {% endfor %})";
+
+    // TODO
+    std::string template_parameter_format = R"(`{% if cppast_kind == "template type parameter" %} typename{% endif %} {{ name }} `)";
 
     // TODO
     std::string template_argument_format = "template-argument";

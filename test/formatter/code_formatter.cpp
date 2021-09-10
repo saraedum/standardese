@@ -299,23 +299,56 @@ TEST_CASE("Functions can be Formatted", "[code_formatter]") {
     }
 
     SECTION("Template Friend Operators") {
-      // TODO
-    }
+      util::cpp_file header(util::unindent(R"(
+        #include <ostream>
 
-    SECTION("Friend Constructors") {
-      // TODO
-    }
+        namespace A {
+          template <typename T>
+          class C {
+            template <typename S>
+            friend std::ostream& operator<<(std::ostream&, const C<S>&);
+          };
+        }
+      )"));
 
-    SECTION("Template Friend Constructors") {
-      // TODO
-    }
+      SECTION("In the Class Context") {
+        auto formatted = code_formatter{{}, header}.build(header["A::operator<<"], header["A::C"]);
 
-    SECTION("Friend Methods") {
-      // TODO
-    }
+        REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
+          <?xml version="1.0"?>
+          <document>
+            <paragraph>
+              <code>template&lt;typename S&gt; std::ostream&amp; operator&lt;&lt;(std::ostream&amp;, const </code> <link target-entity="C"> <code>C&lt;S&gt;</code> </link> <code>&amp;)</code>
+            </paragraph>
+          </document>
+          )"));
+      }
 
-    SECTION("Template Friend Methods") {
-      // TODO
+      SECTION("Outside the Class Context") {
+        auto formatted = code_formatter{{}, header}.build(header["A::operator<<"], header);
+
+        REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
+          <?xml version="1.0"?>
+          <document>
+            <paragraph>
+              <code>template&lt;typename S&gt; std::ostream&amp; A::operator&lt;&lt;(std::ostream&amp;, const </code> <link target-entity="C"> <code>C&lt;S&gt;</code> </link> <code>&amp;)</code>
+            </paragraph>
+          </document>
+          )"));
+      }
+
+      SECTION("Without any Context") {
+        auto formatted = code_formatter{{}, header}.build(header["A::operator<<"]);
+
+        REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
+          <?xml version="1.0"?>
+          <document>
+            <paragraph>
+              <code>template&lt;typename S&gt; std::ostream&amp; A::operator&lt;&lt;(std::ostream&amp;, const </code> <link target-entity="C"> <code>C&lt;S&gt;</code> </link> <code>&amp;)</code>
+            </paragraph>
+          </document>
+          )"));
+      }
     }
 
     SECTION("Friend Functions") {
@@ -612,7 +645,7 @@ TEST_CASE("Functions can be Formatted", "[code_formatter]") {
         <?xml version="1.0"?>
         <document>
           <paragraph>
-            <code>X&lt;int&gt; f()</code>
+            <link target-entity="X"> <code>X&lt;int&gt;</code> </link> <code>f()</code>
           </paragraph>
         </document>
         )"));

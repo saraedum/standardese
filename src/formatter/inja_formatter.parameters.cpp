@@ -4,6 +4,7 @@
 
 #include <fmt/format.h>
 #include <cppast/cpp_function.hpp>
+#include <cppast/cpp_function_template.hpp>
 #include <cppast/cpp_entity_kind.hpp>
 
 #include "inja_formatter.impl.hpp"
@@ -35,6 +36,10 @@ std::vector<const cppast::cpp_entity*> inja_formatter::parameters(const cppast::
     case cppast::cpp_entity_kind::member_function_t:
     case cppast::cpp_entity_kind::constructor_t:
       for (auto& param : static_cast<const cppast::cpp_function_base&>(entity).parameters())
+        params.push_back(&param);
+      break;
+    case cppast::cpp_entity_kind::function_template_t:
+      for (auto& param : static_cast<const cppast::cpp_function_template&>(entity).parameters())
         params.push_back(&param);
       break;
     default:

@@ -9,6 +9,8 @@
 #include <cppast/cpp_array_type.hpp>
 #include <cppast/cpp_decltype_type.hpp>
 #include <cppast/cpp_function_type.hpp>
+#include <cppast/cpp_function_template.hpp>
+#include <cppast/cpp_class_template.hpp>
 #include <cppast/cpp_template.hpp>
 #include <fmt/format.h>
 #include <boost/filesystem/path.hpp>
@@ -41,16 +43,35 @@ std::string inja_formatter::name_callback(const nlohmann::json& data) const {
 
 std::string inja_formatter::name(const cppast::cpp_entity& entity) const {
   switch(entity.kind()) {
+    case cppast::cpp_entity_kind::function_template_t:
+      return name(static_cast<const cppast::cpp_function_template&>(entity).function());
+    case cppast::cpp_entity_kind::class_template_t:
+      return name(static_cast<const cppast::cpp_class_template&>(entity).class_());
     case cppast::cpp_entity_kind::file_t:
       return boost::filesystem::path(entity.name()).filename().native();
     case cppast::cpp_entity_kind::friend_t:
     {
       const auto& frend = static_cast<const cppast::cpp_friend&>(entity);
       if (frend.entity().has_value())
-        return frend.entity().value().name();
+        return name(frend.entity().value());
+      logger::warn(fmt::format("Could not determine entity underlying a friend. Will return `{}` as its name.", frend.name()));
       return frend.name();
     }
+    case cppast::cpp_entity_kind::function_t:
+    case cppast::cpp_entity_kind::member_function_t:
+    case cppast::cpp_entity_kind::class_t:
+    case cppast::cpp_entity_kind::constructor_t:
+    case cppast::cpp_entity_kind::destructor_t:
+    case cppast::cpp_entity_kind::conversion_op_t:
+    case cppast::cpp_entity_kind::function_parameter_t:
+    case cppast::cpp_entity_kind::template_type_parameter_t:
+      // If the fnuction parameter is unnamed, this returns the empty string.
+    case cppast::cpp_entity_kind::variable_t:
+    case cppast::cpp_entity_kind::member_variable_t:
+      return entity.name();
     default:
+      // TODO
+      logger::warn(fmt::format("Not implemented: Cannot determine name of a {} yet. Will return {} instead.", cppast::to_string(entity.kind()), entity.name()));
       return entity.name();
   }
 }
