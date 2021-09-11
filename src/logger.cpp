@@ -39,21 +39,21 @@ spdlog::logger& get() {
   return *logger;
 }
 
-void critical(const std::string& msg) { 
+void critical(const std::string& msg) {
   get().critical(msg);
 
   std::lock_guard lock{counter_mutex};
   error_count++;
 }
 
-void error(const std::string& msg) { 
+void error(const std::string& msg) {
   get().error(msg);
 
   std::lock_guard lock{counter_mutex};
   error_count++;
 }
 
-void warn(const std::string& msg) { 
+void warn(const std::string& msg) {
   if (is_warn_as_error)
     error(msg);
   else {
@@ -64,11 +64,11 @@ void warn(const std::string& msg) {
   }
 }
 
-void info(const std::string& msg) { 
+void info(const std::string& msg) {
   get().info(msg);
 }
 
-void debug(const std::string& msg) { 
+void debug(const std::string& msg) {
   get().debug(msg);
 }
 
@@ -77,7 +77,7 @@ void debug(const std::function<std::string()>& msg) {
     debug(msg());
 }
 
-void trace(const std::string& msg) { 
+void trace(const std::string& msg) {
   get().trace(msg);
 }
 

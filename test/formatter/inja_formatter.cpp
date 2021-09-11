@@ -25,10 +25,11 @@ using standardese::formatter::inja_formatter;
 
 TEST_CASE("Strings from Inja Templates", "[inja_formatter]") {
   auto logger = util::logger::throwing_logger();
-  util::cpp_file header;
-  auto inja = inja_formatter({}, header);
 
   SECTION("`filename()` and `path` Callbacks") {
+    util::cpp_file header;
+    auto inja = inja_formatter({}, header);
+
     SECTION("`path` Provides the Path of the Defining Header File") {
       inja.data().merge_patch(inja.to_json(header));
 
@@ -45,6 +46,9 @@ TEST_CASE("Strings from Inja Templates", "[inja_formatter]") {
   }
 
   SECTION("`name` Callback") {
+    util::cpp_file header;
+    auto inja = inja_formatter({}, header);
+
     SECTION("`name` of a C++ Entity Provides the (Shortened) cppast Name of the Entity") {
       inja.data().merge_patch(inja.to_json(header));
 
@@ -65,6 +69,9 @@ TEST_CASE("Strings from Inja Templates", "[inja_formatter]") {
   }
 
   SECTION("`sanitize_basename` Callback") {
+    util::cpp_file header;
+    auto inja = inja_formatter({}, header);
+
     SECTION("`sanitize_basename` Replaces Strange Characters") {
       REQUIRE(inja.format(R"({{ sanitize_basename("a%b@ c") }})") == "a_b_c");
     }
@@ -75,12 +82,18 @@ TEST_CASE("Strings from Inja Templates", "[inja_formatter]") {
   }
 
   SECTION("`md_escape` Callback") {
+    util::cpp_file header;
+    auto inja = inja_formatter({}, header);
+
     REQUIRE(inja.format(R"({{ md_escape("`code`") }})") == R"(\`code\`)");
     REQUIRE(inja.format(R"({{ md_escape("A`B`C") }})") == R"(A\`B\`C)");
   }
 
   SECTION("`cppast_kind` Callback") {
     SECTION("`cppast_kind` of a File") {
+      util::cpp_file header;
+      auto inja = inja_formatter({}, header);
+
       inja.data().merge_patch(inja.to_json(header));
 
       REQUIRE(inja.cppast_kind(header) == "file");
@@ -96,6 +109,74 @@ TEST_CASE("Strings from Inja Templates", "[inja_formatter]") {
       inja.data() = inja.to_json(header["f"]);
       REQUIRE(inja.format(R"({{ cppast_kind(return_type) }})") == "builtin");
     }
+  }
+
+  SECTION("`scope` Callback") {
+    SECTION("`scope` of a Template Declaration") {
+      util::cpp_file header(R"(
+        class A {
+          template <typename T>
+          class C {
+          };
+        };
+      )");
+
+      auto inja = inja_formatter({}, header);
+
+      REQUIRE(inja.scope(header["A::C"]) == "A");
+    }
+
+    SECTION("`scope` of a Template Instantiation Returns the Scope of the Primary Declaration") {
+      util::cpp_file header(R"(
+        struct A {
+          template <typename T>
+          class C {};
+        };
+
+        void f(A::C<int> x);
+      )");
+
+      auto inja = inja_formatter({}, header);
+      // Get the type of the parameter x of f.
+      const auto& C = inja.type(*inja.parameters(header["f"]).at(0));
+      REQUIRE(inja.scope(C) == "A");
+    }
+
+    // TODO: Test all other entities and types.
+  }
+
+  SECTION("`namespace` Callback") {
+    SECTION("`namespace` of a Template Declaration") {
+      util::cpp_file header(R"(
+        namespace A {
+          template <typename T>
+          class C {
+          };
+        };
+      )");
+
+      auto inja = inja_formatter({}, header);
+
+      REQUIRE(inja.namespaze(header["A::C"]) == "A");
+    }
+
+    SECTION("`namespace` of a Template Instantiation Returns the Namespace of the Primary Declaration") {
+      util::cpp_file header(R"(
+        namespace A {
+          template <typename T>
+          class C {};
+        };
+
+        void f(A::C<int> x);
+      )");
+
+      auto inja = inja_formatter({}, header);
+      // Get the type of the parameter x of f.
+      const auto& C = inja.type(*inja.parameters(header["f"]).at(0));
+      REQUIRE(inja.namespaze(C) == "A");
+    }
+
+    // TODO: Test all other entities and types.
   }
 }
 

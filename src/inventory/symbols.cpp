@@ -107,7 +107,7 @@ symbols::symbols(symbols&& value) : self(std::move(value.self)) {}
 symbols::~symbols() {}
 
 type_safe::optional<model::link_target> symbols::find(const std::string& name_) const {
-  std::string name = name_; 
+  std::string name = name_;
 
   if (boost::starts_with(name, "::"))
     // A name in the global scope. But it does not matter since we are already in the global scope.
@@ -152,7 +152,7 @@ type_safe::optional<model::link_target> symbols::impl::cppast_symbols::find(cons
 
   if (found)
     return found.value();
-      
+
   return type_safe::nullopt;
 }
 
@@ -208,7 +208,7 @@ type_safe::optional_ref<const T> symbols::impl::generic_symbols<T>::descendant(c
 }
 
 type_safe::optional_ref<const cppast::cpp_entity> symbols::impl::cppast_symbols::parameter(const cppast::cpp_entity& root_, const std::string& name_) const {
-  const cppast::cpp_entity* root = &root_; 
+  const cppast::cpp_entity* root = &root_;
   std::string name = name_;
 
   boost::erase_all(name, " ");
@@ -232,7 +232,7 @@ type_safe::optional_ref<const cppast::cpp_entity> symbols::impl::cppast_symbols:
 }
 
 type_safe::optional_ref<const cppast::cpp_entity> symbols::impl::cppast_symbols::child(const cppast::cpp_entity& root_, const std::string& name_) const {
-  const cppast::cpp_entity* root = &root_; 
+  const cppast::cpp_entity* root = &root_;
   std::string name = name_;
 
   boost::erase_all(name, " ");
@@ -308,7 +308,7 @@ type_safe::optional_ref<const cppast::cpp_entity> symbols::impl::cppast_symbols:
 }
 
 type_safe::optional_ref<const cppast::cpp_entity> symbols::impl::cppast_symbols::frend(const cppast::cpp_entity& root_, const std::string& name_) const {
-  const cppast::cpp_entity* root = &root_; 
+  const cppast::cpp_entity* root = &root_;
   std::string name = name_;
 
   boost::erase_all(name, " ");
@@ -358,7 +358,7 @@ type_safe::optional_ref<const cppast::cpp_entity> symbols::impl::cppast_symbols:
         return false;
       }
     }
-    
+
     // Continue the search.
     return true;
   });
@@ -448,7 +448,7 @@ std::string symbols::impl::cppast_symbols::parameter_names(const cppast::cpp_ent
     names += param.name();
     names += ",";
   }
-  
+
   return "(" + names.substr(0, names.size() - 1) + ")";
 }
 

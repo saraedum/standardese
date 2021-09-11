@@ -21,11 +21,11 @@ namespace standardese::model::mixin
     {
         // TODO: Maybe this sugar is not worth it. At least not outside of the constructor.
         model::markup::text convert(std::string text) {
-            return model::markup::text(std::move(text)); 
+            return model::markup::text(std::move(text));
         }
 
         model::markup::text convert(const char* text) {
-            return model::markup::text(std::move(text)); 
+            return model::markup::text(std::move(text));
         }
 
         template <typename S>

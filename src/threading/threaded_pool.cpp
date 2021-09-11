@@ -22,7 +22,7 @@ threaded_pool::threaded_pool(int parallelism) {
 
         {
           std::unique_lock lock{mutex};
-          
+
           if (!accepting) {
             // Destructor has been called and there is nothing left to do.
             assert(tasks.empty());
@@ -32,7 +32,7 @@ threaded_pool::threaded_pool(int parallelism) {
           if (!tasks.empty()) {
             task = std::move(tasks.front());
             tasks.pop();
-            
+
             running++;
           } else {
             task_enqueued.wait(lock);

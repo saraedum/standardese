@@ -29,7 +29,7 @@ index_document_builder::index_document_builder(options options, parser::cpp_cont
 
 document index_document_builder::build(const std::string& name, const std::string& path, const std::function<bool(const model::entity&)> predicate, const model::unordered_entities& entities) const {
   auto list = model::markup::list(false);
-  
+
   for (auto& entity : entities)
     if (predicate(entity))
       model::visitor::visit([&](auto&& documentation) {
@@ -46,7 +46,7 @@ document index_document_builder::build(const std::string& name, const std::strin
           // We create a link with a target but no "text". A transformation
           // such as the anchor_text_transformation will fill in that text.
           auto link = model::markup::link(target, "");
-          
+
           list.add_child(model::markup::list_item(link));
         } else {
           throw std::logic_error("unexpected entity in index document builder");

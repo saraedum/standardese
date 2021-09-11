@@ -81,7 +81,7 @@ namespace {
 
 // See https://github.com/sphinx-doc/sphinx/blob/4.x/sphinx/util/inventory.py#L95
 void load_v1(std::istream& in, documentation_set& inventory) {
-  throw std::logic_error("not implemented: loading of Sphinx version 1 inventories"); 
+  throw std::logic_error("not implemented: loading of Sphinx version 1 inventories");
 }
 
 // See https://github.com/sphinx-doc/sphinx/blob/4.x/sphinx/util/inventory.py#L113

@@ -31,7 +31,8 @@ std::vector<comment_collector::comment> comment_collector::collect(const cppast:
       const auto comment = entity.comment();
       if (comment) {
           comments.emplace_back(comment.value(), entity);
-      } 
+      }
+
       // TODO: Why would we want to do this?
       /*else {
           comments.emplace_back("", entity);

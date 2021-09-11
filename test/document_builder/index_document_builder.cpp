@@ -29,7 +29,7 @@ TEST_CASE("Typical Index Files can be Generated", "[index_document_builder]")
   auto logger = util::logger::throwing_logger();
   cpp_file header;
 
-  document_builder::index_document_builder builder({}, header); 
+  document_builder::index_document_builder builder({}, header);
 
   auto parsed = util::parsed_comments(header).add(header, R"(
     \file
@@ -39,7 +39,7 @@ TEST_CASE("Typical Index Files can be Generated", "[index_document_builder]")
   SECTION("Index of All Header Files")
   {
     auto index = builder.build("headers", "headers", document_builder::index_document_builder::is_header_file, parsed.entities);
-    
+
     SECTION("Links Cannot be Emitted Without a Header File Entity")
     {
       standardese::model::unordered_entities documents{std::vector{std::move(index)}};

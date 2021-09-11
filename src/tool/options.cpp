@@ -94,7 +94,7 @@ namespace {
 /// Parses command-line options with `boost::program_options`.
 struct options_parser {
     options_parser(struct options::options_options options);
-    
+
     /// Parse command line arguments into our `options`.
     void parse(int argc, const char* argv[]);
 
@@ -115,7 +115,7 @@ struct options_parser {
     void parse_config_file(const fs::path&, po::variables_map&);
 
     /// Return generic options that any command line program should probably have.
-    po::options_description generic_options() const; 
+    po::options_description generic_options() const;
 
     /// Put the values of the generic options into the options structs.
     void process_generic_options(po::variables_map&);
@@ -272,11 +272,11 @@ options_parser::options_parser(struct options::options_options options) {
   if (options.columns < 0)
       options.columns = terminal_columns();
 
-  this->options.options_options = options; 
+  this->options.options_options = options;
 }
 
 void options_parser::parse(int argc, const char* argv[]) {
-  po::options_description descriptions; 
+  po::options_description descriptions;
   descriptions.add(generic_options());
   descriptions.add(legacy_input_options());
   descriptions.add(legacy_compilation_options());
@@ -785,9 +785,9 @@ void options_parser::process_composition_options(po::variables_map& parsed) {
         options.transformation_options.entity_heading_options.inja_formatter_options.type_format = format;
         options.transformation_options.entity_heading_options.inja_formatter_options.return_type_format = format;
         options.transformation_options.entity_heading_options.inja_formatter_options.parameter_type_format = format;
-      } else if (name == "return_type") { 
+      } else if (name == "return_type") {
         options.transformation_options.entity_heading_options.inja_formatter_options.return_type_format = format;
-      } else if (name == "parameter_type") { 
+      } else if (name == "parameter_type") {
         options.transformation_options.entity_heading_options.inja_formatter_options.parameter_type_format = format;
       } else {
         // TODO

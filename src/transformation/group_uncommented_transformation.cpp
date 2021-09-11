@@ -192,7 +192,7 @@ void group_uncommented_transformation::do_transform(model::entity& document) {
                 } else {
                   if (uncommented.find(&sibling) == uncommented.end()) {
                     // This entity is not present in this document.
-                    previous = nullptr; 
+                    previous = nullptr;
                   } else {
                     if (uncommented.at(&sibling)) {
                       // This entity is uncommented. Ignore its group.

@@ -331,7 +331,7 @@ TEST_CASE("Functions can be Formatted", "[code_formatter]") {
           <?xml version="1.0"?>
           <document>
             <paragraph>
-              <code>template&lt;typename S&gt; std::ostream&amp; A::operator&lt;&lt;(std::ostream&amp;, const </code> <link target-entity="C"> <code>C&lt;S&gt;</code> </link> <code>&amp;)</code>
+              <code>template&lt;typename S&gt; std::ostream&amp; A::operator&lt;&lt;(std::ostream&amp;, const </code> <link target-entity="C"> <code>A::C&lt;S&gt;</code> </link> <code>&amp;)</code>
             </paragraph>
           </document>
           )"));
@@ -344,7 +344,7 @@ TEST_CASE("Functions can be Formatted", "[code_formatter]") {
           <?xml version="1.0"?>
           <document>
             <paragraph>
-              <code>template&lt;typename S&gt; std::ostream&amp; A::operator&lt;&lt;(std::ostream&amp;, const </code> <link target-entity="C"> <code>C&lt;S&gt;</code> </link> <code>&amp;)</code>
+              <code>template&lt;typename S&gt; std::ostream&amp; A::operator&lt;&lt;(std::ostream&amp;, const </code> <link target-entity="C"> <code>A::C&lt;S&gt;</code> </link> <code>&amp;)</code>
             </paragraph>
           </document>
           )"));
@@ -352,11 +352,107 @@ TEST_CASE("Functions can be Formatted", "[code_formatter]") {
     }
 
     SECTION("Friend Functions") {
-      // TODO
+      util::cpp_file header(util::unindent(R"(
+        #include <ostream>
+
+        namespace A {
+          class C {
+            friend std::ostream& f(std::ostream&, const C&);
+          };
+        }
+      )"));
+
+      SECTION("In the Class Context") {
+        auto formatted = code_formatter{{}, header}.build(header["A::f"], header["A::C"]);
+
+        REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
+          <?xml version="1.0"?>
+          <document>
+            <paragraph>
+              <code>std::ostream&amp; f(std::ostream&amp;, const </code> <link target-entity="C"> <code>C</code> </link> <code>&amp;)</code>
+            </paragraph>
+          </document>
+          )"));
+      }
+
+      SECTION("Outside the Class Context") {
+        auto formatted = code_formatter{{}, header}.build(header["A::f"], header);
+
+        REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
+          <?xml version="1.0"?>
+          <document>
+            <paragraph>
+              <code>std::ostream&amp; A::f(std::ostream&amp;, const </code> <link target-entity="C"> <code>A::C</code> </link> <code>&amp;)</code>
+            </paragraph>
+          </document>
+          )"));
+      }
+
+      SECTION("Without any Context") {
+        auto formatted = code_formatter{{}, header}.build(header["A::f"]);
+
+        REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
+          <?xml version="1.0"?>
+          <document>
+            <paragraph>
+              <code>std::ostream&amp; A::f(std::ostream&amp;, const </code> <link target-entity="C"> <code>A::C</code> </link> <code>&amp;)</code>
+            </paragraph>
+          </document>
+          )"));
+      }
     }
 
     SECTION("Template Friend Functions") {
-      // TODO
+      util::cpp_file header(util::unindent(R"(
+        #include <ostream>
+
+        namespace A {
+          template <typename T>
+          class C {
+            template <typename S>
+            friend std::ostream& f(std::ostream&, const C<S>&);
+          };
+        }
+      )"));
+
+      SECTION("In the Class Context") {
+        auto formatted = code_formatter{{}, header}.build(header["A::f"], header["A::C"]);
+
+        REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
+          <?xml version="1.0"?>
+          <document>
+            <paragraph>
+              <code>template&lt;typename S&gt; std::ostream&amp; f(std::ostream&amp;, const </code> <link target-entity="C"> <code>C&lt;S&gt;</code> </link> <code>&amp;)</code>
+            </paragraph>
+          </document>
+          )"));
+      }
+
+      SECTION("Outside the Class Context") {
+        auto formatted = code_formatter{{}, header}.build(header["A::f"], header);
+
+        REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
+          <?xml version="1.0"?>
+          <document>
+            <paragraph>
+              <code>template&lt;typename S&gt; std::ostream&amp; A::f(std::ostream&amp;, const </code> <link target-entity="C"> <code>A::C&lt;S&gt;</code> </link> <code>&amp;)</code>
+            </paragraph>
+          </document>
+          )"));
+      }
+
+      SECTION("Without any Context") {
+        auto formatted = code_formatter{{}, header}.build(header["A::f"]);
+
+        REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
+          <?xml version="1.0"?>
+          <document>
+            <paragraph>
+              <code>template&lt;typename S&gt; std::ostream&amp; A::f(std::ostream&amp;, const </code> <link target-entity="C"> <code>A::C&lt;S&gt;</code> </link> <code>&amp;)</code>
+            </paragraph>
+          </document>
+          )"));
+      }
     }
   }
 

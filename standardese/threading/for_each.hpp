@@ -18,7 +18,7 @@ namespace standardese::threading {
 template <typename I, typename F>
 void for_each(pool::factory workers, I begin, I end, F f) {
   std::vector<std::function<void()>> tasks;
-  
+
   for (;begin != end; ++begin) {
     tasks.emplace_back([begin, &f]() {
       f(*begin);

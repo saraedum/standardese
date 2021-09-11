@@ -29,7 +29,7 @@ void anchor_transformation::do_transform(model::entity& document) {
       // * Render for mkdocs/hugo/...
 
       // TODO: Anyway, what mkdocs does is not a bad strategy in general: https://github.com/Python-Markdown/markdown/blob/master/markdown/extensions/toc.py#L26
-      
+
       // TODO: Complain when the anchor is not unique (and offer a solution?)
 
       // TODO: What can we do when there is no heading?
@@ -44,7 +44,7 @@ void anchor_transformation::do_transform(model::entity& document) {
           }
           recurse();
         }, heading);
-        
+
         std::regex strip(R"([^\w\s-])");
         std::regex escape(R"([-\s]+)");
         inner = std::regex_replace(inner, strip, "");

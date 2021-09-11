@@ -37,7 +37,7 @@ TEST_CASE("Function Lookup in MarkDown Links", "[cppast_inventory]")
         CHECK(!symbols.find("f()"));
         CHECK(!symbols.find("f(int arg)"));
         CHECK(!symbols.find("f::f"));
-    } 
+    }
 
     SECTION("Functions are Found With or Without Their Template Arguments")
     {
@@ -71,7 +71,7 @@ TEST_CASE("Function Lookup in MarkDown Links", "[cppast_inventory]")
 
         const auto& a = header["a"];
         const auto& b = header["b"];
-      
+
         const auto target =[](const auto& anchor) {
           return anchor.value().accept([&](auto&& target) -> type_safe::object_ref<const cppast::cpp_entity> {
             using T = std::decay_t<decltype(target)>;
@@ -116,7 +116,7 @@ TEST_CASE("Function Lookup in MarkDown Links", "[cppast_inventory]")
             // const is part of the signature
             CHECK(!symbols.find("X::f(int, char)"));
             CHECK(symbols.find("X::f(int, char)const"));
-            
+
             CHECK(symbols.find("X::f(int, char, bool)"));
         }
 

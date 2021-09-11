@@ -54,7 +54,7 @@ void entity_heading_transformation::do_transform(model::entity& document) {
           // TODO: Cap at 5?
           paragraph->template as<model::markup::heading>().level += level;
 
-        entity.insert_child(std::move(*paragraph)); 
+        entity.insert_child(std::move(*paragraph));
       }
 
       if (has_scope) level++;

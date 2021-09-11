@@ -375,7 +375,7 @@ v0.1
 * `standardese::compile_config` class for compilation options and `compile_commands.json` support
 
 * new parsing with the help of Boost.Wave
- 
+
 * skip attributes when parsing
 
 * more robust parsing, error handling options

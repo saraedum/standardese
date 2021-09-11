@@ -15,7 +15,7 @@ namespace standardese::model::visitor
 // TODO: Should we tear this apart into two classes? Boolean template flags indicate that something is wrong.
 // TODO: Should we rename the visits so that we don't overload? Might make interaction with cppyy easier.
 template<bool is_const = false>
-class visitor 
+class visitor
 {
     template <typename T>
     using conditional_const = std::conditional_t<is_const, const T, T>;

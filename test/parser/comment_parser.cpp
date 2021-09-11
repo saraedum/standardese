@@ -40,7 +40,7 @@ TEST_CASE("Markdown Markup", "[comment_parser]")
     {
         const auto parsed = parsed_comments(header).add(header["f"], R"(
             A brief which is not relevant for this test
-    
+
             This line starts the details.
             `code`
             *emphasis with `code`*\
@@ -240,11 +240,11 @@ TEST_CASE("Markdown Markup", "[comment_parser]")
             > This initial quote is not used for the brief but goes into details.
             >
             > Second line of the quote.
-            
+
             > A second quote.
             > The second line of the second quote.
             )");
-    
+
         CHECK(xml_generator::render(parsed) == unindent(R"(
             <?xml version="1.0"?>
             <entity-documentation name="f">
@@ -266,29 +266,29 @@ TEST_CASE("Markdown Markup", "[comment_parser]")
         const auto parsed = parsed_comments(header).add(header["f"], R"(
             * This list.
             * is tight.
-            
+
             List break.
-            
+
             * An item with a paragraph.
-            
+
               And another paragraph.
-            
+
             * And a different item.
-            
+
             List break.
-            
+
             1. An
             2. ordered
             3. list
-            
+
             List break.
-            
+
             * A list
-            
+
             * with another
               1. list
               2. inside
-            
+
             * *great*
             )");
 
@@ -359,7 +359,7 @@ TEST_CASE("Markdown Markup", "[comment_parser]")
             ```
             A code block starting a comment is not used for a brief but goes to the details.
             ```
-            
+
             ```cpp
             A code block with info.
             ```
@@ -382,14 +382,14 @@ TEST_CASE("Markdown Markup", "[comment_parser]")
     {
         const auto parsed = parsed_comments(header).add(header["f"], R"(
             # A heading starting a comment is not used for a brief but goes to the details.
-            
+
             ## B
-            
+
             ### C
-            
+
             DDD
             ===
-            
+
             EEE
             ---
             )");
@@ -412,11 +412,11 @@ TEST_CASE("Markdown Markup", "[comment_parser]")
     {
         const auto parsed = parsed_comments(header).add(header["f"], R"(
             This line is used for the brief and does not show up in the details.
-            
+
             A paragraph.
-            
+
             ---
-            
+
             A completely different paragraph.
             )");
 
@@ -443,9 +443,9 @@ TEST_CASE("Markdown Markup", "[comment_parser]")
                 The first line ends in punctuation so it defines the brief and does not show up in the details.
                 The first paragraph.
                 Second line of the first paragraph.
-                
+
                 The second paragraph.
-                
+
                 The third paragraph.
                 Second line of the third paragraph.
                 )");
@@ -494,16 +494,16 @@ TEST_CASE("Markdown Markup", "[comment_parser]")
             const auto parsed = parsed_comments(header).add(header["f"], R"(
                 Implicit brief.
                 This is not part of the brief anymore because the previous line ends with a full stop.
-                
+
                 Still details.
                 Even still details.
-                
+
                 > Also in quote.
-                
+
                 ```
                 Or code.
                 ```
-                
+
                 * Or
                 * List
                 )");
@@ -547,18 +547,18 @@ TEST_CASE("Standardese Specific Markup Rules", "[comment_parser]")
         const auto parsed = parsed_comments(header).add(header["f"], R"(
             \brief Explicit brief.
             Still explicit brief.
-             
+
             \details Explicit details.
-             
+
             Still details.
-             
+
             \effects Explicit effects.
             Still effects.
-             
+
             Details again.
-             
+
             \requires
-             
+
             \returns
             Explicit returns.
             \returns Different returns.
@@ -603,9 +603,9 @@ TEST_CASE("Standardese Specific Markup Rules", "[comment_parser]")
             Technically, this is because our cmark extension only recognizes such commands when they start a new block, and blocks can only start at the beginning of a line.
             \synopsis Ignore all lines starting with a command.
             But please include me.
-            
+
             > \effects In block quote is ignored.
-            
+
             * \effects In list is ignored.
             )");
 
@@ -635,41 +635,41 @@ TEST_CASE("Standardese Specific Markup Rules", "[comment_parser]")
         const auto parsed = parsed_comments(header).add(header["f"], R"(
             \effects The first line of the effects section.
             The second line of the effects.
-            
+
             This is part of effects and not details because there is an explicit end command.
-            
+
             This is part of effects and not details because there is an explicit end command.
-            
+
             \end
-            
+
             This is the first line of the details.
-            
+
             \returns This is the only line of the returns section.
             \end
-            
+
             \notes This is the first line of the notes section.
-            
+
             Another line of the notes section.
             \end
             This is the second line of the details.
-            
+
             \requires This is the first line of the requires section.
-            
+
             This is the second
             and this is the third line of the requires.\end
             This is the fourth line of the requires section because an \end must be at the start of the line.
             \end
             This is the third line of the details.
-            
+
             \param foo A parameter.
             Going on.
-            
+
             * Still
             * going
             * on
-            
+
             \end
-            
+
             This is the fourth line of the details.
             )");
 
@@ -740,12 +740,12 @@ TEST_CASE("Standardese Specific Markup Rules", "[comment_parser]")
             It requires extra long description.
             \returns Default returns.
             \notes This terminates.
-            
+
             \effects -> really weird
-            
+
             \see [foo] - Optional description.
             \see [bar]-
-            
+
             This terminates.
             )");
 
@@ -839,7 +839,7 @@ TEST_CASE("Standardese Commands", "[comment_parser]")
             CHECK(parsed_comments(header).add(header["f"], R"(\exclude)").as_documentation().exclude_mode == model::exclude_mode::exclude);
             CHECK(parsed_comments(header).add(header["f"], R"(\exclude return)").as_documentation().exclude_mode == model::exclude_mode::exclude_return_type);
             CHECK(parsed_comments(header).add(header["f"], R"(\exclude target)").as_documentation().exclude_mode == model::exclude_mode::exclude_target);
-            
+
         }
         SECTION("With other Keywords, the command is treated as text.")
         {

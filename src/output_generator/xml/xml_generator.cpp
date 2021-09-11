@@ -42,7 +42,7 @@ void xml_generator::visit(code_block& code_block) {
 
     if (!code_block.language.empty())
         top.append_attribute("language").set_value(code_block.language.c_str());
-        
+
     stream_generator::visit(code_block);
     top = top.parent();
 }

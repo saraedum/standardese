@@ -209,7 +209,7 @@ model::entity synopsis(const cppast::cpp_entity& entity) {
       do_write_token_seq("\n");
       need_indent = true;
     }
-    
+
     bool need_indent = true;
     int indent = 0;
     std::string code;

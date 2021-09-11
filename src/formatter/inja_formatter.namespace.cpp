@@ -8,6 +8,7 @@
 #include <cppast/cpp_entity_kind.hpp>
 #include <cppast/cpp_type.hpp>
 #include <cppast/cpp_array_type.hpp>
+#include <cppast/cpp_template.hpp>
 
 #include "inja_formatter.impl.hpp"
 #include "../../standardese/logger.hpp"
@@ -82,7 +83,7 @@ std::string inja_formatter::namespaze(const std::string& fullname) const {
   // We cannot really know what of name is scope and what is namespace, so we
   // just assume that everything is namespace. We could probably do better here
   // by looking at the context's scope and finding a shared prefix.
-  const std::string name = this->name(fullname); 
+  const std::string name = this->name(fullname);
 
   assert(boost::algorithm::starts_with(fullname, name));
 
@@ -95,8 +96,6 @@ std::string inja_formatter::namespaze(const std::string& fullname) const {
 }
 
 type_safe::optional<std::vector<std::string>> inja_formatter::namespaces(const cppast::cpp_type& type) const {
-  std::vector<std::string> ret;
-
   switch (type.kind()) {
     case cppast::cpp_type_kind::array_t:
       return namespaces(static_cast<const cppast::cpp_array_type&>(type).value_type());
@@ -108,31 +107,40 @@ type_safe::optional<std::vector<std::string>> inja_formatter::namespaces(const c
     case cppast::cpp_type_kind::member_function_t:
     case cppast::cpp_type_kind::member_object_t:
     case cppast::cpp_type_kind::template_parameter_t:
-      return ret;
+      return std::vector<std::string>{};
     case cppast::cpp_type_kind::template_instantiation_t:
-      // TODO: Can we do better here?
-      return type_safe::nullopt;
+    {
+      const auto declaration = static_cast<const cppast::cpp_template_instantiation_type&>(type).primary_template().get(self->cpp_context.index());
+      if (declaration.begin() != declaration.end())
+        return namespaces(declaration.begin()->get());
+      break;
+    }
     case cppast::cpp_type_kind::cv_qualified_t:
       return namespaces(static_cast<const cppast::cpp_cv_qualified_type&>(type).type());
     case cppast::cpp_type_kind::dependent_t:
       // TODO: Can we do better here?
-      return type_safe::nullopt;
+      logger::warn(fmt::format("Not implemented: cannot determine namespace() of dependent type {}.", cppast::to_string(type)));
+      break;
     case cppast::cpp_type_kind::pointer_t:
     case cppast::cpp_type_kind::reference_t:
       return namespaces(static_cast<const cppast::cpp_pointer_type&>(type).pointee());
     case cppast::cpp_type_kind::unexposed_t:
-      return type_safe::nullopt;
+      break;
     case cppast::cpp_type_kind::user_defined_t:
       {
         const auto& user_defined = static_cast<const cppast::cpp_user_defined_type&>(type);
-        for (const auto& definition : user_defined.entity().get(self->cpp_context.index()))
-          return namespaces(definition.get());
+        const auto definition = user_defined.entity().get(self->cpp_context.index());
+        if (definition.begin() != definition.end())
+          return namespaces(definition.begin()->get());
         return std::vector{namespaze(user_defined.entity().name())};
       }
     default:
       // TODO
-      throw std::logic_error("not implemented: namespaces() for unexpected type");
+      logger::warn(fmt::format("Not implemented: cannot determine namespace() of type {}.", cppast::to_string(type)));
+      break;
   }
+
+  return type_safe::nullopt;
 }
 
 std::vector<std::string> inja_formatter::namespaces(const cppast::cpp_entity& entity) const {

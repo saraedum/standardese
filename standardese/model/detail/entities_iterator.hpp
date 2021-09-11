@@ -9,7 +9,7 @@ namespace standardese::model::detail
 {
 
 class entities_iterator {
-  
+
 };
 
 }

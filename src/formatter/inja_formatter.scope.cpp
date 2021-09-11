@@ -76,12 +76,12 @@ std::vector<const cppast::cpp_entity*> scopes(const cppast::cpp_entity& entity) 
   }
 }
 
-type_safe::optional<std::vector<const cppast::cpp_entity*>> parent_scopes(const cppast::cpp_type& type) {
-  std::vector<const cppast::cpp_entity*> ret;
-
+/// Return the scopes this type is defined in. From the outermost top-level
+/// scope to the innermost scope such as a function scope.
+type_safe::optional<std::vector<const cppast::cpp_entity*>> scopes(const cppast::cpp_type& type, const cppast::cpp_entity_index& index) {
   switch (type.kind()) {
     case cppast::cpp_type_kind::array_t:
-      return parent_scopes(static_cast<const cppast::cpp_array_type&>(type).value_type());
+      return scopes(static_cast<const cppast::cpp_array_type&>(type).value_type(), index);
     case cppast::cpp_type_kind::auto_t:
     case cppast::cpp_type_kind::builtin_t:
     case cppast::cpp_type_kind::decltype_auto_t:
@@ -90,27 +90,39 @@ type_safe::optional<std::vector<const cppast::cpp_entity*>> parent_scopes(const 
     case cppast::cpp_type_kind::member_function_t:
     case cppast::cpp_type_kind::member_object_t:
     case cppast::cpp_type_kind::template_parameter_t:
-      return ret;
+      return std::vector<const cppast::cpp_entity*>{};
     case cppast::cpp_type_kind::template_instantiation_t:
-      // TODO: Can we do better here?
-      return type_safe::nullopt;
+    {
+      const auto declaration = static_cast<const cppast::cpp_template_instantiation_type&>(type).primary_template().get(index);
+      if (declaration.begin() != declaration.end())
+        return scopes(declaration.begin()->get());
+      break;
+    }
     case cppast::cpp_type_kind::cv_qualified_t:
-      return parent_scopes(static_cast<const cppast::cpp_cv_qualified_type&>(type).type());
-    case cppast::cpp_type_kind::dependent_t:
-      // TODO: Can we do better here?
-      return type_safe::nullopt;
+      return scopes(static_cast<const cppast::cpp_cv_qualified_type&>(type).type(), index);
     case cppast::cpp_type_kind::pointer_t:
     case cppast::cpp_type_kind::reference_t:
-      return parent_scopes(static_cast<const cppast::cpp_pointer_type&>(type).pointee());
+      return scopes(static_cast<const cppast::cpp_pointer_type&>(type).pointee(), index);
     case cppast::cpp_type_kind::unexposed_t:
-      return type_safe::nullopt;
+      break;
+    case cppast::cpp_type_kind::dependent_t:
+      // TODO: Can we do better here?
+      logger::warn(fmt::format("Not implemented: cannot determine scope() of dependent type {}.", cppast::to_string(type)));
+      break;
     case cppast::cpp_type_kind::user_defined_t:
-      // TODO: We can probably do better here by invoking scope(cpp_entity) sometimes, cf. name()/namespaze().
-      return type_safe::nullopt;
+    {
+      const auto& user_defined = static_cast<const cppast::cpp_user_defined_type&>(type);
+      const auto definition = user_defined.entity().get(index);
+      if (definition.begin() != definition.end())
+        return scopes(definition.begin()->get());
+      break;
+    }
     default:
       // TODO
-      throw std::logic_error("not implemented: parent_scopes() for unexpected type");
+      logger::warn(fmt::format("Not implemented: cannot determine scope() of type {}.", cppast::to_string(type)));
+      break;
   }
+  return type_safe::nullopt;
 }
 
 std::string render_scope(std::vector<const cppast::cpp_entity*> self, std::optional<std::vector<const cppast::cpp_entity*>> context, std::function<std::string(const cppast::cpp_entity&)> name, enum inja_formatter::inja_formatter_options::scope_display_options options) {
@@ -170,7 +182,7 @@ std::string inja_formatter::scope(const cppast::cpp_entity& entity) const {
 }
 
 std::string inja_formatter::scope(const cppast::cpp_type& type) const {
-  const auto type_scopes = parent_scopes(type);
+  const auto type_scopes = scopes(type, self->cpp_context.index());
 
   if (!type_scopes.has_value())
     return std::string{};

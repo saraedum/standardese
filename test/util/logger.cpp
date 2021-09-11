@@ -30,7 +30,7 @@ logger::~logger() {
 
 logger logger::capturing_logger(std::ostream& stream, const std::string& name) {
   struct stream_sink : public spdlog::sinks::base_sink<std::mutex> {
-    stream_sink(std::ostream& stream) : stream(stream) {}  
+    stream_sink(std::ostream& stream) : stream(stream) {}
 
     void sink_it_(const spdlog::details::log_msg& msg) override {
       stream << std::string(msg.payload.data(), msg.payload.size()) << std::endl;

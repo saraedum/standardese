@@ -310,7 +310,7 @@ void comment_parser::parse(cmark_node* node, T& model) const
 {
     const auto special_command = command_extension::command_extension::node_type<commands::special_command>();
     const auto section_command = command_extension::command_extension::node_type<commands::section_command>();
-    
+
     if (cmark_node_get_type(node) == special_command)
         apply_command(node, model);
     else if (cmark_node_get_type(node) == section_command)

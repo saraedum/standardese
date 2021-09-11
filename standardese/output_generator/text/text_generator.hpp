@@ -19,7 +19,7 @@ class text_generator : public cmark_generator {
     };
 
     text_generator(std::ostream& os, text_generator_options = {});
-    
+
     ~text_generator() override;
 
     static std::string render(const model::entity& root);

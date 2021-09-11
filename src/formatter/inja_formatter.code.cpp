@@ -33,7 +33,7 @@ model::document simplify_code(model::document&& root) {
           auto& merge_from = child.as<model::markup::code>();
           auto& whitespace = *children.rbegin();
           if (whitespace.is<model::markup::text>() && whitespace.as<model::markup::text>().value.find_first_not_of(' ') == std::string::npos) {
-            
+
             auto& code = *(++children.rbegin());
             if (code.is<model::markup::code>()) {
               auto& merge_into = code.as<model::markup::code>();

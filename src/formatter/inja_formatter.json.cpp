@@ -199,7 +199,7 @@ nlohmann::json inja_formatter::to_json(const cppast::cpp_entity& entity) const {
   // self->env.add_callback("link", 1, [this, &entity](inja::Arguments& args) {
   //   // TODO: Do not create the link if it is trivial, i.e., going back to the context.
   //   auto link = model::markup::link(entity, "");
-  //   
+  //
   //   impl::foreach([&](const model::entity& child) {
   //     link.add_child(child);
   //   }, self->parse(args.at(0)->get<std::string>()));
@@ -364,7 +364,7 @@ nlohmann::json inja_formatter::to_json(const cppast::cpp_type& type) const {
       //   json["target"] = "";
       // }
       // json["name"] = template_instantiation_type.primary_template().name();
-      // 
+      //
       break;
     case cppast::cpp_type_kind::template_parameter_t:
       json["standardese"]["cppast_kind"] = "template-parameter";
@@ -415,40 +415,40 @@ nlohmann::json inja_formatter::to_json(const cppast::cpp_type& type) const {
 // TODO
 // nlohmann::json inja_formatter::to_json(const model::cpp_entity_documentation& data) {
 //   nlohmann::json json = to_json(data.entity());
-// 
+//
 //   self->env.add_callback("synopsis", [this, &data](inja::Arguments& args) {
 //     // TODO: Do not ignore args.
 //     return self->embed(synopsis_formatter({}).build(data));
 //   });
-// 
+//
 //   return json;
 // }
-// 
+//
 // nlohmann::json inja_formatter::to_json(model::cpp_entity_documentation& data) {
 //   this->add_data(static_cast<const model::cpp_entity_documentation&>(data));
-// 
+//
 //   const auto& entity = data.entity();
-// 
+//
 //   // TODO: Test the different versions of this.
 //   self->env.add_callback("brief", 1, [this, &data](inja::Arguments& args) {
 //     const std::string policy = args.at(0)->get<std::string>();
-// 
+//
 //     for (auto section = data.begin(); section != data.end(); ++section) {
 //       if (section->is<model::section>() && section->as<model::section>().type == parser::commands::section_command::brief) {
 //         model::document brief {"", ""};
 //         for (const auto& block : section->as<model::section>())
 //           brief.add_child(block);
-// 
+//
 //         if (policy == "consume")
 //           data.erase(section);
 //         else
 //           throw std::logic_error("not implemented: brief policy"); // TODO
-// 
+//
 //         return self->embed(std::move(brief));
 //       }
 //     }
-// 
-//     return std::string{}; 
+//
+//     return std::string{};
 //   });
 // }
 

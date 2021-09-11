@@ -72,7 +72,7 @@ TEST_CASE("Visitors Created from Lambdas", "[visitor]") {
 
   SECTION("Non-Const Visitors") {
     visit([&](auto&& entity, auto&& recurse) {
-      using T = std::decay_t<decltype(entity)>; 
+      using T = std::decay_t<decltype(entity)>;
       if constexpr (std::is_same_v<T, standardese::model::markup::text>) {
         REQUIRE(entity.value != "modified text");
       }
@@ -81,7 +81,7 @@ TEST_CASE("Visitors Created from Lambdas", "[visitor]") {
 
     SECTION("Non-Const Non-Recursive Void Visitor") {
       visit([&](auto&& entity) {
-        using T = std::decay_t<decltype(entity)>; 
+        using T = std::decay_t<decltype(entity)>;
         if constexpr (std::is_same_v<T, standardese::model::markup::paragraph>) {
           entity.clear();
         }
@@ -90,7 +90,7 @@ TEST_CASE("Visitors Created from Lambdas", "[visitor]") {
 
     SECTION("Non-Const Non-Recursive Non-Void Visitor") {
       REQUIRE(visit([&](auto&& entity) {
-        using T = std::decay_t<decltype(entity)>; 
+        using T = std::decay_t<decltype(entity)>;
         if constexpr (std::is_same_v<T, standardese::model::markup::paragraph>) {
           entity.clear();
           return 1;
@@ -101,7 +101,7 @@ TEST_CASE("Visitors Created from Lambdas", "[visitor]") {
 
     SECTION("Non-Const Recursive Visitor") {
       visit([&](auto&& entity, auto&& recurse) {
-        using T = std::decay_t<decltype(entity)>; 
+        using T = std::decay_t<decltype(entity)>;
         if constexpr (std::is_same_v<T, standardese::model::markup::text>) {
           entity.value = "modified text";
         }
@@ -110,7 +110,7 @@ TEST_CASE("Visitors Created from Lambdas", "[visitor]") {
     }
 
     visit([&](auto&& entity, auto&& recurse) {
-      using T = std::decay_t<decltype(entity)>; 
+      using T = std::decay_t<decltype(entity)>;
       if constexpr (std::is_same_v<T, standardese::model::markup::text>) {
         REQUIRE(entity.value == "modified text");
       }

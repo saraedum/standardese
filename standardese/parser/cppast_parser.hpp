@@ -47,7 +47,7 @@ class cppast_parser {
   cpp_context context_;
 
   type_safe::optional<cppast::libclang_compilation_database> compile_commands;
-  cppast::libclang_parser parser; 
+  cppast::libclang_parser parser;
 };
 
 }

@@ -30,7 +30,7 @@ void inventory_generator::visit(cpp_entity_documentation& documentation) {
   const auto& entity = documentation.entity();
 
   const auto [domain, type] = domain_type(entity);
-  
+
   inventory.entries.emplace_back(name(entity), domain, type, priority(entity), path + "/#" + documentation.id, display_name(entity));
 
   stream_generator::visit(documentation);
@@ -39,7 +39,7 @@ void inventory_generator::visit(cpp_entity_documentation& documentation) {
 void inventory_generator::visit(group_documentation& documentation) {
   for (const auto& entity : documentation.entities) {
     const auto [domain, type] = domain_type(entity.entity());
-    
+
     inventory.entries.emplace_back(name(entity.entity()), domain, type, priority(entity.entity()), path + "/#" + documentation.id, display_name(entity.entity()));
 
     stream_generator::visit(documentation);

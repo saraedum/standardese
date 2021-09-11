@@ -75,7 +75,7 @@ namespace standardese::parser::command_extension
         static cmark_node* cmark_open_block(cmark_syntax_extension*, int indent, cmark_parser*, cmark_node* parent_container, unsigned char *input, int len);
 
         /// Postprocess the tree of nodes under the node root when the parsing is complete.
-        /// This turns the list of nodes that the parser found into an actual tree of nodes, e.g., 
+        /// This turns the list of nodes that the parser found into an actual tree of nodes, e.g.,
         /// `\returns x` which was parsed into something ressembling
         /// `<section /><paragraph>x</paragraph>` is turned into
         /// `<section><paragraph>x</paragraph></section>`.

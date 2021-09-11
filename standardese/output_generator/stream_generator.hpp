@@ -21,7 +21,7 @@ public:
     stream_generator(std::ostream& os) : out_(os) {
       // TODO: Handle bad stream here and when actually writing output.
     }
-    
+
     virtual ~stream_generator() {}
 
     template <typename G>

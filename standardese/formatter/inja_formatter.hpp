@@ -22,7 +22,7 @@ class inja_formatter {
  public:
   struct inja_formatter_options {
     inja_formatter_options();
-    
+
     /// Controls how the `namespace` callback renders namespaces.
     enum class namespace_display_options {
       /// Show the full namespace.
@@ -74,7 +74,7 @@ class inja_formatter {
           format(option("function_declarator_format")))))
       }}{% endif %} `(` {%
         if cppast_kind in ["destructor", "conversion operator"] %}{% else %}{{
-        format(option("function_parameters_format")) }}{% endif %} `)` {% 
+        format(option("function_parameters_format")) }}{% endif %} `)` {%
         set suffix = join(" ` ` ", reject("empty", list(
           format(option("const_qualification_format")),
           format(option("volatile_qualification_format")),

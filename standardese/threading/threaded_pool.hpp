@@ -21,7 +21,7 @@ class threaded_pool : public pool {
   threaded_pool(int parallelism);
 
   std::future<void> enqueue(std::function<void()> task) override;
-  
+
   /// Return a worker factory with the amount of parallelism.
   /// \param parallelism if non-positive, the value is selected automatically.
   static factory factory(int parallelism);

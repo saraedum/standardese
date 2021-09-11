@@ -20,14 +20,14 @@ namespace standardese::parser::command_extension
 
         /// Retrieve the command and its arguments from this `node`.
         static const user_data& get(cmark_node* node);
-        
+
         /// The command from which the parser created this node.
         T command;
 
         /// Return a tuple containing the arguments of the command from which this node was created.
         template <size_t count>
         auto arguments() const {
-            return arguments(std::make_index_sequence<count>());    
+            return arguments(std::make_index_sequence<count>());
         }
 
       private:

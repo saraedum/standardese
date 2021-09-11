@@ -58,7 +58,7 @@ std::vector<nlohmann::json> inja_formatter::reject(const std::string& predicate,
   }
 
   std::vector<nlohmann::json> filtered;
-  
+
   for (auto& item: items)
     if (!pred(item)) {
       filtered.push_back(std::move(item));

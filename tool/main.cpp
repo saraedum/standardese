@@ -19,10 +19,10 @@ int main(int argc, const char* argv[])
     if (options.parser_options.sources.empty()) {
       standardese::logger::warn("No input files.");
     }
-    
+
     // Parse source code.
     auto [parsed, context] = standardese::tool::parsers(options.parser_options).parse();
-    
+
     // Create output document outlines.
     auto documents = standardese::tool::document_builders(options.document_builder_options).create(parsed, context);
 
