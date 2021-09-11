@@ -84,9 +84,9 @@ class inja_formatter {
 
     std::string template_function_format = R"(`template<` {{ format(option("template_parameters_format")) }} `>` ` ` {{ format(option("function_format"), entity) }})";
 
-    std::string variable_format = R"({{ format(option("type_format"), variable_type) }} ` ` `{{ name }}`)";
+    std::string variable_format = R"({{ format(option("type_format"), variable_type) }} ` ` `{{ code_escape(name) }}`)";
 
-    std::string friend_format = R"(`friend` ` ` {{ md(code(entity)) }})";
+    std::string friend_format = R"(`friend` ` ` {{ code(entity) }})";
 
     std::string type_format = R"({% if target != "" %}[{% endif
       %}{% if cppast_kind == "template instantiation" %}{{ format(option("type_declarator_format")) }} `<` {% if isString(arguments) %}`{{ arguments }}`{% else %}`TODO`{% endif %} `>` {%-
@@ -101,23 +101,23 @@ class inja_formatter {
 
     std::string parameter_type_format = type_format;
 
-    std::string type_declarator_format = R"( `{{ join("::", reject("empty", list(namespace, scope, name))) }}` )";
+    std::string type_declarator_format = R"( `{{ code_escape(join("::", reject("empty", list(namespace, scope, name)))) }}` )";
 
     std::string template_parameters_format = R"({% for param in parameters %}{% if not loop.is_first %} `, ` {% endif %} {{ format(option("template_parameter_format"), param) }} {% endfor %})";
 
     // TODO
-    std::string template_parameter_format = R"(`{% if cppast_kind == "template type parameter" %} typename{% endif %} {{ name }} `)";
+    std::string template_parameter_format = R"(`{% if cppast_kind == "template type parameter" %} typename{% endif %} {{ code_escape(name) }} `)";
 
     // TODO
     std::string template_argument_format = "template-argument";
 
     std::string declaration_specifiers_format = R"({% if length(declaration_specifiers) != 0 %} `{{ join(" ", declaration_specifiers) }}` {% endif %})";
 
-    std::string function_declarator_format = R"( `{{ join("::", reject("empty", list(namespace, scope, name))) }}` )";
+    std::string function_declarator_format = R"( `{{ code_escape(join("::", reject("empty", list(namespace, scope, name)))) }}` )";
 
     std::string function_parameters_format = R"({% for param in parameters %}{% if not loop.is_first %} `, ` {% endif %} {{ format(option("function_parameter_format"), param) }} {% endfor %})";
 
-    std::string function_parameter_format = R"({{ format(option("parameter_type_format"), type) }}{% if name != "" %}` {{ name }}`{% endif %})";
+    std::string function_parameter_format = R"({{ format(option("parameter_type_format"), type) }}{% if name != "" %}` {{ code_escape(name) }}`{% endif %})";
 
     std::string const_qualification_format = R"({% if const_qualification != "" %} `{{ const_qualification }}` {% endif %})";
 

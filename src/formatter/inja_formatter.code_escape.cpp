@@ -17,7 +17,7 @@ std::string inja_formatter::code_escape_callback(const nlohmann::json& data) con
       return code_escape(*entity);
     }
 
-    logger::error(fmt::format("Template callback `code_escape` not valid here. Cannot escape {} for a code black.", nlohmann::to_string(data)));
+    logger::error(fmt::format("Template callback `code_escape` not valid here. Cannot escape {} for a code block.", nlohmann::to_string(data)));
     return std::string{};
   }, self->from_json(data));
 }
