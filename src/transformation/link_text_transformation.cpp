@@ -33,7 +33,7 @@ void link_text_transformation::do_transform(model::entity& root) {
             formatter::inja_formatter inja({}, context);
             inja.data().merge_patch(inja.to_json(data));
 
-            auto rendered = inja.build(format);
+            auto rendered = inja.parse(inja.format(format));
 
             auto paragraph = rendered.begin();
 

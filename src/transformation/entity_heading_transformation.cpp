@@ -125,7 +125,7 @@ model::document heading(T& documentation, parser::cpp_context context, const ent
     format = type_safe::ref(options.group_format);
   }
 
-  return inja.build(*format);
+  return inja.parse(inja.format(*format));
 }
 
 }

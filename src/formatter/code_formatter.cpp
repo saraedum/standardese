@@ -32,51 +32,51 @@ code_formatter::code_formatter_options::code_formatter_options() {}
 
 code_formatter::code_formatter(code_formatter_options options, parser::cpp_context context) : options(std::move(options)), cpp_context(std::move(context)) {}
 
-model::document code_formatter::build(const cppast::cpp_entity& entity) const {
+model::markup::paragraph code_formatter::build(const cppast::cpp_entity& entity) const {
   return inja_formatter{options, cpp_context}.code(entity);
 }
 
-model::document code_formatter::build(const cppast::cpp_entity& entity, const cppast::cpp_entity& context) const {
+model::markup::paragraph code_formatter::build(const cppast::cpp_entity& entity, const cppast::cpp_entity& context) const {
   return inja_formatter{options, cpp_context, context}.code(entity);
 }
 
-model::document code_formatter::build(const cppast::cpp_type& type) const {
+model::markup::paragraph code_formatter::build(const cppast::cpp_type& type) const {
   return build(options.type_format, type);
 }
 
-model::document code_formatter::build(const cppast::cpp_type& type, const cppast::cpp_entity& context) const {
+model::markup::paragraph code_formatter::build(const cppast::cpp_type& type, const cppast::cpp_entity& context) const {
   return build(options.type_format, type, context);
 }
 
-model::document code_formatter::build(const cppast::cpp_template_argument& argument) const {
+model::markup::paragraph code_formatter::build(const cppast::cpp_template_argument& argument) const {
   return build(options.template_argument_format, argument);
 }
 
-model::document code_formatter::build(const cppast::cpp_template_argument& argument, const cppast::cpp_entity& context) const {
+model::markup::paragraph code_formatter::build(const cppast::cpp_template_argument& argument, const cppast::cpp_entity& context) const {
   return build(options.template_argument_format, argument, context);
 }
 
-model::document code_formatter::build(const std::string& format, const cppast::cpp_entity& entity) const {
+model::markup::paragraph code_formatter::build(const std::string& format, const cppast::cpp_entity& entity) const {
   return inja_formatter{options, cpp_context}.code(format, entity);
 }
 
-model::document code_formatter::build(const std::string& format, const cppast::cpp_entity& entity, const cppast::cpp_entity& context) const {
+model::markup::paragraph code_formatter::build(const std::string& format, const cppast::cpp_entity& entity, const cppast::cpp_entity& context) const {
   return inja_formatter{options, cpp_context, context}.code(format, entity);
 }
 
-model::document code_formatter::build(const std::string& format, const cppast::cpp_type& type) const {
+model::markup::paragraph code_formatter::build(const std::string& format, const cppast::cpp_type& type) const {
   return inja_formatter{options, cpp_context}.code(format, type);
 }
 
-model::document code_formatter::build(const std::string& format, const cppast::cpp_type& type, const cppast::cpp_entity& context) const {
+model::markup::paragraph code_formatter::build(const std::string& format, const cppast::cpp_type& type, const cppast::cpp_entity& context) const {
   return inja_formatter{options, cpp_context, context}.code(format, type);
 }
 
-model::document code_formatter::build(const std::string& format, const cppast::cpp_template_argument& argument) const {
+model::markup::paragraph code_formatter::build(const std::string& format, const cppast::cpp_template_argument& argument) const {
   return inja_formatter{options, cpp_context}.code(format, argument);
 }
 
-model::document code_formatter::build(const std::string& format, const cppast::cpp_template_argument& argument, const cppast::cpp_entity& context) const {
+model::markup::paragraph code_formatter::build(const std::string& format, const cppast::cpp_template_argument& argument, const cppast::cpp_entity& context) const {
   return inja_formatter{options, cpp_context, context}.code(format, argument);
 }
 

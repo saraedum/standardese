@@ -20,28 +20,6 @@
 namespace standardese::output_generator
 {
 
-namespace {
-
-cmark_node* append_child(cmark_node* top, cmark_node_type type) {
-  // TODO: Use the safe cmark wrapper from the extensions here.
-  auto node = cmark_node_new(type);
-  int success = cmark_node_append_child(top, node);
-  if (!success)
-    logger::error(fmt::format("Could not insert a MarkDown node of type `{}` into node of type `{}`. The node and its children will be missing from the output.", cmark_node_get_type_string(node), cmark_node_get_type_string(top)));
-  return node;
-}
-
-cmark_node* prepend_child(cmark_node* top, cmark_node_type type) {
-  // TODO: Use the safe cmark wrapper from the extensions here.
-  auto node = cmark_node_new(type);
-  int success = cmark_node_prepend_child(top, node);
-  if (!success)
-    logger::error(fmt::format("Could not insert a MarkDown node of type `{}` into node of type `{}`. The node and its children will be missing from the output.", cmark_node_get_type_string(node), cmark_node_get_type_string(top)));
-  return node;
-}
-
-}
-
 cmark_generator::cmark_generator(std::ostream& os) : stream_generator(os), root(cmark_node_new(CMARK_NODE_DOCUMENT)), top(root.get()) {
   auto* node = cmark_node_new(CMARK_NODE_TEXT);
   // TODO
@@ -156,9 +134,9 @@ void cmark_generator::visit(group_documentation& documentation) {
 
 void cmark_generator::visit(text& text) {
     if (cmark_node_get_type(top) == CMARK_NODE_CODE_BLOCK || cmark_node_get_type(top) == CMARK_NODE_CODE) {
-        if (!cmark_node_get_literal(top))
-            cmark_node_set_literal(top, "");
-        cmark_node_set_literal(top, (cmark_node_get_literal(top) + text.value).c_str());
+      if (!cmark_node_get_literal(top))
+        cmark_node_set_literal(top, "");
+      cmark_node_set_literal(top, (cmark_node_get_literal(top) + text.value).c_str());
     } else {
       auto node = append_child(top, CMARK_NODE_TEXT);
       cmark_node_set_literal(node, text.value.c_str());
@@ -177,5 +155,22 @@ void cmark_generator::visit(thematic_break& thematic_break) {
     append_child(top, CMARK_NODE_THEMATIC_BREAK);
 }
 
+cmark_node* cmark_generator::append_child(cmark_node* top, cmark_node_type type) {
+  // TODO: Use the safe cmark wrapper from the extensions here.
+  auto node = cmark_node_new(type);
+  int success = cmark_node_append_child(top, node);
+  if (!success)
+    logger::error(fmt::format("Could not insert a MarkDown node of type `{}` into node of type `{}`. The node and its children will be missing from the output.", cmark_node_get_type_string(node), cmark_node_get_type_string(top)));
+  return node;
 }
 
+cmark_node* cmark_generator::prepend_child(cmark_node* top, cmark_node_type type) {
+  // TODO: Use the safe cmark wrapper from the extensions here.
+  auto node = cmark_node_new(type);
+  int success = cmark_node_prepend_child(top, node);
+  if (!success)
+    logger::error(fmt::format("Could not insert a MarkDown node of type `{}` into node of type `{}`. The node and its children will be missing from the output.", cmark_node_get_type_string(node), cmark_node_get_type_string(top)));
+  return node;
+}
+
+}

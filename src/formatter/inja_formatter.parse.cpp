@@ -9,13 +9,12 @@
 #include "../../standardese/parser/markdown_parser.hpp"
 #include "../../standardese/model/visitor/visit.hpp"
 #include "../../standardese/logger.hpp"
+
 #include "inja_formatter.impl.hpp"
 
 namespace standardese::formatter {
 
-model::document inja_formatter::build(const std::string &format) const {
-  const std::string markdown = this->format(format);
-
+model::document inja_formatter::parse(const std::string &markdown) const {
   model::document parsed = parser::markdown_parser{}.parse(markdown);
 
   model::visitor::visit([&](auto& entity, auto&& recurse) {

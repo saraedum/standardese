@@ -109,11 +109,6 @@ inja_formatter::inja_formatter(struct inja_formatter_options options, parser::cp
       return nlohmann::json::array();
     return reject_callback(*args[0], *args[1]);
   });
-  add_callback("join", [&](const std::vector<const nlohmann::json*>& args) {
-    if (!check_arg_count("join", args, 2))
-      return std::string{};
-    return join_callback(*args[0], *args[1]);
-  });
   add_callback("declaration_specifiers", [&]() {
     return declaration_specifiers_callback(data());
   });

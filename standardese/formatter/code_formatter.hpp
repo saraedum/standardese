@@ -26,63 +26,40 @@ class code_formatter {
   // TODO: Make the context more flexible. It could be any kind of documentation.
 
   /// Return `entity` written in C++ syntax.
-  /// The returned document contains a single block such as a paragraph or a
-  /// code block that contains the markup for the entity.
-  model::document build(const cppast::cpp_entity& entity) const;
+  model::markup::paragraph build(const cppast::cpp_entity& entity) const;
 
   /// Return `entity` written in C++ syntax.
-  /// The returned document contains a single block such as a paragraph or a
-  /// code block that contains the markup for the entity.
-  model::document build(const cppast::cpp_entity& entity, const cppast::cpp_entity& context) const;
+  model::markup::paragraph build(const cppast::cpp_entity& entity, const cppast::cpp_entity& context) const;
 
   /// Return `entity` written in C++ syntax according to `format`.
-  /// The returned document contains a single block such as a paragraph or a
-  /// code block that contains the markup for the entity.
-  model::document build(const std::string& format, const cppast::cpp_entity& entity) const;
+  model::markup::paragraph build(const std::string& format, const cppast::cpp_entity& entity) const;
 
   /// Return `entity` written in C++ syntax according to `format`.
-  /// The returned document contains a single block such as a paragraph or a
-  /// code block that contains the markup for the entity.
-  model::document build(const std::string& format, const cppast::cpp_entity& entity, const cppast::cpp_entity& context) const;
+  model::markup::paragraph build(const std::string& format, const cppast::cpp_entity& entity, const cppast::cpp_entity& context) const;
 
   /// Return `type` written in C++ syntax.
-  /// The returned document contains a single block such as a paragraph or a
-  /// code block that contains the markup for the type.
-  model::document build(const cppast::cpp_type& type) const;
+  model::markup::paragraph build(const cppast::cpp_type& type) const;
 
   /// Return `type` written in C++ syntax.
-  /// The returned document contains a single block such as a paragraph or a
-  /// code block that contains the markup for the type.
-  model::document build(const cppast::cpp_type& type, const cppast::cpp_entity& context) const;
+  model::markup::paragraph build(const cppast::cpp_type& type, const cppast::cpp_entity& context) const;
 
   /// Return `type` written in C++ syntax according to `format`.
-  /// The returned document contains a single block such as a paragraph or a
-  /// code block that contains the markup for the type.
-  model::document build(const std::string& format, const cppast::cpp_type& type) const;
+  model::markup::paragraph build(const std::string& format, const cppast::cpp_type& type) const;
+
   /// Return `type` written in C++ syntax according to `format`.
-  /// The returned document contains a single block such as a paragraph or a
-  /// code block that contains the markup for the type.
-  model::document build(const std::string& format, const cppast::cpp_type& type, const cppast::cpp_entity& context) const;
+  model::markup::paragraph build(const std::string& format, const cppast::cpp_type& type, const cppast::cpp_entity& context) const;
 
   /// Return `argument` written in C++ syntax.
-  /// The returned document contains a single block such as a paragraph or a
-  /// code block that contains the markup for the argument.
-  model::document build(const cppast::cpp_template_argument& argument) const;
+  model::markup::paragraph build(const cppast::cpp_template_argument& argument) const;
 
   /// Return `argument` written in C++ syntax.
-  /// The returned document contains a single block such as a paragraph or a
-  /// code block that contains the markup for the argument.
-  model::document build(const cppast::cpp_template_argument& argument, const cppast::cpp_entity& context) const;
+  model::markup::paragraph build(const cppast::cpp_template_argument& argument, const cppast::cpp_entity& context) const;
 
   /// Return `argument` written in C++ syntax according to `format`.
-  /// The returned document contains a single block such as a paragraph or a
-  /// code block that contains the markup for the argument.
-  model::document build(const std::string& format, const cppast::cpp_template_argument& argument) const;
+  model::markup::paragraph build(const std::string& format, const cppast::cpp_template_argument& argument) const;
 
   /// Return `argument` written in C++ syntax according to `format`.
-  /// The returned document contains a single block such as a paragraph or a
-  /// code block that contains the markup for the argument.
-  model::document build(const std::string& format, const cppast::cpp_template_argument& argument, const cppast::cpp_entity& context) const;
+  model::markup::paragraph build(const std::string& format, const cppast::cpp_template_argument& argument, const cppast::cpp_entity& context) const;
 
  private:
   code_formatter_options options;

@@ -13,7 +13,6 @@
 #include "../../standardese/formatter/inja_formatter.hpp"
 #include "../../standardese/model/visitor/visit.hpp"
 #include "../../standardese/logger.hpp"
-#include "../../standardese/output_generator/markdown/markdown_generator.hpp"
 
 #include "inja_formatter.impl.hpp"
 
@@ -73,33 +72,7 @@ nlohmann::json inja_formatter::to_json(const model::entity& entity) const {
       json["standardese"]["synopsis"] = entity.synopsis.has_value() ? entity.synopsis.value() : "";
     }
 
-    struct serialization_generator : output_generator::markdown::markdown_generator {
-      serialization_generator(std::ostream& os, const inja_formatter& self) : markdown_generator(os), self(self) {}
-
-      void visit(link& link) override {
-        auto serializable = link;
-
-        serializable.target.accept([&](auto&& target) -> void {
-          using T = std::decay_t<decltype(target)>;
-          if constexpr (std::is_same_v<T, model::link_target::cppast_target>) {
-            serializable.target = model::link_target::uri_target(self.target(*target.target));
-          }
-        });
-
-        markdown_generator::visit(serializable);
-      }
-
-      const inja_formatter& self;
-    };
-
-    {
-      std::stringstream stream;
-      {
-        auto generator = serialization_generator(stream, *this);
-        entity.accept(generator);
-      }
-      json["md"] = stream.str();
-    }
+    json["md"] = md(entity);
   }, entity);
 
   return json;

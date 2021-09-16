@@ -7,7 +7,7 @@
 #include <cppast/cpp_type_alias.hpp>
 
 #include "../../standardese/formatter/synopsis_formatter.hpp"
-#include "../../standardese/formatter/code_formatter.hpp"
+#include "../../standardese/formatter/inja_formatter.hpp"
 #include "../../standardese/model/cpp_entity_documentation.hpp"
 #include "../../standardese/model/document.hpp"
 
@@ -129,10 +129,8 @@ model::document synopsis_formatter::build(const model::cpp_entity_documentation&
   return generator;
   */
 
-  code_formatter::code_formatter_options options;
-  static_cast<inja_formatter::inja_formatter_options&>(options) = this->options;
-
-  return code_formatter{options, cpp_context}.build(documentation.entity(), documentation.entity());
+  inja_formatter inja{options, cpp_context};
+  return inja.synopsis(documentation.entity());
 }
 
 }

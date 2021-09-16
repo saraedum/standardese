@@ -68,6 +68,7 @@ std::string inja_formatter::name(const cppast::cpp_entity& entity) const {
       // If the fnuction parameter is unnamed, this returns the empty string.
     case cppast::cpp_entity_kind::variable_t:
     case cppast::cpp_entity_kind::member_variable_t:
+    case cppast::cpp_entity_kind::type_alias_t:
       return entity.name();
     default:
       // TODO

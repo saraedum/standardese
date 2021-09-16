@@ -10,6 +10,8 @@
 #include "text.hpp"
 #include "../mixin/visitable.hpp"
 
+// TODO: If code can only contain text, then why is it a container at all?
+// Maybe so it could contain other things that string, e.g., links? Maybe some day but we should not support this at the moment.
 namespace standardese::model::markup
 {
     /// A fragment that contains code.

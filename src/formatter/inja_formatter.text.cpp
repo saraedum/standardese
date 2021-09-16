@@ -16,7 +16,7 @@ std::string inja_formatter::text_callback(const nlohmann::json& data) const {
   return text(parser::markdown_parser{}.parse(md));
 }
 
-std::string inja_formatter::text(const model::document& document) const {
+std::string inja_formatter::text(const model::entity& document) const {
   return output_generator::text::text_generator::render(document);
 }
 

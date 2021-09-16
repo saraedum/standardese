@@ -42,7 +42,7 @@ set(src
     transformation/output_group_transformation.cpp
     transformation/anchor_transformation.cpp
     formatter/inja_formatter.cpp
-    formatter/inja_formatter.build.cpp
+    formatter/inja_formatter.parse.cpp
     formatter/inja_formatter.json.cpp
     formatter/inja_formatter.format.cpp
     formatter/inja_formatter.add_callback.cpp
@@ -56,7 +56,7 @@ set(src
     formatter/inja_formatter.code_escape.cpp
     formatter/inja_formatter.md_escape.cpp
     formatter/inja_formatter.reject.cpp
-    formatter/inja_formatter.join.cpp
+    formatter/inja_formatter.code_join.cpp
     formatter/inja_formatter.declaration_specifiers.cpp
     formatter/inja_formatter.target.cpp
     formatter/inja_formatter.parameters.cpp
@@ -86,6 +86,7 @@ set(src
     output_generator/xml/xml_generator.cpp
     document_builder/index_document_builder.cpp
     document_builder/entity_document_builder.cpp
+    model/document.cpp
     model/link_target.cpp
     model/unordered_entities.cpp
     model/visitor/recursive_visitor.cpp

@@ -84,8 +84,14 @@ model::entity markdown_parser::parse(cmark_node* node) const
         assert(cmark_node_first_child(node) == nullptr && "text is not supposed to have any child nodes");
         return model::markup::text(cmark_node_get_literal(node));
       case CMARK_NODE_CODE:
+      {
         assert(cmark_node_first_child(node) == nullptr && "code is not supposed to have any child nodes");
-        return model::markup::code(cmark_node_get_literal(node));
+        const char* literal = cmark_node_get_literal(node);
+        assert(literal != nullptr && "code literal must be set");
+        if (strlen(literal) == 0)
+          return model::markup::code{};
+        return model::markup::code(literal);
+      }
       case CMARK_NODE_EMPH:
         return parse_into(node, model::markup::emphasis());
       case CMARK_NODE_STRONG:

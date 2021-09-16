@@ -35,6 +35,9 @@ class cmark_generator : public stream_generator {
     void visit(image&) override;
 
   protected:
+    static cmark_node* append_child(cmark_node*, cmark_node_type);
+    static cmark_node* prepend_child(cmark_node*, cmark_node_type);
+
     std::unique_ptr<cmark_node, std::integral_constant<std::decay_t<decltype(cmark_node_free)>, cmark_node_free>> root;
     cmark_node* top;
 };

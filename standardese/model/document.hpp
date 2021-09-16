@@ -17,6 +17,15 @@ namespace standardese::model
         template <typename ...Args>
         document(std::string name, std::string path, Args&&... args) : name(std::move(name)), path(std::move(path)), mixin::anchored_container<>(std::forward<Args>(args)...) {}
 
+        /// Return the unique block of this document.
+        /// Returns an empty paragraph if this document is empty.
+        model::entity block() const;
+
+        /// Return the unique block of this document which must be a paragraph.
+        /// Return an empty paragraph if this document is empty.
+        /// This is essentially equivalent to `block().as<paragraph>()`.
+        model::markup::paragraph paragraph() const;
+
         /// A (unique) symbolic base name for this document.
         /// The final output name without the suffix.
         std::string name;

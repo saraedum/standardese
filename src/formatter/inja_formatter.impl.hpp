@@ -50,4 +50,3 @@ struct inja_formatter::impl {
 }
 
 #endif
-

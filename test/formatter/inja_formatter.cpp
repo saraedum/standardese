@@ -10,6 +10,7 @@
 #include "../../standardese/model/entity.hpp"
 #include "../../standardese/model/module.hpp"
 #include "../../standardese/model/document.hpp"
+#include "../../standardese/model/markup/paragraph.hpp"
 #include "../../standardese/output_generator/xml/xml_generator.hpp"
 #include "../util/logger.hpp"
 #include "../util/cpp_file.hpp"
@@ -178,6 +179,54 @@ TEST_CASE("Strings from Inja Templates", "[inja_formatter]") {
 
     // TODO: Test all other entities and types.
   }
+
+  SECTION("`md` Callback") {
+    SECTION("`md` can Render an Empty Document") {
+      // TODO
+    }
+
+    SECTION("`md` can Render a Code Block") {
+      // TODO
+    }
+
+    SECTION("`md` can Render Code") {
+      // TODO
+    }
+
+    SECTION("`md` can Render a Paragraph") {
+      // TODO
+    }
+
+    SECTION("`md` can Render Text") {
+      // TODO
+    }
+
+    SECTION("`md` Renders the Output of `code` as MarkDown") {
+      util::cpp_file header(R"(
+        void f();
+      )");
+
+      auto inja = inja_formatter({}, header);
+
+      // Note that the output has a trailing newline since code() creates a paragraph.
+      REQUIRE(inja.md(inja.code(header["f"])) == R"(`void f()`)" "\n");
+    }
+  }
+
+  SECTION("`text` Callback") {
+    SECTION("`text` Renders Code as Plain Text") {
+      util::cpp_file header(R"(
+        struct A;
+
+        bool operator==(const A&, const A&);
+      )");
+
+      auto inja = inja_formatter({}, header);
+
+      // Note that the output has a trailing newline since code() creates a paragraph.
+      REQUIRE(inja.text(inja.code(header["operator=="])) == R"(bool operator==(const A&, const A&))" "\n");
+    }
+  }
 }
 
 TEST_CASE("Markup Entities from Inja Templates", "[inja_formatter]") {
@@ -186,7 +235,7 @@ TEST_CASE("Markup Entities from Inja Templates", "[inja_formatter]") {
   auto inja = inja_formatter({}, header);
 
   SECTION("MarkDown is Supported") {
-    const auto node = inja.build("`code`");
+    const auto node = inja.parse("`code`");
     REQUIRE(output_generator::xml::xml_generator::render(node) == util::unindent(R"(
       <?xml version="1.0"?>
       <document>
@@ -198,7 +247,7 @@ TEST_CASE("Markup Entities from Inja Templates", "[inja_formatter]") {
   }
 
   SECTION("MarkDown Can be Escaped") {
-    const auto node = inja.build(R"({{ md_escape("`code`") }})");
+    const auto node = inja.parse(inja.format(R"({{ md_escape("`code`") }})"));
     REQUIRE(output_generator::xml::xml_generator::render(node) == util::unindent(R"(
       <?xml version="1.0"?>
       <document>

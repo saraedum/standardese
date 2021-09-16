@@ -22,6 +22,8 @@ class text_generator : public cmark_generator {
 
     ~text_generator() override;
 
+    void visit(link&) override;
+
     static std::string render(const model::entity& root);
 
   private:

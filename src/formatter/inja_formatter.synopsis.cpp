@@ -3,10 +3,12 @@
 // found in the top-level directory of this distribution.
 
 #include <fmt/format.h>
+#include <cppast/cpp_entity.hpp>
 
 #include "inja_formatter.impl.hpp"
 #include "../../standardese/logger.hpp"
 #include "../../standardese/model/document.hpp"
+#include "../../standardese/model/markup/paragraph.hpp"
 
 namespace standardese::formatter {
 
@@ -24,7 +26,9 @@ nlohmann::json inja_formatter::synopsis_callback(const nlohmann::json& data) con
 
 model::document inja_formatter::synopsis(const cppast::cpp_entity& entity) const {
   // TODO: Use \synopsis.
-  return code(entity);
+  model::document document{"", ""};
+  document.add_child(std::move(code(entity)));
+  return document;
 }
 
 }

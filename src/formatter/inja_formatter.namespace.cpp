@@ -85,7 +85,10 @@ std::string inja_formatter::namespaze(const std::string& fullname) const {
   // by looking at the context's scope and finding a shared prefix.
   const std::string name = this->name(fullname);
 
-  assert(boost::algorithm::starts_with(fullname, name));
+  if (!boost::algorithm::ends_with(fullname, name)) {
+    logger::error(fmt::format("Cannot determine namespace of {} since it does not start with {}.", fullname, name));
+    return std::string{};
+  }
 
   std::string namespaze = fullname.substr(0, fullname.size() - name.size());
 

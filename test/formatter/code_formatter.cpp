@@ -5,6 +5,7 @@
 #include "../../standardese/formatter/code_formatter.hpp"
 #include "../../standardese/model/cpp_entity_documentation.hpp"
 #include "../../standardese/model/document.hpp"
+#include "../../standardese/model/markup/paragraph.hpp"
 #include "../../standardese/output_generator/xml/xml_generator.hpp"
 
 #include "../../external/catch/single_include/catch2/catch.hpp"
@@ -25,11 +26,9 @@ TEST_CASE("Functions can be Formatted", "[code_formatter]") {
 
     REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
       <?xml version="1.0"?>
-      <document>
-        <paragraph>
-          <code>void f()</code>
-        </paragraph>
-      </document>
+      <paragraph>
+        <code>void f()</code>
+      </paragraph>
       )"));
   }
 
@@ -41,11 +40,9 @@ TEST_CASE("Functions can be Formatted", "[code_formatter]") {
 
       REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
         <?xml version="1.0"?>
-        <document>
-          <paragraph>
-            <code>void f()</code>
-          </paragraph>
-        </document>
+        <paragraph>
+          <code>void f()</code>
+        </paragraph>
         )"));
     }
 
@@ -54,11 +51,9 @@ TEST_CASE("Functions can be Formatted", "[code_formatter]") {
 
       REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
         <?xml version="1.0"?>
-        <document>
-          <paragraph>
-            <code>void C::f()</code>
-          </paragraph>
-        </document>
+        <paragraph>
+          <code>void C::f()</code>
+        </paragraph>
         )"));
     }
 
@@ -67,11 +62,9 @@ TEST_CASE("Functions can be Formatted", "[code_formatter]") {
 
       REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
         <?xml version="1.0"?>
-        <document>
-          <paragraph>
-            <code>void C::f()</code>
-          </paragraph>
-        </document>
+        <paragraph>
+          <code>void C::f()</code>
+        </paragraph>
         )"));
     }
   }
@@ -84,11 +77,9 @@ TEST_CASE("Functions can be Formatted", "[code_formatter]") {
 
       REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
         <?xml version="1.0"?>
-        <document>
-          <paragraph>
-            <code>C()</code>
-          </paragraph>
-        </document>
+        <paragraph>
+          <code>C()</code>
+        </paragraph>
         )"));
     }
 
@@ -97,11 +88,9 @@ TEST_CASE("Functions can be Formatted", "[code_formatter]") {
 
       REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
         <?xml version="1.0"?>
-        <document>
-          <paragraph>
-            <code>C::C()</code>
-          </paragraph>
-        </document>
+        <paragraph>
+          <code>C::C()</code>
+        </paragraph>
         )"));
     }
 
@@ -110,11 +99,9 @@ TEST_CASE("Functions can be Formatted", "[code_formatter]") {
 
       REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
         <?xml version="1.0"?>
-        <document>
-          <paragraph>
-            <code>C::C()</code>
-          </paragraph>
-        </document>
+        <paragraph>
+          <code>C::C()</code>
+        </paragraph>
         )"));
     }
   }
@@ -127,11 +114,9 @@ TEST_CASE("Functions can be Formatted", "[code_formatter]") {
 
       REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
         <?xml version="1.0"?>
-        <document>
-          <paragraph>
-            <code>~C()</code>
-          </paragraph>
-        </document>
+        <paragraph>
+          <code>~C()</code>
+        </paragraph>
         )"));
     }
 
@@ -140,11 +125,9 @@ TEST_CASE("Functions can be Formatted", "[code_formatter]") {
 
       REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
         <?xml version="1.0"?>
-        <document>
-          <paragraph>
-            <code>C::~C()</code>
-          </paragraph>
-        </document>
+        <paragraph>
+          <code>C::~C()</code>
+        </paragraph>
         )"));
     }
 
@@ -153,11 +136,9 @@ TEST_CASE("Functions can be Formatted", "[code_formatter]") {
 
       REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
         <?xml version="1.0"?>
-        <document>
-          <paragraph>
-            <code>C::~C()</code>
-          </paragraph>
-        </document>
+        <paragraph>
+          <code>C::~C()</code>
+        </paragraph>
         )"));
     }
   }
@@ -170,11 +151,9 @@ TEST_CASE("Functions can be Formatted", "[code_formatter]") {
 
       REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
         <?xml version="1.0"?>
-        <document>
-          <paragraph>
-            <code>operator int()</code>
-          </paragraph>
-        </document>
+        <paragraph>
+          <code>operator int()</code>
+        </paragraph>
         )"));
     }
 
@@ -183,11 +162,9 @@ TEST_CASE("Functions can be Formatted", "[code_formatter]") {
 
       REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
         <?xml version="1.0"?>
-        <document>
-          <paragraph>
-            <code>C::operator int()</code>
-          </paragraph>
-        </document>
+        <paragraph>
+          <code>C::operator int()</code>
+        </paragraph>
         )"));
     }
 
@@ -196,11 +173,9 @@ TEST_CASE("Functions can be Formatted", "[code_formatter]") {
 
       REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
         <?xml version="1.0"?>
-        <document>
-          <paragraph>
-            <code>C::operator int()</code>
-          </paragraph>
-        </document>
+        <paragraph>
+          <code>C::operator int()</code>
+        </paragraph>
         )"));
     }
   }
@@ -213,11 +188,16 @@ TEST_CASE("Functions can be Formatted", "[code_formatter]") {
 
       REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
         <?xml version="1.0"?>
-        <document>
-          <paragraph>
-            <link target-entity="C"> <code>C</code> </link> <code>&amp; operator+=(const </code> <link target-entity="C"> <code>C</code> </link> <code>&amp;)</code>
-          </paragraph>
-        </document>
+        <paragraph>
+          <link target-entity="C">
+            <code>C</code>
+          </link>
+          <code>&amp; operator+=(const </code>
+          <link target-entity="C">
+            <code>C</code>
+          </link>
+          <code>&amp;)</code>
+        </paragraph>
         )"));
     }
 
@@ -226,11 +206,16 @@ TEST_CASE("Functions can be Formatted", "[code_formatter]") {
 
       REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
         <?xml version="1.0"?>
-        <document>
-          <paragraph>
-            <link target-entity="C"> <code>C</code> </link> <code>&amp; C::operator+=(const </code> <link target-entity="C"> <code>C</code> </link> <code>&amp;)</code>
-          </paragraph>
-        </document>
+        <paragraph>
+          <link target-entity="C">
+            <code>C</code>
+          </link>
+          <code>&amp; C::operator+=(const </code>
+          <link target-entity="C">
+            <code>C</code>
+          </link>
+          <code>&amp;)</code>
+        </paragraph>
         )"));
     }
 
@@ -239,11 +224,16 @@ TEST_CASE("Functions can be Formatted", "[code_formatter]") {
 
       REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
         <?xml version="1.0"?>
-        <document>
-          <paragraph>
-            <link target-entity="C"> <code>C</code> </link> <code>&amp; C::operator+=(const </code> <link target-entity="C"> <code>C</code> </link> <code>&amp;)</code>
-          </paragraph>
-        </document>
+        <paragraph>
+          <link target-entity="C">
+            <code>C</code>
+          </link>
+          <code>&amp; C::operator+=(const </code>
+          <link target-entity="C">
+            <code>C</code>
+          </link>
+          <code>&amp;)</code>
+        </paragraph>
         )"));
     }
   }
@@ -263,11 +253,13 @@ TEST_CASE("Functions can be Formatted", "[code_formatter]") {
 
         REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
           <?xml version="1.0"?>
-          <document>
-            <paragraph>
-              <code>std::ostream&amp; operator&lt;&lt;(std::ostream&amp;, const </code> <link target-entity="C"> <code>C</code> </link> <code>&amp;)</code>
-            </paragraph>
-          </document>
+          <paragraph>
+            <code>std::ostream&amp; operator&lt;&lt;(std::ostream&amp;, const </code>
+            <link target-entity="C">
+              <code>C</code>
+            </link>
+            <code>&amp;)</code>
+          </paragraph>
           )"));
       }
 
@@ -276,11 +268,13 @@ TEST_CASE("Functions can be Formatted", "[code_formatter]") {
 
         REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
           <?xml version="1.0"?>
-          <document>
-            <paragraph>
-              <code>std::ostream&amp; A::operator&lt;&lt;(std::ostream&amp;, const </code> <link target-entity="C"> <code>A::C</code> </link> <code>&amp;)</code>
-            </paragraph>
-          </document>
+          <paragraph>
+            <code>std::ostream&amp; A::operator&lt;&lt;(std::ostream&amp;, const </code>
+            <link target-entity="C">
+              <code>A::C</code>
+            </link>
+            <code>&amp;)</code>
+          </paragraph>
           )"));
       }
 
@@ -289,11 +283,13 @@ TEST_CASE("Functions can be Formatted", "[code_formatter]") {
 
         REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
           <?xml version="1.0"?>
-          <document>
-            <paragraph>
-              <code>std::ostream&amp; A::operator&lt;&lt;(std::ostream&amp;, const </code> <link target-entity="C"> <code>A::C</code> </link> <code>&amp;)</code>
-            </paragraph>
-          </document>
+          <paragraph>
+            <code>std::ostream&amp; A::operator&lt;&lt;(std::ostream&amp;, const </code>
+            <link target-entity="C">
+              <code>A::C</code>
+            </link>
+            <code>&amp;)</code>
+          </paragraph>
           )"));
       }
     }
@@ -316,11 +312,13 @@ TEST_CASE("Functions can be Formatted", "[code_formatter]") {
 
         REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
           <?xml version="1.0"?>
-          <document>
-            <paragraph>
-              <code>template&lt;typename S&gt; std::ostream&amp; operator&lt;&lt;(std::ostream&amp;, const </code> <link target-entity="C"> <code>C&lt;S&gt;</code> </link> <code>&amp;)</code>
-            </paragraph>
-          </document>
+          <paragraph>
+            <code>template&lt;typename S&gt; std::ostream&amp; operator&lt;&lt;(std::ostream&amp;, const </code>
+            <link target-entity="C">
+              <code>C&lt;S&gt;</code>
+            </link>
+            <code>&amp;)</code>
+          </paragraph>
           )"));
       }
 
@@ -329,11 +327,13 @@ TEST_CASE("Functions can be Formatted", "[code_formatter]") {
 
         REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
           <?xml version="1.0"?>
-          <document>
-            <paragraph>
-              <code>template&lt;typename S&gt; std::ostream&amp; A::operator&lt;&lt;(std::ostream&amp;, const </code> <link target-entity="C"> <code>A::C&lt;S&gt;</code> </link> <code>&amp;)</code>
-            </paragraph>
-          </document>
+          <paragraph>
+            <code>template&lt;typename S&gt; std::ostream&amp; A::operator&lt;&lt;(std::ostream&amp;, const </code>
+            <link target-entity="C">
+              <code>A::C&lt;S&gt;</code>
+            </link>
+            <code>&amp;)</code>
+          </paragraph>
           )"));
       }
 
@@ -342,11 +342,13 @@ TEST_CASE("Functions can be Formatted", "[code_formatter]") {
 
         REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
           <?xml version="1.0"?>
-          <document>
-            <paragraph>
-              <code>template&lt;typename S&gt; std::ostream&amp; A::operator&lt;&lt;(std::ostream&amp;, const </code> <link target-entity="C"> <code>A::C&lt;S&gt;</code> </link> <code>&amp;)</code>
-            </paragraph>
-          </document>
+          <paragraph>
+            <code>template&lt;typename S&gt; std::ostream&amp; A::operator&lt;&lt;(std::ostream&amp;, const </code>
+            <link target-entity="C">
+              <code>A::C&lt;S&gt;</code>
+            </link>
+            <code>&amp;)</code>
+          </paragraph>
           )"));
       }
     }
@@ -367,11 +369,13 @@ TEST_CASE("Functions can be Formatted", "[code_formatter]") {
 
         REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
           <?xml version="1.0"?>
-          <document>
-            <paragraph>
-              <code>std::ostream&amp; f(std::ostream&amp;, const </code> <link target-entity="C"> <code>C</code> </link> <code>&amp;)</code>
-            </paragraph>
-          </document>
+          <paragraph>
+            <code>std::ostream&amp; f(std::ostream&amp;, const </code>
+            <link target-entity="C">
+              <code>C</code>
+            </link>
+            <code>&amp;)</code>
+          </paragraph>
           )"));
       }
 
@@ -380,11 +384,13 @@ TEST_CASE("Functions can be Formatted", "[code_formatter]") {
 
         REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
           <?xml version="1.0"?>
-          <document>
-            <paragraph>
-              <code>std::ostream&amp; A::f(std::ostream&amp;, const </code> <link target-entity="C"> <code>A::C</code> </link> <code>&amp;)</code>
-            </paragraph>
-          </document>
+          <paragraph>
+            <code>std::ostream&amp; A::f(std::ostream&amp;, const </code>
+            <link target-entity="C">
+              <code>A::C</code>
+            </link>
+            <code>&amp;)</code>
+          </paragraph>
           )"));
       }
 
@@ -393,11 +399,13 @@ TEST_CASE("Functions can be Formatted", "[code_formatter]") {
 
         REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
           <?xml version="1.0"?>
-          <document>
-            <paragraph>
-              <code>std::ostream&amp; A::f(std::ostream&amp;, const </code> <link target-entity="C"> <code>A::C</code> </link> <code>&amp;)</code>
-            </paragraph>
-          </document>
+          <paragraph>
+            <code>std::ostream&amp; A::f(std::ostream&amp;, const </code>
+            <link target-entity="C">
+              <code>A::C</code>
+            </link>
+            <code>&amp;)</code>
+          </paragraph>
           )"));
       }
     }
@@ -420,11 +428,13 @@ TEST_CASE("Functions can be Formatted", "[code_formatter]") {
 
         REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
           <?xml version="1.0"?>
-          <document>
-            <paragraph>
-              <code>template&lt;typename S&gt; std::ostream&amp; f(std::ostream&amp;, const </code> <link target-entity="C"> <code>C&lt;S&gt;</code> </link> <code>&amp;)</code>
-            </paragraph>
-          </document>
+          <paragraph>
+            <code>template&lt;typename S&gt; std::ostream&amp; f(std::ostream&amp;, const </code>
+            <link target-entity="C">
+              <code>C&lt;S&gt;</code>
+            </link>
+            <code>&amp;)</code>
+          </paragraph>
           )"));
       }
 
@@ -433,11 +443,13 @@ TEST_CASE("Functions can be Formatted", "[code_formatter]") {
 
         REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
           <?xml version="1.0"?>
-          <document>
-            <paragraph>
-              <code>template&lt;typename S&gt; std::ostream&amp; A::f(std::ostream&amp;, const </code> <link target-entity="C"> <code>A::C&lt;S&gt;</code> </link> <code>&amp;)</code>
-            </paragraph>
-          </document>
+          <paragraph>
+            <code>template&lt;typename S&gt; std::ostream&amp; A::f(std::ostream&amp;, const </code>
+            <link target-entity="C">
+              <code>A::C&lt;S&gt;</code>
+            </link>
+            <code>&amp;)</code>
+          </paragraph>
           )"));
       }
 
@@ -446,11 +458,13 @@ TEST_CASE("Functions can be Formatted", "[code_formatter]") {
 
         REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
           <?xml version="1.0"?>
-          <document>
-            <paragraph>
-              <code>template&lt;typename S&gt; std::ostream&amp; A::f(std::ostream&amp;, const </code> <link target-entity="C"> <code>A::C&lt;S&gt;</code> </link> <code>&amp;)</code>
-            </paragraph>
-          </document>
+          <paragraph>
+            <code>template&lt;typename S&gt; std::ostream&amp; A::f(std::ostream&amp;, const </code>
+            <link target-entity="C">
+              <code>A::C&lt;S&gt;</code>
+            </link>
+            <code>&amp;)</code>
+          </paragraph>
           )"));
       }
     }
@@ -464,11 +478,9 @@ TEST_CASE("Functions can be Formatted", "[code_formatter]") {
 
       REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
         <?xml version="1.0"?>
-        <document>
-          <paragraph>
-            <code>void f()</code>
-          </paragraph>
-        </document>
+        <paragraph>
+          <code>void f()</code>
+        </paragraph>
         )"));
     }
 
@@ -487,11 +499,9 @@ TEST_CASE("Functions can be Formatted", "[code_formatter]") {
 
         REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
           <?xml version="1.0"?>
-          <document>
-            <paragraph>
-              <code>std::nullptr_t f()</code>
-            </paragraph>
-          </document>
+          <paragraph>
+            <code>std::nullptr_t f()</code>
+          </paragraph>
           )"));
       }
 
@@ -503,11 +513,9 @@ TEST_CASE("Functions can be Formatted", "[code_formatter]") {
 
         REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
           <?xml version="1.0"?>
-          <document>
-            <paragraph>
-              <code>nullptr_t f()</code>
-            </paragraph>
-          </document>
+          <paragraph>
+            <code>nullptr_t f()</code>
+          </paragraph>
           )"));
       }
     }
@@ -519,11 +527,9 @@ TEST_CASE("Functions can be Formatted", "[code_formatter]") {
 
         REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
           <?xml version="1.0"?>
-          <document>
-            <paragraph>
-              <code>int f()</code>
-            </paragraph>
-          </document>
+          <paragraph>
+            <code>int f()</code>
+          </paragraph>
           )"));
       }
 
@@ -533,11 +539,9 @@ TEST_CASE("Functions can be Formatted", "[code_formatter]") {
 
         REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
           <?xml version="1.0"?>
-          <document>
-            <paragraph>
-              <code>unsigned long long f()</code>
-            </paragraph>
-          </document>
+          <paragraph>
+            <code>unsigned long long f()</code>
+          </paragraph>
           )"));
       }
 
@@ -547,11 +551,9 @@ TEST_CASE("Functions can be Formatted", "[code_formatter]") {
 
         REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
           <?xml version="1.0"?>
-          <document>
-            <paragraph>
-              <code>long long f()</code>
-            </paragraph>
-          </document>
+          <paragraph>
+            <code>long long f()</code>
+          </paragraph>
           )"));
       }
     }
@@ -562,11 +564,9 @@ TEST_CASE("Functions can be Formatted", "[code_formatter]") {
 
       REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
         <?xml version="1.0"?>
-        <document>
-          <paragraph>
-            <code>bool f()</code>
-          </paragraph>
-        </document>
+        <paragraph>
+          <code>bool f()</code>
+        </paragraph>
         )"));
     }
 
@@ -577,11 +577,9 @@ TEST_CASE("Functions can be Formatted", "[code_formatter]") {
 
         REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
           <?xml version="1.0"?>
-          <document>
-            <paragraph>
-              <code>float f()</code>
-            </paragraph>
-          </document>
+          <paragraph>
+            <code>float f()</code>
+          </paragraph>
           )"));
       }
 
@@ -591,11 +589,9 @@ TEST_CASE("Functions can be Formatted", "[code_formatter]") {
 
         REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
           <?xml version="1.0"?>
-          <document>
-            <paragraph>
-              <code>double f()</code>
-            </paragraph>
-          </document>
+          <paragraph>
+            <code>double f()</code>
+          </paragraph>
           )"));
       }
     }
@@ -608,11 +604,9 @@ TEST_CASE("Functions can be Formatted", "[code_formatter]") {
 
       REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
         <?xml version="1.0"?>
-        <document>
-          <paragraph>
-            <code>void* f()</code>
-          </paragraph>
-        </document>
+        <paragraph>
+          <code>void* f()</code>
+        </paragraph>
         )"));
     }
 
@@ -626,11 +620,9 @@ TEST_CASE("Functions can be Formatted", "[code_formatter]") {
 
       REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
         <?xml version="1.0"?>
-        <document>
-          <paragraph>
-            <code>std::string* f()</code>
-          </paragraph>
-        </document>
+        <paragraph>
+          <code>std::string* f()</code>
+        </paragraph>
         )"));
     }
 
@@ -644,11 +636,9 @@ TEST_CASE("Functions can be Formatted", "[code_formatter]") {
 
       REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
         <?xml version="1.0"?>
-        <document>
-          <paragraph>
-            <code>X* f()</code>
-          </paragraph>
-        </document>
+        <paragraph>
+          <code>X* f()</code>
+        </paragraph>
         )"));
     }
   }
@@ -660,11 +650,9 @@ TEST_CASE("Functions can be Formatted", "[code_formatter]") {
 
       REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
         <?xml version="1.0"?>
-        <document>
-          <paragraph>
-            <code>int&amp; f()</code>
-          </paragraph>
-        </document>
+        <paragraph>
+          <code>int&amp; f()</code>
+        </paragraph>
         )"));
     }
 
@@ -678,11 +666,9 @@ TEST_CASE("Functions can be Formatted", "[code_formatter]") {
 
       REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
         <?xml version="1.0"?>
-        <document>
-          <paragraph>
-            <code>const std::string&amp; f()</code>
-          </paragraph>
-        </document>
+        <paragraph>
+          <code>const std::string&amp; f()</code>
+        </paragraph>
         )"));
     }
 
@@ -696,11 +682,12 @@ TEST_CASE("Functions can be Formatted", "[code_formatter]") {
 
       REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
         <?xml version="1.0"?>
-        <document>
-          <paragraph>
-            <link target-entity="X"> <code>X</code> </link> <code>&amp; f()</code>
-          </paragraph>
-        </document>
+        <paragraph>
+          <link target-entity="X">
+            <code>X</code>
+          </link>
+          <code>&amp; f()</code>
+        </paragraph>
         )"));
     }
   }
@@ -717,11 +704,9 @@ TEST_CASE("Functions can be Formatted", "[code_formatter]") {
 
       REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
         <?xml version="1.0"?>
-        <document>
-          <paragraph>
-            <code>std::vector&lt;int&gt; f()</code>
-          </paragraph>
-        </document>
+        <paragraph>
+          <code>std::vector&lt;int&gt; f()</code>
+        </paragraph>
         )"));
     }
 
@@ -739,11 +724,12 @@ TEST_CASE("Functions can be Formatted", "[code_formatter]") {
 
       REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
         <?xml version="1.0"?>
-        <document>
-          <paragraph>
-            <link target-entity="X"> <code>X&lt;int&gt;</code> </link> <code>f()</code>
-          </paragraph>
-        </document>
+        <paragraph>
+          <link target-entity="X">
+            <code>X&lt;int&gt;</code>
+          </link>
+          <code> f()</code>
+        </paragraph>
         )"));
     }
   }
@@ -759,11 +745,12 @@ TEST_CASE("Functions can be Formatted", "[code_formatter]") {
 
     REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
       <?xml version="1.0"?>
-      <document>
-        <paragraph>
-          <link target-entity="C"> <code>C</code> </link> <code>C::clone()</code>
-        </paragraph>
-      </document>
+      <paragraph>
+        <link target-entity="C">
+          <code>C</code>
+        </link>
+        <code> C::clone()</code>
+      </paragraph>
       )"));
   }
 
@@ -778,11 +765,9 @@ TEST_CASE("Functions can be Formatted", "[code_formatter]") {
 
     REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
       <?xml version="1.0"?>
-      <document>
-        <paragraph>
-          <code>std::string f()</code>
-        </paragraph>
-      </document>
+      <paragraph>
+        <code>std::string f()</code>
+      </paragraph>
       )"));
   }
 }
@@ -795,11 +780,9 @@ TEST_CASE("Variables can be Formatted", "[code_formatter]") {
 
       REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
         <?xml version="1.0"?>
-        <document>
-          <paragraph>
-            <code>const int a</code>
-          </paragraph>
-        </document>
+        <paragraph>
+          <code>const int a</code>
+        </paragraph>
         )"));
     }
 
@@ -809,11 +792,9 @@ TEST_CASE("Variables can be Formatted", "[code_formatter]") {
 
       REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
         <?xml version="1.0"?>
-        <document>
-          <paragraph>
-            <code>volatile int a</code>
-          </paragraph>
-        </document>
+        <paragraph>
+          <code>volatile int a</code>
+        </paragraph>
         )"));
     }
 
@@ -823,11 +804,9 @@ TEST_CASE("Variables can be Formatted", "[code_formatter]") {
 
       REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
         <?xml version="1.0"?>
-        <document>
-          <paragraph>
-            <code>const volatile int a</code>
-          </paragraph>
-        </document>
+        <paragraph>
+          <code>const volatile int a</code>
+        </paragraph>
         )"));
     }
   }
