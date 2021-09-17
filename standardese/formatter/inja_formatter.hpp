@@ -348,6 +348,8 @@ class inja_formatter {
   /// decide this without knowdledge of the underlying C++ source code.
   std::string scope(const std::string&) const;
 
+  void info(const std::string&) const;
+
  private:
   std::string name_callback(const nlohmann::json&) const;
   std::string md_callback(const nlohmann::json&) const;
@@ -380,6 +382,12 @@ class inja_formatter {
   std::string replace_callback(const nlohmann::json&, const nlohmann::json&, const nlohmann::json&) const;
   std::string namespace_callback(const nlohmann::json&) const;
   std::string scope_callback(const nlohmann::json&) const;
+  // TODO: Expose above. Register callbacks. Test.
+  void error_callback(const nlohmann::json&) const;
+  void warn_callback(const nlohmann::json&) const;
+  void info_callback(const nlohmann::json&) const;
+  void debug_callback(const nlohmann::json&) const;
+  void trace_callback(const nlohmann::json&) const;
 
   struct impl;
   std::unique_ptr<struct impl> self;

@@ -257,6 +257,12 @@ inja_formatter::inja_formatter(struct inja_formatter_options options, parser::cp
       return std::string{};
     return scope_callback(*args[0]);
   });
+  add_callback("info", [&](const std::vector<const nlohmann::json*>& args) {
+    if (!check_arg_count("info", args, 1))
+      return nlohmann::json{};
+    info_callback(*args[0]);
+    return nlohmann::json{};
+  });
 }
 
 inja_formatter::inja_formatter(struct inja_formatter_options options, parser::cpp_context cpp_context, const cppast::cpp_entity& context) : inja_formatter(std::move(options), std::move(cpp_context)) {
