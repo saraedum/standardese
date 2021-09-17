@@ -16,7 +16,7 @@ std::string inja_formatter::text_callback(const nlohmann::json& data) const {
   return std::visit([&](auto&& entity) {
     using T = std::decay_t<decltype(entity)>;
     if constexpr (std::is_same_v<T, const nlohmann::json::string_t*>) {
-      return text(static_cast<std::string>(data));
+      return text(*entity);
     } else {
       return text(md_callback(data));
     }
