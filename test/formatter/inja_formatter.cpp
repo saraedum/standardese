@@ -234,6 +234,16 @@ TEST_CASE("Strings from Inja Templates", "[inja_formatter]") {
       REQUIRE(inja.text(inja.code(R"(bool operator==(const A&, const A&))")) == R"(bool operator==(const A&, const A&))" "\n");
     }
   }
+
+  SECTION("`replace` Callback") {
+    SECTION("Replaces all Matches of a Regular Expression") {
+      util::cpp_file header;
+      auto inja = inja_formatter({}, header);
+      
+      REQUIRE(inja.replace("mp_limb_signed_t", "mp_limb_signed_t", "slong") == "slong");
+      REQUIRE(inja.replace(R"(mp\_limb\_signed\_t)", R"(mp\\?_limb\\?_signed\\?_t)", "slong") == "slong");
+    }
+  }
 }
 
 TEST_CASE("Markup Entities from Inja Templates", "[inja_formatter]") {

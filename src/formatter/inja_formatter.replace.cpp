@@ -39,5 +39,3 @@ std::string inja_formatter::replace(const std::string& str, const std::string& p
 }
 
 }
-
-
