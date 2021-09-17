@@ -11,6 +11,9 @@
 namespace standardese::formatter {
 
 nlohmann::json inja_formatter::synopsis_callback(const nlohmann::json& data) const {
+  // TODO
+  return nlohmann::json{};
+  /*
   return std::visit([&](auto&& entity) {
     using T = std::decay_t<decltype(entity)>;
     if constexpr (std::is_same_v<T, const cppast::cpp_entity*>) {
@@ -20,6 +23,7 @@ nlohmann::json inja_formatter::synopsis_callback(const nlohmann::json& data) con
     logger::error(fmt::format("Template callback `synopsis` not valid here. Cannot request synopsis of {}.", nlohmann::to_string(data)));
     return nlohmann::json{};
   }, self->from_json(data));
+  */
 }
 
 nlohmann::json inja_formatter::synopsis(const cppast::cpp_entity& entity) const {

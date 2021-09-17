@@ -276,10 +276,10 @@ class inja_formatter {
   /// Returns null if no override has been set.
   nlohmann::json synopsis(const cppast::cpp_entity&) const;
 
-  /// Return the text wrapped as inline code.
-  /// Essentially this adds MarkDown backticks around `text` while preserving
-  /// some other markup such as hyperlinks.
-  model::markup::paragraph code(const std::string& text) const;
+  /// Return text wrapped as inline code.
+  /// Essentially this adds MarkDown backticks around `markdown` while
+  /// preserving some other markup such as hyperlinks.
+  model::markup::paragraph code(const std::string& markdown) const;
 
   /// Return the entity wrapped as inline code.
   model::markup::paragraph code(const model::entity& entity) const;
@@ -309,6 +309,8 @@ class inja_formatter {
   /// [code]() into a plain string that can be included in a code block or a text
   /// document.
   std::string text(const model::entity&) const;
+
+  std::string text(const std::string& markdown) const;
 
   std::string replace(const std::string&, const std::string& pattern, const std::string& replacement) const;
 

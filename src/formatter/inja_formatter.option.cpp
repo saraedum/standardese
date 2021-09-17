@@ -46,6 +46,7 @@ std::string inja_formatter::option(const std::string& key) const {
   else if (key == "type_declarator_format") return options.type_declarator_format;
   else if (key == "variable_format") return options.variable_format;
   else if (key == "template_function_format") return options.template_function_format;
+  else if (key == "friend_format") return options.friend_format;
   else if (key == "cpp_format") return options.cpp_format;
   else {
     logger::error(fmt::format("Unknown option `{}` in template.", key));
