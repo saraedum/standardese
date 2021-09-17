@@ -85,7 +85,7 @@ std::pair<model::unordered_entities, parser::cpp_context> parsers::parse() {
           return {};
 
         const auto resolve_entity = [](const std::string&) -> type_safe::optional_ref<const cppast::cpp_entity> {
-          throw std::logic_error(R"(not implemented: resole_entity in tool::parsers.)");
+          throw std::logic_error(R"(not implemented: resolve_entity in tool::parsers.)");
         };
 
         return comment_parser.parse(std::get<0>(comment_with_file), *std::get<1>(comment_with_file), resolve_entity);
