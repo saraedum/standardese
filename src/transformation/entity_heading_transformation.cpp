@@ -32,7 +32,7 @@ namespace standardese::transformation {
 namespace {
 
 template <typename T>
-model::document heading(T& documentation, parser::cpp_context, const entity_heading_transformation::entity_heading_transformation_options&);
+model::document heading(T& documentation, parser::cpp_context, type_safe::optional_ref<const cppast::cpp_entity>, const entity_heading_transformation::entity_heading_transformation_options&);
 
 }
 
@@ -41,27 +41,33 @@ entity_heading_transformation::entity_heading_transformation(model::unordered_en
 entity_heading_transformation::entity_heading_transformation_options::entity_heading_transformation_options(formatter::inja_formatter::inja_formatter_options inja_formatter_options) : inja_formatter_options(std::move(inja_formatter_options)) {}
 
 void entity_heading_transformation::do_transform(model::entity& document) {
-  int level = 0;
+  std::vector<type_safe::optional_ref<const cppast::cpp_entity>> level;
 
   model::visitor::visit([&](auto&& entity, auto&& recurse) {
     using T = std::decay_t<decltype(entity)>;
 
     if constexpr (std::is_base_of_v<model::mixin::documentation, T>) {
-      auto doc = heading(entity, cpp_context, options);
+      auto doc = heading(entity, cpp_context, level.size() ? level.back() : type_safe::nullopt, options);
       bool has_scope = doc.begin() != doc.end() && doc.begin()->template is<model::markup::heading>();
       for (auto paragraph = doc.rbegin(); paragraph != doc.rend(); ++paragraph) {
         if (paragraph->template is<model::markup::heading>())
           // TODO: Cap at 5?
-          paragraph->template as<model::markup::heading>().level += level;
+          paragraph->template as<model::markup::heading>().level += level.size();
 
         entity.insert_child(std::move(*paragraph));
       }
 
-      if (has_scope) level++;
+      if (has_scope) {
+        if constexpr (std::is_same_v<T, model::cpp_entity_documentation>)
+          level.push_back(type_safe::ref(entity.entity()));
+        else
+          level.push_back({});
+      }
 
       recurse();
 
-      if (has_scope) level--;
+      if (has_scope)
+        level.pop_back();
     } else {
       recurse();
     }
@@ -71,8 +77,14 @@ void entity_heading_transformation::do_transform(model::entity& document) {
 namespace {
 
 template <typename T>
-model::document heading(T& documentation, parser::cpp_context context, const entity_heading_transformation::entity_heading_transformation_options& options) {
-  formatter::inja_formatter inja{options.inja_formatter_options, context};
+model::document heading(T& documentation, parser::cpp_context cpp_context, type_safe::optional_ref<const cppast::cpp_entity> context, const entity_heading_transformation::entity_heading_transformation_options& options) {
+  formatter::inja_formatter inja = [&]() {
+    if (context.has_value())
+      return formatter::inja_formatter{options.inja_formatter_options, cpp_context, context.value()};
+    else
+      return formatter::inja_formatter{options.inja_formatter_options, cpp_context};
+  }();
+
   inja.data().merge_patch(inja.to_json(documentation));
 
   // TODO:
