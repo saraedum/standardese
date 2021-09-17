@@ -7,8 +7,6 @@
 
 #include "inja_formatter.impl.hpp"
 #include "../../standardese/logger.hpp"
-#include "../../standardese/model/document.hpp"
-#include "../../standardese/model/markup/paragraph.hpp"
 
 namespace standardese::formatter {
 
@@ -16,19 +14,17 @@ nlohmann::json inja_formatter::synopsis_callback(const nlohmann::json& data) con
   return std::visit([&](auto&& entity) {
     using T = std::decay_t<decltype(entity)>;
     if constexpr (std::is_same_v<T, const cppast::cpp_entity*>) {
-      return to_json(synopsis(*entity));
+      return synopsis(*entity);
     }
 
-    logger::error(fmt::format("Template callback `synopsis` not valid here. Cannot produce synopsis of {}.", nlohmann::to_string(data)));
-    return to_json(model::document{"", ""});
+    logger::error(fmt::format("Template callback `synopsis` not valid here. Cannot request synopsis of {}.", nlohmann::to_string(data)));
+    return nlohmann::json{};
   }, self->from_json(data));
 }
 
-model::document inja_formatter::synopsis(const cppast::cpp_entity& entity) const {
+nlohmann::json inja_formatter::synopsis(const cppast::cpp_entity& entity) const {
   // TODO: Use \synopsis.
-  model::document document{"", ""};
-  document.add_child(std::move(code(entity)));
-  return document;
+  return nlohmann::json{};
 }
 
 }

@@ -129,8 +129,11 @@ model::document synopsis_formatter::build(const model::cpp_entity_documentation&
   return generator;
   */
 
+  /*
   inja_formatter inja{options, cpp_context};
   return inja.synopsis(documentation.entity());
+  */
+  throw std::logic_error("not implemented: synopsis_formatter::build()");
 }
 
 }

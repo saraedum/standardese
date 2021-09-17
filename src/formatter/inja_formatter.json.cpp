@@ -40,39 +40,43 @@ const T* from_string(const nlohmann::json::string_t* value) {
 nlohmann::json inja_formatter::to_json(const model::entity& entity) const {
   nlohmann::json json;
 
+  // TODO: This is quite hacky. In particular how we only render md sometimes. Can we render md when a document contains anything that is not supported in plain MarkDown?
+
   model::visitor::visit([&](auto&& entity) {
     using T = std::decay_t<decltype(entity)>;
 
-    if constexpr (std::is_same_v<T, model::module>) {
-      json["standardese"] = {
-        {"kind", "module"},
-        {"name", entity.name },
-      };
-    } else if constexpr (std::is_same_v<T, model::document>) {
-      json["standardese"] = {
-        {"kind", "document"},
-        {"name", entity.name},
-        {"path", entity.path},
-      };
-    } else if constexpr (std::is_same_v<T, model::group_documentation>) {
-      json["standardese"] = {
-        {"kind", "group"},
-        {"entities", nlohmann::json::array()},
-      };
-      for (auto& member : entity.entities)
-        json["standardese"]["entities"].push_back(to_json(member.entity()));
-    } else if constexpr (std::is_same_v<T, model::cpp_entity_documentation>) {
-      // TODO: Are we losing \synopsis here?
-      json.merge_patch(to_json(entity.entity()));
-    }
-
     if constexpr (std::is_base_of_v<model::mixin::documentation, T>) {
+      if constexpr (std::is_same_v<T, model::module>) {
+        json["standardese"] = {
+          {"kind", "module"},
+          {"name", entity.name },
+        };
+      } else if constexpr (std::is_same_v<T, model::group_documentation>) {
+        json["standardese"] = {
+          {"kind", "group"},
+          {"entities", nlohmann::json::array()},
+        };
+        for (auto& member : entity.entities)
+          json["standardese"]["entities"].push_back(to_json(member.entity()));
+      } else if constexpr (std::is_same_v<T, model::cpp_entity_documentation>) {
+        // TODO: Are we losing \synopsis here?
+        json.merge_patch(to_json(entity.entity()));
+      }
+
       json["standardese"]["group"] = entity.group.has_value() ? entity.group.value() : "";
       json["standardese"]["output_section"] = entity.output_section.has_value() ? entity.output_section.value() : "";
       json["standardese"]["synopsis"] = entity.synopsis.has_value() ? entity.synopsis.value() : "";
-    }
+    } else {
+      if constexpr (std::is_same_v<T, model::document>) {
+        json["standardese"] = {
+          {"kind", "document"},
+          {"name", entity.name},
+          {"path", entity.path},
+        };
+      }
 
-    json["md"] = md(entity);
+      json["md"] = md(entity);
+    }
   }, entity);
 
   return json;
@@ -445,6 +449,10 @@ nlohmann::json inja_formatter::to_json(const model::link_target& target) const {
   });
 
   return json;
+}
+
+nlohmann::json inja_formatter::to_json(const cppast::cpp_template_argument&) const {
+  throw std::logic_error("not implemented: to_json");
 }
 
 inja_formatter::impl::variant inja_formatter::impl::from_json(const nlohmann::json& value) {

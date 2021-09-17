@@ -11,20 +11,13 @@
 #include "../../standardese/model/document.hpp"
 #include "../../standardese/model/markup/paragraph.hpp"
 #include "../../standardese/model/visitor/visit.hpp"
-#include "../../standardese/output_generator/xml/xml_generator.hpp"
 
 namespace standardese::formatter {
 
 nlohmann::json inja_formatter::code_callback(const nlohmann::json& data) const {
   return std::visit([&](auto&& entity) {
     using T = std::decay_t<decltype(entity)>;
-    if constexpr (std::is_same_v<T, const cppast::cpp_entity*>) {
-      return to_json(code(*entity));
-    } else if constexpr (std::is_same_v<T, const cppast::cpp_type*>) {
-      return to_json(code(*entity));
-    } else if constexpr (std::is_same_v<T, const cppast::cpp_template_argument*>) {
-      return to_json(code(*entity));
-    } else if constexpr (std::is_same_v<T, const nlohmann::json::string_t*>) {
+    if constexpr (std::is_same_v<T, const nlohmann::json::string_t*>) {
       return to_json(code(data));
     }
 
@@ -52,52 +45,6 @@ nlohmann::json inja_formatter::code_callback(const nlohmann::json& format, const
     }
     return to_json(model::document{"", ""});
   }, self->from_json(format), self->from_json(entity));
-}
-
-model::markup::paragraph inja_formatter::code(const cppast::cpp_entity& entity) const {
-  switch(entity.kind()) {
-    case cppast::cpp_entity_kind::function_t:
-    case cppast::cpp_entity_kind::member_function_t:
-    case cppast::cpp_entity_kind::constructor_t:
-    case cppast::cpp_entity_kind::destructor_t:
-    case cppast::cpp_entity_kind::conversion_op_t:
-      return code(self->options.function_format, entity);
-    case cppast::cpp_entity_kind::friend_t:
-      return code(self->options.friend_format, entity);
-    case cppast::cpp_entity_kind::variable_t:
-    case cppast::cpp_entity_kind::member_variable_t:
-      return code(self->options.variable_format, entity);
-    case cppast::cpp_entity_kind::file_t:
-      logger::error(fmt::format("not implemented: cannot render code() for file `{}`.", name(entity)));
-      return {};
-    case cppast::cpp_entity_kind::function_template_t:
-      return code(self->options.template_function_format, entity);
-    default:
-      // TODO
-      logger::error(fmt::format("not implemented: code() for `{}`.", name(entity)));
-      return {};
-  }
-}
-
-model::markup::paragraph inja_formatter::code(const std::string& format, const cppast::cpp_entity& entity) const {
-  auto finally = impl::savepoint(const_cast<inja_formatter::impl&>(*this->self));
-  const_cast<inja_formatter*>(this)->data() = to_json(entity);
-  return code(this->format(format));
-}
-
-model::markup::paragraph inja_formatter::code(const cppast::cpp_type& entity) const {
-  return code(self->options.type_format, entity);
-}
-
-model::markup::paragraph inja_formatter::code(const std::string& format, const cppast::cpp_type& entity) const {
-  auto finally = impl::savepoint(const_cast<inja_formatter::impl&>(*this->self));
-  const_cast<inja_formatter*>(this)->data() = to_json(entity);
-  return code(this->format(format));
-}
-
-model::markup::paragraph inja_formatter::code(const std::string& format, const cppast::cpp_template_argument& entity) const {
-  // TODO
-  throw std::logic_error("not implemented: code(template_argument)");
 }
 
 model::markup::paragraph inja_formatter::code(const std::string& text) const {

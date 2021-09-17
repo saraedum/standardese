@@ -44,6 +44,9 @@ std::string inja_formatter::option(const std::string& key) const {
   else if (key == "ref_qualification_format") return options.ref_qualification_format;
   else if (key == "noexcept_specification_format") return options.noexcept_specification_format;
   else if (key == "type_declarator_format") return options.type_declarator_format;
+  else if (key == "variable_format") return options.variable_format;
+  else if (key == "template_function_format") return options.template_function_format;
+  else if (key == "cpp_format") return options.cpp_format;
   else {
     logger::error(fmt::format("Unknown option `{}` in template.", key));
     return nlohmann::json{};

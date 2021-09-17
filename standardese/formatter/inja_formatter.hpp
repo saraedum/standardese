@@ -61,6 +61,16 @@ class inja_formatter {
       hidden,
     } scope_display_options;
 
+    // Formatting rule for a C or C++ entity.
+    // Typically, this will just delegate to other formatting rules for
+    // distinct types of entities.
+    std::string cpp_format = R"({%
+      if cppast_kind in ["function", "member function", "constructor", "destructor", "conversion operator"] %}{{ format(option("function_format")) }}{%
+      else if cppast_kind in ["friend"] %}{{ format(option("friend_format")) }}{%
+      else if cppast_kind in ["variable", "member variable"] %}{{ format(option("variable_format")) }}{%
+      else if cppast_kind in ["function template"] %}{{ format(option("template_function_format")) }}{%
+      else %}TODO: not implemented {{ cppast_kind }}.{% endif %})";
+
     /// Formatting rule for functions.
     /// This includes member functions, constructors, destructors, operators.
     /// See https://en.cppreference.com/w/cpp/language/function.
@@ -84,9 +94,9 @@ class inja_formatter {
 
     std::string template_function_format = R"(template&lt;{{ format(option("template_parameters_format")) }}&gt; {{ format(option("function_format"), entity) }})";
 
-    std::string variable_format = R"({{ format(option("type_format"), variable_type) }} {{ code_escape(name) }})";
+    std::string variable_format = R"({{ format(option("type_format"), variable_type) }} {{ md_escape(name) }})";
 
-    std::string friend_format = R"(friend {{ md(code(entity)) }})";
+    std::string friend_format = R"(friend {% if cppast_kind(entity) in ["function", "member function", "constructor", "destructor", "conversion operator"] %}{{ format(option("function_format"), entity) }}{% else %}(not implemented: formatting a {{ cppast_kind }} friend.{%endif%})";
 
     std::string type_format = R"({% if target != "" %}[{% endif
       %}{% if cppast_kind == "template instantiation" %}{{ format(option("type_declarator_format")) }}&lt;{% if isString(arguments) %}{{ arguments }}{% else %}TODO{% endif %}&gt;{%-
@@ -101,29 +111,29 @@ class inja_formatter {
 
     std::string parameter_type_format = type_format;
 
-    std::string type_declarator_format = R"({{ code_escape(join(reject("empty", list(namespace, scope, name)), "::")) }})";
+    std::string type_declarator_format = R"({{ md_escape(join(reject("empty", list(namespace, scope, name)), "::")) }})";
 
     std::string template_parameters_format = R"({% for param in parameters %}{% if not loop.is_first %}, {% endif %}{{ format(option("template_parameter_format"), param) }}{% endfor %})";
 
     // TODO
-    std::string template_parameter_format = R"({% if cppast_kind == "template type parameter" %}typename {% endif %}{{ code_escape(name) }})";
+    std::string template_parameter_format = R"({% if cppast_kind == "template type parameter" %}typename {% endif %}{{ md_escape(name) }})";
 
     // TODO
     std::string template_argument_format = "template-argument";
 
     std::string declaration_specifiers_format = R"({% if length(declaration_specifiers) != 0 %}{{ join(declaration_specifiers, " ") }}{% endif %})";
 
-    std::string function_declarator_format = R"({{ code_escape(join(reject("empty", list(namespace, scope, name)), "::")) }})";
+    std::string function_declarator_format = R"({{ md_escape(join(reject("empty", list(namespace, scope, name)), "::")) }})";
 
     std::string function_parameters_format = R"({% for param in parameters %}{% if not loop.is_first %}, {% endif %}{{ format(option("function_parameter_format"), param) }}{% endfor %})";
 
-    std::string function_parameter_format = R"({{ format(option("parameter_type_format"), type) }}{% if name != "" %}{{ code_escape(name) }}{% endif %})";
+    std::string function_parameter_format = R"({{ format(option("parameter_type_format"), type) }}{% if name != "" %} {{ md_escape(name) }}{% endif %})";
 
     std::string const_qualification_format = R"({% if const_qualification != "" %}{{ const_qualification }}{% endif %})";
 
     std::string volatile_qualification_format = R"({% if volatile_qualification != "" %}{{ volatile_qualification }}{% endif %})";
 
-    std::string ref_qualification_format = R"({% if ref_qualification != "" %}{{ ref_qualification }}{% endif %})";
+    std::string ref_qualification_format = R"({% if ref_qualification != "" %}{{ md_escape(ref_qualification) }}{% endif %})";
 
     // TODO
     std::string noexcept_specification_format = "";
@@ -262,37 +272,9 @@ class inja_formatter {
 
   std::string kind(const cppast::cpp_entity&) const;
 
-  model::document synopsis(const cppast::cpp_entity&) const;
-
-  /// Return a short C++ representation of this entity.
-  /// This method can be invoked in inja templates as `{{ code }}` or `{{
-  /// code(entity) }}`.
-  model::markup::paragraph code(const cppast::cpp_entity&) const;
-
-  /// Return a short C++ representation of this entity.
-  /// This method can be invoked in inja templates as `{{ code }}` or `{{
-  /// code(entity) }}`.
-  model::markup::paragraph code(const std::string& format, const cppast::cpp_entity&) const;
-
-  /// Return a short C++ representation of this type.
-  /// This method can be invoked in inja templates as `{{ code }}` or `{{
-  /// code(type) }}`.
-  model::markup::paragraph code(const cppast::cpp_type&) const;
-
-  /// Return a short C++ representation of this type.
-  /// This method can be invoked in inja templates as `{{ code }}` or `{{
-  /// code(type) }}`.
-  model::markup::paragraph code(const std::string& format, const cppast::cpp_type&) const;
-
-  /// Return a short C++ representation of this argument.
-  /// This method can be invoked in inja templates as `{{ code }}` or `{{
-  /// code(argument) }}`.
-  model::markup::paragraph code(const cppast::cpp_template_argument&) const;
-
-  /// Return a short C++ representation of this argument.
-  /// This method can be invoked in inja templates as `{{ code }}` or `{{
-  /// code(argument) }}`.
-  model::markup::paragraph code(const std::string& format, const cppast::cpp_template_argument&) const;
+  /// Return the synopsis override for this entity.
+  /// Returns null if no override has been set.
+  nlohmann::json synopsis(const cppast::cpp_entity&) const;
 
   /// Return the text wrapped as inline code.
   /// Essentially this adds MarkDown backticks around `text` while preserving

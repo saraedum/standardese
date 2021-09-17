@@ -197,6 +197,7 @@ void visitor::add_template_parameters(const cppast::cpp_template& entity) {
 void visitor::add_function_parameters(const cppast::cpp_function_base& entity) {
   for (const auto& param: entity.parameters()) {
     auto& parent = root->rbegin()->as<model::cpp_entity_documentation>();
+    // TODO: This does not seem to work. When looking into generated documentation XML, there are lots of Parameters sections. Not just one in some places.
     auto& section = ensure_section(parent, parser::commands::section_command::parameters);
 
     visitor v(section, entities);

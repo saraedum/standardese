@@ -182,7 +182,17 @@ TEST_CASE("Strings from Inja Templates", "[inja_formatter]") {
 
   SECTION("`md` Callback") {
     SECTION("`md` can Render an Empty Document") {
-      // TODO
+      util::cpp_file header;
+
+      auto inja = inja_formatter({}, header);
+      REQUIRE(inja.md(model::document{"", ""}) == "\n");
+    }
+
+    SECTION("`md` can Render an Empty Paragraph") {
+      util::cpp_file header;
+
+      auto inja = inja_formatter({}, header);
+      REQUIRE(inja.md(model::markup::paragraph{}) == "\n");
     }
 
     SECTION("`md` can Render a Code Block") {
@@ -202,14 +212,11 @@ TEST_CASE("Strings from Inja Templates", "[inja_formatter]") {
     }
 
     SECTION("`md` Renders the Output of `code` as MarkDown") {
-      util::cpp_file header(R"(
-        void f();
-      )");
-
+      util::cpp_file header;
       auto inja = inja_formatter({}, header);
 
       // Note that the output has a trailing newline since code() creates a paragraph.
-      REQUIRE(inja.md(inja.code(header["f"])) == R"(`void f()`)" "\n");
+      REQUIRE(inja.md(inja.code("void f()")) == R"(`void f()`)" "\n");
     }
   }
 
@@ -224,7 +231,7 @@ TEST_CASE("Strings from Inja Templates", "[inja_formatter]") {
       auto inja = inja_formatter({}, header);
 
       // Note that the output has a trailing newline since code() creates a paragraph.
-      REQUIRE(inja.text(inja.code(header["operator=="])) == R"(bool operator==(const A&, const A&))" "\n");
+      REQUIRE(inja.text(inja.code(R"(bool operator==(const A&, const A&))")) == R"(bool operator==(const A&, const A&))" "\n");
     }
   }
 }

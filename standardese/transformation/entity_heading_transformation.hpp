@@ -12,6 +12,8 @@
 
 namespace standardese::transformation {
 
+// TODO: This is crucial and currently completely untested.
+
 /// Inserts headings into a document, e.g., for all
 /// [model::cpp_entity_documentation]() entities.
 class entity_heading_transformation : public transformation {
@@ -20,7 +22,7 @@ class entity_heading_transformation : public transformation {
       entity_heading_transformation_options(formatter::inja_formatter::inja_formatter_options = {});
 
       // TODO: Read from CLI and reset the default to standardese 0-5-0 equivalent.
-      std::string format = R"({% if cppast_kind == "file" %}# {{ join(" — ", reject("whitespace", list(md_escape(name), md(section("brief"))))) }}{{ drop_section("brief") }}
+      std::string format = R"({% if cppast_kind == "file" %}# {{ join(reject("whitespace", list(md_escape(name), md(section("brief")))), " - ") }}{{ drop_section("brief") }}
         {%- else if cppast_kind in ["function", "member function", "conversion operator", "constructor", "destructor", "function template", "friend"] %}# {{ md(synopsis) }}
         {%- else if cppast_kind == "function_parameter" %}###### `{{ code_escape(name) }}` {{ md(section("brief")) }}{{ drop_section("brief") }}
         {%- else %}# {{ md_escape(kind) }} `{{ code_escape(name) }}`

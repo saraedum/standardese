@@ -25,6 +25,8 @@
 #include "../../standardese/model/link_target.hpp"
 #include "../../standardese/model/markup/paragraph.hpp"
 #include "../../standardese/logger.hpp"
+// TODO
+#include "../../standardese/output_generator/xml/xml_generator.hpp"
 
 namespace standardese::formatter {
 
@@ -33,11 +35,15 @@ code_formatter::code_formatter_options::code_formatter_options() {}
 code_formatter::code_formatter(code_formatter_options options, parser::cpp_context context) : options(std::move(options)), cpp_context(std::move(context)) {}
 
 model::markup::paragraph code_formatter::build(const cppast::cpp_entity& entity) const {
-  return inja_formatter{options, cpp_context}.code(entity);
+  inja_formatter inja{options, cpp_context};
+  inja.data() = inja.to_json(entity);
+  return inja.code(inja.format(options.cpp_format));
 }
 
 model::markup::paragraph code_formatter::build(const cppast::cpp_entity& entity, const cppast::cpp_entity& context) const {
-  return inja_formatter{options, cpp_context, context}.code(entity);
+  inja_formatter inja{options, cpp_context, context};
+  inja.data() = inja.to_json(entity);
+  return inja.code(inja.format(options.cpp_format));
 }
 
 model::markup::paragraph code_formatter::build(const cppast::cpp_type& type) const {
@@ -57,27 +63,39 @@ model::markup::paragraph code_formatter::build(const cppast::cpp_template_argume
 }
 
 model::markup::paragraph code_formatter::build(const std::string& format, const cppast::cpp_entity& entity) const {
-  return inja_formatter{options, cpp_context}.code(format, entity);
+  inja_formatter inja{options, cpp_context};
+  inja.data() = inja.to_json(entity);
+  return inja.code(inja.format(format));
 }
 
 model::markup::paragraph code_formatter::build(const std::string& format, const cppast::cpp_entity& entity, const cppast::cpp_entity& context) const {
-  return inja_formatter{options, cpp_context, context}.code(format, entity);
+  inja_formatter inja{options, cpp_context, context};
+  inja.data() = inja.to_json(entity);
+  return inja.code(inja.format(format));
 }
 
 model::markup::paragraph code_formatter::build(const std::string& format, const cppast::cpp_type& type) const {
-  return inja_formatter{options, cpp_context}.code(format, type);
+  inja_formatter inja{options, cpp_context};
+  inja.data() = inja.to_json(type);
+  return inja.code(inja.format(format));
 }
 
 model::markup::paragraph code_formatter::build(const std::string& format, const cppast::cpp_type& type, const cppast::cpp_entity& context) const {
-  return inja_formatter{options, cpp_context, context}.code(format, type);
+  inja_formatter inja{options, cpp_context, context};
+  inja.data() = inja.to_json(type);
+  return inja.code(inja.format(format));
 }
 
 model::markup::paragraph code_formatter::build(const std::string& format, const cppast::cpp_template_argument& argument) const {
-  return inja_formatter{options, cpp_context}.code(format, argument);
+  inja_formatter inja{options, cpp_context};
+  inja.data() = inja.to_json(argument);
+  return inja.code(inja.format(format));
 }
 
 model::markup::paragraph code_formatter::build(const std::string& format, const cppast::cpp_template_argument& argument, const cppast::cpp_entity& context) const {
-  return inja_formatter{options, cpp_context, context}.code(format, argument);
+  inja_formatter inja{options, cpp_context, context};
+  inja.data() = inja.to_json(argument);
+  return inja.code(inja.format(format));
 }
 
 }
