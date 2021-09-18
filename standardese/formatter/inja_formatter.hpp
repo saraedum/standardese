@@ -212,9 +212,6 @@ class inja_formatter {
   /// sanitize_basename(name) }}`.
   std::string sanitize_basename(const std::string& name) const;
 
-  /// Return the argument escaped for MarkDown code (blocks.)
-  std::string code_escape(const std::string&) const;
-
   /// Return the argument escaped for MarkDown.
   /// Ideally, this would return a string that produces the input when parsed
   /// as MarkDown, i.e., something that roundtrips. However, this is not
@@ -279,6 +276,8 @@ class inja_formatter {
   /// Return text wrapped as inline code.
   /// Essentially this adds MarkDown backticks around `markdown` while
   /// preserving some other markup such as hyperlinks.
+  /// If you want a code block that fully preserves the text in `markdown`, you
+  /// should `md_escape` it first.
   model::markup::paragraph code(const std::string& markdown) const;
 
   /// Return the entity wrapped as inline code.
@@ -356,7 +355,6 @@ class inja_formatter {
   std::string path_callback(const nlohmann::json&) const;
   std::string filename_callback(const nlohmann::json&) const;
   std::string sanitize_basename_callback(const nlohmann::json&) const;
-  std::string code_escape_callback(const nlohmann::json&) const;
   std::string md_escape_callback(const nlohmann::json&) const;
   std::string format_callback(const nlohmann::json&) const;
   std::string format_callback(const nlohmann::json&, const nlohmann::json&) const;

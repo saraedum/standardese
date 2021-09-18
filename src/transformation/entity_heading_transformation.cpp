@@ -38,7 +38,18 @@ model::document heading(T& documentation, parser::cpp_context, type_safe::option
 
 entity_heading_transformation::entity_heading_transformation(model::unordered_entities& entities, parser::cpp_context cpp_context, struct entity_heading_transformation_options options) : transformation(entities), options(options), cpp_context(std::move(cpp_context)) {}
 
-entity_heading_transformation::entity_heading_transformation_options::entity_heading_transformation_options(formatter::inja_formatter::inja_formatter_options inja_formatter_options) : inja_formatter_options(std::move(inja_formatter_options)) {}
+entity_heading_transformation::entity_heading_transformation_options::entity_heading_transformation_options(formatter::inja_formatter::inja_formatter_options inja_formatter_options) : 
+  // TODO: Read from CLI and reset the default to standardese 0-5-0 equivalent.
+  format(R"({% if cppast_kind == "file" %}# {{ join(reject("whitespace", list(md_escape(name), md(section("brief")))), " — ") }}{{ drop_section("brief") }}
+        {%- else if cppast_kind in ["function", "member function", "conversion operator", "constructor", "destructor", "function template", "friend"] %}# {% if synopsis %}{{ md(code(md_escape(synopsis))) }}{% else %}{{ md(code(md_escape(text(format(option("cpp_format")))))) }}{% endif %}
+        {%- else if cppast_kind == "function_parameter" %}###### {{ md(code(md_escape(name))) }} {{ md(section("brief")) }}{{ drop_section("brief") }}
+        {%- else %}# {{ md_escape(kind) }} {{ md(code(md_escape(name))) }}
+        {%- endif %})"),
+  // TODO: Read from CLI and reset the default to standardese 0-5-0 equivalent.
+  group_format(R"(# {{ standardese.output_section }}
+```
+{% for member in standardese.entities %}({{ loop.index1 }}) {% if synopsis %}{{ text(code(md_escape(synopsis(member)))) }}{% else %}{{ text(code(md_escape(text(format(option("cpp_format"), member))))) }}{% endif %}{% endfor %}```)"),
+  inja_formatter_options(std::move(inja_formatter_options)) {}
 
 void entity_heading_transformation::do_transform(model::entity& document) {
   std::vector<type_safe::optional_ref<const cppast::cpp_entity>> level;

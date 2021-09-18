@@ -53,7 +53,6 @@ set(src
     formatter/inja_formatter.scope.cpp
     formatter/inja_formatter.filename.cpp
     formatter/inja_formatter.sanitize_basename.cpp
-    formatter/inja_formatter.code_escape.cpp
     formatter/inja_formatter.md_escape.cpp
     formatter/inja_formatter.reject.cpp
     formatter/inja_formatter.code_join.cpp

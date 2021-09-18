@@ -21,17 +21,8 @@ class entity_heading_transformation : public transformation {
     struct entity_heading_transformation_options {
       entity_heading_transformation_options(formatter::inja_formatter::inja_formatter_options = {});
 
-      // TODO: Read from CLI and reset the default to standardese 0-5-0 equivalent.
-      std::string format = R"({% if cppast_kind == "file" %}# {{ join(reject("whitespace", list(md_escape(name), md(section("brief")))), " — ") }}{{ drop_section("brief") }}
-        {%- else if cppast_kind in ["function", "member function", "conversion operator", "constructor", "destructor", "function template", "friend"] %}# `{% if synopsis %}{{ code_escape(synopsis) }}{% else %}{{ code_escape(text(format(option("cpp_format")))) }}{% endif %}`
-        {%- else if cppast_kind == "function_parameter" %}###### `{{ code_escape(name) }}` {{ md(section("brief")) }}{{ drop_section("brief") }}
-        {%- else %}# {{ md_escape(kind) }} `{{ code_escape(name) }}`
-        {%- endif %})";
-
-      std::string group_format = R"(# {{ standardese.output_section }}
-```
-{% for member in standardese.entities %}({{ loop.index1 }}) {% if synopsis %}{{ code_escape(synopsis(member)) }}{% else %}{{ code_escape(text(format(option("cpp_format"), member))) }}{% endif %}
-{% endfor %}```)";
+      std::string format;
+      std::string group_format;
 
       formatter::inja_formatter::inja_formatter_options inja_formatter_options;
     };

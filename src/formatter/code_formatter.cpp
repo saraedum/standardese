@@ -25,8 +25,6 @@
 #include "../../standardese/model/link_target.hpp"
 #include "../../standardese/model/markup/paragraph.hpp"
 #include "../../standardese/logger.hpp"
-// TODO
-#include "../../standardese/output_generator/xml/xml_generator.hpp"
 
 namespace standardese::formatter {
 

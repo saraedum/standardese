@@ -80,11 +80,6 @@ inja_formatter::inja_formatter(struct inja_formatter_options options, parser::cp
       return std::string{};
     return sanitize_basename_callback(*args[0]);
   });
-  add_callback("code_escape", [&](const std::vector<const nlohmann::json*>& args) {
-    if (!check_arg_count("code_escape", args, 1))
-      return std::string{};
-    return code_escape_callback(*args[0]);
-  });
   add_callback("md_escape", [&](const std::vector<const nlohmann::json*>& args) {
     if (!check_arg_count("md_escape", args, 1))
       return std::string{};
