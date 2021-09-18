@@ -64,79 +64,51 @@ class inja_formatter {
     // Formatting rule for a C or C++ entity.
     // Typically, this will just delegate to other formatting rules for
     // distinct types of entities.
-    std::string cpp_format = R"({%
-      if cppast_kind in ["function", "member function", "constructor", "destructor", "conversion operator"] %}{{ format(option("function_format")) }}{%
-      else if cppast_kind in ["friend"] %}{{ format(option("friend_format")) }}{%
-      else if cppast_kind in ["variable", "member variable"] %}{{ format(option("variable_format")) }}{%
-      else if cppast_kind in ["function template"] %}{{ format(option("template_function_format")) }}{%
-      else %}TODO: not implemented {{ cppast_kind }}.{% endif %})";
+    std::string cpp_format;
 
     /// Formatting rule for functions.
     /// This includes member functions, constructors, destructors, operators.
     /// See https://en.cppreference.com/w/cpp/language/function.
-    std::string function_format = R"({%
-        if cppast_kind in ["constructor", "destructor", "conversion operator"] %}{{
-          format(option("function_declarator_format"))
-       }}{% else %}{{
-        join(reject("empty", list(
-          format(option("declaration_specifiers_format")),
-          format(option("return_type_format"), return_type),
-          format(option("function_declarator_format")))), " ")
-      }}{% endif %}({%
-        if cppast_kind in ["destructor", "conversion operator"] %}{% else %}{{
-        format(option("function_parameters_format")) }}{% endif %}){%
-        set suffix = join(reject("empty", list(
-          format(option("const_qualification_format")),
-          format(option("volatile_qualification_format")),
-          format(option("ref_qualification_format")),
-          format(option("noexcept_specification_format")))), " ")
-      %}{% if length(suffix) %} {% endif %}{{ suffix }})";
+    std::string function_format;
 
-    std::string template_function_format = R"(template&lt;{{ format(option("template_parameters_format")) }}&gt; {{ format(option("function_format"), entity) }})";
+    std::string template_function_format;
 
-    std::string variable_format = R"({{ format(option("type_format"), variable_type) }} {{ md_escape(name) }})";
+    std::string variable_format;
 
-    std::string friend_format = R"(friend {% if cppast_kind(entity) in ["function", "member function", "constructor", "destructor", "conversion operator"] %}{{ format(option("function_format"), entity) }}{% else %}(not implemented: formatting a {{ cppast_kind }} friend.{%endif%})";
+    std::string friend_format;
 
-    std::string type_format = R"({% if target != "" %}[{% endif
-      %}{% if cppast_kind == "template instantiation" %}{{ format(option("type_declarator_format")) }}&lt;{% if isString(arguments) %}{{ arguments }}{% else %}TODO{% endif %}&gt;{%-
-      else if cppast_kind == "reference" %}{{ format(option("type_format"), type) }}{{ format(option("ref_qualification_format"))
-      }}{%- else if cppast_kind == "cv-qualified" %}{{ join(reject("empty", list(format(option("const_qualification_format")), format(option("volatile_qualification_format")), format(option("type_format"), type))), " ")
-      }}{%- else %}{{ format(option("type_declarator_format")) }}{% endif %}{% if target != "" %}]({{ target }}){% endif %})";
+    std::string type_format;
 
     /// Formatting rule for a function's return type.
     /// This controls the formatting of a function's return type with its
     /// specifiers.
-    std::string return_type_format = type_format;
+    std::string return_type_format;
 
-    std::string parameter_type_format = type_format;
+    std::string parameter_type_format;
 
-    std::string type_declarator_format = R"({{ md_escape(join(reject("empty", list(namespace, scope, name)), "::")) }})";
+    std::string type_declarator_format;
 
-    std::string template_parameters_format = R"({% for param in parameters %}{% if not loop.is_first %}, {% endif %}{{ format(option("template_parameter_format"), param) }}{% endfor %})";
+    std::string template_parameters_format;
 
-    // TODO
-    std::string template_parameter_format = R"({% if cppast_kind == "template type parameter" %}typename {% endif %}{{ md_escape(name) }})";
+    std::string template_parameter_format;
 
-    // TODO
-    std::string template_argument_format = "template-argument";
+    std::string template_argument_format;
 
-    std::string declaration_specifiers_format = R"({% if length(declaration_specifiers) != 0 %}{{ join(declaration_specifiers, " ") }}{% endif %})";
+    std::string declaration_specifiers_format;
 
-    std::string function_declarator_format = R"({{ md_escape(join(reject("empty", list(namespace, scope, name)), "::")) }})";
+    std::string function_declarator_format;
 
-    std::string function_parameters_format = R"({% for param in parameters %}{% if not loop.is_first %}, {% endif %}{{ format(option("function_parameter_format"), param) }}{% endfor %})";
+    std::string function_parameters_format;
 
-    std::string function_parameter_format = R"({{ format(option("parameter_type_format"), type) }}{% if name != "" %} {{ md_escape(name) }}{% endif %})";
+    std::string function_parameter_format;
 
-    std::string const_qualification_format = R"({% if const_qualification != "" %}{{ const_qualification }}{% endif %})";
+    std::string const_qualification_format;
 
-    std::string volatile_qualification_format = R"({% if volatile_qualification != "" %}{{ volatile_qualification }}{% endif %})";
+    std::string volatile_qualification_format;
 
-    std::string ref_qualification_format = R"({% if ref_qualification != "" %}{{ md_escape(ref_qualification) }}{% endif %})";
+    std::string ref_qualification_format;
 
-    // TODO
-    std::string noexcept_specification_format = "";
+    std::string noexcept_specification_format;
   };
 
   inja_formatter(inja_formatter_options, parser::cpp_context);

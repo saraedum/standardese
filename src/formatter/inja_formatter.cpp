@@ -35,7 +35,56 @@ bool check_arg_count(const std::string& name, const std::vector<const nlohmann::
 
 }
 
-inja_formatter::inja_formatter_options::inja_formatter_options() {}
+inja_formatter::inja_formatter_options::inja_formatter_options() :
+  cpp_format(R"({%
+      if cppast_kind in ["function", "member function", "constructor", "destructor", "conversion operator"] %}{{ format(option("function_format")) }}{%
+      else if cppast_kind in ["friend"] %}{{ format(option("friend_format")) }}{%
+      else if cppast_kind in ["variable", "member variable"] %}{{ format(option("variable_format")) }}{%
+      else if cppast_kind in ["function template"] %}{{ format(option("template_function_format")) }}{%
+      else %}TODO: not implemented {{ cppast_kind }}.{% endif %})"),
+  function_format(R"({%
+        if cppast_kind in ["constructor", "destructor", "conversion operator"] %}{{
+          format(option("function_declarator_format"))
+       }}{% else %}{{
+        join(reject("empty", list(
+          format(option("declaration_specifiers_format")),
+          format(option("return_type_format"), return_type),
+          format(option("function_declarator_format")))), " ")
+      }}{% endif %}({%
+        if cppast_kind in ["destructor", "conversion operator"] %}{% else %}{{
+        format(option("function_parameters_format")) }}{% endif %}){%
+        set suffix = join(reject("empty", list(
+          format(option("const_qualification_format")),
+          format(option("volatile_qualification_format")),
+          format(option("ref_qualification_format")),
+          format(option("noexcept_specification_format")))), " ")
+      %}{% if length(suffix) %} {% endif %}{{ suffix }})"),
+  template_function_format(R"(template&lt;{{ format(option("template_parameters_format")) }}&gt; {{ format(option("function_format"), entity) }})"),
+  variable_format(R"({{ format(option("type_format"), variable_type) }} {{ md_escape(name) }})"),
+  friend_format(R"(friend {% if cppast_kind(entity) in ["function", "member function", "constructor", "destructor", "conversion operator"] %}{{ format(option("function_format"), entity) }}{% else %}not implemented: formatting a {{ cppast_kind }} friend.{%endif%})"),
+  type_format(R"({% if target != "" %}[{% endif
+      %}{% if cppast_kind == "template instantiation" %}{{ format(option("type_declarator_format")) }}&lt;{% if isString(arguments) %}{{ arguments }}{% else %}TODO{% endif %}&gt;{%-
+      else if cppast_kind == "reference" %}{{ format(option("type_format"), type) }}{{ format(option("ref_qualification_format"))
+      }}{%- else if cppast_kind == "cv-qualified" %}{{ join(reject("empty", list(format(option("const_qualification_format")), format(option("volatile_qualification_format")), format(option("type_format"), type))), " ")
+      }}{%- else %}{{ format(option("type_declarator_format")) }}{% endif %}{% if target != "" %}]({{ target }}){% endif %})"),
+  return_type_format(type_format),
+  parameter_type_format(type_format),
+  type_declarator_format(R"({{ md_escape(join(reject("empty", list(namespace, scope, name)), "::")) }})"),
+  template_parameters_format(R"({% for param in parameters %}{% if not loop.is_first %}, {% endif %}{{ format(option("template_parameter_format"), param) }}{% endfor %})"),
+  // TODO
+  template_parameter_format(R"({% if cppast_kind == "template type parameter" %}typename {% endif %}{{ md_escape(name) }})"),
+    // TODO
+  template_argument_format("TODO: template argument"),
+  declaration_specifiers_format(R"({% if length(declaration_specifiers) != 0 %}{{ join(declaration_specifiers, " ") }}{% endif %})"),
+  function_declarator_format(R"({{ md_escape(join(reject("empty", list(namespace, scope, name)), "::")) }})"),
+  function_parameters_format(R"({% for param in parameters %}{% if not loop.is_first %}, {% endif %}{{ format(option("function_parameter_format"), param) }}{% endfor %})"),
+  function_parameter_format(R"({{ format(option("parameter_type_format"), type) }}{% if name != "" %} {{ md_escape(name) }}{% endif %})"),
+  const_qualification_format(R"({% if const_qualification != "" %}{{ const_qualification }}{% endif %})"),
+  volatile_qualification_format(R"({% if volatile_qualification != "" %}{{ volatile_qualification }}{% endif %})"),
+  ref_qualification_format(R"({% if ref_qualification != "" %}{{ md_escape(ref_qualification) }}{% endif %})"),
+  // TODO
+  noexcept_specification_format("")
+  {}
 
 inja_formatter::inja_formatter(struct inja_formatter_options options, parser::cpp_context cpp_context) : self(std::make_unique<impl>(std::move(options), std::move(cpp_context))) {
   add_callback("name", [&]() {
