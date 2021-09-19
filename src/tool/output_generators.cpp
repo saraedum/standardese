@@ -21,14 +21,6 @@ namespace standardese::tool {
 output_generators::output_generators(struct options options) : options(options) {}
 
 void output_generators::emit(model::unordered_entities& documents) {
-  /*
-  for (auto& document : documents) {
-    std::ofstream out("TODO.xml");
-    auto generator = output_generator::xml::xml_generator{out};
-    document.accept(generator);
-  }
-  */
-
   logger::info("Rendering output documents.");
 
   const auto open = [&](const boost::filesystem::path& path) {
@@ -40,6 +32,13 @@ void output_generators::emit(model::unordered_entities& documents) {
   for (auto& document : documents) {
     auto out = open(options.output_directory / (document.as<model::document>().name + ".md"));
     auto generator = output_generator::markdown::markdown_generator{out};
+    document.accept(generator);
+  }
+
+  // TODO: Only render when requested.
+  for (auto& document : documents) {
+    auto out = open(options.output_directory / (document.as<model::document>().name + ".xml"));
+    auto generator = output_generator::xml::xml_generator{out};
     document.accept(generator);
   }
 
