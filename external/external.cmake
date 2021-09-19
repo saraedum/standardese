@@ -11,18 +11,6 @@ execute_process(COMMAND git submodule update --init -- external/cppast
 add_subdirectory(external/cppast EXCLUDE_FROM_ALL)
 
 #
-# add ThreadPool
-#
-if((NOT THREADPOOL_INCLUDE_DIR) OR (NOT EXISTS ${THREADPOOL_INCLUDE_DIR}))
-    message("Unable to find ThreadPool, cloning...")
-    execute_process(COMMAND git submodule update --init -- external/ThreadPool
-                    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-    set(THREADPOOL_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/external/ThreadPool
-        CACHE PATH "ThreadPool include directory")
-    # don't need to be installed
-endif()
-
-#
 # add cmark
 #
 find_library(CMARK_LIBRARY "cmark-gfm" "/usr/lib" "/usr/local/lib")

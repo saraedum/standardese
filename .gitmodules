@@ -1,6 +1,3 @@
-[submodule "external/ThreadPool"]
-    path = external/ThreadPool
-    url = https://github.com/progschj/ThreadPool.git
 [submodule "external/cmark"]
     path = external/cmark
     url = https://github.com/github/cmark.git

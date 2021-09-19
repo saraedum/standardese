@@ -9,7 +9,7 @@
 #include "inja_formatter.impl.hpp"
 
 // TODO: Drop external/ from everything but test/. Instead explain how to grab
-//       dependencies and set compiler flags.
+//       dependencies and set compiler flags: needs https://github.com/conda-forge/staged-recipes/pull/16209
 
 namespace standardese::formatter {
 
@@ -70,7 +70,7 @@ inja_formatter::inja_formatter_options::inja_formatter_options() :
   template_parameters_format(R"({% for param in parameters %}{% if not loop.is_first %}, {% endif %}{{ format(option("template_parameter_format"), param) }}{% endfor %})"),
   // TODO
   template_parameter_format(R"({% if cppast_kind == "template type parameter" %}typename {% endif %}{{ md_escape(name) }})"),
-    // TODO
+  // TODO
   template_argument_format("TODO: template argument"),
   declaration_specifiers_format(R"({% if length(declaration_specifiers) != 0 %}{{ join(declaration_specifiers, " ") }}{% endif %})"),
   function_declarator_format(R"({{ md_escape(join(reject("empty", list(namespace, scope, name)), "::")) }})"),
