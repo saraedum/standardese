@@ -10,6 +10,7 @@
 #include "../../standardese/parser/commands/section_command.hpp"
 #include "../../standardese/parser/commands/inline_command.hpp"
 #include "../../standardese/parser/comment_parser.hpp"
+#include "../util/regex.hpp"
 
 namespace standardese::parser {
 
@@ -23,7 +24,7 @@ namespace
 std::string command_character_escaped(char command_character) {
   std::string escaped = " ";
   escaped[0] = command_character;
-  if (!std::regex_match(escaped, std::regex("\\w"))) {
+  if (!std::regex_match(escaped, util::regex::command_character_escaped_command)) {
     // Anything that is not alpha-numeric can be escaped with a backslash; it
     // probably does not need to be escaped though.
     escaped = "\\" + escaped;

@@ -2,11 +2,11 @@
 // This file is subject to the license terms in the LICENSE file
 // found in the top-level directory of this distribution.
 
-#include <regex>
 #include <fmt/format.h>
 
 #include "inja_formatter.impl.hpp"
 #include "../../standardese/logger.hpp"
+#include "../util/regex.hpp"
 
 namespace standardese::formatter {
 
@@ -23,8 +23,7 @@ std::string inja_formatter::sanitize_basename_callback(const nlohmann::json& dat
 }
 
 std::string inja_formatter::sanitize_basename(const std::string& basename) const {
-  static std::regex forbidden{R"((\W|_)+)"};
-  return std::regex_replace(basename, forbidden, "_");
+  return std::regex_replace(basename, util::regex::inja_formatter_sanitize_basename_forbidden, "_");
 }
 
 }

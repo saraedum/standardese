@@ -97,6 +97,7 @@ set(src
     tool/output_generators.cpp
     tool/options.cpp
     tool/parsers.cpp
+    util/regex.cpp
     logger.cpp)
 
 add_library(standardese ${src})

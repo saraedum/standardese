@@ -3,12 +3,12 @@
 // found in the top-level directory of this distribution.
 
 #include <sstream>
-#include <regex>
 
 #include "../../standardese/transformation/anchor_transformation.hpp"
 #include "../../standardese/model/mixin/anchored.hpp"
 #include "../../standardese/model/unordered_entities.hpp"
 #include "../../standardese/model/visitor/visit.hpp"
+#include "../util/regex.hpp"
 
 namespace standardese::transformation {
 
@@ -45,11 +45,9 @@ void anchor_transformation::do_transform(model::entity& document) {
           recurse();
         }, heading);
 
-        std::regex strip(R"([^\w\s-])");
-        std::regex escape(R"([-\s]+)");
-        inner = std::regex_replace(inner, strip, "");
+        inner = std::regex_replace(inner, util::regex::anchor_transformation_strip, "");
         std::transform(inner.begin(), inner.end(), inner.begin(), [](unsigned char c){ return std::tolower(c); });
-        inner = std::regex_replace(inner, escape, "-");
+        inner = std::regex_replace(inner, util::regex::anchor_transformation_escape, "-");
         // TODO: Additionally, mkdocs sometimes adds _number to make things unique.
 
         entity.id = inner;

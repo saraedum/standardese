@@ -5,7 +5,6 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
-#include <regex>
 
 #include <fmt/format.h>
 #include <boost/iostreams/filtering_streambuf.hpp>
@@ -15,6 +14,7 @@
 
 #include "../../../standardese/inventory/sphinx/documentation_set.hpp"
 #include "../../../standardese/logger.hpp"
+#include "../../util/regex.hpp"
 
 namespace standardese::inventory::sphinx {
 
@@ -96,8 +96,7 @@ void load_v2(std::istream& in, documentation_set& inventory) {
   std::string header;
   std::getline(in, header);
 
-  static std::regex zlib{"zlib"};
-  if (!std::regex_search(header, zlib))
+  if (!std::regex_search(header, util::regex::sphinx_load_v2_zlib))
     throw std::invalid_argument("invalid sphinx inventory header (not compressed)");
 
   boost::iostreams::filtering_streambuf<boost::iostreams::input> compressed;
@@ -112,11 +111,9 @@ void load_v2(std::istream& in, documentation_set& inventory) {
     std::string line;
     std::getline(uncompressed, line);
 
-    // Essentially the same as https://github.com/sphinx-doc/sphinx/blob/4.x/sphinx/util/inventory.py#L123
-    static std::regex syntax{R"((.+?)\s+(\S+)\s+(-?\d+)\s+?(\S*)\s+(.*)\s*)"};
     std::smatch match;
 
-    if (!std::regex_match(line, match, syntax)) {
+    if (!std::regex_match(line, match, util::regex::sphinx_load_v2_syntax)) {
       // Apparently, non-matching lines are allowed: https://github.com/sphinx-doc/sphinx/blob/4.x/sphinx/util/inventory.py#L126
       logger::info(fmt::format("Ignoring malformed line in Sphinx inventory: `{}`", line));
       continue;

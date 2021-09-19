@@ -17,7 +17,6 @@
 #include <cppast/forward.hpp>
 #include <iostream>
 #include <cstdlib>
-#include <regex>
 #include <stdexcept>
 #include <boost/program_options.hpp>
 #include <boost/filesystem.hpp>
@@ -33,6 +32,7 @@
 
 #include "../../standardese/tool/options.hpp"
 #include "../../standardese/logger.hpp"
+#include "../util/regex.hpp"
 
 #ifndef STANDARDESE_VERSION_MAJOR
 #define STANDARDESE_VERSION_MAJOR "?"
@@ -595,10 +595,9 @@ po::options_description options_parser::legacy_comment_options() const {
 void options_parser::process_legacy_comment_options(po::variables_map& parsed) {
   if (parsed.count("comment.external_doc")) {
     for (const auto& external : parsed.at("comment.external_doc").as<std::vector<std::string>>()) {
-      static std::regex syntax{R"(([^=]*)=(.*\$\$.*))"};
 
       std::smatch match;
-      if (!std::regex_match(external, match, syntax)) {
+      if (!std::regex_match(external, match, util::regex::options_parser_process_legacy_comment_options_syntax)) {
         logger::error(fmt::format("Ignoring malformed argument for --external. Must be `NAMESPACE=URL` and URL must contain $$ but found `{}`.", external));
       } else {
         transformations::options::external_legacy_options external_options;
@@ -729,9 +728,8 @@ po::options_description options_parser::composition_options() const {
 void options_parser::process_external_options(po::variables_map& parsed) {
   if (parsed.count("external")) {
     for (auto external: parsed.at("external").as<std::vector<std::string>>()) {
-      std::regex syntax{"([^:]*):([^:]*):([^=]*)=(.*)"};
       std::smatch match;
-      if (!std::regex_match(external, match, syntax)) {
+      if (!std::regex_match(external, match, util::regex::options_parser_process_external_options_syntax)) {
         logger::error(fmt::format("Igroning malformed command line flag for --external. Must be of the form `KIND:SCHEMA:INVENTORY=URL` but found `{}`.", external));
         continue;
       }
@@ -1014,8 +1012,7 @@ void options_parser::select_output_format(po::variables_map& parsed, const std::
 
 std::string options_parser::escape_inja(const std::string& input) {
   // TODO: Also escape `##` at the start of a line.
-  static std::regex control{"[{}]"};
-  return std::regex_replace(input, control, R"({{ "$&" }})");
+  return std::regex_replace(input, util::regex::options_parser_escape_inja_control, R"({{ "$&" }})");
 }
 
 }

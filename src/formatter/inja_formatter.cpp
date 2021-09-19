@@ -8,9 +8,6 @@
 #include "../../standardese/logger.hpp"
 #include "inja_formatter.impl.hpp"
 
-// TODO: Move all regex instantiations to a shared place. Calling the
-// non-default constructor is extremely expensive for compile time.
-
 // TODO: Drop external/ from everything but test/. Instead explain how to grab
 //       dependencies and set compiler flags.
 

@@ -4,7 +4,6 @@
 // found in the top-level directory of this distribution.
 
 #include <fmt/format.h>
-#include <regex>
 #include <cstdlib>
 
 #include <cppast/cpp_file.hpp>
@@ -16,6 +15,8 @@
 #include "../../standardese/model/unordered_entities.hpp"
 #include "../../standardese/inventory/symbols.hpp"
 #include "../../standardese/logger.hpp"
+
+#include "../util/regex.hpp"
 
 namespace standardese::transformation {
 
@@ -76,9 +77,8 @@ void link_target_internal_transformation::do_transform(model::entity& document) 
 
           {
             // TODO: This is a hack, see heading transformation.
-            const static std::regex entity_pattern{"^standardese://@([0-9]*)$"};
             std::smatch match;
-            if (std::regex_match(target.target, match, entity_pattern)) {
+            if (std::regex_match(target.target, match, util::regex::link_target_internal_transformation_entity_pattern)) {
               link.target = model::link_target(*static_cast<const cppast::cpp_entity*>((void*)atol(match[1].str().c_str())));
               return;
             }
@@ -94,9 +94,8 @@ void link_target_internal_transformation::do_transform(model::entity& document) 
           }
 
           // Taken from RFC3986 p.50. Adapted so that scheme & authority are not optional.
-          const static std::regex uri_pattern{R"(^(([^:/?#]+):)(//([^/?#]*))([^?#]*)(\?([^#]*))?(#(.*))?)"};
           std::smatch match;
-          if (std::regex_match(target.target, match, uri_pattern)) {
+          if (std::regex_match(target.target, match, util::regex::link_target_internal_transformation_uri_pattern)) {
             // TODO: Handle standardese:// schemes here.
             return;
           }
