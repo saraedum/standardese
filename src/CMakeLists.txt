@@ -55,7 +55,6 @@ set(src
     formatter/inja_formatter.sanitize_basename.cpp
     formatter/inja_formatter.md_escape.cpp
     formatter/inja_formatter.reject.cpp
-    formatter/inja_formatter.code_join.cpp
     formatter/inja_formatter.declaration_specifiers.cpp
     formatter/inja_formatter.target.cpp
     formatter/inja_formatter.parameters.cpp
