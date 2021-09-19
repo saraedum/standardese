@@ -6,7 +6,7 @@
 
 #include <boost/filesystem/path.hpp>
 
-#include "../../../external/catch/single_include/catch2/catch.hpp"
+#include "../../external/catch/single_include/catch2/catch.hpp"
 
 #include "../../util/logger.hpp"
 

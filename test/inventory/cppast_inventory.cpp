@@ -4,7 +4,7 @@
 
 #include <cppast/cpp_entity_kind.hpp>
 
-#include "../../external/catch/single_include/catch2/catch.hpp"
+#include "../external/catch/single_include/catch2/catch.hpp"
 
 #include "../util/cpp_file.hpp"
 #include "../util/logger.hpp"

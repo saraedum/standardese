@@ -6,7 +6,7 @@
 #include <boost/algorithm/string/replace.hpp>
 #include <boost/type_index.hpp>
 
-#include "../../external/catch/single_include/catch2/catch.hpp"
+#include "../external/catch/single_include/catch2/catch.hpp"
 
 #include "../../standardese/transformation/link_target_internal_transformation.hpp"
 #include "../../standardese/model/visitor/visit.hpp"

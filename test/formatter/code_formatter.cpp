@@ -8,7 +8,7 @@
 #include "../../standardese/model/markup/paragraph.hpp"
 #include "../../standardese/output_generator/xml/xml_generator.hpp"
 
-#include "../../external/catch/single_include/catch2/catch.hpp"
+#include "../external/catch/single_include/catch2/catch.hpp"
 
 #include "../util/cpp_file.hpp"
 #include "../util/parsed_comments.hpp"

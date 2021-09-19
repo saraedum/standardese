@@ -16,7 +16,7 @@
 #include "../util/cpp_file.hpp"
 #include "../util/unindent.hpp"
 
-#include "../../external/catch/single_include/catch2/catch.hpp"
+#include "../external/catch/single_include/catch2/catch.hpp"
 
 namespace standardese::test::formatter {
 

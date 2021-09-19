@@ -3,7 +3,7 @@
 // This file is subject to the license terms in the LICENSE file
 // found in the top-level directory of this distribution.
 
-#include "../../external/catch/single_include/catch2/catch.hpp"
+#include "../external/catch/single_include/catch2/catch.hpp"
 
 #include "../../standardese/output_generator/xml/xml_generator.hpp"
 #include "../../standardese/document_builder/entity_document_builder.hpp"

@@ -5,7 +5,7 @@
 
 #include <boost/type_index.hpp>
 
-#include "../../external/catch/single_include/catch2/catch.hpp"
+#include "../external/catch/single_include/catch2/catch.hpp"
 
 #include "../../standardese/transformation/link_external_legacy_transformation.hpp"
 #include "../../standardese/model/visitor/visit.hpp"

@@ -5,4 +5,4 @@
 #define CATCH_CONFIG_MAIN
 #define CATCH_CONFIG_COLOUR_NONE
 #define CATCH_CONFIG_CONSOLE_WIDTH 512
-#include "../external/catch/single_include/catch2/catch.hpp"
+#include "external/catch/single_include/catch2/catch.hpp"

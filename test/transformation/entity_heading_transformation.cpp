@@ -4,7 +4,7 @@
 
 #include "../../standardese/transformation/entity_heading_transformation.hpp"
 
-#include "../../external/catch/single_include/catch2/catch.hpp"
+#include "../external/catch/single_include/catch2/catch.hpp"
 #include "../../standardese/document_builder/entity_document_builder.hpp"
 #include "../../standardese/output_generator/xml/xml_generator.hpp"
 #include "../../standardese/model/document.hpp"

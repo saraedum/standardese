@@ -8,5 +8,5 @@
 	path = external/tiny-process-library
 	url = https://gitlab.com/eidheim/tiny-process-library.git
 [submodule "external/catch"]
-	path = external/catch
+	path = test/external/catch
 	url = https://github.com/catchorg/Catch2.git

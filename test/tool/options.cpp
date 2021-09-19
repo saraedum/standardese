@@ -6,7 +6,7 @@
 #include <boost/type_index.hpp>
 #include <boost/algorithm/string.hpp>
 
-#include "../../external/catch/single_include/catch2/catch.hpp"
+#include "../external/catch/single_include/catch2/catch.hpp"
 #include "../../standardese/tool/options.hpp"
 #include "../util/logger.hpp"
 

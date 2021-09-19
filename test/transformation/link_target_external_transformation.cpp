@@ -4,7 +4,7 @@
 
 #include <boost/type_index.hpp>
 
-#include "../../external/catch/single_include/catch2/catch.hpp"
+#include "../external/catch/single_include/catch2/catch.hpp"
 
 #include "../../standardese/transformation/link_target_external_transformation.hpp"
 #include "../../standardese/inventory/sphinx/documentation_set.hpp"
