@@ -26,6 +26,7 @@ set(tests
     transformation/link_external_legacy_transformation.cpp
     transformation/link_text_transformation.cpp
     transformation/entity_heading_transformation.cpp
+    transformation/group_transformation.cpp
     formatter/inja_formatter.cpp
     formatter/code_formatter.cpp
     comment.cpp

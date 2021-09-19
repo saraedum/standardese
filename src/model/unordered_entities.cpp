@@ -4,6 +4,7 @@
 
 #include <boost/unordered_set.hpp>
 #include <fmt/format.h>
+#include <initializer_list>
 
 #include "../../standardese/model/unordered_entities.hpp"
 #include "../../standardese/model/entity.hpp"
@@ -34,6 +35,8 @@ struct unordered_entities::unordered_iterator<is_const>::impl {
 unordered_entities::unordered_entities() noexcept : impl_(new impl{}) {}
 
 unordered_entities::~unordered_entities() noexcept {}
+
+unordered_entities::unordered_entities(std::initializer_list<model::entity> init) : unordered_entities(init.begin(), init.end()) {}
 
 unordered_entities::unordered_entities(unordered_entities&& rhs) noexcept : impl_(std::move(rhs.impl_)) {}
 

@@ -18,8 +18,6 @@
 #include "../../standardese/logger.hpp"
 #include "../../standardese/output_generator/xml/xml_generator.hpp"
 
-using standardese::model::document;
-
 namespace standardese::document_builder
 {
 
@@ -27,7 +25,7 @@ index_document_builder::options::options() {}
 
 index_document_builder::index_document_builder(options options, parser::cpp_context context) : anchor_text_formatter(options.anchor_text_options, std::move(context)) {}
 
-document index_document_builder::build(const std::string& name, const std::string& path, const std::function<bool(const model::entity&)> predicate, const model::unordered_entities& entities) const {
+model::document index_document_builder::build(const std::string& name, const std::string& path, const std::function<bool(const model::entity&)> predicate, const model::unordered_entities& entities) const {
   auto list = model::markup::list(false);
 
   for (auto& entity : entities)
@@ -53,7 +51,7 @@ document index_document_builder::build(const std::string& name, const std::strin
         }
       }, entity);
 
-  return document(name, path, std::move(list));
+  return model::document(name, path, std::move(list));
 }
 
 bool index_document_builder::is_header_file(const model::entity& entity) {

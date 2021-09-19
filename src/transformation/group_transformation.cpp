@@ -5,11 +5,13 @@
 
 #include <stack>
 #include <vector>
+#include <fmt/format.h>
 
 #include "../../standardese/transformation/group_transformation.hpp"
 
 #include "../../standardese/model/group_documentation.hpp"
 #include "../../standardese/model/visitor/visit.hpp"
+#include "../../standardese/logger.hpp"
 
 namespace standardese::transformation {
 
@@ -59,23 +61,46 @@ void group_transformation::do_transform(model::entity& document) {
 
 void group_transformation::merge(model::group_documentation& group, model::cpp_entity_documentation&& entity) const {
   if (entity.synopsis.has_value()) {
-    if (group.synopsis.has_value())
-      ; // TODO: Complain
+    if (group.synopsis.has_value() && group.synopsis.value() != entity.synopsis.value())
+      logger::warn(fmt::format("Only one entity of a group can define a synopsis. Ignoring synopsis {} of group {}.", group.synopsis.value(), entity.group.value()));
     group.synopsis = entity.synopsis;
   }
   if (entity.output_section.has_value()) {
-    if (group.output_section.has_value())
-      ; // TODO: Complain
+    if (group.output_section.has_value() && entity.output_section.value() != group.output_section.value())
+      logger::warn(fmt::format("Only one entity of a group can define an output section. Ignoring output section {} of group {}.", group.output_section.value(), entity.group.value()));
     group.output_section = entity.output_section;
   }
   if (entity.module.has_value()) {
-    if (group.module.has_value())
-      ; // TODO: Complain
+    if (group.module.has_value() && group.module.value() != entity.module.value())
+      logger::warn(fmt::format("Only one entity of a group can define a module. Ignoring module {} of group {}.", group.module.value(), entity.group.value()));
     group.module = entity.module;
   }
-
-  for (auto& child : entity)
+  
+  for (auto& child : entity) {
+    if (child.is<model::section>()) {
+      auto& section = child.as<model::section>();
+      // Search for any existing section of the same type in the group.
+      auto existing = [&]() {
+        for (auto existing = group.begin(); existing != group.end(); ++existing)
+          if (existing->is<model::section>() && existing->as<model::section>().type == section.type)
+            return existing;
+        return group.end();
+      }();
+      if (existing != group.end()) {
+        if (existing->as<model::section>().begin() != existing->as<model::section>().end()) {
+          if (section.begin() == section.end())
+            // Keep the existing section and drop the one coming from this
+            // child since it is empty anyway.
+            continue;
+          // TODO: Use the configured section names.
+          logger::warn(fmt::format("Multiple members of the group {} define a non-empty {} section. The sections will show up in the generated documentation but there will be no indication which section came from which group member originally.", entity.group.value(), "?" /* section.type */));
+        } else
+          // Replace existing section since it is empty.
+          group.erase(existing);
+      };
+    }
     group.add_child(std::move(child));
+  }
 
   entity.clear();
 

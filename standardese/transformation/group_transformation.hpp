@@ -10,6 +10,16 @@
 
 namespace standardese::transformation {
 
+/// Merges entities that are in the same group, e.g., related overloads that
+/// are marked with the same `\group` command.
+/// Such merged entities will then typically receive a heading listing all the
+/// group members
+/// ```
+/// (1) first_overload()
+/// (2) second_overload()
+/// …
+/// ```
+/// see [entity_heading_transformation]().
 class group_transformation : public transformation {
   public:
     struct group_options {
