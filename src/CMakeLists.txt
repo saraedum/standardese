@@ -111,10 +111,6 @@ target_compile_definitions(standardese PUBLIC
                                 STANDARDESE_VERSION_MAJOR=${STANDARDESE_VERSION_MAJOR}
                                 STANDARDESE_VERSION_MINOR=${STANDARDESE_VERSION_MINOR})
 
-# add threading support
-find_package(Threads REQUIRED)
-target_link_libraries(standardese PUBLIC Threads::Threads)
-
 # link cppast
 target_link_libraries(standardese PUBLIC cppast)
 

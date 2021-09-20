@@ -9,7 +9,7 @@
 #include "inja_formatter.impl.hpp"
 
 // TODO: Drop external/ from everything but test/. Instead explain how to grab
-//       dependencies and set compiler flags: needs https://github.com/conda-forge/staged-recipes/pull/16209
+//       dependencies and set compiler flags: needs https://github.com/conda-forge/staged-recipes/pull/16209, https://github.com/conda-forge/staged-recipes/pull/16210
 
 namespace standardese::formatter {
 
