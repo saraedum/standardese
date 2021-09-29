@@ -52,14 +52,6 @@ model::markup::paragraph code_formatter::build(const cppast::cpp_type& type, con
   return build(options.type_format, type, context);
 }
 
-model::markup::paragraph code_formatter::build(const cppast::cpp_template_argument& argument) const {
-  return build(options.template_argument_format, argument);
-}
-
-model::markup::paragraph code_formatter::build(const cppast::cpp_template_argument& argument, const cppast::cpp_entity& context) const {
-  return build(options.template_argument_format, argument, context);
-}
-
 model::markup::paragraph code_formatter::build(const std::string& format, const cppast::cpp_entity& entity) const {
   inja_formatter inja{options, cpp_context};
   inja.data() = inja.to_json(entity);
@@ -81,18 +73,6 @@ model::markup::paragraph code_formatter::build(const std::string& format, const 
 model::markup::paragraph code_formatter::build(const std::string& format, const cppast::cpp_type& type, const cppast::cpp_entity& context) const {
   inja_formatter inja{options, cpp_context, context};
   inja.data() = inja.to_json(type);
-  return inja.code(inja.format(format));
-}
-
-model::markup::paragraph code_formatter::build(const std::string& format, const cppast::cpp_template_argument& argument) const {
-  inja_formatter inja{options, cpp_context};
-  inja.data() = inja.to_json(argument);
-  return inja.code(inja.format(format));
-}
-
-model::markup::paragraph code_formatter::build(const std::string& format, const cppast::cpp_template_argument& argument, const cppast::cpp_entity& context) const {
-  inja_formatter inja{options, cpp_context, context};
-  inja.data() = inja.to_json(argument);
   return inja.code(inja.format(format));
 }
 

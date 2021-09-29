@@ -12,6 +12,7 @@ namespace standardese::formatter {
 template<class> inline constexpr bool always_false_v = false;
 
 // TODO: Use everywhere for better error messages.
+// TODO: Break up into actual to_string methods in inja_formatter.
 std::string inja_formatter::impl::to_string(const nlohmann::json& data) const {
   return std::visit([&](auto&& entity) {
     using T = std::decay_t<decltype(entity)>;
@@ -21,8 +22,6 @@ std::string inja_formatter::impl::to_string(const nlohmann::json& data) const {
       return fmt::format("type {}, i.e., {}", inja_formatter{{}, cpp_context}.name(*entity), nlohmann::to_string(data));
     } else if constexpr (std::is_same_v<T, std::nullptr_t>) {
       return std::string{"null"};
-    } else if constexpr (std::is_same_v<T, model::link_target>) {
-      return fmt::format("link target {}", nlohmann::to_string(data));
     } else if constexpr (std::is_same_v<T, model::module>) {
       return fmt::format("module {}", entity.name);
     } else if constexpr (std::is_same_v<T, const json::array_t*>) {

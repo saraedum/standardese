@@ -47,7 +47,11 @@ TEST_CASE("Strings from Inja Templates", "[inja_formatter]") {
   }
 
   SECTION("`name` Callback") {
-    util::cpp_file header;
+    util::cpp_file header(util::unindent(R"(
+      void f();
+
+      class X {};
+    )"));
     auto inja = inja_formatter({}, header);
 
     SECTION("`name` of a C++ Entity Provides the (Shortened) cppast Name of the Entity") {
@@ -64,8 +68,22 @@ TEST_CASE("Strings from Inja Templates", "[inja_formatter]") {
       REQUIRE(inja.format("{{ name }}") == context.name);
     }
 
-    SECTION("`name` Cannot be used Without an Appropriate Context") {
+    SECTION("`name` cannot be used Without an Appropriate Context") {
       REQUIRE_THROWS(inja.format("{{ name }}"));
+    }
+
+    // TODO: Test all the other name() overloads.
+
+    SECTION("`name` can be used as Advertised in the Documentation of to_json(cpp_entity)") {
+      inja.data()["entity"] = inja.to_json(header["f"]);
+
+      REQUIRE(inja.format("{{ name(entity) }}") == "f");
+    }
+
+    SECTION("`name` can be used as Advertised in the Documentation of to_json(cpp_type)") {
+      inja.data()["type"] = inja.to_json(header["X"]);
+
+      REQUIRE(inja.format("{{ name(type) }}") == "X");
     }
   }
 

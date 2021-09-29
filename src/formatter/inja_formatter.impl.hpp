@@ -30,15 +30,17 @@ struct inja_formatter::impl {
 
   impl(inja_formatter_options options, parser::cpp_context cpp_context);
 
-  static const std::string& href_schema();
-
   using json = nlohmann::json;
-  using variant = std::variant<std::nullptr_t, const cppast::cpp_entity*, const cppast::cpp_type*, model::link_target, model::module, const json::array_t*, json::boolean_t, json::number_float_t, const json::object_t*, const json::string_t*>;
+  using variant = std::variant<std::nullptr_t, const cppast::cpp_entity*, const cppast::cpp_type*, model::module, const json::array_t*, json::boolean_t, json::number_float_t, const json::object_t*, const json::string_t*>;
 
   static variant from_json(const nlohmann::json&);
 
   /// Return a string representation of this JSON for debug/logging purposes.
   std::string to_string(const nlohmann::json&) const;
+
+  /// Return a URL scheme that can be used to encode internal links for
+  /// target() and parse().
+  static const std::string& target_schema();
 
   inja_formatter_options options;
   inja::Environment env;

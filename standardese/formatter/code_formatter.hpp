@@ -49,18 +49,6 @@ class code_formatter {
   /// Return `type` written in C++ syntax according to `format`.
   model::markup::paragraph build(const std::string& format, const cppast::cpp_type& type, const cppast::cpp_entity& context) const;
 
-  /// Return `argument` written in C++ syntax.
-  model::markup::paragraph build(const cppast::cpp_template_argument& argument) const;
-
-  /// Return `argument` written in C++ syntax.
-  model::markup::paragraph build(const cppast::cpp_template_argument& argument, const cppast::cpp_entity& context) const;
-
-  /// Return `argument` written in C++ syntax according to `format`.
-  model::markup::paragraph build(const std::string& format, const cppast::cpp_template_argument& argument) const;
-
-  /// Return `argument` written in C++ syntax according to `format`.
-  model::markup::paragraph build(const std::string& format, const cppast::cpp_template_argument& argument, const cppast::cpp_entity& context) const;
-
  private:
   code_formatter_options options;
   parser::cpp_context cpp_context;

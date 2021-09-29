@@ -24,14 +24,14 @@ model::document inja_formatter::parse(const std::string &markdown) const {
       if (entity.target.href().has_value()) {
         std::string href = entity.target.href().value();
 
-        if (href.rfind(impl::href_schema()) == 0)
+        if (href.rfind(impl::target_schema()) == 0)
           std::visit([&](auto&& parsed) {
             using T = std::decay_t<decltype(parsed)>;
-            if constexpr (std::is_same_v<T, model::link_target>)
-              entity.target = parsed;
+            if constexpr (std::is_same_v<T, const cppast::cpp_entity*>)
+              entity.target = model::link_target(*parsed);
             else
               logger::error(fmt::format("Could not parse link target `{}` which is not of a supported kind.", href));
-          }, impl::from_json(nlohmann::json::parse(href.substr(impl::href_schema().size()))));
+          }, impl::from_json(nlohmann::json::parse(href.substr(impl::target_schema().size()))));
       }
     }
 
@@ -41,8 +41,8 @@ model::document inja_formatter::parse(const std::string &markdown) const {
   return parsed;
 }
 
-const std::string& inja_formatter::impl::href_schema() {
-  static std::string schema = "json://";
+const std::string& inja_formatter::impl::target_schema() {
+  static std::string schema = "standardese-target://";
   return schema;
 }
 

@@ -31,7 +31,6 @@ void link_text_transformation::do_transform(model::entity& root) {
 
           const auto apply = [&](const std::string& format, auto&& data) {
             formatter::inja_formatter inja({}, context);
-            inja.data().merge_patch(inja.to_json(data));
 
             auto rendered = inja.parse(inja.format(format));
 

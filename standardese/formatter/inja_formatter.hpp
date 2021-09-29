@@ -124,6 +124,10 @@ class inja_formatter {
   /// Returns the root node of the generated markup tree.
   model::document parse(const std::string& markdown) const;
 
+  /// Return the JSON object associated to this formatter.
+  /// The properties of this object can be used in template strings, i.e.,
+  /// after setting `data["x"] = "text"` you can use `{{ x }}` in a template to
+  /// render "text".
   nlohmann::json& data();
   const nlohmann::json& data() const;
 
@@ -132,13 +136,21 @@ class inja_formatter {
   void add_void_callback(const std::string& name, std::function<void()>);
   void add_void_callback(const std::string& name, std::function<void(std::vector<const nlohmann::json*>)>);
 
+  /// Return this C/C++ entity as JSON, typically, for inclusion in `data()`.
+  /// The JSON returned is an implementation detail but it is such that the
+  /// other methods here that accept a `cpp_entity` can then be invoked on it
+  /// from an inja template. I.e., after setting `data()["entity"] =
+  /// to_json(...)`, an inja template could invoke `{{ name(entity) }}` to
+  /// render the name of that C/C++ entity.
   nlohmann::json to_json(const cppast::cpp_entity&) const;
 
+  /// Return this C/C++ type as JSON, typically, for inclusion in `data()`.
+  /// The JSON returned is an implementation detail but it is such that the
+  /// other methods here that accept a `cpp_type` can then be invoked on it
+  /// from an inja template. I.e., after setting `data()["type"] =
+  /// to_json(...)`, an inja template could invoke `{{ name(type) }}` to render
+  /// the name of that C/C++ type.
   nlohmann::json to_json(const cppast::cpp_type&) const;
-
-  nlohmann::json to_json(const cppast::cpp_template_argument&) const;
-
-  nlohmann::json to_json(const model::link_target&) const;
 
   nlohmann::json to_json(const model::entity&) const;
 
@@ -200,6 +212,8 @@ class inja_formatter {
   std::vector<std::string> declaration_specifiers(const cppast::cpp_entity&) const;
 
   /// Return a link to this entity for MarkDown.
+  /// The link is encoded in a way that might not make sense outside of the
+  /// running standardese invocation. It is meant to be consumed by `parse()`.
   /// This method can be invoked in inja templates as `{{ target }}` or `{{
   /// target(entity) }}`.
   std::string target(const cppast::cpp_entity&) const;

@@ -27,7 +27,7 @@ std::string inja_formatter::target_callback(const nlohmann::json& data) const {
 }
 
 std::string inja_formatter::target(const cppast::cpp_entity& entity) const {
-  return self->href_schema() + to_json(model::link_target(entity)).dump();
+  return self->target_schema() + to_json(entity).dump();
 }
 
 std::string inja_formatter::target(const cppast::cpp_type& type) const {
