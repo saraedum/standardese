@@ -7,6 +7,12 @@
 #include <spdlog/spdlog.h>
 #include <mutex>
 
+#if __linux__
+#include <execinfo.h>
+#include <stdio.h>
+#include <stdlib.h>
+#endif
+
 #include "../standardese/logger.hpp"
 
 namespace standardese::logger {
@@ -16,6 +22,8 @@ namespace {
 std::mutex counter_mutex;
 
 static bool is_warn_as_error = false;
+// TODO: Make configurable by log level.
+static bool include_stacktraces = true;
 
 int error_count = 0;
 int warning_count = 0;
@@ -39,15 +47,39 @@ spdlog::logger& get() {
   return *logger;
 }
 
+std::string append_stacktrace(std::string msg) {
+#if __linux__
+  if (include_stacktraces) {
+    const int FRAMES = 128;
+    void *frames[FRAMES];
+    char **strings;
+
+    const int size = backtrace(frames, FRAMES);
+    strings = backtrace_symbols(frames, size);
+
+    if (strings != NULL) {
+      msg += "\nat:";
+      for (int i = 0; i < size; i++) {
+        msg += "\n  ";
+        msg += strings[i];
+      }
+    }
+
+    free(strings);
+  }
+#endif
+  return msg;
+}
+
 void critical(const std::string& msg) {
-  get().critical(msg);
+  get().critical(append_stacktrace(msg));
 
   std::lock_guard lock{counter_mutex};
   error_count++;
 }
 
 void error(const std::string& msg) {
-  get().error(msg);
+  get().error(append_stacktrace(msg));
 
   std::lock_guard lock{counter_mutex};
   error_count++;
