@@ -38,7 +38,7 @@ inja_formatter::inja_formatter_options::inja_formatter_options() :
       else if cppast_kind in ["friend"] %}{{ format(option("friend_format")) }}{%
       else if cppast_kind in ["variable", "member variable"] %}{{ format(option("variable_format")) }}{%
       else if cppast_kind in ["function template"] %}{{ format(option("template_function_format")) }}{%
-      else %}TODO: not implemented {{ cppast_kind }}.{% endif %})"),
+      else %}{{ error(format("not implemented: inja_formatter_options::cpp_format does not handle {{ cppast_kind }} yet.")) }}{% endif %})"),
   function_format(R"({%
         if cppast_kind in ["constructor", "destructor", "conversion operator"] %}{{
           format(option("function_declarator_format"))

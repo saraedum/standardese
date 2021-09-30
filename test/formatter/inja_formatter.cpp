@@ -264,11 +264,28 @@ TEST_CASE("Strings from Inja Templates", "[inja_formatter]") {
   }
 
   SECTION("`error` Callback") {
-    util::cpp_file header;
-    auto inja = inja_formatter({}, header);
+    SECTION("Invoke Callback with a Simple String Argument") {
+      util::cpp_file header;
+      auto inja = inja_formatter({}, header);
 
-    REQUIRE_THROWS_AS(inja.error("error message"), test::util::logger::message_logged_error);
-    REQUIRE_THROWS_AS(inja.format(R"({{ error("error message") }})"), test::util::logger::message_logged_error);
+      REQUIRE_THROWS_AS(inja.error("error message"), test::util::logger::message_logged_error);
+      REQUIRE_THROWS_AS(inja.format(R"({{ error("error message") }})"), test::util::logger::message_logged_error);
+    }
+    
+    // A more realistic use case:
+    SECTION("Invoke Callback with a Formatted String Argument") {
+      util::cpp_file header;
+      auto inja = inja_formatter({}, header);
+      inja.data().merge_patch(inja.to_json(header));
+
+      std::stringstream s;
+      util::logger::capturing_logger(s);
+
+      REQUIRE(inja.format(R"({{ error(format("failed to process header {{ name }}")) }})") == "");
+
+      CAPTURE(s.str());
+      REQUIRE(s.str().find("failed to process header header.hpp") != std::string::npos);
+    }
   }
 
   SECTION("`warn` Callback") {
@@ -287,11 +304,14 @@ TEST_CASE("Strings from Inja Templates", "[inja_formatter]") {
 
     SECTION("Invoked Directly") {
       inja.info("informational message");
+
       CAPTURE(s.str());
       REQUIRE(s.str().find("informational message") != std::string::npos);
     }
+
     SECTION("Invoked through Template") {
       REQUIRE(inja.format(R"({{ info("informational message") }})") == "");
+
       CAPTURE(s.str());
       REQUIRE(s.str().find("informational message") != std::string::npos);
     }
@@ -305,11 +325,14 @@ TEST_CASE("Strings from Inja Templates", "[inja_formatter]") {
 
     SECTION("Invoked Directly") {
       inja.debug("debug message");
+
       // Debug messages are not logged normally.
       REQUIRE(s.str() == "");
     }
+
     SECTION("Invoked through Template") {
       REQUIRE(inja.format(R"({{ debug("debug message") }})") == "");
+
       // Debug messages are not logged normally.
       REQUIRE(s.str() == "");
     }
@@ -323,11 +346,14 @@ TEST_CASE("Strings from Inja Templates", "[inja_formatter]") {
 
     SECTION("Invoked Directly") {
       inja.trace("trace message");
+
       // Trace messages are not logged normally.
       REQUIRE(s.str() == "");
     }
+
     SECTION("Invoked through Template") {
       REQUIRE(inja.format(R"({{ trace("trace message") }})") == "");
+
       // Trace messages are not logged normally.
       REQUIRE(s.str() == "");
     }
