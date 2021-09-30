@@ -298,10 +298,34 @@ inja_formatter::inja_formatter(struct inja_formatter_options options, parser::cp
       return std::string{};
     return scope_callback(*args[0]);
   });
+  add_callback("error", [&](const std::vector<const nlohmann::json*>& args) {
+    if (!check_arg_count("error", args, 1))
+      return nlohmann::json{};
+    error_callback(*args[0]);
+    return nlohmann::json{};
+  });
+  add_callback("warn", [&](const std::vector<const nlohmann::json*>& args) {
+    if (!check_arg_count("warn", args, 1))
+      return nlohmann::json{};
+    warn_callback(*args[0]);
+    return nlohmann::json{};
+  });
   add_callback("info", [&](const std::vector<const nlohmann::json*>& args) {
     if (!check_arg_count("info", args, 1))
       return nlohmann::json{};
     info_callback(*args[0]);
+    return nlohmann::json{};
+  });
+  add_callback("debug", [&](const std::vector<const nlohmann::json*>& args) {
+    if (!check_arg_count("debug", args, 1))
+      return nlohmann::json{};
+    debug_callback(*args[0]);
+    return nlohmann::json{};
+  });
+  add_callback("trace", [&](const std::vector<const nlohmann::json*>& args) {
+    if (!check_arg_count("trace", args, 1))
+      return nlohmann::json{};
+    trace_callback(*args[0]);
     return nlohmann::json{};
   });
 }

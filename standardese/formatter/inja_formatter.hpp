@@ -333,7 +333,25 @@ class inja_formatter {
   /// decide this without knowdledge of the underlying C++ source code.
   std::string scope(const std::string&) const;
 
+  /// Write an error message to the logs.
+  /// This method can be invoked in an inja template as `{{ error("message") }}`.
+  void error(const std::string&) const;
+
+  /// Write a warning message to the logs.
+  /// This method can be invoked in an inja template as `{{ warn("message") }}`.
+  void warn(const std::string&) const;
+
+  /// Write an informational message to the logs.
+  /// This method can be invoked in an inja template as `{{ info("message") }}`.
   void info(const std::string&) const;
+
+  /// Write a debug message to the logs.
+  /// This method can be invoked in an inja template as `{{ debug("message") }}`.
+  void debug(const std::string&) const;
+
+  /// Write a trace message to the logs.
+  /// This method can be invoked in an inja template as `{{ trace("message") }}`.
+  void trace(const std::string&) const;
 
  private:
   std::string name_callback(const nlohmann::json&) const;
@@ -366,7 +384,6 @@ class inja_formatter {
   std::string replace_callback(const nlohmann::json&, const nlohmann::json&, const nlohmann::json&) const;
   std::string namespace_callback(const nlohmann::json&) const;
   std::string scope_callback(const nlohmann::json&) const;
-  // TODO: Expose above. Register callbacks. Test.
   void error_callback(const nlohmann::json&) const;
   void warn_callback(const nlohmann::json&) const;
   void info_callback(const nlohmann::json&) const;

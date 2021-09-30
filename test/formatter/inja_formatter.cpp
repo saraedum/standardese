@@ -262,6 +262,76 @@ TEST_CASE("Strings from Inja Templates", "[inja_formatter]") {
       REQUIRE(inja.replace(R"(mp\_limb\_signed\_t)", R"(mp\\?_limb\\?_signed\\?_t)", "slong") == "slong");
     }
   }
+
+  SECTION("`error` Callback") {
+    util::cpp_file header;
+    auto inja = inja_formatter({}, header);
+
+    REQUIRE_THROWS_AS(inja.error("error message"), test::util::logger::message_logged_error);
+    REQUIRE_THROWS_AS(inja.format(R"({{ error("error message") }})"), test::util::logger::message_logged_error);
+  }
+
+  SECTION("`warn` Callback") {
+    util::cpp_file header;
+    auto inja = inja_formatter({}, header);
+
+    REQUIRE_THROWS_AS(inja.warn("warning message"), test::util::logger::message_logged_error);
+    REQUIRE_THROWS_AS(inja.format(R"({{ warn("warning message") }})"), test::util::logger::message_logged_error);
+  }
+
+  SECTION("`info` Callback") {
+    util::cpp_file header;
+    auto inja = inja_formatter({}, header);
+    std::stringstream s;
+    util::logger::capturing_logger(s);
+
+    SECTION("Invoked Directly") {
+      inja.info("informational message");
+      CAPTURE(s.str());
+      REQUIRE(s.str().find("informational message") != std::string::npos);
+    }
+    SECTION("Invoked through Template") {
+      REQUIRE(inja.format(R"({{ info("informational message") }})") == "");
+      CAPTURE(s.str());
+      REQUIRE(s.str().find("informational message") != std::string::npos);
+    }
+  }
+
+  SECTION("`debug` Callback") {
+    util::cpp_file header;
+    auto inja = inja_formatter({}, header);
+    std::stringstream s;
+    util::logger::capturing_logger(s);
+
+    SECTION("Invoked Directly") {
+      inja.debug("debug message");
+      // Debug messages are not logged normally.
+      REQUIRE(s.str() == "");
+    }
+    SECTION("Invoked through Template") {
+      REQUIRE(inja.format(R"({{ debug("debug message") }})") == "");
+      // Debug messages are not logged normally.
+      REQUIRE(s.str() == "");
+    }
+  }
+
+  SECTION("`trace` Callback") {
+    util::cpp_file header;
+    auto inja = inja_formatter({}, header);
+    std::stringstream s;
+    util::logger::capturing_logger(s);
+
+    SECTION("Invoked Directly") {
+      inja.trace("trace message");
+      // Trace messages are not logged normally.
+      REQUIRE(s.str() == "");
+    }
+    SECTION("Invoked through Template") {
+      REQUIRE(inja.format(R"({{ trace("trace message") }})") == "");
+      // Trace messages are not logged normally.
+      REQUIRE(s.str() == "");
+    }
+  }
 }
 
 TEST_CASE("Markup Entities from Inja Templates", "[inja_formatter]") {
