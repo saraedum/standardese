@@ -33,7 +33,7 @@ struct inja_formatter::impl {
   impl(inja_formatter_options options, parser::cpp_context cpp_context);
 
   using json = nlohmann::json;
-  using variant = std::variant<std::nullptr_t, const cppast::cpp_entity*, const cppast::cpp_type*, const model::entity*, const json::array_t*, json::boolean_t, json::number_float_t, const json::object_t*, const json::string_t*>;
+  using variant = std::variant<std::nullptr_t, const cppast::cpp_entity*, const cppast::cpp_type*, const model::entity*, const json::array_t*, json::boolean_t, json::number_float_t, const json::object_t*, const json::string_t*, json::number_integer_t>;
 
   static variant from_json(const nlohmann::json&);
 

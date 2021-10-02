@@ -98,9 +98,9 @@ nlohmann::json inja_formatter::to_json(const cppast::cpp_type* type) const {
 }
 
 inja_formatter::impl::variant inja_formatter::impl::from_json(const nlohmann::json& value) {
-  if (value.is_null())
+  if (value.is_null()) {
     return nullptr;
-  if (value.is_object()) {
+  } else if (value.is_object()) {
     const auto standardese = value.find("standardese");
     if (standardese != value.end() && standardese->is_object()) {
       const auto kind = standardese->find("kind");
@@ -135,9 +135,11 @@ inja_formatter::impl::variant inja_formatter::impl::from_json(const nlohmann::js
     return value.get_ptr<const nlohmann::json::string_t*>();
   } else if (value.is_array()) {
     return value.get_ptr<const nlohmann::json::array_t*>();
+  } else if (value.is_number_integer()) {
+    return static_cast<nlohmann::json::number_integer_t>(value);
   }
 
-  // TODO
+  // TODO: make sure that we can handle everything that nlohmann::json knows about.
   throw std::logic_error(fmt::format("not implemented: from_json({})", nlohmann::to_string(value)));
 }
 
