@@ -45,9 +45,9 @@ entity_heading_transformation::entity_heading_transformation_options::entity_hea
         {%- else %}# {{ md_escape(kind) }} {{ md(code(md_escape(name))) }}
         {%- endif %})"),
   // TODO: Read from CLI and reset the default to standardese 0-5-0 equivalent.
-  group_format(R"(# {{ standardese.output_section }}
+  group_format(R"(# {{ md_escape(standardese.output_section) }}
 ```
-{% for member in standardese.entities %}({{ loop.index1 }}) {% if synopsis %}{{ text(code(md_escape(synopsis(member)))) }}{% else %}{{ text(code(md_escape(text(format(option("cpp_format"), member))))) }}{% endif %}{% endfor %}```)"),
+{% for member in standardese.entities %}({{ loop.index1 }}) {% if synopsis %}{{ text(code(md_escape(synopsis(member)))) }}{% else %}{{ text(code(md_escape(text(md_escape(format(option("cpp_format"), member)))))) }}{% endif %}{% endfor %}```)"),
   inja_formatter_options(std::move(inja_formatter_options)) {}
 
 void entity_heading_transformation::do_transform(model::entity& document) {

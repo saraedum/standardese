@@ -60,7 +60,7 @@ inja_formatter::inja_formatter_options::inja_formatter_options() :
   variable_format(R"({{ format(option("type_format"), variable_type) }} {{ md_escape(name) }})"),
   friend_format(R"(friend {% if cppast_kind(entity) in ["function", "member function", "constructor", "destructor", "conversion operator"] %}{{ format(option("function_format"), entity) }}{% else %}not implemented: formatting a {{ cppast_kind }} friend.{%endif%})"),
   type_format(R"({% if target != "" %}[{% endif
-      %}{% if cppast_kind == "template instantiation" %}{{ format(option("type_declarator_format")) }}&lt;{% if isString(arguments) %}{{ arguments }}{% else %}TODO{% endif %}&gt;{%-
+      %}{% if cppast_kind == "template instantiation" %}{{ format(option("type_declarator_format")) }}&lt;{% if isString(arguments) %}{{ md_escape(arguments) }}{% else %}TODO{% endif %}&gt;{%-
       else if cppast_kind == "reference" %}{{ format(option("type_format"), type) }}{{ format(option("ref_qualification_format"))
       }}{%- else if cppast_kind == "cv-qualified" %}{{ join(reject("empty", list(format(option("const_qualification_format")), format(option("volatile_qualification_format")), format(option("type_format"), type))), " ")
       }}{%- else %}{{ format(option("type_declarator_format")) }}{% endif %}{% if target != "" %}]({{ target }}){% endif %})"),
