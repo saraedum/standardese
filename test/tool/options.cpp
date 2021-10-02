@@ -9,6 +9,7 @@
 #include "../external/catch/single_include/catch2/catch.hpp"
 #include "../../standardese/tool/options.hpp"
 #include "../util/logger.hpp"
+#include "../util/tmp_file.hpp"
 
 namespace standardese::test::tool {
 
@@ -160,6 +161,43 @@ TEST_CASE("Parsing of Legacy --input.* Options", "[tool]") {
 
 }
 
+TEST_CASE("Parsing of Legacy --compilation.* Options", "[tool]") {
+  auto logstream = std::stringstream();
+  auto logger = util::logger::capturing_logger(logstream);
+
+  SECTION("--compilation.macro_definition") {
+    util::tmp_file header{"header.hpp", R"(
+      #ifndef MACRO
+      THIS_LINE_SHOULD_BE_IGNORED
+      #endif
+      )"};
+
+    const char* argv[] = {"standardese", "--compilation.macro_definition", "MACRO", "header.hpp"};
+    auto options = options::parse(sizeof(argv)/sizeof(*argv), argv, {});
+
+    parser::cppast_parser parser{options.parser_options.cppast_options};
+    parser.parse(header.path);
+
+    CHECK(logstream.str() != "");
+  }
+
+  SECTION("--compilation.macro_undefinition") {
+    util::tmp_file header{"header.hpp", R"(
+      #ifdef MACRO
+      THIS_LINE_SHOULD_BE_IGNORED
+      #endif
+      )"};
+
+    const char* argv[] = {"standardese", "--compilation.macro_definition", "MACRO", "--compilation.macro_undefinition", "MACRO", "header.hpp"};
+    auto options = options::parse(sizeof(argv)/sizeof(*argv), argv, {});
+
+    parser::cppast_parser parser{options.parser_options.cppast_options};
+    parser.parse(header.path);
+
+    CHECK(logstream.str() != "");
+  }
+}
+
 TEST_CASE("Parsing of Legacy --comment.* Options", "[tool]") {
   auto logstream = std::stringstream();
   auto logger = util::logger::capturing_logger(logstream);
@@ -284,6 +322,65 @@ TEST_CASE("Parsing of Parser Options", "[tool]") {
     auto options = options::parse(sizeof(argv)/sizeof(*argv), argv, {});
 
     CHECK(options.parser_options.comment_parser_options.free_file_comments);
+  }
+
+  SECTION("-D") {
+    SECTION("Without Value") {
+      util::tmp_file header{"header.hpp", R"(
+        #ifndef MACRO
+        THIS_LINE_SHOULD_BE_IGNORED
+        #endif
+        )"};
+
+      const char* argv[] = {"standardese", "-D", "MACRO", "header.hpp"};
+      auto options = options::parse(sizeof(argv)/sizeof(*argv), argv, {});
+
+      parser::cppast_parser parser{options.parser_options.cppast_options};
+      parser.parse(header.path);
+    }
+
+    SECTION("With Value") {
+      util::tmp_file header{"header.hpp", R"(
+        #if MACRO==0
+        #else
+        THIS_LINE_SHOULD_BE_IGNORED
+        #endif
+        )"};
+
+      const char* argv[] = {"standardese", "-D", "MACRO=0", "header.hpp"};
+      auto options = options::parse(sizeof(argv)/sizeof(*argv), argv, {});
+
+      parser::cppast_parser parser{options.parser_options.cppast_options};
+      parser.parse(header.path);
+    }
+  }
+
+  SECTION("-U") {
+    util::tmp_file header{"header.hpp", R"(
+      #ifdef MACRO
+      THIS_LINE_SHOULD_BE_IGNORED
+      #endif
+      )"};
+
+    const char* argv[] = {"standardese", "-D", "MACRO", "-U", "MACRO", "header.hpp"};
+    auto options = options::parse(sizeof(argv)/sizeof(*argv), argv, {});
+
+    parser::cppast_parser parser{options.parser_options.cppast_options};
+    parser.parse(header.path);
+  }
+
+  SECTION("Known Bug: Order of -D and -U is Ignored") {
+    util::tmp_file header{"header.hpp", R"(
+      #ifdef MACRO
+      THIS_LINE_SHOULD_BE_IGNORED
+      #endif
+      )"};
+
+    const char* argv[] = {"standardese", "-U", "MACRO", "-D", "MACRO", "header.h"};
+    auto options = options::parse(sizeof(argv)/sizeof(*argv), argv, {});
+
+    parser::cppast_parser parser{options.parser_options.cppast_options};
+    parser.parse(header.path);
   }
 }
 

@@ -11,6 +11,7 @@
 #include "../../standardese/model/mixin/documentation.hpp"
 #include "../../standardese/parser/markdown_parser.hpp"
 #include "../../standardese/model/document.hpp"
+#include "../../standardese/logger.hpp"
 
 namespace standardese::transformation {
 

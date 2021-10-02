@@ -12,6 +12,7 @@
 #include "../../standardese/model/group_documentation.hpp"
 #include "../../standardese/model/visitor/visit.hpp"
 #include "../../standardese/logger.hpp"
+#include "../../standardese/output_generator/xml/xml_generator.hpp"
 
 namespace standardese::transformation {
 

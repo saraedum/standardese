@@ -36,6 +36,7 @@ set(tests
     synopsis.cpp
     util/unindent.cpp
     util/cpp_file.cpp
+    util/tmp_file.cpp
     util/logger.cpp
     util/parsed_comments.cpp)
 

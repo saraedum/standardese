@@ -18,6 +18,7 @@ struct regex {
   static std::regex options_parser_process_legacy_comment_options_syntax;
   static std::regex options_parser_process_external_options_syntax;
   static std::regex options_parser_escape_inja_control;
+  static std::regex options_parser_process_parser_options_macro;
   static std::regex anchor_transformation_strip;
   static std::regex anchor_transformation_escape;
   static std::regex link_external_legacy_transformation_pattern;

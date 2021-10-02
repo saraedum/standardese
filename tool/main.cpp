@@ -351,10 +351,6 @@ standardese::entity_blacklist get_blacklist(const po::variables_map& options)
 //TODO: bring these parameters back       "the C++ standard to use for parsing, valid values are c++98/03/11/14/1z/17")
 //TODO: bring these parameters back      ("compilation.include_dir,I", po::value<std::vector<std::string>>(),
 //TODO: bring these parameters back       "adds an additional include directory to use for parsing")
-//TODO: bring these parameters back      ("compilation.macro_definition,D", po::value<std::vector<std::string>>(),
-//TODO: bring these parameters back       "adds an implicit #define before parsing")
-//TODO: bring these parameters back      ("compilation.macro_undefinition,U", po::value<std::vector<std::string>>(),
-//TODO: bring these parameters back       "adds an implicit #undef before parsing")
 //TODO: bring these parameters back      ("compilation.feature,f", po::value<std::vector<std::string>>(),
 //TODO: bring these parameters back       "enable a custom feature (-fXX flag)")
 //TODO: bring these parameters back      ("compilation.gnu_extensions",

@@ -12,6 +12,7 @@ std::regex standardese::util::regex::command_character_escaped_command("\\w");
 std::regex standardese::util::regex::options_parser_process_legacy_comment_options_syntax{R"(([^=]*)=(.*\$\$.*))"};
 std::regex standardese::util::regex::options_parser_process_external_options_syntax{"([^:]*):([^:]*):([^=]*)=(.*)"};
 std::regex standardese::util::regex::options_parser_escape_inja_control{"[{}]"};
+std::regex standardese::util::regex::options_parser_process_parser_options_macro{"([^=]+)(=?)(.*)"};
 std::regex standardese::util::regex::anchor_transformation_strip(R"([^\w\s-])");
 std::regex standardese::util::regex::anchor_transformation_escape(R"([-\s]+)");
 std::regex standardese::util::regex::link_external_legacy_transformation_pattern{R"((?:::)?(([^:]*)::.*))"};

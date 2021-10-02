@@ -574,15 +574,37 @@ void options_parser::process_legacy_input_options(po::variables_map& parsed) {
 po::options_description options_parser::legacy_compilation_options() const {
   auto legacy = po::options_description("Legacy Compilation Options", options.options_options.columns);
 
-  // TODO: Implement me
+  legacy.add_options()
+      ("compilation.macro_definition", po::value<std::vector<std::string>>(), "deprecated, use -D instead.")
+      ("compilation.macro_undefinition", po::value<std::vector<std::string>>(), "deprecated, use -U instead.");
 
   return legacy;
 }
 
-void options_parser::process_legacy_compilation_options(po::variables_map&) {}
+void options_parser::process_legacy_compilation_options(po::variables_map& parsed) {
+  if (parsed.count("compilation.macro_definition")) {
+    logger::warn("--compilation.macro_definition is deprecated, use -D instead.");
+
+    if (!parsed.count("-D"))
+      parsed.insert({"-D", {boost::any{std::vector<std::string>{}}, false}});
+    auto& definitions = parsed.at("-D").as<std::vector<std::string>>();
+    for (const auto& definition: parsed.at("compilation.macro_definition").as<std::vector<std::string>>())
+      definitions.push_back(definition);
+  }
+
+  if (parsed.count("compilation.macro_undefinition")) {
+    logger::warn("--compilation.macro_undefinition is deprecated, use -U instead.");
+
+    if (!parsed.count("-U"))
+      parsed.insert({"-U", {boost::any{std::vector<std::string>{}}, false}});
+    auto& undefinitions = parsed.at("-U").as<std::vector<std::string>>();
+    for (const auto& name: parsed.at("compilation.macro_undefinition").as<std::vector<std::string>>())
+      undefinitions.push_back(name);
+  }
+}
 
 po::options_description options_parser::legacy_comment_options() const {
-  auto legacy = po::options_description("Legacy Compilation Options", options.options_options.columns);
+  auto legacy = po::options_description("Legacy Comment Options", options.options_options.columns);
 
   legacy.add_options()
     // TODO: Test & Mark as Deprecated (use --command-pattern instead.)
@@ -678,6 +700,8 @@ po::options_description options_parser::cpp_parser_options() const {
   compiler.add_options()
     (",I", po::value<std::vector<std::string>>()->value_name("dir"), "Add directory to be searched for header files.")
     ("std", po::value<cppast::cpp_standard>()->default_value(cppast::cpp_standard::cpp_14), "The C++ standard to use for parsing.")
+    (",D", po::value<std::vector<std::string>>()->value_name("definition"), "Predefine a macro when parsing code.")
+    (",U", po::value<std::vector<std::string>>()->value_name("macro"), "Cancel definitions of this macro when parsing code.")
     // Note that this is handled in process_markdown_parser_options() because
     // it actually does not affect the C++ parser.
     ("free-file-comments", po::value<bool>()->default_value(false)->implicit_value(true)->zero_tokens(), "Associate free comments to their header file.");
@@ -693,6 +717,26 @@ void options_parser::process_cpp_parser_options(po::variables_map& parsed) {
 
   if (parsed.count("std")) {
     options.parser_options.cppast_options.clang_config.set_flags(parsed.at("std").as<cppast::cpp_standard>());
+  }
+
+  if (parsed.count("-D")) {
+    for (const auto& definition: parsed.at("-D").as<std::vector<std::string>>()) {
+      std::smatch match;
+      if (!std::regex_match(definition, match, util::regex::options_parser_process_parser_options_macro)) {
+        logger::error(fmt::format("Ignoring malformed command line flag for -D; found `{}`.", definition));
+        continue;
+      }
+
+      if (match[2] == "=")
+        options.parser_options.cppast_options.clang_config.define_macro(match[1], match[3]);
+      else
+        options.parser_options.cppast_options.clang_config.define_macro(match[1], "1");
+    }
+  }
+
+  if (parsed.count("-U")) {
+    for (const auto& name: parsed.at("-U").as<std::vector<std::string>>())
+      options.parser_options.cppast_options.clang_config.undefine_macro(name);
   }
 }
 
@@ -730,7 +774,7 @@ void options_parser::process_external_options(po::variables_map& parsed) {
     for (auto external: parsed.at("external").as<std::vector<std::string>>()) {
       std::smatch match;
       if (!std::regex_match(external, match, util::regex::options_parser_process_external_options_syntax)) {
-        logger::error(fmt::format("Igroning malformed command line flag for --external. Must be of the form `KIND:SCHEMA:INVENTORY=URL` but found `{}`.", external));
+        logger::error(fmt::format("Ignoring malformed command line flag for --external. Must be of the form `KIND:SCHEMA:INVENTORY=URL` but found `{}`.", external));
         continue;
       }
 

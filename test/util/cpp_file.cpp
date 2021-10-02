@@ -9,6 +9,7 @@
 #include "../../standardese/parser/cppast_parser.hpp"
 
 #include "cpp_file.hpp"
+#include "tmp_file.hpp"
 #include "unindent.hpp"
 #include "logger.hpp"
 
@@ -20,29 +21,7 @@ cpp_file::cpp_file(const std::string& code, const std::string& name) : code(unin
   if (files.find(key()) == files.end()) {
     parser::cppast_parser parser{{}};
 
-    struct tmp_file {
-      tmp_file(const std::string& name) :
-        parent(boost::filesystem::temp_directory_path() / boost::filesystem::unique_path()),
-        path([&]() {
-          if (!boost::filesystem::create_directories(parent))
-            throw std::logic_error("Temporary directory with random name already exists. We will not write to it as we can not safely remove it.");
-          return parent / name;
-        }()),
-        stream(boost::filesystem::ofstream(path)) {}
-
-      ~tmp_file() {
-        boost::filesystem::remove_all(this->parent);
-      }
-
-      boost::filesystem::path parent;
-      boost::filesystem::path path;
-      boost::filesystem::ofstream stream;
-    };
-
-    auto tmp = tmp_file(name);
-
-    tmp.stream << this->code;
-    tmp.stream.close();
+    auto tmp = tmp_file(name, this->code);
 
     files.insert({key(), {type_safe::ref(parser.parse(tmp.path)), parser.context()}});
   }
