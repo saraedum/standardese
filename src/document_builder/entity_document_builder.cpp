@@ -89,6 +89,7 @@ void visitor::operator()(T&& documentation) {
     const auto& entity = documentation.entity();
 
     // Create documentation for entity and its children.
+    // TODO: Test all of these.
     switch(entity.kind()) {
       case cppast::cpp_entity_kind::file_t:
       case cppast::cpp_entity_kind::namespace_t:
@@ -102,6 +103,8 @@ void visitor::operator()(T&& documentation) {
         break;
       case cppast::cpp_entity_kind::function_template_t:
       case cppast::cpp_entity_kind::template_type_parameter_t:
+      case cppast::cpp_entity_kind::non_type_template_parameter_t:
+      case cppast::cpp_entity_kind::template_template_parameter_t:
       case cppast::cpp_entity_kind::function_parameter_t:
       case cppast::cpp_entity_kind::macro_parameter_t:
       case cppast::cpp_entity_kind::function_t:
@@ -127,12 +130,14 @@ void visitor::operator()(T&& documentation) {
       case cppast::cpp_entity_kind::access_specifier_t:
       case cppast::cpp_entity_kind::function_template_specialization_t:
       case cppast::cpp_entity_kind::class_template_specialization_t:
+      case cppast::cpp_entity_kind::static_assert_t:
         // Ignore this entity. We might want to change this eventually and actually show these if they have explicit documentation.
-        break;
+        return;
       case cppast::cpp_entity_kind::friend_t:
         add_friend(static_cast<const cppast::cpp_friend&>(entity));
         break;
       default:
+        // TODO
         logger::error(fmt::format("Not implemented: cannot generate documentation for entity `{}` of type `{}` yet.", entity.name(), (long)entity.kind()));
         return;
     }
@@ -180,6 +185,7 @@ model::section& visitor::ensure_section(model::cpp_entity_documentation& parent,
 
 void visitor::add_template_parameters(const cppast::cpp_template& entity) {
   for (const auto& tparam: entity.parameters()) {
+    assert(root->rbegin() != root->rend() && "Cannot add template parameters if parent entity has not been added itself.");
     auto& parent = root->rbegin()->as<model::cpp_entity_documentation>();
     auto& section = ensure_section(parent, parser::commands::section_command::requires);
 
