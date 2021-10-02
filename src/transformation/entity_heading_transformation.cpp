@@ -56,8 +56,8 @@ void entity_heading_transformation::do_transform(model::entity& document) {
   model::visitor::visit([&](auto&& entity, auto&& recurse) {
     using T = std::decay_t<decltype(entity)>;
 
-    if constexpr (std::is_base_of_v<model::mixin::documentation, T>) {
-      auto doc = heading(entity, cpp_context, level.size() ? level.back() : type_safe::nullopt, options);
+    if constexpr (std::is_same_v<model::cpp_entity_documentation, T>) {
+      auto doc = heading<T>(entity, cpp_context, level.size() ? level.back() : type_safe::nullopt, options);
       bool has_scope = doc.begin() != doc.end() && doc.begin()->template is<model::markup::heading>();
       for (auto paragraph = doc.rbegin(); paragraph != doc.rend(); ++paragraph) {
         if (paragraph->template is<model::markup::heading>())
@@ -95,7 +95,11 @@ model::document heading(T& documentation, parser::cpp_context cpp_context, type_
       return formatter::inja_formatter{options.inja_formatter_options, cpp_context};
   }();
 
-  inja.data().merge_patch(inja.to_json(documentation));
+  if constexpr (std::is_same_v<model::cpp_entity_documentation, T>) {
+    inja.data().merge_patch(inja.to_json(&documentation.entity()));
+  } else {
+    inja.data().merge_patch(inja.to_json(documentation));
+  }
 
   // TODO:
   // logger::debug([&]() { return fmt::format("Generating heading for {} `{}`.", cppast::to_string(documentation.entity().kind()), inja.name(documentation.entity())); });
