@@ -21,7 +21,7 @@ std::string inja_formatter::cppast_kind_callback(const nlohmann::json& data) con
       return cppast_kind(*entity);
     }
 
-    logger::error(fmt::format("Template callback `cppast_kind` not valid here. Cannot determine kind of {}.", nlohmann::to_string(data)));
+    logger::error(fmt::format("Template callback `cppast_kind` not valid here. Cannot determine kind of {}.", self->to_string(data)));
     return std::string{};
   }, self->from_json(data));
 }

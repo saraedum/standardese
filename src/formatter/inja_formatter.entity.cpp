@@ -23,7 +23,7 @@ nlohmann::json inja_formatter::entity_callback(const nlohmann::json& data) const
           return to_json(&this->entity(*entity));
       }
     }
-    logger::error(fmt::format("Template callback `entity` not valid here. Cannot determine underlying entity for {}.", nlohmann::to_string(data)));
+    logger::error(fmt::format("Template callback `entity` not valid here. Cannot determine underlying entity for {}.", self->to_string(data)));
     return nlohmann::json{};
   }, self->from_json(data));
 }

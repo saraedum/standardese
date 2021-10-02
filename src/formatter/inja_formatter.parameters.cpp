@@ -22,7 +22,7 @@ nlohmann::json inja_formatter::parameters_callback(const nlohmann::json& data) c
       for(auto* param : parameters(*entity))
         params.push_back(to_json(param));
     } else {
-      logger::error(fmt::format("Template callback `parameters` not valid here. Cannot determine parameters for {}.", nlohmann::to_string(data)));
+      logger::error(fmt::format("Template callback `parameters` not valid here. Cannot determine parameters for {}.", self->to_string(data)));
     }
     return params;
   }, self->from_json(data));

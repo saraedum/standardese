@@ -21,7 +21,7 @@ nlohmann::json inja_formatter::code_callback(const nlohmann::json& data) const {
       return to_json(code(data));
     }
 
-    logger::error(fmt::format("Template callback `code` not valid here. Cannot produce code for {}.", nlohmann::to_string(data)));
+    logger::error(fmt::format("Template callback `code` not valid here. Cannot produce code for {}.", self->to_string(data)));
     return to_json(model::document{"", ""});
   }, self->from_json(data));
 }
@@ -38,10 +38,10 @@ nlohmann::json inja_formatter::code_callback(const nlohmann::json& format, const
       } else if constexpr (std::is_same_v<S, const cppast::cpp_template_argument&>) {
         return to_json(code(*format_string, *cpp_entity));
       } else {
-        logger::error(fmt::format("Template callback `code` not valid here. Cannot produce code for {}.", nlohmann::to_string(entity)));
+        logger::error(fmt::format("Template callback `code` not valid here. Cannot produce code for {}.", self->to_string(entity)));
       }
     } else {
-      logger::error(fmt::format("Template callback `code` not valid here. Argument {} is not a format string.", nlohmann::to_string(format)));
+      logger::error(fmt::format("Template callback `code` not valid here. Argument {} is not a format string.", self->to_string(format)));
     }
     return to_json(model::document{"", ""});
   }, self->from_json(format), self->from_json(entity));

@@ -23,8 +23,7 @@ nlohmann::json inja_formatter::variable_type_callback(const nlohmann::json& data
           return to_json(&variable_type(*entity));
       }
     }
-    // TODO: Use to_string() in messages everywhere.
-    logger::error(fmt::format("Template callback variable_type` not valid here. Cannot determine variable type for {}.", self->to_string(data)));
+    logger::error(fmt::format("Template callback `variable_type` not valid here. Cannot determine variable type of {}.", self->to_string(data)));
     return nlohmann::json{};
   }, self->from_json(data));
 }

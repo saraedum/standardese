@@ -22,7 +22,6 @@ nlohmann::json inja_formatter::return_type_callback(const nlohmann::json& data) 
           return to_json(&return_type(*entity));
       }
     }
-    // TODO: Use to_string() in messages everywhere.
     logger::error(fmt::format("Template callback `return_type` not valid here. Cannot determine return type for {}.", self->to_string(data)));
     return nlohmann::json{};
   }, self->from_json(data));

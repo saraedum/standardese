@@ -35,7 +35,7 @@ std::string inja_formatter::const_qualification_callback(const nlohmann::json& d
       return const_qualification(*entity);
     }
 
-    logger::error(fmt::format("Template callback `const_qualification` not valid here. Cannot determine const qualification of {}.", nlohmann::to_string(data)));
+    logger::error(fmt::format("Template callback `const_qualification` not valid here. Cannot determine const qualification of {}.", self->to_string(data)));
     return std::string{};
   }, self->from_json(data));
 }
@@ -44,7 +44,7 @@ std::string inja_formatter::const_qualification(const cppast::cpp_entity& entity
   switch(entity.kind()) {
     case cppast::cpp_entity_kind::member_function_t:
     case cppast::cpp_entity_kind::conversion_op_t:
-      return to_string(static_cast<const cppast::cpp_member_function_base&>(entity).cv_qualifier());
+      return formatter::to_string(static_cast<const cppast::cpp_member_function_base&>(entity).cv_qualifier());
     default:
       // No other entity can be "const". All the other "const" keywords refer
       // to types. (Or are we missing something here?)
@@ -55,7 +55,7 @@ std::string inja_formatter::const_qualification(const cppast::cpp_entity& entity
 std::string inja_formatter::const_qualification(const cppast::cpp_type& type) const {
   switch(type.kind()) {
     case cppast::cpp_type_kind::cv_qualified_t:
-      return to_string(static_cast<const cppast::cpp_cv_qualified_type&>(type).cv_qualifier());
+      return formatter::to_string(static_cast<const cppast::cpp_cv_qualified_type&>(type).cv_qualifier());
     default:
       return std::string{};
 }

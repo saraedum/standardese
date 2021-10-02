@@ -63,7 +63,7 @@ nlohmann::json inja_formatter::to_json(const model::entity* entity) const {
   nlohmann::json json = {
     {"standardese", {
       {"kind", "entity"},
-      {"value", to_string(entity)}
+      {"value", formatter::to_string(entity)}
     } }
   };
 
@@ -72,14 +72,14 @@ nlohmann::json inja_formatter::to_json(const model::entity* entity) const {
 
 nlohmann::json inja_formatter::to_json(model::entity&& entity) const {
   self->entities.push(std::move(entity));
-  return to_json(&self->entities.top());
+  return this->to_json(&self->entities.top());
 }
 
 nlohmann::json inja_formatter::to_json(const cppast::cpp_entity* entity) const {
   nlohmann::json json = {
     {"standardese", {
       {"kind", "cpp_entity"},
-      {"value", to_string(entity) },
+      {"value", formatter::to_string(entity) },
     } }
   };
 
@@ -90,7 +90,7 @@ nlohmann::json inja_formatter::to_json(const cppast::cpp_type* type) const {
   nlohmann::json json = {
     {"standardese", {
       {"kind", "cpp_type"},
-      {"value", to_string(type) }
+      {"value", formatter::to_string(type) }
     } }
   };
 

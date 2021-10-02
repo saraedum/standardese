@@ -17,7 +17,7 @@ std::string inja_formatter::md_escape_callback(const nlohmann::json& data) const
       return md_escape(*entity);
     }
 
-    logger::error(fmt::format("Template callback `md_escape` not valid here. Cannot escape {} as MarkDown.", nlohmann::to_string(data)));
+    logger::error(fmt::format("Template callback `md_escape` not valid here. Cannot escape {} as MarkDown.", self->to_string(data)));
     return std::string{};
   }, self->from_json(data));
 }

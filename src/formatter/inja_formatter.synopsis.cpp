@@ -20,7 +20,7 @@ nlohmann::json inja_formatter::synopsis_callback(const nlohmann::json& data) con
       return synopsis(*entity);
     }
 
-    logger::error(fmt::format("Template callback `synopsis` not valid here. Cannot request synopsis of {}.", nlohmann::to_string(data)));
+    logger::error(fmt::format("Template callback `synopsis` not valid here. Cannot request synopsis of {}.", self->to_string(data)));
     return nlohmann::json{};
   }, self->from_json(data));
   */

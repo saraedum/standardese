@@ -37,7 +37,7 @@ std::string inja_formatter::name_callback(const nlohmann::json& data) const {
           return name(entity);
         }
 
-        logger::error(fmt::format("Template callback `name` not valid here. Cannot determine name of {}.", nlohmann::to_string(data)));
+        logger::error(fmt::format("Template callback `name` not valid here. Cannot determine name of {}.", self->to_string(data)));
         return std::string{};
       }, *entity);
     } else if constexpr (std::is_same_v<T, const cppast::cpp_type*>) {
@@ -46,7 +46,7 @@ std::string inja_formatter::name_callback(const nlohmann::json& data) const {
       return name(*entity);
     }
 
-    logger::error(fmt::format("Template callback `name` not valid here. Cannot determine name of {}.", nlohmann::to_string(data)));
+    logger::error(fmt::format("Template callback `name` not valid here. Cannot determine name of {}.", self->to_string(data)));
     return std::string{};
   }, self->from_json(data));
 }

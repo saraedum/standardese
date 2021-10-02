@@ -15,7 +15,7 @@ namespace standardese::formatter {
 
 namespace {
 
-bool check_arg_count(const std::string& name, const std::vector<const nlohmann::json*>& args, int min, int max = -1) {
+bool check_arg_count(const inja_formatter& inja, const std::string& name, const std::vector<const nlohmann::json*>& args, int min, int max = -1) {
   if (max == -1)
     max = min;
 
@@ -24,7 +24,7 @@ bool check_arg_count(const std::string& name, const std::vector<const nlohmann::
     return false;
   }
   if (args.size() > max) {
-    logger::error(fmt::format("Inja callback `{}` expects at most {} arguments. Ignoring trailing argument `{}`.", name, max, nlohmann::to_string(*args[max])));
+    logger::error(fmt::format("Inja callback `{}` expects at most {} arguments. Ignoring trailing argument `{}`.", name, max, inja.to_string(*args[max])));
   }
 
   return true;
@@ -88,7 +88,7 @@ inja_formatter::inja_formatter(struct inja_formatter_options options, parser::cp
     return name_callback(self->data);
   });
   add_callback("name", [&](const std::vector<const nlohmann::json*>& args) {
-    if (!check_arg_count("name", args, 1))
+    if (!check_arg_count(*this, "name", args, 1))
       return std::string{};
     return name_callback(*args[0]);
   });
@@ -96,7 +96,7 @@ inja_formatter::inja_formatter(struct inja_formatter_options options, parser::cp
     return md_callback(self->data);
   });
   add_callback("md", [&](const std::vector<const nlohmann::json*>& args) {
-    if (!check_arg_count("md", args, 1))
+    if (!check_arg_count(*this, "md", args, 1))
       return std::string{};
     return md_callback(*args[0]);
   });
@@ -104,7 +104,7 @@ inja_formatter::inja_formatter(struct inja_formatter_options options, parser::cp
     return text_callback(self->data);
   });
   add_callback("text", [&](const std::vector<const nlohmann::json*>& args) {
-    if (!check_arg_count("text", args, 1))
+    if (!check_arg_count(*this, "text", args, 1))
       return std::string{};
     return text_callback(*args[0]);
   });
@@ -112,27 +112,27 @@ inja_formatter::inja_formatter(struct inja_formatter_options options, parser::cp
     return path_callback(self->data);
   });
   add_callback("path", [&](const std::vector<const nlohmann::json*>& args) {
-    if (!check_arg_count("path", args, 1))
+    if (!check_arg_count(*this, "path", args, 1))
       return std::string{};
     return path_callback(*args[0]);
   });
   add_callback("filename", [&](const std::vector<const nlohmann::json*>& args) {
-    if (!check_arg_count("filename", args, 1))
+    if (!check_arg_count(*this, "filename", args, 1))
       return std::string{};
     return filename_callback(*args[0]);
   });
   add_callback("sanitize_basename", [&](const std::vector<const nlohmann::json*>& args) {
-    if (!check_arg_count("sanitize_basename", args, 1))
+    if (!check_arg_count(*this, "sanitize_basename", args, 1))
       return std::string{};
     return sanitize_basename_callback(*args[0]);
   });
   add_callback("md_escape", [&](const std::vector<const nlohmann::json*>& args) {
-    if (!check_arg_count("md_escape", args, 1))
+    if (!check_arg_count(*this, "md_escape", args, 1))
       return std::string{};
     return md_escape_callback(*args[0]);
   });
   add_callback("format", [&](const std::vector<const nlohmann::json*>& args) {
-    if (!check_arg_count("format", args, 1, 2))
+    if (!check_arg_count(*this, "format", args, 1, 2))
       return std::string{};
     if (args.size() == 2)
       return format_callback(*args[0], *args[1]);
@@ -146,7 +146,7 @@ inja_formatter::inja_formatter(struct inja_formatter_options options, parser::cp
     return ret;
   });
   add_callback("reject", [&](const std::vector<const nlohmann::json*>& args) {
-    if (!check_arg_count("reject", args, 2))
+    if (!check_arg_count(*this, "reject", args, 2))
       return nlohmann::json::array();
     return reject_callback(*args[0], *args[1]);
   });
@@ -154,7 +154,7 @@ inja_formatter::inja_formatter(struct inja_formatter_options options, parser::cp
     return declaration_specifiers_callback(data());
   });
   add_callback("declaration_specifiers", [&](const std::vector<const nlohmann::json*>& args) {
-    if (!check_arg_count("declaration_specifiers", args, 1))
+    if (!check_arg_count(*this, "declaration_specifiers", args, 1))
       return nlohmann::json::array();
     return declaration_specifiers_callback(*args[0]);
   });
@@ -162,7 +162,7 @@ inja_formatter::inja_formatter(struct inja_formatter_options options, parser::cp
     return target_callback(data());
   });
   add_callback("target", [&](const std::vector<const nlohmann::json*>& args) {
-    if (!check_arg_count("target", args, 1))
+    if (!check_arg_count(*this, "target", args, 1))
       return std::string{};
     return target_callback(*args[0]);
   });
@@ -170,7 +170,7 @@ inja_formatter::inja_formatter(struct inja_formatter_options options, parser::cp
     return parameters_callback(data());
   });
   add_callback("parameters", [&](const std::vector<const nlohmann::json*>& args) {
-    if (!check_arg_count("parameters", args, 1))
+    if (!check_arg_count(*this, "parameters", args, 1))
       return nlohmann::json::array();
     return parameters_callback(*args[0]);
   });
@@ -178,7 +178,7 @@ inja_formatter::inja_formatter(struct inja_formatter_options options, parser::cp
     return const_qualification_callback(data());
   });
   add_callback("const_qualification", [&](const std::vector<const nlohmann::json*>& args) {
-    if (!check_arg_count("const_qualification", args, 1))
+    if (!check_arg_count(*this, "const_qualification", args, 1))
       return std::string{};
     return const_qualification_callback(*args[0]);
   });
@@ -186,7 +186,7 @@ inja_formatter::inja_formatter(struct inja_formatter_options options, parser::cp
     return volatile_qualification_callback(data());
   });
   add_callback("volatile_qualification", [&](const std::vector<const nlohmann::json*>& args) {
-    if (!check_arg_count("volatile_qualification", args, 1))
+    if (!check_arg_count(*this, "volatile_qualification", args, 1))
       return std::string{};
     return volatile_qualification_callback(*args[0]);
   });
@@ -194,7 +194,7 @@ inja_formatter::inja_formatter(struct inja_formatter_options options, parser::cp
     return ref_qualification_callback(data());
   });
   add_callback("ref_qualification", [&](const std::vector<const nlohmann::json*>& args) {
-    if (!check_arg_count("ref_qualification", args, 1))
+    if (!check_arg_count(*this, "ref_qualification", args, 1))
       return std::string{};
     return ref_qualification_callback(*args[0]);
   });
@@ -202,7 +202,7 @@ inja_formatter::inja_formatter(struct inja_formatter_options options, parser::cp
     return cppast_kind_callback(data());
   });
   add_callback("cppast_kind", [&](const std::vector<const nlohmann::json*>& args) {
-    if (!check_arg_count("cppast_kind", args, 1))
+    if (!check_arg_count(*this, "cppast_kind", args, 1))
       return std::string{};
     return cppast_kind_callback(*args[0]);
   });
@@ -210,7 +210,7 @@ inja_formatter::inja_formatter(struct inja_formatter_options options, parser::cp
     return kind_callback(data());
   });
   add_callback("kind", [&](const std::vector<const nlohmann::json*>& args) {
-    if (!check_arg_count("kind", args, 1))
+    if (!check_arg_count(*this, "kind", args, 1))
       return std::string{};
     return kind_callback(*args[0]);
   });
@@ -218,14 +218,14 @@ inja_formatter::inja_formatter(struct inja_formatter_options options, parser::cp
     return synopsis_callback(data());
   });
   add_callback("synopsis", [&](const std::vector<const nlohmann::json*>& args) {
-    if (!check_arg_count("synopsis", args, 1)) {
+    if (!check_arg_count(*this, "synopsis", args, 1)) {
       model::entity empty = model::markup::text{""};
       return to_json(&empty);
     }
     return synopsis_callback(*args[0]);
   });
   add_callback("option", [&](const std::vector<const nlohmann::json*>& args) {
-    if (!check_arg_count("option", args, 1))
+    if (!check_arg_count(*this, "option", args, 1))
       return std::string{};
     return option_callback(*args[0]);
   });
@@ -233,7 +233,7 @@ inja_formatter::inja_formatter(struct inja_formatter_options options, parser::cp
     return return_type_callback(data());
   });
   add_callback("return_type", [&](const std::vector<const nlohmann::json*>& args) {
-    if (!check_arg_count("return_type", args, 1))
+    if (!check_arg_count(*this, "return_type", args, 1))
       return nlohmann::json{};
     return return_type_callback(*args[0]);
   });
@@ -241,7 +241,7 @@ inja_formatter::inja_formatter(struct inja_formatter_options options, parser::cp
     return variable_type_callback(data());
   });
   add_callback("variable_type", [&](const std::vector<const nlohmann::json*>& args) {
-    if (!check_arg_count("variable_type", args, 1))
+    if (!check_arg_count(*this, "variable_type", args, 1))
       return nlohmann::json{};
     return variable_type_callback(*args[0]);
   });
@@ -249,7 +249,7 @@ inja_formatter::inja_formatter(struct inja_formatter_options options, parser::cp
     return type_callback(data());
   });
   add_callback("type", [&](const std::vector<const nlohmann::json*>& args) {
-    if (!check_arg_count("type", args, 1))
+    if (!check_arg_count(*this, "type", args, 1))
       return nlohmann::json{};
     return type_callback(*args[0]);
   });
@@ -257,7 +257,7 @@ inja_formatter::inja_formatter(struct inja_formatter_options options, parser::cp
     return arguments_callback(data());
   });
   add_callback("arguments", [&](const std::vector<const nlohmann::json*>& args) {
-    if (!check_arg_count("arguments", args, 1))
+    if (!check_arg_count(*this, "arguments", args, 1))
       return nlohmann::json{};
     return arguments_callback(*args[0]);
   });
@@ -265,7 +265,7 @@ inja_formatter::inja_formatter(struct inja_formatter_options options, parser::cp
     return code_callback(data());
   });
   add_callback("code", [&](const std::vector<const nlohmann::json*>& args) {
-    if (!check_arg_count("code", args, 1, 2))
+    if (!check_arg_count(*this, "code", args, 1, 2))
       return nlohmann::json{};
     if (args.size() == 1)
       return code_callback(*args[0]);
@@ -275,12 +275,12 @@ inja_formatter::inja_formatter(struct inja_formatter_options options, parser::cp
     return entity_callback(data());
   });
   add_callback("entity", [&](const std::vector<const nlohmann::json*>& args) {
-    if (!check_arg_count("entity", args, 1))
+    if (!check_arg_count(*this, "entity", args, 1))
       return nlohmann::json{};
     return entity_callback(*args[0]);
   });
   add_callback("replace", [&](const std::vector<const nlohmann::json*>& args) {
-    if (!check_arg_count("replace", args, 3))
+    if (!check_arg_count(*this, "replace", args, 3))
       return std::string{};
     return replace_callback(*args[0], *args[1], *args[2]);
   });
@@ -288,7 +288,7 @@ inja_formatter::inja_formatter(struct inja_formatter_options options, parser::cp
     return namespace_callback(data());
   });
   add_callback("namespace", [&](const std::vector<const nlohmann::json*>& args) {
-    if (!check_arg_count("namespace", args, 1))
+    if (!check_arg_count(*this, "namespace", args, 1))
       return std::string{};
     return namespace_callback(*args[0]);
   });
@@ -296,36 +296,36 @@ inja_formatter::inja_formatter(struct inja_formatter_options options, parser::cp
     return scope_callback(data());
   });
   add_callback("scope", [&](const std::vector<const nlohmann::json*>& args) {
-    if (!check_arg_count("scope", args, 1))
+    if (!check_arg_count(*this, "scope", args, 1))
       return std::string{};
     return scope_callback(*args[0]);
   });
   add_callback("error", [&](const std::vector<const nlohmann::json*>& args) {
-    if (!check_arg_count("error", args, 1))
+    if (!check_arg_count(*this, "error", args, 1))
       return nlohmann::json{};
     error_callback(*args[0]);
     return nlohmann::json{};
   });
   add_callback("warn", [&](const std::vector<const nlohmann::json*>& args) {
-    if (!check_arg_count("warn", args, 1))
+    if (!check_arg_count(*this, "warn", args, 1))
       return nlohmann::json{};
     warn_callback(*args[0]);
     return nlohmann::json{};
   });
   add_callback("info", [&](const std::vector<const nlohmann::json*>& args) {
-    if (!check_arg_count("info", args, 1))
+    if (!check_arg_count(*this, "info", args, 1))
       return nlohmann::json{};
     info_callback(*args[0]);
     return nlohmann::json{};
   });
   add_callback("debug", [&](const std::vector<const nlohmann::json*>& args) {
-    if (!check_arg_count("debug", args, 1))
+    if (!check_arg_count(*this, "debug", args, 1))
       return nlohmann::json{};
     debug_callback(*args[0]);
     return nlohmann::json{};
   });
   add_callback("trace", [&](const std::vector<const nlohmann::json*>& args) {
-    if (!check_arg_count("trace", args, 1))
+    if (!check_arg_count(*this, "trace", args, 1))
       return nlohmann::json{};
     trace_callback(*args[0]);
     return nlohmann::json{};

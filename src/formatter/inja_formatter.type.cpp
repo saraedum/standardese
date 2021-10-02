@@ -28,7 +28,7 @@ nlohmann::json inja_formatter::type_callback(const nlohmann::json& data) const {
           return to_json(&type(*entity));
       }
     }
-    logger::error(fmt::format("Template callback `type` not valid here. Cannot determine type for {}.", nlohmann::to_string(data)));
+    logger::error(fmt::format("Template callback `type` not valid here. Cannot determine type for {}.", self->to_string(data)));
     return nlohmann::json{};
   }, self->from_json(data));
 }

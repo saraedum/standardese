@@ -370,6 +370,9 @@ class inja_formatter {
   /// This method can be invoked in an inja template as `{{ trace("message") }}`.
   void trace(const std::string&) const;
 
+  /// Return a pretty-printed version this JSON object for debugging purposes.
+  std::string to_string(const nlohmann::json&) const;
+
  private:
   std::string name_callback(const nlohmann::json&) const;
   std::string md_callback(const nlohmann::json&) const;

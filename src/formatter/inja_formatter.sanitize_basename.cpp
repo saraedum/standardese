@@ -17,7 +17,7 @@ std::string inja_formatter::sanitize_basename_callback(const nlohmann::json& dat
       return sanitize_basename(*entity);
     }
 
-    logger::error(fmt::format("Template callback `sanitize_basename` not valid here. Cannot sanitize name of {}.", nlohmann::to_string(data)));
+    logger::error(fmt::format("Template callback `sanitize_basename` not valid here. Cannot sanitize name of {}.", self->to_string(data)));
     return std::string{};
   }, self->from_json(data));
 }

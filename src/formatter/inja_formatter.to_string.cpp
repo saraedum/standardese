@@ -6,12 +6,16 @@
 #include <cppast/cpp_entity_kind.hpp>
 
 #include "inja_formatter.impl.hpp"
+#include "../../standardese/output_generator/xml/xml_generator.hpp"
 
 namespace standardese::formatter {
 
 template<class> inline constexpr bool always_false_v = false;
 
-// TODO: Use everywhere for better error messages.
+std::string inja_formatter::to_string(const nlohmann::json& data) const {
+  return self->to_string(data);
+}
+
 // TODO: Break up into actual to_string methods in inja_formatter.
 std::string inja_formatter::impl::to_string(const nlohmann::json& data) const {
   return std::visit([&](auto&& entity) {
@@ -23,19 +27,20 @@ std::string inja_formatter::impl::to_string(const nlohmann::json& data) const {
     } else if constexpr (std::is_same_v<T, std::nullptr_t>) {
       return std::string{"null"};
     } else if constexpr (std::is_same_v<T, const model::entity*>) {
-      // TODO
-      return std::string{"TODO"};
+      return fmt::format("entity {}, i.e., {}", output_generator::xml::xml_generator::render(*entity), nlohmann::to_string(data));
     } else if constexpr (std::is_same_v<T, const json::array_t*>) {
       return fmt::format("array {}", nlohmann::to_string(data));
     } else if constexpr (std::is_same_v<T, json::boolean_t>) {
       return fmt::format("bool {}", nlohmann::to_string(data));
     } else if constexpr (std::is_same_v<T, json::number_float_t>) {
       return fmt::format("number {}", nlohmann::to_string(data));
+    } else if constexpr (std::is_same_v<T, json::number_integer_t>) {
+      return fmt::format("number {}", nlohmann::to_string(data));
     } else if constexpr (std::is_same_v<T, const json::object_t*>) {
       return fmt::format("object {}", nlohmann::to_string(data));
     } else if constexpr (std::is_same_v<T, const json::string_t*>) {
       return fmt::format("string {}", nlohmann::to_string(data));
-    } else {
+    } else if constexpr (std::is_same_v<T, int>) {
       static_assert(always_false_v<T>, "unsupported variant");
       return std::string{};
     }

@@ -19,7 +19,7 @@ std::string inja_formatter::ref_qualification_callback(const nlohmann::json& dat
       return ref_qualification(*entity);
     }
 
-    logger::error(fmt::format("Template callback `ref_qualification` not valid here. Cannot determine ref qualification of {}.", nlohmann::to_string(data)));
+    logger::error(fmt::format("Template callback `ref_qualification` not valid here. Cannot determine ref qualification of {}.", self->to_string(data)));
     return std::string{};
   }, self->from_json(data));
 }

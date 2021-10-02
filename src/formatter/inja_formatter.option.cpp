@@ -16,7 +16,7 @@ std::string inja_formatter::option_callback(const nlohmann::json& data) const {
       return option(*name);
     }
 
-    logger::error(fmt::format("Template callback `option` not valid here. Cannot get option for {}.", nlohmann::to_string(data)));
+    logger::error(fmt::format("Template callback `option` not valid here. Cannot get option for {}.", self->to_string(data)));
     return std::string{};
   }, self->from_json(data));
 }

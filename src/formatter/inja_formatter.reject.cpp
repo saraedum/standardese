@@ -19,10 +19,10 @@ nlohmann::json inja_formatter::reject_callback(const nlohmann::json& predicate, 
       if constexpr (std::is_same_v<L, const nlohmann::json::array_t*>) {
         return reject(*p, *i);
       } else {
-        logger::error(fmt::format("Template callback `reject` not valid here. Cannot use {} as a list of items.", nlohmann::to_string(items)));
+        logger::error(fmt::format("Template callback `reject` not valid here. Cannot use {} as a list of items.", self->to_string(items)));
       }
     } else {
-      logger::error(fmt::format("Template callback `reject` not valid here. Cannot use {} as a predicate.", nlohmann::to_string(predicate)));
+      logger::error(fmt::format("Template callback `reject` not valid here. Cannot use {} as a predicate.", self->to_string(predicate)));
     }
     return std::vector<nlohmann::json>{};
   }, self->from_json(predicate), self->from_json(items));
@@ -63,7 +63,7 @@ std::vector<nlohmann::json> inja_formatter::reject(const std::string& predicate,
     if (!pred(item)) {
       filtered.push_back(std::move(item));
     } else {
-      logger::trace([&]() { return fmt::format("Rejecting {} as it is `{}`.", nlohmann::to_string(item), predicate); });
+      logger::trace([&]() { return fmt::format("Rejecting {} as it is `{}`.", self->to_string(item), predicate); });
     }
 
   return filtered;

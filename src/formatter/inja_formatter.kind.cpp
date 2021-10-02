@@ -20,7 +20,7 @@ std::string inja_formatter::kind_callback(const nlohmann::json& data) const {
       return kind(*entity);
     }
 
-    logger::error(fmt::format("Template callback `kind` not valid here. Cannot determine kind of {}.", nlohmann::to_string(data)));
+    logger::error(fmt::format("Template callback `kind` not valid here. Cannot determine kind of {}.", self->to_string(data)));
     return std::string{};
   }, self->from_json(data));
 }

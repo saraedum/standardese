@@ -37,7 +37,7 @@ nlohmann::json inja_formatter::arguments_callback(const nlohmann::json& data) co
       }, arguments(*entity));
     }
 
-    logger::error(fmt::format("Template callback `arguments` not valid here. Cannot determine template arguments for {}.", nlohmann::to_string(data)));
+    logger::error(fmt::format("Template callback `arguments` not valid here. Cannot determine template arguments for {}.", self->to_string(data)));
     return nlohmann::json::array();
   }, self->from_json(data));
 }

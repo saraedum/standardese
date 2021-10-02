@@ -21,7 +21,7 @@ std::string inja_formatter::target_callback(const nlohmann::json& data) const {
       return target(*entity);
     }
 
-    logger::error(fmt::format("Template callback `target` not valid here. Cannot create link to {}.", nlohmann::to_string(data)));
+    logger::error(fmt::format("Template callback `target` not valid here. Cannot create link to {}.", self->to_string(data)));
     return std::string{};
   }, self->from_json(data));
 }

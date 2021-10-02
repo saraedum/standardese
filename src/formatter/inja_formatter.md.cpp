@@ -24,7 +24,7 @@ std::string inja_formatter::md_callback(const nlohmann::json& data) const {
       return md(*entity);
     }
 
-    logger::error(fmt::format("Cannot render `{}` as MarkDown in inja callback `md`.", nlohmann::to_string(data)));
+    logger::error(fmt::format("Cannot render `{}` as MarkDown in inja callback `md`.", self->to_string(data)));
     return std::string{};
   }, self->from_json(data));
 }

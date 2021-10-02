@@ -54,7 +54,7 @@ std::string inja_formatter::namespace_callback(const nlohmann::json& data) const
       return namespaze(*entity);
     }
 
-    logger::error(fmt::format("Template callback `namespace` not valid here. Cannot determine namespace of {}.", nlohmann::to_string(data)));
+    logger::error(fmt::format("Template callback `namespace` not valid here. Cannot determine namespace of {}.", self->to_string(data)));
     return std::string{};
   }, self->from_json(data));
 }

@@ -16,7 +16,7 @@ nlohmann::json inja_formatter::declaration_specifiers_callback(const nlohmann::j
       return declaration_specifiers(*entity);
     }
 
-    logger::error(fmt::format("Template callback `declaration_specifiers` not valid here. Cannot determine specifiers of {}.", nlohmann::to_string(data)));
+    logger::error(fmt::format("Template callback `declaration_specifiers` not valid here. Cannot determine specifiers of {}.", self->to_string(data)));
     return std::vector<std::string>{};
   }, self->from_json(data));
 }

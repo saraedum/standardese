@@ -21,7 +21,6 @@
 #include "../../standardese/model/document.hpp"
 #include "../../standardese/model/markup/paragraph.hpp"
 #include "../../standardese/output_generator/xml/xml_generator.hpp"
-#include "../../standardese/parser/comment_parser.hpp"
 #include "../../standardese/parser/cpp_context.hpp"
 #include "../../standardese/logger.hpp"
 #include "../../standardese/parser/cppast_parser.hpp"
@@ -104,12 +103,12 @@ model::document heading(T& documentation, parser::cpp_context cpp_context, type_
   // TODO: Move implementation out.
   inja.add_callback("section", [&](std::vector<const nlohmann::json*> args) {
     if (!args.at(0)->is_string()) {
-      logger::error(fmt::format("Template callback `section()` expects a string argument but found {}.", nlohmann::to_string(*args.at(0))));
+      logger::error(fmt::format("Template callback `section()` expects a string argument but found {}.", inja.to_string(*args.at(0))));
       return nlohmann::json{};
     }
 
     if (args.size() != 1) {
-      logger::warn(fmt::format("Ignoring trailing argument {}. Template callback `section()` expected exactly one string argument.", nlohmann::to_string(*args.at(1))));
+      logger::warn(fmt::format("Ignoring trailing argument {}. Template callback `section()` expected exactly one string argument.", inja.to_string(*args.at(1))));
     }
 
     // TODO: Actually parse argument.
@@ -124,12 +123,12 @@ model::document heading(T& documentation, parser::cpp_context cpp_context, type_
   // TODO: Move implementation out.
   inja.add_void_callback("drop_section", [&](std::vector<const nlohmann::json*> args) {
     if (!args.at(0)->is_string()) {
-      logger::error(fmt::format("Template callback `drop_section()` expects a string argument but found {}.", nlohmann::to_string(*args.at(0))));
+      logger::error(fmt::format("Template callback `drop_section()` expects a string argument but found {}.", inja.to_string(*args.at(0))));
       return;
     }
 
     if (args.size() != 1) {
-      logger::warn(fmt::format("Ignoring trailing argument {}. Template callback `drop_section()` expected exactly one string argument.", nlohmann::to_string(*args.at(1))));
+      logger::warn(fmt::format("Ignoring trailing argument {}. Template callback `drop_section()` expected exactly one string argument.", inja.to_string(*args.at(1))));
     }
 
     // TODO: Actually parse argument.

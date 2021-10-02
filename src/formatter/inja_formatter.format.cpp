@@ -20,7 +20,7 @@ std::string inja_formatter::format_callback(const nlohmann::json& format, const 
       return this->format(*entity);
     }
 
-    logger::error(fmt::format("Template callback `format` not valid here. Cannot format with template {}.", nlohmann::to_string(format)));
+    logger::error(fmt::format("Template callback `format` not valid here. Cannot format with template {}.", self->to_string(format)));
     return std::string{};
   }, self->from_json(format));
 
@@ -33,7 +33,7 @@ std::string inja_formatter::format_callback(const nlohmann::json& format) const 
       return this->format(*entity);
     }
 
-    logger::error(fmt::format("Template callback `format` not valid here. Cannot format with template {}.", nlohmann::to_string(format)));
+    logger::error(fmt::format("Template callback `format` not valid here. Cannot format with template {}.", self->to_string(format)));
     return std::string{};
   }, self->from_json(format));
 }
@@ -42,7 +42,7 @@ std::string inja_formatter::format(const std::string &format) const {
   try {
     std::string rendered = self->env.render(format, self->data);
 
-    logger::trace([&]() { return fmt::format("Rendered template `{}` with `{}` as `{}`.", format, nlohmann::to_string(data()), rendered); });
+    logger::trace([&]() { return fmt::format("Rendered template `{}` with `{}` as `{}`.", format, self->to_string(data()), rendered); });
 
     return rendered;
   } catch(inja::ParserError& e) {

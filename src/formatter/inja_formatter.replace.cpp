@@ -14,17 +14,17 @@ std::string inja_formatter::replace_callback(const nlohmann::json& str_, const n
   return std::visit([&](auto&& str, auto&& pattern, auto&& replacement) {
     using T = std::decay_t<decltype(str)>;
     if constexpr (!std::is_same_v<T, const nlohmann::json::string_t*>) {
-      logger::error(fmt::format("Template callback `replace` expected a string but found.", nlohmann::to_string(str_)));
+      logger::error(fmt::format("Template callback `replace` expected a string but found {}.", self->to_string(str_)));
       return std::string{};
     } else {
       using T = std::decay_t<decltype(pattern)>;
       if constexpr (!std::is_same_v<T, const nlohmann::json::string_t*>) {
-        logger::error(fmt::format("Template callback `replace` expected a string but found.", nlohmann::to_string(pattern_)));
+        logger::error(fmt::format("Template callback `replace` expected a string but found {}.", self->to_string(pattern_)));
         return std::string{};
       } else {
         using T = std::decay_t<decltype(replacement)>;
         if constexpr (!std::is_same_v<T, const nlohmann::json::string_t*>) {
-          logger::error(fmt::format("Template callback `replace` expected a string but found.", nlohmann::to_string(replacement_)));
+          logger::error(fmt::format("Template callback `replace` expected a string but found {}.", self->to_string(replacement_)));
           return std::string{};
         } else {
           return replace(*str, *pattern, *replacement);

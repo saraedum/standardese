@@ -16,7 +16,7 @@ std::string inja_formatter::path_callback(const nlohmann::json& data) const {
       if constexpr (std::is_same_v<T, const cppast::cpp_entity*>) {
         return path(*entity);
       }
-      logger::error(fmt::format("Cannot determine path of `{}` in inja callback `path`.", nlohmann::to_string(data)));
+      logger::error(fmt::format("Cannot determine path of `{}` in inja callback `path`.", self->to_string(data)));
       return std::string{};
     }, self->from_json(data));
 }

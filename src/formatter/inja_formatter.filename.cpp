@@ -17,7 +17,7 @@ std::string inja_formatter::filename_callback(const nlohmann::json& data) const 
         return filename(*entity);
       }
 
-      logger::error(fmt::format("Cannot determine filename of `{}` in inja callback `filename`.", nlohmann::to_string(data)));
+      logger::error(fmt::format("Cannot determine filename of `{}` in inja callback `filename`.", self->to_string(data)));
       return std::string{};
     }, self->from_json(data));
 }
