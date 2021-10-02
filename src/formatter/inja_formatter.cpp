@@ -218,8 +218,10 @@ inja_formatter::inja_formatter(struct inja_formatter_options options, parser::cp
     return synopsis_callback(data());
   });
   add_callback("synopsis", [&](const std::vector<const nlohmann::json*>& args) {
-    if (!check_arg_count("synopsis", args, 1))
-      return to_json(model::markup::text{""});
+    if (!check_arg_count("synopsis", args, 1)) {
+      model::entity empty = model::markup::text{""};
+      return to_json(&empty);
+    }
     return synopsis_callback(*args[0]);
   });
   add_callback("option", [&](const std::vector<const nlohmann::json*>& args) {

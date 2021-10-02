@@ -5,6 +5,8 @@
 #ifndef STANDARDESE_FORMATTER_INJA_FORMATTER_IMPL_HPP_INCLUDED
 #define STANDARDESE_FORMATTER_INJA_FORMATTER_IMPL_HPP_INCLUDED
 
+#include <stack>
+
 #include <inja/exceptions.hpp>
 #include <inja/inja.hpp>
 
@@ -31,7 +33,7 @@ struct inja_formatter::impl {
   impl(inja_formatter_options options, parser::cpp_context cpp_context);
 
   using json = nlohmann::json;
-  using variant = std::variant<std::nullptr_t, const cppast::cpp_entity*, const cppast::cpp_type*, model::module, const json::array_t*, json::boolean_t, json::number_float_t, const json::object_t*, const json::string_t*>;
+  using variant = std::variant<std::nullptr_t, const cppast::cpp_entity*, const cppast::cpp_type*, const model::entity*, const json::array_t*, json::boolean_t, json::number_float_t, const json::object_t*, const json::string_t*>;
 
   static variant from_json(const nlohmann::json&);
 
@@ -47,6 +49,9 @@ struct inja_formatter::impl {
   json data;
   type_safe::optional_ref<const cppast::cpp_entity> context;
   parser::cpp_context cpp_context;
+
+  /// Stores entities that were added with to_json(model::entity&&).
+  std::stack<model::entity> entities;
 };
 
 }

@@ -18,13 +18,15 @@
 namespace standardese::formatter {
 
 std::string inja_formatter::md_callback(const nlohmann::json& data) const {
-  const auto md = data.find("md");
-  if (md != data.end() && md->is_string()) {
-    return md->get<std::string>();
-  }
+  return std::visit([&](auto&& entity) {
+    using T = std::decay_t<decltype(entity)>;
+    if constexpr (std::is_same_v<T, const model::entity*>) {
+      return md(*entity);
+    }
 
-  logger::error(fmt::format("Cannot render `{}` as MarkDown in inja callback `md`.", nlohmann::to_string(data)));
-  return std::string{};
+    logger::error(fmt::format("Cannot render `{}` as MarkDown in inja callback `md`.", nlohmann::to_string(data)));
+    return std::string{};
+  }, self->from_json(data));
 }
 
 std::string inja_formatter::md(const model::entity& entity) const {

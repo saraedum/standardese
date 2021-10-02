@@ -20,7 +20,7 @@ nlohmann::json inja_formatter::variable_type_callback(const nlohmann::json& data
       switch(entity->kind()) {
         case cppast::cpp_entity_kind::variable_t:
         case cppast::cpp_entity_kind::member_variable_t:
-          return to_json(variable_type(*entity));
+          return to_json(&variable_type(*entity));
       }
     }
     // TODO: Use to_string() in messages everywhere.

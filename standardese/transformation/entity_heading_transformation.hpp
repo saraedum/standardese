@@ -12,10 +12,12 @@
 
 namespace standardese::transformation {
 
-// TODO: This is crucial and currently completely untested.
-
-/// Inserts headings into a document, e.g., for all
-/// [model::cpp_entity_documentation]() entities.
+/// Inserts headings into a document.
+/// For example, this can be used to insert a heading for every
+/// [model::cpp_entity_documentation](), i.e., for every documented C/C++
+/// entity.
+/// This is also used to create the headings for all sections that are
+/// created in the source code with commands such as `\returns`.
 class entity_heading_transformation : public transformation {
   public:
     struct entity_heading_transformation_options {

@@ -34,7 +34,7 @@ model::unordered_entities document_builders::create(model::unordered_entities& p
       auto& documentation = entity.as<model::cpp_entity_documentation>();
 
       formatter::inja_formatter inja{{}, context};
-      inja.data().merge_patch(inja.to_json(documentation.entity()));
+      inja.data().merge_patch(inja.to_json(&documentation.entity()));
 
       if (cppast::cpp_file::kind() == documentation.entity().kind()) {
         logger::debug(fmt::format("Creating document for entity {}.", documentation.entity().name()));

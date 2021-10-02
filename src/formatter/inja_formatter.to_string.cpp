@@ -22,8 +22,9 @@ std::string inja_formatter::impl::to_string(const nlohmann::json& data) const {
       return fmt::format("type {}, i.e., {}", inja_formatter{{}, cpp_context}.name(*entity), nlohmann::to_string(data));
     } else if constexpr (std::is_same_v<T, std::nullptr_t>) {
       return std::string{"null"};
-    } else if constexpr (std::is_same_v<T, model::module>) {
-      return fmt::format("module {}", entity.name);
+    } else if constexpr (std::is_same_v<T, const model::entity*>) {
+      // TODO
+      return std::string{"TODO"};
     } else if constexpr (std::is_same_v<T, const json::array_t*>) {
       return fmt::format("array {}", nlohmann::to_string(data));
     } else if constexpr (std::is_same_v<T, json::boolean_t>) {

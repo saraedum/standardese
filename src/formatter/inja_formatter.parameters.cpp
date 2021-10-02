@@ -20,7 +20,7 @@ nlohmann::json inja_formatter::parameters_callback(const nlohmann::json& data) c
     using T = std::decay_t<decltype(entity)>;
     if constexpr (std::is_same_v<T, const cppast::cpp_entity*>) {
       for(auto* param : parameters(*entity))
-        params.push_back(to_json(*param));
+        params.push_back(to_json(param));
     } else {
       logger::error(fmt::format("Template callback `parameters` not valid here. Cannot determine parameters for {}.", nlohmann::to_string(data)));
     }

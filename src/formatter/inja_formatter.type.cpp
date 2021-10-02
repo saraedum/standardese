@@ -19,13 +19,13 @@ nlohmann::json inja_formatter::type_callback(const nlohmann::json& data) const {
     if constexpr (std::is_same_v<T, const cppast::cpp_entity*>) {
       switch(entity->kind()) {
         case cppast::cpp_entity_kind::function_parameter_t:
-          return to_json(type(*entity));
+          return to_json(&type(*entity));
       }
     } else if constexpr (std::is_same_v<T, const cppast::cpp_type*>) {
       switch(entity->kind()) {
         case cppast::cpp_type_kind::cv_qualified_t:
         case cppast::cpp_type_kind::reference_t:
-          return to_json(type(*entity));
+          return to_json(&type(*entity));
       }
     }
     logger::error(fmt::format("Template callback `type` not valid here. Cannot determine type for {}.", nlohmann::to_string(data)));

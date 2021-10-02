@@ -28,7 +28,7 @@ nlohmann::json inja_formatter::arguments_callback(const nlohmann::json& data) co
               if constexpr (std::is_same_v<A, std::string>) {
                 ret.push_back(arg);
               } else {
-                ret.push_back(to_json(*arg));
+                ret.push_back(to_json(arg));
               }
             }, arg);
           }

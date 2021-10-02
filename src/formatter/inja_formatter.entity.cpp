@@ -20,7 +20,7 @@ nlohmann::json inja_formatter::entity_callback(const nlohmann::json& data) const
       switch(entity->kind()) {
         case cppast::cpp_entity_kind::friend_t:
         case cppast::cpp_entity_kind::function_template_t:
-          return to_json(this->entity(*entity));
+          return to_json(&this->entity(*entity));
       }
     }
     logger::error(fmt::format("Template callback `entity` not valid here. Cannot determine underlying entity for {}.", nlohmann::to_string(data)));

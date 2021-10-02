@@ -75,13 +75,13 @@ TEST_CASE("Strings from Inja Templates", "[inja_formatter]") {
     // TODO: Test all the other name() overloads.
 
     SECTION("`name` can be used as Advertised in the Documentation of to_json(cpp_entity)") {
-      inja.data()["entity"] = inja.to_json(header["f"]);
+      inja.data()["entity"] = inja.to_json(&header["f"]);
 
       REQUIRE(inja.format("{{ name(entity) }}") == "f");
     }
 
     SECTION("`name` can be used as Advertised in the Documentation of to_json(cpp_type)") {
-      inja.data()["type"] = inja.to_json(header["X"]);
+      inja.data()["type"] = inja.to_json(&header["X"]);
 
       REQUIRE(inja.format("{{ name(type) }}") == "X");
     }
@@ -125,7 +125,7 @@ TEST_CASE("Strings from Inja Templates", "[inja_formatter]") {
 
       REQUIRE(inja.cppast_kind(static_cast<const cppast::cpp_function&>(header["f"]).return_type()) == "builtin");
 
-      inja.data() = inja.to_json(header["f"]);
+      inja.data() = inja.to_json(&header["f"]);
       REQUIRE(inja.format(R"({{ cppast_kind(return_type) }})") == "builtin");
     }
   }
@@ -203,7 +203,16 @@ TEST_CASE("Strings from Inja Templates", "[inja_formatter]") {
       util::cpp_file header;
 
       auto inja = inja_formatter({}, header);
-      REQUIRE(inja.md(model::document{"", ""}) == "\n");
+      auto document = model::document{"", ""};
+
+      SECTION("Directly Invoking the Command") {
+        REQUIRE(inja.md(document) == "\n");
+      }
+
+      SECTION("In a Template") {
+        inja.data().merge_patch(inja.to_json(document));
+        REQUIRE(inja.format(R"({{ md }})") == "\n");
+      }
     }
 
     SECTION("`md` can Render an Empty Paragraph") {

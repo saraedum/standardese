@@ -18,6 +18,7 @@
 
 #include "inja_formatter.impl.hpp"
 #include "../../standardese/logger.hpp"
+#include "../../standardese/model/visitor/visit.hpp"
 
 #include "../../standardese/model/group_documentation.hpp"
 
@@ -28,8 +29,17 @@ std::string inja_formatter::name_callback(const nlohmann::json& data) const {
     using T = std::decay_t<decltype(entity)>;
     if constexpr (std::is_same_v<T, const cppast::cpp_entity*>) {
       return name(*entity);
-    } else if constexpr (std::is_same_v<T, model::module>) {
-      return name(entity);
+    } else if constexpr (std::is_same_v<T, const model::entity*>) {
+      return model::visitor::visit([&](auto&& entity) {
+        using S = std::decay_t<decltype(entity)>;
+
+        if constexpr (std::is_same_v<S, model::module>) {
+          return name(entity);
+        }
+
+        logger::error(fmt::format("Template callback `name` not valid here. Cannot determine name of {}.", nlohmann::to_string(data)));
+        return std::string{};
+      }, *entity);
     } else if constexpr (std::is_same_v<T, const cppast::cpp_type*>) {
       return name(*entity);
     } else if constexpr (std::is_same_v<T, const nlohmann::json::string_t*>) {

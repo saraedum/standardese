@@ -59,69 +59,40 @@ const T* from_string(const nlohmann::json::string_t* value) {
 
 }
 
-nlohmann::json inja_formatter::to_json(const model::entity& entity) const {
-  nlohmann::json json;
-
-  // TODO: This is quite hacky. In particular how we only render md sometimes. Can we render md when a document contains anything that is not supported in plain MarkDown?
-
-  model::visitor::visit([&](auto&& entity) {
-    using T = std::decay_t<decltype(entity)>;
-
-    if constexpr (std::is_base_of_v<model::mixin::documentation, T>) {
-      if constexpr (std::is_same_v<T, model::module>) {
-        json["standardese"] = {
-          {"kind", "module"},
-          {"name", entity.name },
-        };
-      } else if constexpr (std::is_same_v<T, model::group_documentation>) {
-        json["standardese"] = {
-          {"kind", "group"},
-          {"entities", nlohmann::json::array()},
-        };
-        for (auto& member : entity.entities)
-          json["standardese"]["entities"].push_back(to_json(member.entity()));
-      } else if constexpr (std::is_same_v<T, model::cpp_entity_documentation>) {
-        // TODO: Are we losing \synopsis here?
-        json.merge_patch(to_json(entity.entity()));
-      }
-
-      json["standardese"]["group"] = entity.group.has_value() ? entity.group.value() : "";
-      json["standardese"]["output_section"] = entity.output_section.has_value() ? entity.output_section.value() : "";
-      json["standardese"]["synopsis"] = entity.synopsis.has_value() ? entity.synopsis.value() : "";
-    } else {
-      if constexpr (std::is_same_v<T, model::document>) {
-        json["standardese"] = {
-          {"kind", "document"},
-          {"name", entity.name},
-          {"path", entity.path},
-        };
-      }
-
-      json["md"] = md(entity);
-    }
-  }, entity);
-
-  return json;
-}
-
-nlohmann::json inja_formatter::to_json(const cppast::cpp_entity& entity) const {
-  nlohmann::json json;
-
-  json["standardese"] = {
-    {"kind", "cpp_entity"},
-    {"value", to_string(&entity) },
+nlohmann::json inja_formatter::to_json(const model::entity* entity) const {
+  nlohmann::json json = {
+    {"standardese", {
+      {"kind", "entity"},
+      {"value", to_string(entity)}
+    } }
   };
 
   return json;
 }
 
-nlohmann::json inja_formatter::to_json(const cppast::cpp_type& type) const {
+nlohmann::json inja_formatter::to_json(model::entity&& entity) const {
+  self->entities.push(std::move(entity));
+  return to_json(&self->entities.top());
+}
+
+nlohmann::json inja_formatter::to_json(const cppast::cpp_entity* entity) const {
+  nlohmann::json json = {
+    {"standardese", {
+      {"kind", "cpp_entity"},
+      {"value", to_string(entity) },
+    } }
+  };
+
+  return json;
+}
+
+nlohmann::json inja_formatter::to_json(const cppast::cpp_type* type) const {
   nlohmann::json json = {
     {"standardese", {
       {"kind", "cpp_type"},
-      {"value", to_string(&type) }
-    }
-  }};
+      {"value", to_string(type) }
+    } }
+  };
 
   return json;
 }
@@ -142,16 +113,16 @@ inja_formatter::impl::variant inja_formatter::impl::from_json(const nlohmann::js
             return from_string<cppast::cpp_entity>(v->get_ptr<const nlohmann::json::string_t*>());
           else
             logger::warn(fmt::format("Unsupported value in {}", nlohmann::to_string(value)));
-        } else if (kind_ref == "module") {
-          const auto name = standardese->find("name");
-          if (name != standardese->end() && name->is_string())
-            return model::module(name->get<std::string>());
-          else
-            logger::warn(fmt::format("Unsupported name in {}", nlohmann::to_string(value)));
         } else if (kind_ref == "cpp_type") {
           const auto v = standardese->find("value");
           if (v != standardese->end() && v->is_string())
             return from_string<cppast::cpp_type>(v->get_ptr<const nlohmann::json::string_t*>());
+          else
+            logger::warn(fmt::format("Unsupported value in {}", nlohmann::to_string(value)));
+        } else if (kind_ref == "entity") {
+          const auto v = standardese->find("value");
+          if (v != standardese->end() && v->is_string())
+            return from_string<model::entity>(v->get_ptr<const nlohmann::json::string_t*>());
           else
             logger::warn(fmt::format("Unsupported value in {}", nlohmann::to_string(value)));
         } else {

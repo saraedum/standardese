@@ -45,5 +45,3 @@ namespace standardese::parser::commands
 }
 
 #endif // STANDARDESE_COMMENT_COMMANDS_HPP_INCLUDED
-
-

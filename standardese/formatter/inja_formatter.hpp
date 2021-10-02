@@ -142,7 +142,7 @@ class inja_formatter {
   /// from an inja template. I.e., after setting `data()["entity"] =
   /// to_json(...)`, an inja template could invoke `{{ name(entity) }}` to
   /// render the name of that C/C++ entity.
-  nlohmann::json to_json(const cppast::cpp_entity&) const;
+  nlohmann::json to_json(const cppast::cpp_entity*) const;
 
   /// Return this C/C++ type as JSON, typically, for inclusion in `data()`.
   /// The JSON returned is an implementation detail but it is such that the
@@ -150,9 +150,26 @@ class inja_formatter {
   /// from an inja template. I.e., after setting `data()["type"] =
   /// to_json(...)`, an inja template could invoke `{{ name(type) }}` to render
   /// the name of that C/C++ type.
-  nlohmann::json to_json(const cppast::cpp_type&) const;
+  nlohmann::json to_json(const cppast::cpp_type*) const;
 
-  nlohmann::json to_json(const model::entity&) const;
+  /// Return this entity as JSON, typically, for inclusion in `data()`.
+  /// The JSON returned is an implementation detail but it is such that the
+  /// other methods here that accept a `model::entity` can then be invoked on it
+  /// from an inja template. I.e., after setting `data()["entity"] =
+  /// to_json(...)`, an inja template could invoke `{{ md(entity) }}` to render
+  /// this entity as MarkDown.
+  /// Note that the implementation might refer back to this entity
+  /// through this pointer, i.e., you must make sure that the entity
+  /// remains alive for the lifetime of this inja formatter.
+  nlohmann::json to_json(const model::entity*) const;
+
+  /// Return this entity as JSON, typically, for inclusion in `data()`.
+  /// The JSON returned is an implementation detail but it is such that the
+  /// other methods here that accept a `model::entity` can then be invoked on it
+  /// from an inja template. I.e., after setting `data()["entity"] =
+  /// to_json(...)`, an inja template could invoke `{{ md(entity) }}` to render
+  /// this entity as MarkDown.
+  nlohmann::json to_json(model::entity&&) const;
 
   /// Return a short name of this entity.
   /// This method can be invoked in inja templates as `{{ name }}` or as `{{ name(entity) }}`.
