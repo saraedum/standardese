@@ -92,8 +92,9 @@ void group_transformation::merge(model::group_documentation& group, model::cpp_e
             // Keep the existing section and drop the one coming from this
             // child since it is empty anyway.
             continue;
+          // TODO: This reports all the automatically generated Parameters sections. They are not really empty but contain a trivial cpp_entity_documentation.
           // TODO: Use the configured section names.
-          logger::warn(fmt::format("Multiple members of the group {} define a non-empty {} section. The sections will show up in the generated documentation but there will be no indication which section came from which group member originally.", entity.group.value(), "?" /* section.type */));
+          // logger::warn(fmt::format("Multiple members of the group {} define a non-empty {} section. The sections will show up in the generated documentation but there will be no indication which section came from which group member originally. Namely, we found {} and then {}.", entity.group.value(), section.type, output_generator::xml::xml_generator::xml_generator::render(*existing), output_generator::xml::xml_generator::xml_generator::render(section)));
         } else
           // Replace existing section since it is empty.
           group.erase(existing);
