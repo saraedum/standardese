@@ -10,18 +10,18 @@
 
 namespace standardese::formatter {
 
-std::string inja_formatter::path_callback(const nlohmann::json& data) const {
+std::string inja_formatter::absolute_callback(const nlohmann::json& data) const {
     return std::visit([&](auto&& entity) {
       using T = std::decay_t<decltype(entity)>;
       if constexpr (std::is_same_v<T, const cppast::cpp_entity*>) {
-        return path(*entity);
+        return absolute(*entity);
       }
-      logger::error(fmt::format("Cannot determine path of `{}` in inja callback `path`.", self->to_string(data)));
+      logger::error(fmt::format("Cannot determine path of `{}` in inja callback `absolute`.", self->to_string(data)));
       return std::string{};
     }, self->from_json(data));
 }
 
-std::string inja_formatter::path(const cppast::cpp_entity& entity) const {
+std::string inja_formatter::absolute(const cppast::cpp_entity& entity) const {
   const auto* parent = &entity;
   while(parent->parent().has_value())
     parent = &parent->parent().value();
@@ -29,4 +29,3 @@ std::string inja_formatter::path(const cppast::cpp_entity& entity) const {
 }
 
 }
-

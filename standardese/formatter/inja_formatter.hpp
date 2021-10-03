@@ -18,6 +18,7 @@
 namespace standardese::formatter {
 
 /// Renders C++ entities using the Inja templating engine.
+// TODO: Add data() callback that returns self.data().
 class inja_formatter {
  public:
   struct inja_formatter_options {
@@ -197,10 +198,16 @@ class inja_formatter {
   /// This method can be invoked in inja templates as `{{ md(entity) }}`.
   std::string md(const model::entity&) const;
 
-  /// Return the path to the header where this entity is defined.
-  /// This method can be invoked in inja templates as `{{ path }}` or as `{{
-  /// path(entity) }}`.
-  std::string path(const cppast::cpp_entity&) const;
+  /// Return the absolute path to the header where this entity is defined.
+  /// This method can be invoked in inja templates as `{{ absolute }}` or as
+  /// `{{ absolute(entity) }}`.
+  std::string absolute(const cppast::cpp_entity&) const;
+
+  /// Return the relative path of the header where this entity is defined,
+  /// relative to the common base of `paths`.
+  /// This method can be invoked in inja templates as `{{ relative(paths) }}`
+  /// or as `{{ relative(entity, paths) }}`.
+  std::string relative(const cppast::cpp_entity&, const std::vector<std::string>& paths) const;
 
   /// Return the filename part of the path.
   /// Returns `header.hpp` for `/directory/header.hpp`.
@@ -376,7 +383,8 @@ class inja_formatter {
  private:
   std::string name_callback(const nlohmann::json&) const;
   std::string md_callback(const nlohmann::json&) const;
-  std::string path_callback(const nlohmann::json&) const;
+  std::string absolute_callback(const nlohmann::json&) const;
+  std::string relative_callback(const nlohmann::json&, const nlohmann::json&) const;
   std::string filename_callback(const nlohmann::json&) const;
   std::string sanitize_basename_callback(const nlohmann::json&) const;
   std::string md_escape_callback(const nlohmann::json&) const;

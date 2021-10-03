@@ -62,7 +62,7 @@ void link_href_internal_transformation::do_transform(model::entity& document) {
           // TODO: Use cppast ids instead?
           auto resolved = anchors.find(&*target.target);
           if (resolved == anchors.end()) {
-              logger::error(fmt::format("Could not create URL for link to the {} `{}` from `{}`. Found the reference `{}`. Target was not found in inventory of C++ entities which are linkable.", formatter::inja_formatter{{}, context}.kind(*target.target), target.target->name(), formatter::inja_formatter{{}, context}.path(*target.target), output_generator::xml::xml_generator::render(document)));
+              logger::error(fmt::format("Could not create URL for link to the {} `{}` from `{}`. Found the reference `{}`. Target was not found in inventory of C++ entities which are linkable.", formatter::inja_formatter{{}, context}.kind(*target.target), target.target->name(), formatter::inja_formatter{{}, context}.absolute(*target.target), output_generator::xml::xml_generator::render(document)));
               return;
           }
 

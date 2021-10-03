@@ -6,6 +6,7 @@
 #include <fmt/format.h>
 #include <cppast/cpp_file.hpp>
 #include <nlohmann/json.hpp>
+#include <unordered_set>
 
 #include "../../standardese/tool/document_builders.hpp"
 #include "../../standardese/model/unordered_entities.hpp"
@@ -26,7 +27,22 @@ model::unordered_entities document_builders::create(model::unordered_entities& p
 
   model::unordered_entities documents;
 
-  formatter::inja_formatter formatter{{}, context};
+  formatter::inja_formatter inja{{}, context};
+
+  std::vector<std::string> headers;
+  {
+    std::unordered_set<std::string> headers_;
+
+    for (auto& entity : parsed) {
+      if (entity.is<model::cpp_entity_documentation>()) {
+        const auto& documentation = entity.as<model::cpp_entity_documentation>();
+        const auto& header = inja.absolute(documentation.entity());
+        headers_.insert(header);
+      }
+    }
+
+    std::copy(headers_.begin(), headers_.end(), std::back_inserter(headers));
+  }
 
   logger::info("Creating entity documents.");
   for (auto& entity : parsed) {
@@ -35,6 +51,7 @@ model::unordered_entities document_builders::create(model::unordered_entities& p
 
       formatter::inja_formatter inja{{}, context};
       inja.data().merge_patch(inja.to_json(&documentation.entity()));
+      inja.data()["paths"] = headers;
 
       if (cppast::cpp_file::kind() == documentation.entity().kind()) {
         logger::debug(fmt::format("Creating document for entity {}.", documentation.entity().name()));

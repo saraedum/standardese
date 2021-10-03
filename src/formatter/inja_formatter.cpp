@@ -108,13 +108,21 @@ inja_formatter::inja_formatter(struct inja_formatter_options options, parser::cp
       return std::string{};
     return text_callback(*args[0]);
   });
-  add_callback("path", [&]() {
-    return path_callback(self->data);
+  add_callback("absolute", [&]() {
+    return absolute_callback(self->data);
   });
-  add_callback("path", [&](const std::vector<const nlohmann::json*>& args) {
-    if (!check_arg_count(*this, "path", args, 1))
+  add_callback("absolute", [&](const std::vector<const nlohmann::json*>& args) {
+    if (!check_arg_count(*this, "absolute", args, 1))
       return std::string{};
-    return path_callback(*args[0]);
+    return absolute_callback(*args[0]);
+  });
+  add_callback("relative", [&](const std::vector<const nlohmann::json*>& args) {
+    if (!check_arg_count(*this, "relative", args, 1, 2))
+      return std::string{};
+    if (args.size() == 2)
+      return relative_callback(*args[0], *args[1]);
+    else
+      return relative_callback(self->data, *args[0]);
   });
   add_callback("filename", [&](const std::vector<const nlohmann::json*>& args) {
     if (!check_arg_count(*this, "filename", args, 1))

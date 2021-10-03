@@ -27,22 +27,28 @@ using standardese::formatter::inja_formatter;
 TEST_CASE("Strings from Inja Templates", "[inja_formatter]") {
   auto logger = util::logger::throwing_logger();
 
-  SECTION("`filename()` and `path` Callbacks") {
+  SECTION("`filename`, `absolute`, and `relative` Callbacks") {
     util::cpp_file header;
     auto inja = inja_formatter({}, header);
 
-    SECTION("`path` Provides the Path of the Defining Header File") {
+    SECTION("`absolute` Provides the Path of the Defining Header File") {
       inja.data().merge_patch(inja.to_json(header));
 
-      REQUIRE(inja.format("{{ path }}") == header.path());
+      REQUIRE(inja.format("{{ absolute }}") == header.path());
 
       SECTION("`filename` extracts the Filename Part") {
-        REQUIRE(inja.format("{{ filename(path) }}") == header.path().filename());
+        REQUIRE(inja.format("{{ filename(absolute) }}") == header.path().filename());
       }
     }
 
-    SECTION("`path` Cannot be used Without an Appropriate Context") {
-      REQUIRE_THROWS(inja.format("{{ path }}"));
+    SECTION("`absolute` Cannot be used Without an Appropriate Context") {
+      REQUIRE_THROWS(inja.format("{{ absolute }}"));
+    }
+
+    SECTION("`relative` Relativizes Paths") {
+      REQUIRE(inja.relative(header, {inja.absolute(header)}) == inja.filename(inja.absolute(header)));
+
+      REQUIRE(inja.relative(header, {"/unrelated/x", "/unrelated/y"}) == inja.absolute(header));
     }
   }
 
