@@ -81,6 +81,7 @@ std::string inja_formatter::name(const cppast::cpp_entity& entity) const {
     case cppast::cpp_entity_kind::type_alias_t:
     case cppast::cpp_entity_kind::enum_t:
     case cppast::cpp_entity_kind::enum_value_t:
+    case cppast::cpp_entity_kind::alias_template_t:
       return entity.name();
     default:
       // TODO: Make sure that this is complete and every case tested.
