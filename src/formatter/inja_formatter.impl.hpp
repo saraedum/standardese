@@ -6,6 +6,7 @@
 #define STANDARDESE_FORMATTER_INJA_FORMATTER_IMPL_HPP_INCLUDED
 
 #include <stack>
+#include <variant>
 
 #include <inja/exceptions.hpp>
 #include <inja/inja.hpp>

@@ -279,6 +279,14 @@ inja_formatter::inja_formatter(struct inja_formatter_options options, parser::cp
       return code_callback(*args[0]);
     return code_callback(*args[0], *args[1]);
   });
+  add_callback("output_section", [&]() {
+    return output_section_callback(data());
+  });
+  add_callback("output_section", [&](const std::vector<const nlohmann::json*>& args) {
+    if (!check_arg_count(*this, "output_section", args, 1))
+      return nlohmann::json{};
+    return output_section_callback(*args[0]);
+  });
   add_callback("entity", [&]() {
     return entity_callback(data());
   });

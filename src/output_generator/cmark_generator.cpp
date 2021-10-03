@@ -83,6 +83,11 @@ void cmark_generator::visit(link& link) {
       } else if (link.target.href().has_value()) {
         cmark_node_set_url(top, link.target.href().value().c_str());
       } else if constexpr (std::is_same_v<T, model::link_target::cppast_target>) {
+        // TODO: This is very noisy:
+        // When a link cannot be resolved earlier, e.g., because the target is
+        // uncommented, then this warning shows which is very annoying.
+        // We should either detect this problem or probably better, not exclude
+        // uncommented entities if they are the target of links.
         logger::error(fmt::format("Cannot render link to C/C++ entity `{}` as MarkDown. MarkDown does not know about C/C++ entities and this target has no actual URL attached to it.", target.target->name()));
       } else {
         logger::error("Cannot render this kind of link as MarkDown yet.");

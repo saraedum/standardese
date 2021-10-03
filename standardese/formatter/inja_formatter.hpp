@@ -279,6 +279,7 @@ class inja_formatter {
 
   std::string kind(const cppast::cpp_entity&) const;
 
+  /// TODO: Should this be queried on a C++ entity or rather to a model::entity? (Or both.)
   /// Return the synopsis override for this entity.
   /// Returns null if no override has been set.
   nlohmann::json synopsis(const cppast::cpp_entity&) const;
@@ -312,6 +313,13 @@ class inja_formatter {
   const cppast::cpp_type& type(const cppast::cpp_type&) const;
 
   const cppast::cpp_entity& entity(const cppast::cpp_entity&) const;
+
+  const cppast::cpp_entity& entity(const model::cpp_entity_documentation&) const;
+
+  const std::vector<model::cpp_entity_documentation>& entity(const model::group_documentation&) const;
+
+  // TODO: Should this also be available on a cpp_entity?
+  type_safe::optional<std::string> output_section(const model::entity&) const;
 
   /// Return the documentation entity rendered as plain text.
   /// Typically, this is used to turn a document such as the one returned by
@@ -412,6 +420,7 @@ class inja_formatter {
   std::string replace_callback(const nlohmann::json&, const nlohmann::json&, const nlohmann::json&) const;
   std::string namespace_callback(const nlohmann::json&) const;
   std::string scope_callback(const nlohmann::json&) const;
+  nlohmann::json output_section_callback(const nlohmann::json&) const;
   void error_callback(const nlohmann::json&) const;
   void warn_callback(const nlohmann::json&) const;
   void info_callback(const nlohmann::json&) const;

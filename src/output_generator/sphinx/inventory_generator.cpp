@@ -9,6 +9,8 @@
 #include "../../../standardese/model/group_documentation.hpp"
 #include "../../../standardese/model/document.hpp"
 
+// TODO: Namespaces are missing in the output.
+
 // TODO: Create a parser::intersphinx::document_set here and then dump it out.
 
 namespace standardese::output_generator::sphinx

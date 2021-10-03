@@ -45,9 +45,9 @@ entity_heading_transformation::entity_heading_transformation_options::entity_hea
         {%- else %}# {{ md_escape(kind) }} {{ md(code(md_escape(name))) }}
         {%- endif %})"),
   // TODO: Read from CLI and reset the default to standardese 0-5-0 equivalent.
-  group_format(R"(# {{ md_escape(standardese.output_section) }}
+  group_format(R"(# {{ output_section }}
 ```
-{% for member in standardese.entities %}({{ loop.index1 }}) {% if synopsis %}{{ text(code(md_escape(synopsis(member)))) }}{% else %}{{ text(code(md_escape(text(md_escape(format(option("cpp_format"), member)))))) }}{% endif %}{% endfor %}```)"),
+{% for member in entity %}({{ loop.index1 }}) {% if synopsis(entity(member)) %}{{ text(code(md_escape(synopsis(entity(member))))) }}{% else %}{{ text(code(format(option("cpp_format"), entity(member)))) }}{% endif %}{% endfor %}```)"),
   inja_formatter_options(std::move(inja_formatter_options)) {}
 
 void entity_heading_transformation::do_transform(model::entity& document) {
@@ -56,7 +56,7 @@ void entity_heading_transformation::do_transform(model::entity& document) {
   model::visitor::visit([&](auto&& entity, auto&& recurse) {
     using T = std::decay_t<decltype(entity)>;
 
-    if constexpr (std::is_same_v<model::cpp_entity_documentation, T>) {
+    if constexpr (std::is_same_v<model::cpp_entity_documentation, T> || std::is_same_v<model::group_documentation, T>) {
       auto doc = heading<T>(entity, cpp_context, level.size() ? level.back() : type_safe::nullopt, options);
       bool has_scope = doc.begin() != doc.end() && doc.begin()->template is<model::markup::heading>();
       for (auto paragraph = doc.rbegin(); paragraph != doc.rend(); ++paragraph) {

@@ -80,6 +80,7 @@ set(src
     formatter/inja_formatter.info.cpp
     formatter/inja_formatter.debug.cpp
     formatter/inja_formatter.trace.cpp
+    formatter/inja_formatter.output_section.cpp
     formatter/synopsis_formatter.cpp
     formatter/code_formatter.cpp
     output_generator/cmark_generator.cpp
