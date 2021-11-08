@@ -9,7 +9,7 @@ source:
   path: ../../
 
 build:
-  number: 5
+  number: 6
   skip: true  # [win and vc<14]
   run_exports:
     # standardese uses semantic versioning
