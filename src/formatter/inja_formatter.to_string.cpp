@@ -16,7 +16,7 @@ std::string inja_formatter::to_string(const nlohmann::json& data) const {
   return self->to_string(data);
 }
 
-// TODO: Break up into actual to_string methods in inja_formatter.
+// TODO(0.6.0-rc): Break up into actual to_string methods in inja_formatter.
 std::string inja_formatter::impl::to_string(const nlohmann::json& data) const {
   return std::visit([&](auto&& entity) {
     using T = std::decay_t<decltype(entity)>;

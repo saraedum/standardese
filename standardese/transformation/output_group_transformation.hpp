@@ -10,7 +10,7 @@
 
 namespace standardese::transformation {
 
-// TODO: Rename to output_section_transformation
+// TODO(0.6.0-alpha): Rename to output_section_transformation
 class output_group_transformation : public transformation {
   public:
     using transformation::transformation;

@@ -15,7 +15,7 @@ namespace standardese::transformation {
 namespace {
 
 model::entity synopsis(const cppast::cpp_entity& entity) {
-  // TODO: Bring 'hidden' functionality back:
+  // TODO(0.6.0-alpha): Bring 'hidden' functionality back:
   /*
   const char* synopsis_config::default_hidden_name() noexcept { return "'hidden'"; }
   bool write_link(const doc_entity& entity, cppast::string_view name)
@@ -39,7 +39,7 @@ model::entity synopsis(const cppast::cpp_entity& entity) {
   }
   */
 
-  // TODO: Bring group/output sections back:
+  // TODO(0.6.0-alpha): Bring group/output sections back:
   /*
   synopsis_config::flags synopsis_config::default_flags() noexcept { return synopsis_config::show_group_output_section; }
   void doc_cpp_entity::do_generate_synopsis_prefix(const cppast::code_generator::output& output,
@@ -123,10 +123,10 @@ model::entity synopsis(const cppast::cpp_entity& entity) {
       }
   }
   */
-  // TODO: Implement ordering (was that ever implemented?):
+  // TODO(0.6.0-alpha): Implement ordering (was that ever implemented?):
   // entity_index::order generation_config::default_order() noexcept { return entity_index::namespace_inline_sorted; }
 
-  // TODO: Bring back the different exclude modes:
+  // TODO(0.6.0-alpha): Bring back the different exclude modes:
   /*
     cppast::code_generator::generation_options get_exclude_mode(
         type_safe::optional_ref<const comment::metadata> metadata)
@@ -149,7 +149,7 @@ model::entity synopsis(const cppast::cpp_entity& entity) {
     }
    */
 
-  // TODO: Bring back synopsis override:
+  // TODO(0.6.0-alpha): Bring back synopsis override:
   /*
     void generate_synopsis_override(const cppast::code_generator::output& code,
                                     const comment::metadata&              metadata)
@@ -159,7 +159,7 @@ model::entity synopsis(const cppast::cpp_entity& entity) {
     }
    */
 
-  // TODO: Bring back macro replacement logic
+  // TODO(0.6.0-alpha): Bring back macro replacement logic
   /*
       cppast::code_generator::generation_options result;
       if (!config_->is_flag_set(synopsis_config::show_complex_noexcept))
@@ -169,15 +169,15 @@ model::entity synopsis(const cppast::cpp_entity& entity) {
           result |= generation_flags::declaration;
   */
 
-  // TODO: Bring back noexcept logic
+  // TODO(0.6.0-alpha): Bring back noexcept logic
   /*
       show_complex_noexcept,     //< If set, complex noexcept conditions will be shown.
   */
 
-  // TODO: Use the synopsis_formatter instead.
+  // TODO(0.6.0-alpha): Use the synopsis_formatter instead.
   struct generator : public cppast::code_generator {
     void do_indent() override {
-      // TODO: This used to be configurable:
+      // TODO(0.6.0-alpha): This used to be configurable:
       // unsigned synopsis_config::default_tab_width() noexcept { return 4u; }
       indent += 2;
     }
@@ -229,7 +229,7 @@ void synopsis_transformation::do_transform(model::entity& document) {
     if constexpr (std::is_same_v<T, model::cpp_entity_documentation>) {
       const cppast::cpp_entity& entity = documentation.entity();
 
-      // TODO: Make configurable
+      // TODO(0.6.0-alpha): Make configurable
       switch (entity.kind()) {
         case cppast::cpp_entity_kind::class_t:
           switch (static_cast<const cppast::cpp_class&>(entity).class_kind()) {

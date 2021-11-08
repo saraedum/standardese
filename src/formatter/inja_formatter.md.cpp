@@ -61,7 +61,7 @@ std::string inja_formatter::md(const model::entity& entity) const {
         entity.is<model::markup::block_quote>() ||
         entity.is<model::markup::list>() ||
         entity.is<model::markup::heading>() ||
-        // TODO: We really want to handle a section like an unnamed container when converting to md?
+        // TODO(0.6.0-final): We really want to handle a section like an unnamed container when converting to md?
         entity.is<model::section>() ||
         entity.is<model::markup::code_block>()) {
       wrapped_in_block = false;

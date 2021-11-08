@@ -20,7 +20,7 @@ namespace standardese::inventory
 /// Mimicks some aspects of C++ name lookup.
 /// This is used to determine the targets of `\entity` commands and to resolve
 /// MarkDown links to C++ entities.
-/// TODO: Make this aspect configurable:
+/// TODO(0.6.0-alpha): Make this aspect configurable:
 /// Note that we are very liberal in our name lookup here. If there are
 /// multiple symbols that match we just return the first of them. If that's
 /// not the one that the user wanted, they can be completely specific
@@ -31,14 +31,14 @@ namespace standardese::inventory
 /// handled by this class at all.
 class symbols {
  public:
-  // TODO: Do we need to keep the inventory alive?
+  // TODO(0.6.0-beta): Do we need to keep the inventory alive?
   explicit symbols(const inventory&);
 
   symbols(symbols&&);
 
   ~symbols();
 
-  // TODO: Maybe merge these two and add more optional args: entity, policy (i.e., actual lookup options), kind.
+  // TODO(0.6.0-beta): Maybe merge these two and add more optional args: entity, policy (i.e., actual lookup options), kind.
 
   /// Lookup the symbol `name` relative to the `entity`, e.g., because
   /// `name` is mentioned in the comment for `entity`.

@@ -46,7 +46,7 @@ nlohmann::json inja_formatter::entity_callback(const nlohmann::json& data) const
 const cppast::cpp_entity& inja_formatter::entity(const cppast::cpp_entity& entity) const {
   switch (entity.kind()) {
     case cppast::cpp_entity_kind::friend_t:
-      // TODO: When is value not available?
+      // TODO(0.6.0-rc): When is value not available?
       return static_cast<const cppast::cpp_friend&>(entity).entity().value();
     case cppast::cpp_entity_kind::function_template_t:
       return static_cast<const cppast::cpp_function_template&>(entity).function();

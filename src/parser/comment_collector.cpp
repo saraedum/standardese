@@ -21,7 +21,7 @@ std::vector<comment_collector::comment> comment_collector::collect(const cppast:
           return true;
 
       if (cppast::is_friended(entity))
-          // TODO: Why?
+          // TODO(0.6.0-alpha): Why?
           return true;
 
       if (cppast::is_templated(entity))
@@ -33,7 +33,7 @@ std::vector<comment_collector::comment> comment_collector::collect(const cppast:
           comments.emplace_back(comment.value(), entity);
       }
 
-      // TODO: Why would we want to do this?
+      // TODO(0.6.0-alpha): Why would we want to do this?
       /*else {
           comments.emplace_back("", entity);
       }*/

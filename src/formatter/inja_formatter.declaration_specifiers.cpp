@@ -22,7 +22,7 @@ nlohmann::json inja_formatter::declaration_specifiers_callback(const nlohmann::j
 }
 
 std::vector<std::string> inja_formatter::declaration_specifiers(const cppast::cpp_entity& entity) const {
-  // TODO
+  // TODO(0.6.0-alpha): Implement me.
   return {};
 }
 

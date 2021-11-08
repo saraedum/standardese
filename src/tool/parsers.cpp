@@ -39,7 +39,7 @@ std::pair<model::unordered_entities, parser::cpp_context> parsers::parse() {
   // Configure Worker Pool
   auto workers = threading::threaded_pool::factory(options.parallelism);
 
-  // TODO: Split sources when parsing into C - C++ - Markdown?
+  // TODO(0.6.0-beta): Split sources when parsing into C - C++ - Markdown?
 
   // Parse C/C++ source code.
   auto cpp_parser = parser::cppast_parser(options.cppast_options);
@@ -103,7 +103,7 @@ std::pair<model::unordered_entities, parser::cpp_context> parsers::parse() {
       std::string raw(std::istreambuf_iterator<char>(in), {});
       auto doc = markdown_parser.parse(raw);
 
-      // TODO: This is a hack.
+      // TODO(0.6.0-alpha): This is a hack.
       doc.name = md.native();
       if (doc.name.find_last_of('/') != std::string::npos)
         doc.name = doc.name.substr(doc.name.find_last_of('/') + 1);
@@ -120,7 +120,7 @@ std::pair<model::unordered_entities, parser::cpp_context> parsers::parse() {
   // Merge entities.
   auto ret = model::unordered_entities(entities);
 
-  // TODO: Is this really what we should do? And should we do this here?
+  // TODO(0.6.0-alpha): Is this really what we should do? And should we do this here?
   for (auto& cpp_file : successfully_parsed)
     comment_parser.add_uncommented_entities(ret, *cpp_file.value());
 

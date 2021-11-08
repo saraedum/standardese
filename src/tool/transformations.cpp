@@ -28,9 +28,9 @@ template<class> inline constexpr bool always_false_v = false;
 transformations::transformations(struct options options) : options(options) {}
 
 void transformations::transform(model::unordered_entities& documents, const parser::cpp_context& context) {
-  // TODO: Make this configurable
+  // TODO(0.6.0-alpha): Make this configurable
 
-  // TODO: Use parallel worker pool.
+  // TODO(0.6.0-alpha): Use parallel worker pool.
 
   // Resolve Links in Standardese Syntax to Internal Targets
   transformation::link_target_internal_transformation{documents, context}.transform();
@@ -42,7 +42,7 @@ void transformations::transform(model::unordered_entities& documents, const pars
       if constexpr (std::is_same_v<T, options::external_sphinx_options>) {
         transformation::link_sphinx_transformation{documents, external.options, inventory::sphinx::documentation_set::parse(external.inventory.native())}.transform();
       } else if constexpr (std::is_same_v<T, options::external_doxygen_options>) {
-        // TODO: implement me.
+        // TODO(0.6.0-alpha): implement me.
         throw std::logic_error("not implemented: doxygen linking");
       } else if constexpr (std::is_same_v<T, options::external_legacy_options>) {
         transformation::link_external_legacy_transformation{documents, external.options}.transform();

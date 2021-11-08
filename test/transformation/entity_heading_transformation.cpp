@@ -42,7 +42,7 @@ TEST_CASE("Headings are Generated for C++ Entities", "[entity_heading_transforma
       The details of the header file.
       )");
 
-    /* TODO
+    /* TODO(0.6.0-alpha): Implement me.
     SECTION("When the Format String is Empty, No Heading is Generated") {
       entity_heading_transformation{parsed.entities, {""}}.transform();
 

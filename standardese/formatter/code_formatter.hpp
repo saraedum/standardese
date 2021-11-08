@@ -23,7 +23,7 @@ class code_formatter {
 
   code_formatter(code_formatter_options, parser::cpp_context);
 
-  // TODO: Make the context more flexible. It could be any kind of documentation.
+  // TODO(0.6.0-beta): Make the context more flexible. It could be any kind of documentation.
 
   /// Return `entity` written in C++ syntax.
   model::markup::paragraph build(const cppast::cpp_entity& entity) const;

@@ -22,7 +22,7 @@ namespace {
 std::mutex counter_mutex;
 
 static bool is_warn_as_error = false;
-// TODO: Make configurable by log level.
+// TODO(0.6.0-rc): Make configurable by log level.
 static bool include_stacktraces = true;
 
 int error_count = 0;

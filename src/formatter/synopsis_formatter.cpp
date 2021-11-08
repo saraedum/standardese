@@ -19,11 +19,11 @@ synopsis_formatter::synopsis_formatter(synopsis_formatter_options options, parse
 
 model::document synopsis_formatter::build(const model::cpp_entity_documentation& documentation) const {
   /*
-  // TODO: Use synopsis override if set.
-  // TODO: It should be configurable whether this generates a plain `synopsis`
+  // TODO(0.6.0-alpha): Use synopsis override if set.
+  // TODO(0.6.0-alpha): It should be configurable whether this generates a plain `synopsis`
   // or an actual code block with links; probably directly in HTML with eg
   // rouge classes.
-  // TODO: Move this class out.
+  // TODO(0.6.0-alpha): Move this class out.
   struct generator : public cppast::code_generator {
     generator(const parser::cpp_context& context) : context(context) {}
 
@@ -31,14 +31,14 @@ model::document synopsis_formatter::build(const model::cpp_entity_documentation&
     void do_unindent() override {}
     void do_write_newline() override {}
     bool do_write_reference(type_safe::array_ref<const cppast::cpp_entity_id> id, cppast::string_view tokens) override {
-      // TODO: assert(id.begin() != id.end());
+      // TODO(0.6.0-alpha): assert(id.begin() != id.end());
 
       auto declaration = context.index().lookup(*id.begin());
-      // TODO: This code is duplicated. The same lives in symbols lookup.
+      // TODO(0.6.0-alpha): This code is duplicated. The same lives in symbols lookup.
       // It is customary to write `typedef struct S {} S;` or `typedef struct {}
       // S;` especially in C. Technically, an "S" would refer to the typedef, but
       // this is never what people want, instead we refer to the struct.
-      // TODO: How should we do this exactly? Should we run this until we are at a non-trivial typedef?
+      // TODO(0.6.0-alpha): How should we do this exactly? Should we run this until we are at a non-trivial typedef?
       if (declaration && declaration.value().kind() == cppast::cpp_type_alias::kind()) {
         const auto& alias = static_cast<const cppast::cpp_type_alias&>(declaration.value());
         const auto& type = alias.underlying_type();
@@ -48,7 +48,7 @@ model::document synopsis_formatter::build(const model::cpp_entity_documentation&
       }
 
       std::string href = "";
-      // // TODO: Use an inja callback instead and put this reference into some state bag. See the corresponding hack in link_target_transformation.
+      // // TODO(0.6.0-alpha): Use an inja callback instead and put this reference into some state bag. See the corresponding hack in link_target_transformation.
       // if (declaration.has_value()) {
       //   std::stringstream s;
       //   s << "standardese://@";
@@ -57,8 +57,8 @@ model::document synopsis_formatter::build(const model::cpp_entity_documentation&
       // }
 
       std::string name{tokens.c_str(), tokens.c_str() + tokens.length()};
-      // TODO: Allow certain type replacements here, e.g., mp_limb_signed_t should be long with a tooltip explaining that this is not what it seems.
-      // TODO: Emit a link to the external type if this is defined externally.
+      // TODO(0.6.0-alpha): Allow certain type replacements here, e.g., mp_limb_signed_t should be long with a tooltip explaining that this is not what it seems.
+      // TODO(0.6.0-alpha): Emit a link to the external type if this is defined externally.
       if (href == "") {
         do_write_token_seq(name);
       } else {

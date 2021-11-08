@@ -35,7 +35,7 @@ void output_generators::emit(model::unordered_entities& documents) {
     document.accept(generator);
   }
 
-  // TODO: Only render when requested.
+  // TODO(0.6.0-alpha): Only render when requested.
   for (auto& document : documents) {
     auto out = open(options.output_directory / (document.as<model::document>().name + ".xml"));
     auto generator = output_generator::xml::xml_generator{out};

@@ -811,13 +811,13 @@ TEST_CASE("Variables can be Formatted", "[code_formatter]") {
     }
   }
 
-  // TODO: Other Variable Types
+  // TODO(0.6.0-beta): Other Variable Types
 }
 
-// TODO: Formatting of Namespaces
+// TODO(0.6.0-beta): Formatting of Namespaces
 
-// TODO: Formatting of Classes Without Members
+// TODO(0.6.0-beta): Formatting of Classes Without Members
 
-// TODO: Formatting of Classis With Members
+// TODO(0.6.0-beta): Formatting of Classis With Members
 
 }

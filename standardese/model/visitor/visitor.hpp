@@ -12,8 +12,8 @@
 namespace standardese::model::visitor
 {
 
-// TODO: Should we tear this apart into two classes? Boolean template flags indicate that something is wrong.
-// TODO: Should we rename the visits so that we don't overload? Might make interaction with cppyy easier.
+// TODO(0.6.0-alpha): Should we tear this apart into two classes? Boolean template flags indicate that something is wrong.
+// TODO(0.6.0-alpha): Should we rename the visits so that we don't overload? Might make interaction with cppyy easier.
 template<bool is_const = false>
 class visitor
 {

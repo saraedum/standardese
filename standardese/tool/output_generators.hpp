@@ -26,18 +26,18 @@ class output_generators {
       xml,
     };
 
-    // TODO: Implement me
+    // TODO(0.6.0-alpha): Implement me
     /// The format actual documentation is emitted in.
     /// Supplementary files, such as inventories, might be generated in
     /// additional formats.
     output_format primary_format = output_format::markdown;
 
-    // TODO: Implement me
+    // TODO(0.6.0-alpha): Implement me
     /// The name of the intersphinx inventory to create.
     /// No inventory is created if empty.
     std::string intersphinx_inventory = "objects.inv";
 
-    // TODO: Implement me
+    // TODO(0.6.0-alpha): Implement me
     /// The name of the doxygen tagfile to create.
     /// No tagfile is created if empty.
     std::string doxygen_tagfile = "tagfile.xml";
@@ -45,7 +45,7 @@ class output_generators {
     /// Options affecting MarkDown output if [primary_format]() is set to `markdown`.
     output_generator::markdown::markdown_generator::markdown_generator_options markdown_options;
 
-    // TODO: Implement me
+    // TODO(0.6.0-alpha): Implement me
     /// Directory the hierarchy of output files is built in.
     /// The directory is created (but not cleared) if it does not already
     /// exist.

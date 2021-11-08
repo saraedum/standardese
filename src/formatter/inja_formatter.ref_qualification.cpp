@@ -25,7 +25,7 @@ std::string inja_formatter::ref_qualification_callback(const nlohmann::json& dat
 }
 
 std::string inja_formatter::ref_qualification(const cppast::cpp_entity& entity) const {
-  // TODO
+  // TODO(0.6.0-alpha): Implement me.
   return "";
 }
 

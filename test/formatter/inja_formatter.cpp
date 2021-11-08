@@ -22,7 +22,7 @@ namespace standardese::test::formatter {
 
 using standardese::formatter::inja_formatter;
 
-// TODO: Test all the callbacks, directly and in a template.
+// TODO(0.6.0-beta): Test all the callbacks, directly and in a template.
 
 TEST_CASE("Strings from Inja Templates", "[inja_formatter]") {
   auto logger = util::logger::throwing_logger();
@@ -78,7 +78,7 @@ TEST_CASE("Strings from Inja Templates", "[inja_formatter]") {
       REQUIRE_THROWS(inja.format("{{ name }}"));
     }
 
-    // TODO: Test all the other name() overloads.
+    // TODO(0.6.0-beta): Test all the other name() overloads.
 
     SECTION("`name` can be used as Advertised in the Documentation of to_json(cpp_entity)") {
       inja.data()["entity"] = inja.to_json(&header["f"]);
@@ -167,7 +167,7 @@ TEST_CASE("Strings from Inja Templates", "[inja_formatter]") {
       REQUIRE(inja.scope(C) == "A");
     }
 
-    // TODO: Test all other entities and types.
+    // TODO(0.6.0-beta): Test all other entities and types.
   }
 
   SECTION("`namespace` Callback") {
@@ -201,7 +201,7 @@ TEST_CASE("Strings from Inja Templates", "[inja_formatter]") {
       REQUIRE(inja.namespaze(C) == "A");
     }
 
-    // TODO: Test all other entities and types.
+    // TODO(0.6.0-beta): Test all other entities and types.
   }
 
   SECTION("`md` Callback") {
@@ -229,19 +229,19 @@ TEST_CASE("Strings from Inja Templates", "[inja_formatter]") {
     }
 
     SECTION("`md` can Render a Code Block") {
-      // TODO
+      // TODO(0.6.0-alpha): Implement me.
     }
 
     SECTION("`md` can Render Code") {
-      // TODO
+      // TODO(0.6.0-alpha): Implement me.
     }
 
     SECTION("`md` can Render a Paragraph") {
-      // TODO
+      // TODO(0.6.0-alpha): Implement me.
     }
 
     SECTION("`md` can Render Text") {
-      // TODO
+      // TODO(0.6.0-alpha): Implement me.
     }
 
     SECTION("`md` Renders the Output of `code` as MarkDown") {

@@ -12,7 +12,7 @@
 
 namespace standardese::model::markup
 {
-    // TODO: It's probably good if virtually all entities had something like a
+    // TODO(0.6.0-beta): It's probably good if virtually all entities had something like a
     // "source". Explaining what made them so we can properly render things
     // out, e.g., when rendering for YAML.
     class heading final : public mixin::anchored_container<>, public mixin::visitable<heading>

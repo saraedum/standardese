@@ -59,7 +59,7 @@
 #include "../../standardese/model/document.hpp"
 #include "../../standardese/logger.hpp"
 
-// TODO: Better error reporting here and everywhere we use fmt::format. It's a
+// TODO(0.6.0-alpha): Better error reporting here and everywhere we use fmt::format. It's a
 // bit silly to report errors with XML that nobody understands? Generally, it
 // would be nice to always report errors with some context, i.e., the source
 // file (and location) responsible and the component of standardese that
@@ -86,7 +86,7 @@ std::vector<model::entity> comment_parser::parse(const std::string& comment, con
     using unique_parser = unique_cmark<cmark_parser, cmark_parser_free_with_extensions>;
     auto parser = unique_parser(cmark_parser_new(CMARK_OPT_SMART));
 
-    // TODO: Fix verbatim parser.
+    // TODO(0.6.0-alpha): Fix verbatim parser.
     // verbatim_extension::verbatim_extension::create(parser.get());
     ignore_html_extension::ignore_html_extension::create(parser.get());
     command_extension::command_extension::create(parser.get(), options.command_extension_options);
@@ -239,7 +239,7 @@ const cppast::cpp_entity& comment_parser::resolve_base(const cppast::cpp_entity&
   inventory::cppast_inventory inventory{{&entity}, context};
   inventory::symbols symbols{inventory};
 
-  // TODO: Limit lookup to only bases.
+  // TODO(0.6.0-beta): Limit lookup to only bases.
   const auto base = symbols.find(name, entity);
 
   if (!base.has_value())
@@ -262,7 +262,7 @@ const cppast::cpp_entity& comment_parser::resolve_param(const cppast::cpp_entity
   inventory::cppast_inventory inventory{{&entity}, context};
   inventory::symbols symbols{inventory};
 
-  // TODO: Limit lookup to only parameters.
+  // TODO(0.6.0-beta): Limit lookup to only parameters.
   const auto param = symbols.find(name, entity);
 
   if (!param.has_value())
@@ -286,7 +286,7 @@ const cppast::cpp_entity& comment_parser::resolve_param(const cppast::cpp_entity
 
 const cppast::cpp_entity& comment_parser::resolve_tparam(const cppast::cpp_entity& entity, const std::string& name) const
 {
-  // TODO: Use symbols
+  // TODO(0.6.0-beta): Use symbols
     if (cppast::is_template(entity.kind())) {
         for (const auto& param : static_cast<const cppast::cpp_template&>(entity).parameters())
             if (param.name() == name)
@@ -390,7 +390,7 @@ void comment_parser::apply_command(cmark_node* node, T& model) const
           }
 
           model.group = name;
-          // TODO: Why should a group use an output section? Should this not rather be a "heading" for the group?
+          // TODO(0.6.0-beta): Why should a group use an output section? Should this not rather be a "heading" for the group?
           if (!heading.empty())
               model.output_section = heading;
           return;

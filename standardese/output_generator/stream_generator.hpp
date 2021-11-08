@@ -19,7 +19,7 @@ class stream_generator : public model::visitor::recursive_visitor<true>
 {
 public:
     stream_generator(std::ostream& os) : out_(os) {
-      // TODO: Handle bad stream here and when actually writing output.
+      // TODO(0.6.0-rc): Handle bad stream here and when actually writing output.
     }
 
     virtual ~stream_generator() {}

@@ -108,7 +108,7 @@ type_safe::optional<std::vector<const cppast::cpp_entity*>> scopes(const cppast:
     case cppast::cpp_type_kind::unexposed_t:
       break;
     case cppast::cpp_type_kind::dependent_t:
-      // TODO: Can we do better here?
+      // TODO(0.6.0-rc): Can we do better here?
       logger::warn(fmt::format("Not implemented: cannot determine scope() of dependent type {}.", cppast::to_string(type)));
       break;
     case cppast::cpp_type_kind::user_defined_t:
@@ -120,7 +120,7 @@ type_safe::optional<std::vector<const cppast::cpp_entity*>> scopes(const cppast:
       break;
     }
     default:
-      // TODO
+      // TODO(0.6.0-beta): Implement me.
       logger::warn(fmt::format("Not implemented: cannot determine scope() of type {}.", cppast::to_string(type)));
       break;
   }
@@ -175,7 +175,7 @@ std::string inja_formatter::scope(const cppast::cpp_entity& entity) const {
   const auto name = [&](const cppast::cpp_entity& type) { return this->name(type); };
 
   if (self->context.has_value()) {
-    // TODO: Do not add context to scope if it does not define a scope.
+    // TODO(0.6.0-beta): Do not add context to scope if it does not define a scope.
     auto context_scopes = scopes(self->context.value());
     context_scopes.push_back(&self->context.value());
     return render_scope(entity_scopes, context_scopes, name, self->options.scope_display_options);
@@ -192,8 +192,8 @@ std::string inja_formatter::scope(const cppast::cpp_type& type) const {
   const auto name = [&](const cppast::cpp_entity& type) { return this->name(type); };
 
   if (self->context.has_value()) {
-    // TODO: Deduplicate with the above.
-    // TODO: Do not add context to scope if it does not define a scope.
+    // TODO(0.6.0-rc): Deduplicate with the above.
+    // TODO(0.6.0-beta): Do not add context to scope if it does not define a scope.
     auto context_scopes = scopes(self->context.value());
     context_scopes.push_back(&self->context.value());
     return render_scope(type_scopes.value(), context_scopes, name, self->options.scope_display_options);

@@ -90,7 +90,7 @@ TEST_CASE("Typical Index Files can be Generated", "[index_document_builder]")
 
 }
 
-// TODO: Bring these tests back.
+// TODO(0.6.0-alpha): Bring these tests back.
 
 /*
 #include <cppast/cpp_namespace.hpp>

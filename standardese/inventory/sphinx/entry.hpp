@@ -22,7 +22,7 @@ class entry {
  public:
   entry(std::string name, std::string domain, std::string type, long priority, std::string uri, std::string display_name);
 
-  // TODO: We could be more restrictive with the typing here?
+  // TODO(0.6.0-alpha): We could be more restrictive with the typing here?
   std::string name;
   std::string domain;
   std::string type;

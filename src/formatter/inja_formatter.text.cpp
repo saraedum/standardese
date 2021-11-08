@@ -29,7 +29,7 @@ std::string inja_formatter::text(const model::entity& document) const {
 
 std::string inja_formatter::text(const std::string& markdown) const {
   auto text = this->text(parse(markdown));
-  // TODO: Is this really the best way we can handle the fact that a newline is added by an implicitly created paragraph?
+  // TODO(0.6.0-rc): Is this really the best way we can handle the fact that a newline is added by an implicitly created paragraph?
   if (text.size() && markdown.size() && *markdown.rbegin() != '\n')
     text.pop_back();
   return text;

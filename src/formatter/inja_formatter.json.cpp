@@ -139,7 +139,7 @@ inja_formatter::impl::variant inja_formatter::impl::from_json(const nlohmann::js
     return static_cast<nlohmann::json::number_integer_t>(value);
   }
 
-  // TODO: make sure that we can handle everything that nlohmann::json knows about.
+  // TODO(0.6.0-beta): make sure that we can handle everything that nlohmann::json knows about.
   throw std::logic_error(fmt::format("not implemented: from_json({})", nlohmann::to_string(value)));
 }
 

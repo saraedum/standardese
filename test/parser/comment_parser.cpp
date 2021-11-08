@@ -782,7 +782,7 @@ TEST_CASE("Standardese Commands", "[comment_parser]")
 {
     cpp_file header("void f();");
 
-    // TODO: Bring back verbatim in some way.
+    // TODO(0.6.0-alpha): Bring back verbatim in some way.
     /*
     SECTION(R"(\verbatim Signals Inclusion Without any Markup)")
     {
@@ -1476,12 +1476,12 @@ TEST_CASE("Standardese Commands", "[comment_parser]")
 
     SECTION(R"(The \base Command Describes a Base Class)")
     {
-        // TODO: Implement me.
+        // TODO(0.6.0-beta): Implement me.
     }
 
     SECTION("Section Commands")
     {
-        // TODO: We should test all the section commands here.
+        // TODO(0.6.0-beta): We should test all the section commands here.
     }
 }
 

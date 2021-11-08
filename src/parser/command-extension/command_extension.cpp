@@ -474,7 +474,7 @@ cmark_node* command_extension::postprocess_inline_command(cmark_node* command) c
     // separate document for further postprocessing. (Since the rules of
     // postprocessing an inline are the same than the rules of postprocessing
     // an entire comment.)
-    // TODO: Use unique_ptr for memory cleanup.
+    // TODO(0.6.0-rc): Use unique_ptr for memory cleanup.
     cmark_node* document = cmark_node_new(CMARK_NODE_DOCUMENT);
     cmark_node* more = splice(document, cmark_node_next(command));
 

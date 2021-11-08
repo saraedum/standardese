@@ -338,45 +338,45 @@ standardese::entity_blacklist get_blacklist(const po::variables_map& options)
     return blacklist;
 }
 
-//TODO: bring these parameters back  // clang-format off
-//TODO: bring these parameters back  po::options_description generic("Generic options", terminal_width), configuration("Configuration", terminal_width);
-//TODO: bring these parameters back  generic.add_options()
-//TODO: bring these parameters back      ("jobs,j", po::value<unsigned>()->default_value(standardese_tool::default_no_threads()),
-//TODO: bring these parameters back       "sets the number of threads to use");
-//TODO: bring these parameters back
-//TODO: bring these parameters back  configuration.add_options()
-//TODO: bring these parameters back      ("compilation.commands_dir", po::value<std::string>(),
-//TODO: bring these parameters back       "the directory where a compile_commands.json is located, its options have lower priority than the other ones")
-//TODO: bring these parameters back      ("compilation.standard", po::value<std::string>()->default_value("c++14"),
-//TODO: bring these parameters back       "the C++ standard to use for parsing, valid values are c++98/03/11/14/1z/17")
-//TODO: bring these parameters back      ("compilation.include_dir,I", po::value<std::vector<std::string>>(),
-//TODO: bring these parameters back       "adds an additional include directory to use for parsing")
-//TODO: bring these parameters back      ("compilation.feature,f", po::value<std::vector<std::string>>(),
-//TODO: bring these parameters back       "enable a custom feature (-fXX flag)")
-//TODO: bring these parameters back      ("compilation.gnu_extensions",
-//TODO: bring these parameters back       po::value<bool>()->implicit_value(true)->default_value(false),
-//TODO: bring these parameters back       "enable/disable GNU extension support (-std=gnu++XX vs -std=c++XX)")
-//TODO: bring these parameters back      ("compilation.ms_extensions",
-//TODO: bring these parameters back       po::value<bool>()->implicit_value(true)->default_value(default_msvc_comp()),
-//TODO: bring these parameters back       "enable/disable MSVC extension support (-fms-extensions)")
-//TODO: bring these parameters back      ("compilation.ms_compatibility",
-//TODO: bring these parameters back       po::value<bool>()->implicit_value(true)->default_value(default_msvc_comp()),
-//TODO: bring these parameters back       "enable/disable MSVC compatibility (-fms-compatibility)")
-//TODO: bring these parameters back
-//TODO: bring these parameters back      ("comment.command_character", po::value<char>()->default_value(standardese::parser::config::options().command_character),
-//TODO: bring these parameters back       "character used to introduce special commands")
-//TODO: bring these parameters back      ("comment.command_pattern", po::value<std::vector<std::string>>()->default_value({}, ""),
-//TODO: bring these parameters back       "set the regular expression to detect a command, e.g., `--comment.command_pattern 'returns=RETURNS:'` or `'returns|=RETURNS:'` to also keep the original pattern.")
-//TODO: bring these parameters back      ("comment.free_file_comments", po::value<bool>()->implicit_value(true)->default_value(standardese::parser::config::options().free_file_comments),
-//TODO: bring these parameters back       "associate free comments to their entire file")
-//TODO: bring these parameters back      ("comment.group_uncommented", po::value<bool>()->implicit_value(true)->default_value(standardese::parser::config::options().group_uncommented),
-//TODO: bring these parameters back       "group undocumented members with preceding commented members")
-//TODO: bring these parameters back      ("output.entity_index_order", po::value<std::string>()->default_value("namespace_inline_sorted"),
-//TODO: bring these parameters back       "how the namespaces are handled in the entity index: namespace_inline_sorted (sorted inline with all others), "
-//TODO: bring these parameters back       "namespace_external (namespaces in top-level list only, sorted by the end position in the source file)")
-//TODO: bring these parameters back      ("output.tab_width", po::value<unsigned>()->default_value(standardese::synopsis_config::default_tab_width()),
-//TODO: bring these parameters back       "the tab width (i.e. number of spaces, won't emit tab) of the code in the synthesis")
-//TODO: bring these parameters back      ("output.inline_doc", po::value<bool>()->default_value(true)->implicit_value(true),
+//TODO(0.6.0-alpha): bring these parameters back  // clang-format off
+//TODO(0.6.0-alpha): bring these parameters back  po::options_description generic("Generic options", terminal_width), configuration("Configuration", terminal_width);
+//TODO(0.6.0-alpha): bring these parameters back  generic.add_options()
+//TODO(0.6.0-alpha): bring these parameters back      ("jobs,j", po::value<unsigned>()->default_value(standardese_tool::default_no_threads()),
+//TODO(0.6.0-alpha): bring these parameters back       "sets the number of threads to use");
+//TODO(0.6.0-alpha): bring these parameters back
+//TODO(0.6.0-alpha): bring these parameters back  configuration.add_options()
+//TODO(0.6.0-alpha): bring these parameters back      ("compilation.commands_dir", po::value<std::string>(),
+//TODO(0.6.0-alpha): bring these parameters back       "the directory where a compile_commands.json is located, its options have lower priority than the other ones")
+//TODO(0.6.0-alpha): bring these parameters back      ("compilation.standard", po::value<std::string>()->default_value("c++14"),
+//TODO(0.6.0-alpha): bring these parameters back       "the C++ standard to use for parsing, valid values are c++98/03/11/14/1z/17")
+//TODO(0.6.0-alpha): bring these parameters back      ("compilation.include_dir,I", po::value<std::vector<std::string>>(),
+//TODO(0.6.0-alpha): bring these parameters back       "adds an additional include directory to use for parsing")
+//TODO(0.6.0-alpha): bring these parameters back      ("compilation.feature,f", po::value<std::vector<std::string>>(),
+//TODO(0.6.0-alpha): bring these parameters back       "enable a custom feature (-fXX flag)")
+//TODO(0.6.0-alpha): bring these parameters back      ("compilation.gnu_extensions",
+//TODO(0.6.0-alpha): bring these parameters back       po::value<bool>()->implicit_value(true)->default_value(false),
+//TODO(0.6.0-alpha): bring these parameters back       "enable/disable GNU extension support (-std=gnu++XX vs -std=c++XX)")
+//TODO(0.6.0-alpha): bring these parameters back      ("compilation.ms_extensions",
+//TODO(0.6.0-alpha): bring these parameters back       po::value<bool>()->implicit_value(true)->default_value(default_msvc_comp()),
+//TODO(0.6.0-alpha): bring these parameters back       "enable/disable MSVC extension support (-fms-extensions)")
+//TODO(0.6.0-alpha): bring these parameters back      ("compilation.ms_compatibility",
+//TODO(0.6.0-alpha): bring these parameters back       po::value<bool>()->implicit_value(true)->default_value(default_msvc_comp()),
+//TODO(0.6.0-alpha): bring these parameters back       "enable/disable MSVC compatibility (-fms-compatibility)")
+//TODO(0.6.0-alpha): bring these parameters back
+//TODO(0.6.0-alpha): bring these parameters back      ("comment.command_character", po::value<char>()->default_value(standardese::parser::config::options().command_character),
+//TODO(0.6.0-alpha): bring these parameters back       "character used to introduce special commands")
+//TODO(0.6.0-alpha): bring these parameters back      ("comment.command_pattern", po::value<std::vector<std::string>>()->default_value({}, ""),
+//TODO(0.6.0-alpha): bring these parameters back       "set the regular expression to detect a command, e.g., `--comment.command_pattern 'returns=RETURNS:'` or `'returns|=RETURNS:'` to also keep the original pattern.")
+//TODO(0.6.0-alpha): bring these parameters back      ("comment.free_file_comments", po::value<bool>()->implicit_value(true)->default_value(standardese::parser::config::options().free_file_comments),
+//TODO(0.6.0-alpha): bring these parameters back       "associate free comments to their entire file")
+//TODO(0.6.0-alpha): bring these parameters back      ("comment.group_uncommented", po::value<bool>()->implicit_value(true)->default_value(standardese::parser::config::options().group_uncommented),
+//TODO(0.6.0-alpha): bring these parameters back       "group undocumented members with preceding commented members")
+//TODO(0.6.0-alpha): bring these parameters back      ("output.entity_index_order", po::value<std::string>()->default_value("namespace_inline_sorted"),
+//TODO(0.6.0-alpha): bring these parameters back       "how the namespaces are handled in the entity index: namespace_inline_sorted (sorted inline with all others), "
+//TODO(0.6.0-alpha): bring these parameters back       "namespace_external (namespaces in top-level list only, sorted by the end position in the source file)")
+//TODO(0.6.0-alpha): bring these parameters back      ("output.tab_width", po::value<unsigned>()->default_value(standardese::synopsis_config::default_tab_width()),
+//TODO(0.6.0-alpha): bring these parameters back       "the tab width (i.e. number of spaces, won't emit tab) of the code in the synthesis")
+//TODO(0.6.0-alpha): bring these parameters back      ("output.inline_doc", po::value<bool>()->default_value(true)->implicit_value(true),
 //      This is the effect. The following inline entities are normally
 //      included but can be explicitly disabled.
 //        else if (inline_doc
@@ -398,13 +398,13 @@ standardese::entity_blacklist get_blacklist(const po::variables_map& options)
 //                     || entity().kind() == cppast::cpp_bitfield::kind()))
 //            inlines.value().members.add_item(
 //                get_inline_doc(get_documentation_id(), entity(), comment()));
-//TODO: bring these parameters back       "whether or not some entity documentation (parameters etc.) will be shown inline")
-//TODO: bring these parameters back      ("output.show_complex_noexcept", po::value<bool>()->default_value(true)->implicit_value(true),
-//TODO: bring these parameters back       "whether or not complex noexcept expressions will be shown in the synopsis or replaced by \"see below\"")
-//TODO: bring these parameters back      ("output.show_macro_replacement", po::value<bool>()->default_value(false)->implicit_value(true),
-//TODO: bring these parameters back       "whether or not the replacement of macros will be shown")
-//TODO: bring these parameters back      ("output.show_group_output_section", po::value<bool>()->default_value(true)->implicit_value(true),
-//TODO: bring these parameters back       "whether or not member groups have an implicit output section");
+//TODO(0.6.0-alpha): bring these parameters back       "whether or not some entity documentation (parameters etc.) will be shown inline")
+//TODO(0.6.0-alpha): bring these parameters back      ("output.show_complex_noexcept", po::value<bool>()->default_value(true)->implicit_value(true),
+//TODO(0.6.0-alpha): bring these parameters back       "whether or not complex noexcept expressions will be shown in the synopsis or replaced by \"see below\"")
+//TODO(0.6.0-alpha): bring these parameters back      ("output.show_macro_replacement", po::value<bool>()->default_value(false)->implicit_value(true),
+//TODO(0.6.0-alpha): bring these parameters back       "whether or not the replacement of macros will be shown")
+//TODO(0.6.0-alpha): bring these parameters back      ("output.show_group_output_section", po::value<bool>()->default_value(true)->implicit_value(true),
+//TODO(0.6.0-alpha): bring these parameters back       "whether or not member groups have an implicit output section");
     // clang-format on
 
     try

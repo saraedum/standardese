@@ -84,7 +84,7 @@ std::string inja_formatter::name(const cppast::cpp_entity& entity) const {
     case cppast::cpp_entity_kind::alias_template_t:
       return entity.name();
     default:
-      // TODO: Make sure that this is complete and every case tested.
+      // TODO(0.6.0-final): Make sure that this is complete and every case tested.
       logger::warn(fmt::format("Not implemented: Cannot determine name of a {} yet. Will return {} instead.", cppast::to_string(entity.kind()), entity.name()));
       return entity.name();
   }
@@ -131,7 +131,7 @@ std::string inja_formatter::name(const cppast::cpp_type& type) const {
       // TDOO: We can probably do better here, cf. scope()/namespaze().
       return name(static_cast<const cppast::cpp_user_defined_type&>(type).entity().name());
     default:
-      // TODO: Make sure that this is complete and every case tested.
+      // TODO(0.6.0-final): Make sure that this is complete and every case tested.
       throw std::logic_error("not implemented: name for unexpected type");
   }
 }

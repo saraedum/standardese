@@ -30,11 +30,11 @@ std::string inja_formatter::kind(const cppast::cpp_entity& entity) const {
     case cppast::cpp_entity_kind::file_t:
       return "Header File";
     case cppast::cpp_entity_kind::constructor_t:
-      // TODO: (Special) Constructors
+      // TODO(0.6.0-alpha): (Special) Constructors
       return "Constructor";
     case cppast::cpp_entity_kind::function_t:
     case cppast::cpp_entity_kind::member_function_t:
-      // TODO: (Special) Operators
+      // TODO(0.6.0-alpha): (Special) Operators
       return "Function";
     case cppast::cpp_entity_kind::function_parameter_t:
       return "Parameter";
@@ -70,7 +70,7 @@ std::string inja_formatter::kind(const cppast::cpp_entity& entity) const {
         case cppast::cpp_class_kind::union_t:
           return "Union";
         default:
-          // TODO
+          // TODO(0.6.0-alpha): Implement me.
           throw std::logic_error("not implemented");
       }
     case cppast::cpp_entity_kind::access_specifier_t:
@@ -108,7 +108,7 @@ std::string inja_formatter::kind(const cppast::cpp_entity& entity) const {
     case cppast::cpp_entity_kind::count:
       throw std::logic_error("Unsupported entity kind.");
     default:
-      // TODO:
+      // TODO(0.6.0-beta): Implement me.
       throw std::logic_error("not implemented");
   }
 }

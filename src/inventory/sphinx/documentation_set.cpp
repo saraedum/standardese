@@ -26,7 +26,7 @@ void load_v2(std::istream& in, documentation_set& inventory);
 }
 
 documentation_set documentation_set::parse(const std::string& fname) {
-  // TODO: Implement better error detection/handling.
+  // TODO(0.6.0-rc): Implement better error detection/handling.
   documentation_set set;
   std::ifstream(fname) >> set;
   return set;

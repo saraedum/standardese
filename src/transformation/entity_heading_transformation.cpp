@@ -38,13 +38,13 @@ model::document heading(T& documentation, parser::cpp_context, type_safe::option
 entity_heading_transformation::entity_heading_transformation(model::unordered_entities& entities, parser::cpp_context cpp_context, struct entity_heading_transformation_options options) : transformation(entities), options(options), cpp_context(std::move(cpp_context)) {}
 
 entity_heading_transformation::entity_heading_transformation_options::entity_heading_transformation_options(formatter::inja_formatter::inja_formatter_options inja_formatter_options) : 
-  // TODO: Read from CLI and reset the default to standardese 0-5-0 equivalent.
+  // TODO(0.6.0-alpha): Read from CLI and reset the default to standardese 0-5-0 equivalent.
   format(R"({% if cppast_kind == "file" %}# {{ join(reject("whitespace", list(md_escape(name), md(section("brief")))), " — ") }}{{ drop_section("brief") }}
         {%- else if cppast_kind in ["function", "member function", "conversion operator", "constructor", "destructor", "function template", "friend"] %}# {% if synopsis %}{{ md(code(md_escape(synopsis))) }}{% else %}{{ md(code(md_escape(text(format(option("cpp_format")))))) }}{% endif %}
         {%- else if cppast_kind == "function_parameter" %}###### {{ md(code(md_escape(name))) }} {{ md(section("brief")) }}{{ drop_section("brief") }}
         {%- else %}# {{ md_escape(kind) }} {{ md(code(md_escape(name))) }}
         {%- endif %})"),
-  // TODO: Read from CLI and reset the default to standardese 0-5-0 equivalent.
+  // TODO(0.6.0-alpha): Read from CLI and reset the default to standardese 0-5-0 equivalent.
   group_format(R"(# {{ output_section }}
 ```
 {% for member in entity %}({{ loop.index1 }}) {% if synopsis(entity(member)) %}{{ text(code(md_escape(synopsis(entity(member))))) }}{% else %}{{ text(code(format(option("cpp_format"), entity(member)))) }}{% endif %}{% endfor %}```)"),
@@ -61,7 +61,7 @@ void entity_heading_transformation::do_transform(model::entity& document) {
       bool has_scope = doc.begin() != doc.end() && doc.begin()->template is<model::markup::heading>();
       for (auto paragraph = doc.rbegin(); paragraph != doc.rend(); ++paragraph) {
         if (paragraph->template is<model::markup::heading>())
-          // TODO: Cap at 5?
+          // TODO(0.6.0-alpha): Cap at 5?
           paragraph->template as<model::markup::heading>().level += level.size();
 
         entity.insert_child(std::move(*paragraph));
@@ -101,10 +101,10 @@ model::document heading(T& documentation, parser::cpp_context cpp_context, type_
     inja.data().merge_patch(inja.to_json(documentation));
   }
 
-  // TODO:
+  // TODO(0.6.0-alpha):
   // logger::debug([&]() { return fmt::format("Generating heading for {} `{}`.", cppast::to_string(documentation.entity().kind()), inja.name(documentation.entity())); });
 
-  // TODO: Move implementation out.
+  // TODO(0.6.0-beta): Move implementation out.
   inja.add_callback("section", [&](std::vector<const nlohmann::json*> args) {
     if (!args.at(0)->is_string()) {
       logger::error(fmt::format("Template callback `section()` expects a string argument but found {}.", inja.to_string(*args.at(0))));
@@ -115,7 +115,7 @@ model::document heading(T& documentation, parser::cpp_context cpp_context, type_
       logger::warn(fmt::format("Ignoring trailing argument {}. Template callback `section()` expected exactly one string argument.", inja.to_string(*args.at(1))));
     }
 
-    // TODO: Actually parse argument.
+    // TODO(0.6.0-alpha): Actually parse argument.
 
     auto brief = documentation.section(parser::commands::section_command::brief);
     if (brief)
@@ -124,7 +124,7 @@ model::document heading(T& documentation, parser::cpp_context cpp_context, type_
     return inja.to_json(model::section(parser::commands::section_command::brief));
   });
 
-  // TODO: Move implementation out.
+  // TODO(0.6.0-beta): Move implementation out.
   inja.add_void_callback("drop_section", [&](std::vector<const nlohmann::json*> args) {
     if (!args.at(0)->is_string()) {
       logger::error(fmt::format("Template callback `drop_section()` expects a string argument but found {}.", inja.to_string(*args.at(0))));
@@ -135,7 +135,7 @@ model::document heading(T& documentation, parser::cpp_context cpp_context, type_
       logger::warn(fmt::format("Ignoring trailing argument {}. Template callback `drop_section()` expected exactly one string argument.", inja.to_string(*args.at(1))));
     }
 
-    // TODO: Actually parse argument.
+    // TODO(0.6.0-alpha): Actually parse argument.
 
     for (auto section = documentation.begin(); section != documentation.end(); ++section) {
       if (section->template is<model::section>() && section->template as<model::section>().type == parser::commands::section_command::brief) {
@@ -145,7 +145,7 @@ model::document heading(T& documentation, parser::cpp_context cpp_context, type_
     }
   });
 
-  // TODO: Use the same format string.
+  // TODO(0.6.0-beta): Use the same format string.
   auto format = type_safe::ref(options.format);
   if constexpr (std::is_same_v<T, model::group_documentation>) {
     format = type_safe::ref(options.group_format);

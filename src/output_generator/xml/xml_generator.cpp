@@ -18,7 +18,7 @@
 #include "../../../standardese/model/cpp_entity_documentation.hpp"
 #include "../../../standardese/model/group_documentation.hpp"
 
-// TODO: Can we somehow disable the XML document type for error messages and testing?
+// TODO(0.6.0-beta): Can we somehow disable the XML document type for error messages and testing?
 
 namespace standardese::output_generator::xml
 {

@@ -9,7 +9,7 @@
 #include "../mixin/visitable.hpp"
 
 namespace standardese::model::markup {
-    // TODO: If this can only contain a single string, then why is it a
+    // TODO(0.6.0-beta): If this can only contain a single string, then why is it a
     // container and not just a string?  Maybe, so it contain links and other
     // markup. We should remove this functionality even if we might want it some day.
     class code_block final : public mixin::container<>, public mixin::visitable<code_block>

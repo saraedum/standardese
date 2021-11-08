@@ -20,7 +20,7 @@ extern "C" {
 namespace standardese::parser {
 
 /// A CommonMark Markdown parser that parser into `model::markup` entities.
-// TODO: It feels wrong that MarkDown parser and CommentParser do not share more code.
+// TODO(0.6.0-beta): It feels wrong that MarkDown parser and CommentParser do not share more code.
 class markdown_parser
 {
   public:

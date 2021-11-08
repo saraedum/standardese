@@ -69,7 +69,7 @@ std::string cmark_extension::to_xml(cmark_node* node) {
     if (node == nullptr)
         return "nullptr";
 
-    // TODO: Use unique_ptr.
+    // TODO(0.6.0-rc): Use unique_ptr.
     cmark_mem* memory = cmark_get_default_mem_allocator();
     char* xml = cmark_render_xml_with_mem(node, 0, memory);
     std::string ret = xml;

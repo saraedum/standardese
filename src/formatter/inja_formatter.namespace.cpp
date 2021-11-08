@@ -123,7 +123,7 @@ type_safe::optional<std::vector<std::string>> inja_formatter::namespaces(const c
     case cppast::cpp_type_kind::cv_qualified_t:
       return namespaces(static_cast<const cppast::cpp_cv_qualified_type&>(type).type());
     case cppast::cpp_type_kind::dependent_t:
-      // TODO: Can we do better here?
+      // TODO(0.6.0-final): Can we do better here?
       logger::warn(fmt::format("Not implemented: cannot determine namespace() of dependent type {}.", cppast::to_string(type)));
       break;
     case cppast::cpp_type_kind::pointer_t:
@@ -140,7 +140,7 @@ type_safe::optional<std::vector<std::string>> inja_formatter::namespaces(const c
         return std::vector{namespaze(user_defined.entity().name())};
       }
     default:
-      // TODO
+      // TODO(0.6.0-rc): Implement me.
       logger::warn(fmt::format("Not implemented: cannot determine namespace() of type {}.", cppast::to_string(type)));
       break;
   }

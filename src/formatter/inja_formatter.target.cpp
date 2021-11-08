@@ -47,7 +47,7 @@ std::string inja_formatter::target(const cppast::cpp_type& type) const {
         break;
       }
     default:
-      // TODO
+      // TODO(0.6.0-beta): Implement me.
       ;
   }
   return std::string{};

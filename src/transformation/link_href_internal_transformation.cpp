@@ -17,7 +17,7 @@
 #include "../../standardese/formatter/inja_formatter.hpp"
 #include "../../standardese/logger.hpp"
 
-// TODO: We need an additional transformation that optionally turns [target]() into [`target`]().
+// TODO(0.6.0-beta): We need an additional transformation that optionally turns [target]() into [`target`]().
 
 namespace standardese::transformation
 {
@@ -59,14 +59,14 @@ void link_href_internal_transformation::do_transform(model::entity& document) {
         if constexpr (std::is_same_v<T, model::link_target::module_target>) {
           throw std::logic_error("not implemented: resolve_module_target");
         } else if constexpr (std::is_same_v<T, model::link_target::cppast_target>) {
-          // TODO: Use cppast ids instead?
+          // TODO(0.6.0-beta): Use cppast ids instead?
           auto resolved = anchors.find(&*target.target);
           if (resolved == anchors.end()) {
               logger::error(fmt::format("Could not create URL for link to the {} `{}` from `{}`. Found the reference `{}`. Target was not found in inventory of C++ entities which are linkable.", formatter::inja_formatter{{}, context}.kind(*target.target), target.target->name(), formatter::inja_formatter{{}, context}.absolute(*target.target), output_generator::xml::xml_generator::render(document)));
               return;
           }
 
-          // TODO: Make relative
+          // TODO(0.6.0-alpha): Make relative
           entity.target = model::link_target::uri_target("/" + resolved->second);
         }
       });

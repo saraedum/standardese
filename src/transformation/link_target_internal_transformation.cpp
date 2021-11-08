@@ -76,7 +76,7 @@ void link_target_internal_transformation::do_transform(model::entity& document) 
           if (target.target == "") return;
 
           {
-            // TODO: This is a hack, see heading transformation.
+            // TODO(0.6.0-alpha): This is a hack, see heading transformation.
             std::smatch match;
             if (std::regex_match(target.target, match, util::regex::link_target_internal_transformation_entity_pattern)) {
               link.target = model::link_target(*static_cast<const cppast::cpp_entity*>((void*)atol(match[1].str().c_str())));
@@ -84,7 +84,7 @@ void link_target_internal_transformation::do_transform(model::entity& document) 
             }
           }
 
-          // TODO: Perform relative lookup.
+          // TODO(0.6.0-alpha): Perform relative lookup.
           {
             const auto entity = files.find_header(target.target);
             if (entity) {
@@ -96,11 +96,11 @@ void link_target_internal_transformation::do_transform(model::entity& document) 
           // Taken from RFC3986 p.50. Adapted so that scheme & authority are not optional.
           std::smatch match;
           if (std::regex_match(target.target, match, util::regex::link_target_internal_transformation_uri_pattern)) {
-            // TODO: Handle standardese:// schemes here.
+            // TODO(0.6.0-beta): Handle standardese:// schemes here.
             return;
           }
 
-          // TODO: Handle \unique_name
+          // TODO(0.6.0-beta): Handle \unique_name
           {
             auto entity = relative.size() ?
               symbols.find(target.target, *relative.top()) :

@@ -15,7 +15,7 @@ namespace standardese::transformation {
 class synopsis_transformation : public transformation {
   public:
     struct options {
-      // TODO: Actually use this.
+      // TODO(0.6.0-alpha): Actually use this.
       bool exclude_uncommented = false;
     };
 

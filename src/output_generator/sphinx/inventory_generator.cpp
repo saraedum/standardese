@@ -9,9 +9,9 @@
 #include "../../../standardese/model/group_documentation.hpp"
 #include "../../../standardese/model/document.hpp"
 
-// TODO: Namespaces are missing in the output.
+// TODO(0.6.0-beta): Namespaces are missing in the output.
 
-// TODO: Create a parser::intersphinx::document_set here and then dump it out.
+// TODO(0.6.0-beta): Create a parser::intersphinx::document_set here and then dump it out.
 
 namespace standardese::output_generator::sphinx
 {
@@ -49,18 +49,18 @@ void inventory_generator::visit(group_documentation& documentation) {
 }
 
 int inventory_generator::priority(const cppast::cpp_entity& entity) const {
-  // TODO: Any reason to return something else?
+  // TODO(0.6.0-rc): Any reason to return something else?
   return 0;
 }
 
 std::string inventory_generator::display_name(const cppast::cpp_entity& entity) const {
-  // TODO: Make configurable
+  // TODO(0.6.0-rc): Make configurable
   return entity.name();
 }
 
 std::string inventory_generator::name(const cppast::cpp_entity& entity) const {
-  // TODO: Fully qualified name.
-  // TODO: Shorten header names.
+  // TODO(0.6.0-beta): Fully qualified name.
+  // TODO(0.6.0-beta): Shorten header names.
   return entity.name();
 }
 

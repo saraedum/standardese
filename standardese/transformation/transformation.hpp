@@ -9,7 +9,7 @@
 
 namespace standardese::transformation {
 
-// TODO: Should we call the namespace transformer for consistency? And then
+// TODO(0.6.0-alpha): Should we call the namespace transformer for consistency? And then
 // call the classes transformer as well?
 
 class transformation {

@@ -22,7 +22,7 @@ namespace standardese::output_generator
 
 cmark_generator::cmark_generator(std::ostream& os) : stream_generator(os), root(cmark_node_new(CMARK_NODE_DOCUMENT)), top(root.get()) {
   auto* node = cmark_node_new(CMARK_NODE_TEXT);
-  // TODO
+  // TODO(0.6.0-alpha): Implement me.
   cmark_node_set_literal(node, "HELLO");
   cmark_node_append_child(root.get(), node);
 }
@@ -83,7 +83,7 @@ void cmark_generator::visit(link& link) {
       } else if (link.target.href().has_value()) {
         cmark_node_set_url(top, link.target.href().value().c_str());
       } else if constexpr (std::is_same_v<T, model::link_target::cppast_target>) {
-        // TODO: This is very noisy:
+        // TODO(0.6.0-beta): This is very noisy:
         // When a link cannot be resolved earlier, e.g., because the target is
         // uncommented, then this warning shows which is very annoying.
         // We should either detect this problem or probably better, not exclude
@@ -161,7 +161,7 @@ void cmark_generator::visit(thematic_break& thematic_break) {
 }
 
 cmark_node* cmark_generator::append_child(cmark_node* top, cmark_node_type type) {
-  // TODO: Use the safe cmark wrapper from the extensions here.
+  // TODO(0.6.0-rc): Use the safe cmark wrapper from the extensions here.
   auto node = cmark_node_new(type);
   int success = cmark_node_append_child(top, node);
   if (!success)
@@ -170,7 +170,7 @@ cmark_node* cmark_generator::append_child(cmark_node* top, cmark_node_type type)
 }
 
 cmark_node* cmark_generator::prepend_child(cmark_node* top, cmark_node_type type) {
-  // TODO: Use the safe cmark wrapper from the extensions here.
+  // TODO(0.6.0-rc): Use the safe cmark wrapper from the extensions here.
   auto node = cmark_node_new(type);
   int success = cmark_node_prepend_child(top, node);
   if (!success)

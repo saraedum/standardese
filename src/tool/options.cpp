@@ -3,15 +3,15 @@
 // This file is subject to the license terms in the LICENSE file
 // found in the top-level directory of this distribution.
 
-// TODO: Should we use std::filesystem everywhere?
-// TODO: Make sure that all the default values are automatically synchronized with all the variable default values in the option structs.
-// TODO: We should be more careful about throwing exceptions everywher. It
+// TODO(0.6.0-alpha): Should we use std::filesystem everywhere?
+// TODO(0.6.0-alpha): Make sure that all the default values are automatically synchronized with all the variable default values in the option structs.
+// TODO(0.6.0-alpha): We should be more careful about throwing exceptions everywher. It
 // would be better to log and produce something reasonable instead in most
 // places. Or make sure that it's communicated that we throw (even not
 // implemented?) and make sure that our callers are aware of that.
-// TODO: Make sure that all the tool:: classes can recover from exceptions
+// TODO(0.6.0-alpha): Make sure that all the tool:: classes can recover from exceptions
 // somewhat.
-// TODO: Audit all the static casts. We should use some scheme that gives us
+// TODO(0.6.0-alpha): Audit all the static casts. We should use some scheme that gives us
 // good error messages, mostly relevant when casting a cppast types.
 
 #include <cppast/cppast_fwd.hpp>
@@ -46,7 +46,7 @@ namespace po = boost::program_options;
 namespace fs = boost::filesystem;
 
 namespace cppast  {
-// TODO: Upstream into cpppast
+// TODO(0.6.0-alpha): Upstream into cpppast
 std::istream& operator>>(std::istream& in, cpp_standard& std) {
   std::string str;
   in >> str;
@@ -67,7 +67,7 @@ std::istream& operator>>(std::istream& in, cpp_standard& std) {
   return in;
 }
 
-// TODO: Upstream into cpppast
+// TODO(0.6.0-alpha): Upstream into cpppast
 std::ostream& operator<<(std::ostream& os, const cpp_standard& std) {
   switch(std) {
     case cpp_standard::cpp_98:
@@ -238,7 +238,7 @@ struct options_parser {
     void select_output_format(po::variables_map& parsed, const std::string& key, output_generators::options::output_format format);
 
     /// Return `input` with all inja-specific markup escaped.
-    // TODO: Move to inja_formatter.
+    // TODO(0.6.0-alpha): Move to inja_formatter.
     static std::string escape_inja(const std::string& input);
 };
 
@@ -607,7 +607,7 @@ po::options_description options_parser::legacy_comment_options() const {
   auto legacy = po::options_description("Legacy Comment Options", options.options_options.columns);
 
   legacy.add_options()
-    // TODO: Test & Mark as Deprecated (use --command-pattern instead.)
+    // TODO(0.6.0-beta): Test & Mark as Deprecated (use --command-pattern instead.)
     ("comment.command_character", po::value<char>()->default_value('\\'), "character used to introduce special commands")
     ("comment.external_doc", po::value<std::vector<std::string>>()->value_name("namespace=url"), "Link entities in this namespace to a fixed URL prefix.");
 
@@ -744,7 +744,7 @@ po::options_description options_parser::markdown_parser_options() const {
   auto markdown = po::options_description("Comment Parser Options", options.options_options.columns);
 
   markdown.add_options()
-    // TODO: Test
+    // TODO(0.6.0-beta): Test
     ("command-pattern,p", po::value<std::vector<std::string>>()->default_value({}, ""), "set the regular expression to detect a command, e.g., `--command-pattern 'returns=RETURNS:'`, or `'returns|=RETURNS:'` to also keep the default pattern.");
 
   return markdown;
@@ -762,7 +762,7 @@ void options_parser::process_markdown_parser_options(po::variables_map& parsed) 
 po::options_description options_parser::composition_options() const {
   auto composition = po::options_description("Compsition Options", options.options_options.columns);
 
-  // TODO: Implement me
+  // TODO(0.6.0-alpha): Implement me
   composition.add_options()
     ("format,f", po::value<std::vector<std::string>>()->default_value({}, ""), "TODO");
 
@@ -808,7 +808,7 @@ po::options_description options_parser::external_options() const {
 }
 
 void options_parser::process_composition_options(po::variables_map& parsed) {
-  // TODO: Test
+  // TODO(0.6.0-beta): Test
   if (parsed.count("format")) {
     for (const auto& option: parsed.at("format").as<std::vector<std::string>>()) {
       const auto split = option.find("=");
@@ -821,7 +821,7 @@ void options_parser::process_composition_options(po::variables_map& parsed) {
       const auto format = option.substr(split + 1);
 
       if (name == "type") {
-        // TODO: Can we make this more convenient? Or should we rather expose a
+        // TODO(0.6.0-beta): Can we make this more convenient? Or should we rather expose a
         // variable in the template to understand in which context we are
         // formatting?
         options.transformation_options.entity_heading_options.inja_formatter_options.type_format = format;
@@ -832,7 +832,7 @@ void options_parser::process_composition_options(po::variables_map& parsed) {
       } else if (name == "parameter_type") {
         options.transformation_options.entity_heading_options.inja_formatter_options.parameter_type_format = format;
       } else {
-        // TODO
+        // TODO(0.6.0-alpha): Implement me.
         logger::error(fmt::format("Ignoring malformed command line flag for --format. Unknown name `{}`.", name));
       }
     }
@@ -847,7 +847,7 @@ po::options_description options_parser::output_options() const {
     ("exclude-uncommented,X", po::value<counter>()->zero_tokens(), "No output for uncommented C/C++ entities, can be specified multiple times.\n-XXXX no output at all.\n-XXX do not apply this to files.\n-XX also do not apply to parents with commented members.\n-X also show uncommented members in their parent's synopsis.")
     ("private", po::value<bool>()->default_value(false)->implicit_value(true)->zero_tokens(), "Include private members and base classes.")
     ("outdir,O", po::value<boost::filesystem::path>()->value_name("dir")->default_value((struct output_generators::options){}.output_directory), "Output directory for generated files.")
-    // TODO: Document & Test
+    // TODO(0.6.0-alpha): Document & Test
     ("vpath", po::value<std::string>()->default_value(options.document_builder_options.document_path, "")->value_name("template"));
 
   return format;
@@ -979,7 +979,7 @@ void options_parser::process_text_options(po::variables_map& parsed) {
 po::options_description options_parser::doxygen_options() const {
   auto doxygen = po::options_description("Doxygen Tag File Rendering Options", options.options_options.columns);
 
-  // TODO: Implement me
+  // TODO(0.6.0-alpha): Implement me
 
   return doxygen;
 }
@@ -989,7 +989,7 @@ void options_parser::process_doxygen_options(po::variables_map&) {}
 po::options_description options_parser::intersphinx_options() const {
   auto intersphinx = po::options_description("Intersphinx Inventory Rendering Options", options.options_options.columns);
 
-  // TODO: Implement me
+  // TODO(0.6.0-alpha): Implement me
 
   return intersphinx;
 }
@@ -1055,7 +1055,7 @@ void options_parser::select_output_format(po::variables_map& parsed, const std::
 }
 
 std::string options_parser::escape_inja(const std::string& input) {
-  // TODO: Also escape `##` at the start of a line.
+  // TODO(0.6.0-beta): Also escape `##` at the start of a line.
   return std::regex_replace(input, util::regex::options_parser_escape_inja_control, R"({{ "$&" }})");
 }
 

@@ -27,13 +27,13 @@ void link_target_external_transformation::do_transform(model::entity& document) 
       link.target.accept([&](auto&& target) {
         using T = std::decay_t<decltype(target)>;
         if constexpr (std::is_same_v<T, model::link_target::standardese_target>) {
-          // TODO: Support relative lookup here.
+          // TODO(0.6.0-beta): Support relative lookup here.
           auto search = symbols.find(target.target);
           if (search)
             link.target = search.value();
         }
 
-        // TODO: Handle the special schema:// here.
+        // TODO(0.6.0-beta): Handle the special schema:// here.
       });
     }
 

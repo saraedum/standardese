@@ -39,7 +39,7 @@ namespace standardese::parser
             return value.name();
         }
 
-        // TODO: Maybe implement proper fmt formatting instead.
+        // TODO(0.6.0-beta): Maybe implement proper fmt formatting instead.
         static std::string formattable(model::cpp_entity_documentation& value) {
             return formattable(value.entity());
         }
@@ -60,7 +60,7 @@ namespace standardese::parser
         template <typename ...Args>
         explicit parse_error(const std::string& format_str, Args&&... args) : std::runtime_error(fmt::format(format_str, formattable(std::forward<Args>(args))...)) {}
 
-        // TODO: Properly report where this node is in the source file. (Needs changes in cppast probably.)
+        // TODO(0.6.0-beta): Properly report where this node is in the source file. (Needs changes in cppast probably.)
         template <typename ...Args>
         explicit parse_error(cmark_node* location, const std::string& format_str, Args&&... args) : parse_error(format_str, std::forward<Args>(args)...) {}
     };

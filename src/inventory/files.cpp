@@ -19,7 +19,7 @@ type_safe::optional_ref<const cppast::cpp_file> files::find_header(const std::st
 }
 
 type_safe::optional_ref<const cppast::cpp_file> files::find_header(const std::string& name, const std::string& path) const {
-  // TODO: Make this lookup more flexible.
+  // TODO(0.6.0-rc): Make this lookup more flexible.
   for (const auto* header : headers) {
     if (boost::filesystem::path(header->name()).filename() == boost::filesystem::path(name).filename())
       return type_safe::ref(*header);

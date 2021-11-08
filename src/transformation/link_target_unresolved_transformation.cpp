@@ -30,7 +30,7 @@ void link_target_unresolved_transformation::do_transform(model::entity& document
             return;
           }
 
-          // TODO: In the resolution process, allow function<> to link to the non-template version of function.
+          // TODO(0.6.0-beta): In the resolution process, allow function<> to link to the non-template version of function.
           standardese::logger::warn(fmt::format("Could not resolve link target `{}`.", target.target));
         }
       });

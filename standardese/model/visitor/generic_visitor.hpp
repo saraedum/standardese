@@ -30,7 +30,7 @@
 
 namespace standardese::model::visitor {
 
-// TODO: Maybe we should call `visit` of the base class once we renamed all the visit to visit_*.
+// TODO(0.6.0-alpha): Maybe we should call `visit` of the base class once we renamed all the visit to visit_*.
 template <typename T, typename Base = visitor<true>>
 class generic_visitor : public Base {
   public:

@@ -26,7 +26,7 @@
 #include "../../standardese/formatter/inja_formatter.hpp"
 #include "../../standardese/logger.hpp"
 
-// TODO: We do not handle friend declarations correctly here. A class can
+// TODO(0.6.0-beta): We do not handle friend declarations correctly here. A class can
 // declare a friend function that then lives in the surrounding namespace of
 // the class. (It seems that friend namespace::f() is not possible, or rather
 // only possible if f() has been forward declared anyway.) The old standardese
@@ -144,7 +144,7 @@ type_safe::optional<model::link_target> symbols::impl::cppast_symbols::find(cons
   for (auto* root : inventory.roots) {
     auto search = descendant(*root, name);
     if (search) {
-      // TODO: The definition here and elsewhere feels hacky. Should we really do it like this?
+      // TODO(0.6.0-final): The definition here and elsewhere feels hacky. Should we really do it like this?
       if (!found || is_definition(search.value()))
         found = search;
     }
@@ -276,7 +276,7 @@ type_safe::optional_ref<const cppast::cpp_entity> symbols::impl::cppast_symbols:
   // It is customary to write `typedef struct S {} S;` or `typedef struct {}
   // S;` especially in C. Technically, an "S" would refer to the typedef, but
   // this is never what people want, instead we refer to the struct.
-  // TODO: How should we do this exactly? Should we run this until we are at a non-trivial typedef?
+  // TODO(0.6.0-beta): How should we do this exactly? Should we run this until we are at a non-trivial typedef?
   if (child && child.value().kind() == cppast::cpp_type_alias::kind()) {
     const auto& alias = static_cast<const cppast::cpp_type_alias&>(child.value());
     const auto& type = alias.underlying_type();
@@ -286,7 +286,7 @@ type_safe::optional_ref<const cppast::cpp_entity> symbols::impl::cppast_symbols:
   }
 
   if (!child) {
-    // TODO: Do we handle this case correctly?
+    // TODO(0.6.0-beta): Do we handle this case correctly?
     // * Search for A in the context of B.
     // * Search for f in the context of A.
     //
@@ -465,8 +465,8 @@ symbols::impl::sphinx_symbols::sphinx_symbols(const sphinx::documentation_set& i
 type_safe::optional<model::link_target> symbols::impl::sphinx_symbols::find(const std::string& name) const {
   type_safe::optional<sphinx::entry> match;
 
-  // TODO: We should be much more fuzzy here.
-  // TODO: We could be better than O(n) here.
+  // TODO(0.6.0-beta): We should be much more fuzzy here.
+  // TODO(0.6.0-rc): We could be better than O(n) here.
   for (const auto& entry : inventory.entries) {
     if (entry.name == name) {
       if (!match.has_value() || match.value().priority > entry.priority)

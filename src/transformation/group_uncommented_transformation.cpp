@@ -14,7 +14,7 @@
 #include "../../standardese/model/visitor/visit.hpp"
 #include "../../standardese/logger.hpp"
 
-// TODO: This does not work in this case currently:
+// TODO(0.6.0-alpha): This does not work in this case currently:
 // ==* GROUP *==
 // void f();
 // void g();
@@ -75,7 +75,7 @@ bool groups(cppast::cpp_entity_kind kind) {
       // don't want to be grouped or that we do not generate comments for anyway.
       return false;
     default:
-      logger::error("TODO: unknown kind");
+      logger::error("TODO(0.6.0-alpha): unknown kind");
       return false;
   }
 }

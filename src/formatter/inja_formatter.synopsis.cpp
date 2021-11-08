@@ -11,7 +11,7 @@
 namespace standardese::formatter {
 
 nlohmann::json inja_formatter::synopsis_callback(const nlohmann::json& data) const {
-  // TODO
+  // TODO(0.6.0-alpha): Implement me.
   return nlohmann::json{};
   /*
   return std::visit([&](auto&& entity) {
@@ -27,7 +27,7 @@ nlohmann::json inja_formatter::synopsis_callback(const nlohmann::json& data) con
 }
 
 nlohmann::json inja_formatter::synopsis(const cppast::cpp_entity& entity) const {
-  // TODO: Use \synopsis.
+  // TODO(0.6.0-alpha): Use \synopsis.
   return nlohmann::json{};
 }
 

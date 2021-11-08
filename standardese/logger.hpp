@@ -15,14 +15,14 @@ namespace spdlog { class logger; }
 
 namespace standardese::logger {
 
-// TODO: Explain why this pattern is necessary, i.e., spdlog is increasing compile times by a lot.
+// TODO(0.6.0-rc): Explain why this pattern is necessary, i.e., spdlog is increasing compile times by a lot.
 
 /// Return a logger for all standardese messages.
 /// Returns the `"standardese"` logger registered with spdlog and returns it.
 /// If none has been registered yet, registers one.
 spdlog::logger& get();
 
-// TODO: These should all optionally take a callback producing a string so we
+// TODO(0.6.0-rc): These should all optionally take a callback producing a string so we
 // can check whether we should actually print (only really relevant for debug &
 // trace.)
 

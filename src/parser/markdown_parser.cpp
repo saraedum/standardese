@@ -3,7 +3,7 @@
 // This file is subject to the license terms in the LICENSE file
 // found in the top-level directory of this distribution.
 
-// TODO: Do not use asserts anywhere. Be more error tolerant.
+// TODO(0.6.0-beta): Do not use asserts anywhere. Be more error tolerant.
 #include <cassert>
 #include <cmark-gfm.h>
 #include <cmark-gfm-extension_api.h>
@@ -55,7 +55,7 @@ model::document markdown_parser::parse(const std::string& comment) const {
     return doc;
 }
 
-// TODO: parse is a weird term here. We are not parsing anything really.
+// TODO(0.6.0-beta): parse is a weird term here. We are not parsing anything really.
 model::entity markdown_parser::parse(cmark_node* node) const
 {
     const auto parse_into = [&](cmark_node* parent, auto&& container) -> model::entity {
@@ -98,16 +98,15 @@ model::entity markdown_parser::parse(cmark_node* node) const
         return parse_into(node, model::markup::strong_emphasis());
       case CMARK_NODE_LINK:
         {
-          // TODO: Make much of this configurable.
-          // TODO: Read the commonmark spec to make sure we're not doing anything stupid here.
-
-          // TODO: It would be nice to do something like the following:
+          // TODO(0.6.0-alpha): Make much of this configurable.
+          // TODO(0.6.0-alpha): Read the commonmark spec to make sure we're not doing anything stupid here.
+          // TODO(0.6.0-alpha): It would be nice to do something like the following:
           //       * do a fuzzy lookup as the default
           //       * when there is standardese://* do a fuzzy lookup.
           //       * when there is standardese:// do an exact lookup
           //       * when there is standardese://kind/* do a fuzzy lookup with a fixed type.
           //       * when there is standardese://kind/ do a lookup with a fixed type.
-          // TODO: Leave the text empty for links with [entity]() syntax. The
+          // TODO(0.6.0-alpha): Leave the text empty for links with [entity]() syntax. The
           // anchor_text_transformation will fill the text in.
 
           std::string target = std::string(cmark_node_get_url(node));
@@ -156,7 +155,7 @@ model::entity markdown_parser::parse(cmark_node* node) const
 
 void markdown_parser::cmark_parser_free_with_extensions(cmark_parser* parser)
 {
-  // TODO
+  // TODO(0.6.0-alpha): Implement me.
   /*
     auto cur = cmark_parser_get_syntax_extensions(parser);
     while (cur)

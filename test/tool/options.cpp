@@ -11,7 +11,7 @@
 #include "../util/logger.hpp"
 #include "../util/tmp_file.hpp"
 
-// TODO: Test (probably not here). When parsing a Sphinx inventory from a missing file, a proper error is produced and not just "not in a supported format".
+// TODO(0.6.0-beta): Test (probably not here). When parsing a Sphinx inventory from a missing file, a proper error is produced and not just "not in a supported format".
 
 namespace standardese::test::tool {
 

@@ -21,7 +21,7 @@ namespace standardese::tool {
 document_builders::document_builders(struct options options) : options(std::move(options)) {}
 
 model::unordered_entities document_builders::create(model::unordered_entities& parsed, parser::cpp_context context) {
-  // TODO: Make configurable. We presently only build for header files in fixed formats.
+  // TODO(0.6.0-beta): Make configurable. We presently only build for header files in fixed formats.
 
   auto builder = document_builder::entity_document_builder();
 
@@ -67,9 +67,9 @@ model::unordered_entities document_builders::create(model::unordered_entities& p
     }
   }
 
-  // TODO: Build index files.
+  // TODO(0.6.0-alpha): Build index files.
 
-  // TODO: Make sure document names/paths are unique.
+  // TODO(0.6.0-alpha): Make sure document names/paths are unique.
 
   return documents;
 }

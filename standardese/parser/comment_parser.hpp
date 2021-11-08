@@ -23,7 +23,7 @@ namespace standardese::parser
     class comment_parser : public markdown_parser
     {
     public:
-        // TODO: The options options scheme we are using elsewhere is going to
+        // TODO(0.6.0-beta): The options options scheme we are using elsewhere is going to
         // bite us with things such as cppyy. Let's use this scheme instead,
         // i.e., `comment_parser_options options;`.
 
@@ -97,12 +97,12 @@ namespace standardese::parser
 
         /// Add all entities from this file to the parse result that are
         /// lacking explicit comments.
-        /// TODO: Should be a transformation? Anyway, it should not live here.
+        /// TODO(0.6.0-alpha): Should be a transformation? Anyway, it should not live here.
         void add_uncommented_entities(model::unordered_entities&, const cppast::cpp_file&) const;
 
         /// Add modules to the parse result that are mentioned in other
         /// comments but lack explicit documentation.
-        /// TODO: Should be a transformation? Anyway, it should not live here.
+        /// TODO(0.6.0-alpha): Should be a transformation? Anyway, it should not live here.
         void add_uncommented_modules(model::unordered_entities&) const;
 
     private:

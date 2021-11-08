@@ -89,7 +89,7 @@ void visitor::operator()(T&& documentation) {
     const auto& entity = documentation.entity();
 
     // Create documentation for entity and its children.
-    // TODO: Test all of these.
+    // TODO(0.6.0-final): Test all of these.
     switch(entity.kind()) {
       case cppast::cpp_entity_kind::file_t:
       case cppast::cpp_entity_kind::namespace_t:
@@ -137,7 +137,7 @@ void visitor::operator()(T&& documentation) {
         add_friend(static_cast<const cppast::cpp_friend&>(entity));
         break;
       default:
-        // TODO
+        // TODO(0.6.0-beta): Implement me.
         logger::error(fmt::format("Not implemented: cannot generate documentation for entity `{}` of type `{}` yet.", entity.name(), (long)entity.kind()));
         return;
     }

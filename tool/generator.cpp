@@ -2,7 +2,7 @@
 // This file is subject to the license terms in the LICENSE file
 // found in the top-level directory of this distribution.
 
-// TODO: Remove
+// TODO(0.6.0-alpha): Remove
 
 /*
 #include "generator.hpp"

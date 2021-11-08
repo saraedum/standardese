@@ -8,7 +8,7 @@
 #include "transformation.hpp"
 #include "../inventory/symbols.hpp"
 
-// TODO: Make sure that we have consistent calling conventions in constructors/factories everywhere but also make sure it's always documented when the caller is expected to keep something alive:
+// TODO(0.6.0-alpha): Make sure that we have consistent calling conventions in constructors/factories everywhere but also make sure it's always documented when the caller is expected to keep something alive:
 // * const&: the caller has to keep the value alive (with exception of std::string)
 
 namespace standardese::transformation
@@ -22,13 +22,13 @@ class link_target_external_transformation : public transformation {
     struct options {
       /// A URI schema to explicitly link to some external documentation such
       /// as `std` to use `std://` to link to the standard library.
-      /// TODO: Implement this.
+      /// TODO(0.6.0-alpha): Implement this.
       std::string schema;
 
       /// Whether no normal name lookups should be performed, e.g., for the
       /// standard library whether only `std://std::string` should resolve but
       /// not just `std::string`.
-      /// TODO: Implement this.
+      /// TODO(0.6.0-alpha): Implement this.
       bool require_schema = false;
     };
 

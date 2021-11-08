@@ -18,7 +18,7 @@
 namespace standardese::formatter {
 
 /// Renders C++ entities using the Inja templating engine.
-// TODO: Add data() callback that returns self.data().
+// TODO(0.6.0-beta): Add data() callback that returns self.data().
 class inja_formatter {
  public:
   struct inja_formatter_options {
@@ -279,7 +279,7 @@ class inja_formatter {
 
   std::string kind(const cppast::cpp_entity&) const;
 
-  /// TODO: Should this be queried on a C++ entity or rather to a model::entity? (Or both.)
+  /// TODO(0.6.0-rc): Should this be queried on a C++ entity or rather to a model::entity? (Or both.)
   /// Return the synopsis override for this entity.
   /// Returns null if no override has been set.
   nlohmann::json synopsis(const cppast::cpp_entity&) const;
@@ -318,7 +318,7 @@ class inja_formatter {
 
   const std::vector<model::cpp_entity_documentation>& entity(const model::group_documentation&) const;
 
-  // TODO: Should this also be available on a cpp_entity?
+  // TODO(0.6.0-rc): Should this also be available on a cpp_entity?
   type_safe::optional<std::string> output_section(const model::entity&) const;
 
   /// Return the documentation entity rendered as plain text.
@@ -345,10 +345,10 @@ class inja_formatter {
   /// source code.
   std::string namespaze(const std::string&) const;
 
-  // TODO: Document and hook up callbacks.
+  // TODO(0.6.0-rc): Document and hook up callbacks.
   std::vector<std::string> namespaces(const cppast::cpp_entity&) const;
 
-  // TODO: Document and hook up callbacks.
+  // TODO(0.6.0-rc): Document and hook up callbacks.
   type_safe::optional<std::vector<std::string>> namespaces(const cppast::cpp_type&) const;
 
   /// Return the name of the defining type scope of this entity.

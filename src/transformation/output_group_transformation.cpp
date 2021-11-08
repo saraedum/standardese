@@ -30,14 +30,14 @@ void output_group_transformation::do_transform(model::entity& document) {
     using T = std::decay_t<decltype(entity)>;
 
     if constexpr (std::is_base_of_v<model::mixin::documentation, T>) {
-      // TODO: Make configurable
+      // TODO(0.6.0-beta): Make configurable
       if (entity.output_section.has_value() && !entity.group.has_value()) {
         if (!has_output_section.top())
           delta++;
 
         auto heading = model::markup::heading(level.top());
         auto title = parser::markdown_parser{}.parse(entity.output_section.value()).begin()->template as<model::markup::paragraph>();
-        // TODO: We do this a lot: Parse and treat it as inline.
+        // TODO(0.6.0-rc): We do this a lot: Parse and treat it as inline.
         for (auto& child : title) {
           heading.add_child(std::move(child));
         }
@@ -48,7 +48,7 @@ void output_group_transformation::do_transform(model::entity& document) {
     }
 
     if constexpr (std::is_same_v<T, model::markup::heading>) {
-      // TODO: Cap at 5 in a separate transformation.
+      // TODO(0.6.0-beta): Cap at 5 in a separate transformation.
       entity.level += delta;
       if (!has_output_section.top())
         level.top() = entity.level + 1;

@@ -52,7 +52,7 @@ class entity;
 class group_documentation;
 class cpp_entity_documentation;
 enum class exclude_mode;
-// TODO: Should we call this module_documentation?
+// TODO(0.6.0-rc): Should we call this module_documentation?
 class module;
 class unordered_entities;
 class section;

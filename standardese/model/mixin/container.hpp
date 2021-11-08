@@ -19,7 +19,7 @@ namespace standardese::model::mixin
     template <typename T = entity>
     class container
     {
-        // TODO: Maybe this sugar is not worth it. At least not outside of the constructor.
+        // TODO(0.6.0-alpha): Maybe this sugar is not worth it. At least not outside of the constructor.
         model::markup::text convert(std::string text) {
             return model::markup::text(std::move(text));
         }
@@ -45,13 +45,13 @@ namespace standardese::model::mixin
         template <typename ...Args>
         explicit container(Args&&... args) : children_{convert(std::forward<Args>(args))...} {}
 
-        // TODO: Rename to emplace_back()
+        // TODO(0.6.0-alpha): Rename to emplace_back()
         template <typename ...Args>
         void emplace_child(Args&&... args) {
             children_.emplace_back(std::forward<Args>(args)...);
         }
 
-        // TODO: Rename to push_back()
+        // TODO(0.6.0-alpha): Rename to push_back()
         template <typename S>
         void add_child(S&& child) {
             children_.push_back(convert(std::forward<S>(child)));
@@ -121,7 +121,7 @@ namespace standardese::model::mixin
         }
 
     private:
-        // TODO: Should we just make this public? So we do not need all this
+        // TODO(0.6.0-alpha): Should we just make this public? So we do not need all this
         // glue anymore? Or should we instead expose the entire vector
         // interface here and check NDEBUG that children are of expected
         // types? Such as, lists contain only list items...
