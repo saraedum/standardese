@@ -10,7 +10,7 @@
 #include <string>
 #include <functional>
 
-#include <cppast/forward.hpp>
+#include <cppast/cppast_fwd.hpp>
 #include <nlohmann/json_fwd.hpp>
 
 #include "../model/link_target.hpp"

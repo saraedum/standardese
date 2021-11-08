@@ -17,7 +17,7 @@
 #include <cppast/cpp_entity.hpp>
 #include <cppast/cpp_function.hpp>
 #include <cppast/cpp_type.hpp>
-#include <cppast/forward.hpp>
+#include <cppast/cppast_fwd.hpp>
 
 #include <boost/algorithm/string/replace.hpp>
 

@@ -7,7 +7,7 @@
 #define STANDARDESE_FORMATTER_CODE_FORMATTER_HPP_INCLUDED
 
 #include <string>
-#include <cppast/forward.hpp>
+#include <cppast/cppast_fwd.hpp>
 
 #include "inja_formatter.hpp"
 #include "../parser/cpp_context.hpp"

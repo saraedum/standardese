@@ -10,7 +10,7 @@
 #include "../model/link_target.hpp"
 
 #include <memory>
-#include <cppast/forward.hpp>
+#include <cppast/cppast_fwd.hpp>
 #include <type_safe/optional_ref.hpp>
 #include <unordered_set>
 

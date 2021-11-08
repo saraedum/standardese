@@ -5,7 +5,7 @@
 #ifndef STANDARDESE_OUTPUT_SPHINX_INVENTORY_GENERATOR_HPP_INCLUDED
 #define STANDARDESE_OUTPUT_SPHINX_INVENTORY_GENERATOR_HPP_INCLUDED
 
-#include <cppast/forward.hpp>
+#include <cppast/cppast_fwd.hpp>
 
 #include "../stream_generator.hpp"
 #include "../../inventory/sphinx/documentation_set.hpp"

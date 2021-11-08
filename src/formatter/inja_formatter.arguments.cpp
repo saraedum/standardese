@@ -4,7 +4,7 @@
 
 #include <cppast/cpp_type.hpp>
 #include <cppast/cpp_template.hpp>
-#include <cppast/forward.hpp>
+#include <cppast/cppast_fwd.hpp>
 #include <fmt/format.h>
 
 #include "inja_formatter.impl.hpp"

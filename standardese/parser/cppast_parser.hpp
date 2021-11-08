@@ -7,7 +7,7 @@
 #define STANDARDESE_PARSER_CPPAST_PARSER_HPP_INCLUDED
 
 #include <cppast/cpp_entity_index.hpp>
-#include <cppast/forward.hpp>
+#include <cppast/cppast_fwd.hpp>
 #include <cppast/libclang_parser.hpp>
 #include <boost/filesystem.hpp>
 

@@ -7,7 +7,7 @@
 
 #include <unordered_set>
 
-#include <cppast/forward.hpp>
+#include <cppast/cppast_fwd.hpp>
 #include <type_safe/optional_ref.hpp>
 
 namespace standardese::inventory {

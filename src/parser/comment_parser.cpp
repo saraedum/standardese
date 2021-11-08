@@ -7,7 +7,7 @@
 #include "../../standardese/parser/parse_error.hpp"
 
 #include <cassert>
-#include <cppast/forward.hpp>
+#include <cppast/cppast_fwd.hpp>
 #include <cppast/visitor.hpp>
 #include <cstring>
 #include <stdexcept>

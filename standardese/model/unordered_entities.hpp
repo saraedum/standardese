@@ -5,7 +5,7 @@
 #ifndef STANDARDESE_MODEL_ENTITIES_HPP_INCLUDED
 #define STANDARDESE_MODEL_ENTITIES_HPP_INCLUDED
 
-#include <cppast/forward.hpp>
+#include <cppast/cppast_fwd.hpp>
 #include <memory>
 
 #include "../forward.hpp"

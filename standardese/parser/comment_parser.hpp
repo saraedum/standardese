@@ -7,7 +7,7 @@
 #define STANDARDESE_PARSER_COMMENT_PARSER_HPP_INCLUDED
 
 #include <regex>
-#include <cppast/forward.hpp>
+#include <cppast/cppast_fwd.hpp>
 #include <type_safe/reference.hpp>
 #include <type_safe/optional_ref.hpp>
 #include <type_safe/variant.hpp>

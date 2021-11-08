@@ -6,7 +6,7 @@
 #ifndef STANDARDESE_PARSER_COMMENT_COLLECTOR_HPP_INCLUDED
 #define STANDARDESE_PARSER_COMMENT_COLLECTOR_HPP_INCLUDED
 
-#include <cppast/forward.hpp>
+#include <cppast/cppast_fwd.hpp>
 #include <type_safe/reference.hpp>
 #include <vector>
 

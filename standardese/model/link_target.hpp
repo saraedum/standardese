@@ -6,7 +6,7 @@
 #define STANDARDESE_MODEL_LINK_TARGET_HPP_INCLUDED
 
 #include <variant>
-#include <cppast/forward.hpp>
+#include <cppast/cppast_fwd.hpp>
 #include <type_safe/reference.hpp>
 #include <type_safe/optional_ref.hpp>
 

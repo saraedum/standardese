@@ -14,7 +14,7 @@
 // TODO: Audit all the static casts. We should use some scheme that gives us
 // good error messages, mostly relevant when casting a cppast types.
 
-#include <cppast/forward.hpp>
+#include <cppast/cppast_fwd.hpp>
 #include <iostream>
 #include <cstdlib>
 #include <stdexcept>

@@ -4,7 +4,7 @@
 // found in the top-level directory of this distribution.
 
 #include <cppast/diagnostic.hpp>
-#include <cppast/forward.hpp>
+#include <cppast/cppast_fwd.hpp>
 #include  <type_safe/optional.hpp>
 
 #include "../../standardese/parser/cppast_parser.hpp"

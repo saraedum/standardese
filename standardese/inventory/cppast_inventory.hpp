@@ -5,7 +5,7 @@
 #ifndef STANDARDESE_INVENTORY_CPPAST_INVENTORY_HPP_INCLUDED
 #define STANDARDESE_INVENTORY_CPPAST_INVENTORY_HPP_INCLUDED
 
-#include <cppast/forward.hpp>
+#include <cppast/cppast_fwd.hpp>
 #include <type_safe/optional_ref.hpp>
 #include <unordered_set>
 

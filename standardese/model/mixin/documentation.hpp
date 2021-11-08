@@ -9,7 +9,7 @@
 #include <type_safe/optional_ref.hpp>
 #include <type_safe/reference.hpp>
 
-#include <cppast/forward.hpp>
+#include <cppast/cppast_fwd.hpp>
 
 #include "anchored_container.hpp"
 #include "../markup/code_block.hpp"

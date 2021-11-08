@@ -8,7 +8,7 @@
 
 #include <memory>
 
-#include <cppast/forward.hpp>
+#include <cppast/cppast_fwd.hpp>
 
 namespace standardese::parser {
 

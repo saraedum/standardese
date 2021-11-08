@@ -4,7 +4,7 @@
 // found in the top-level directory of this distribution.
 
 #include <cppast/cpp_type.hpp>
-#include <cppast/forward.hpp>
+#include <cppast/cppast_fwd.hpp>
 #include <fmt/format.h>
 
 #include <cppast/code_generator.hpp>
