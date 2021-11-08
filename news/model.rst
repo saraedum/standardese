@@ -132,6 +132,11 @@
   can still be used to get the old behavior. However, one should use
   `--external` to get proper linking using their doxygen tagfile instead.
 
+* Removed all vendored dependencies. They are now required to be available to
+  build standardese. This makes it much easier to package standardese in most
+  distributions. Also, the automagic installation of complex dependencies such
+  as LLVM probably did not work too well in many cases.
+
 **Fixed:**
 
 * Improve display of `--help` by autodetecting terminal width.
