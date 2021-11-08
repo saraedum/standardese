@@ -2,6 +2,8 @@
 // This file is subject to the license terms in the LICENSE file
 // found in the top-level directory of this distribution.
 
+#include <optional>
+
 #include <cppast/cpp_entity_kind.hpp>
 #include <cppast/cpp_file.hpp>
 #include <cppast/cpp_friend.hpp>
