@@ -43,81 +43,81 @@ namespace standardese::model::mixin
         container() noexcept = default;
 
         template <typename ...Args>
-        explicit container(Args&&... args) : children_{convert(std::forward<Args>(args))...} {}
+        explicit container(Args&&... args) : children{convert(std::forward<Args>(args))...} {}
 
         // TODO(0.6.0-alpha): Rename to emplace_back()
         template <typename ...Args>
         void emplace_child(Args&&... args) {
-            children_.emplace_back(std::forward<Args>(args)...);
+            children.emplace_back(std::forward<Args>(args)...);
         }
 
         // TODO(0.6.0-alpha): Rename to push_back()
         template <typename S>
         void add_child(S&& child) {
-            children_.push_back(convert(std::forward<S>(child)));
+            children.push_back(convert(std::forward<S>(child)));
         }
 
         template <typename S>
         void insert_child(S&& child) {
             using std::begin;
-            children_.insert(begin(children_), convert(std::forward<S>(child)));
+            children.insert(begin(children), convert(std::forward<S>(child)));
         }
 
         void clear() {
-            children_.clear();
+            children.clear();
         }
 
         void erase(iterator& it)
         {
-            children_.erase(it);
+            children.erase(it);
         }
 
         /// \returns An iterator to the first child entity.
         iterator begin()
         {
-            return children_.begin();
+            return children.begin();
         }
 
         /// \returns An iterator one past the last child entity.
         iterator end()
         {
-            return children_.end();
+            return children.end();
         }
 
         /// \returns An iterator to the last child entity.
         reverse_iterator rbegin()
         {
-            return children_.rbegin();
+            return children.rbegin();
         }
 
         /// \returns An iterator one before the first child entity.
         reverse_iterator rend()
         {
-            return children_.rend();
+            return children.rend();
         }
 
         /// \returns An iterator to the first child entity.
         const_iterator begin() const
         {
-            return children_.begin();
+            return children.begin();
         }
 
         /// \returns An iterator one past the last child entity.
         const_iterator end() const
         {
-            return children_.end();
+            return children.end();
         }
 
         /// \returns An iterator to the last child entity.
         const_reverse_iterator rbegin() const
         {
-            return children_.rbegin();
+            return children.rbegin();
         }
 
         /// \returns An iterator one before the first child entity.
         const_reverse_iterator rend() const
         {
-            return children_.rend();
+            return children.rend();
         }
 
     private:
@@ -125,7 +125,7 @@ namespace standardese::model::mixin
         // glue anymore? Or should we instead expose the entire vector
         // interface here and check NDEBUG that children are of expected
         // types? Such as, lists contain only list items...
-        std::vector<T> children_;
+        std::vector<T> children;
     };
 }
 

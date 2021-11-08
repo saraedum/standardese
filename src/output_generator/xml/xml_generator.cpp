@@ -240,7 +240,7 @@ std::string xml_generator::render(const model::entity& root) {
 }
 
 xml_generator::~xml_generator() {
-    xml_document.save(out_, "  ");
+    xml_document.save(out, "  ");
 }
 
 }

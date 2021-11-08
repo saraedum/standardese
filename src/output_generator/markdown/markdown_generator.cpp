@@ -20,7 +20,7 @@ markdown_generator::markdown_generator(std::ostream& os, markdown_generator_opti
 markdown_generator::~markdown_generator() {
   using unique_string = unique_cmark<char, free>;
   unique_string str{cmark_render_commonmark(root.get(), CMARK_OPT_NOBREAKS, 0)};
-  out_ << str.get();
+  out << str.get();
 }
 
 }

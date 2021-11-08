@@ -12,10 +12,6 @@
 #include "../parser/cpp_context.hpp"
 #include "inventory.hpp"
 
-// TODO(0.6.0-alpha): Normalize member variables everywhere. Since we are not hiding all
-// variables as private anymore, we should remove all the trailing _ and
-// announce it as news.
-
 namespace standardese::inventory
 {
 

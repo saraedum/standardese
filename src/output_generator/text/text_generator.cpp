@@ -20,7 +20,7 @@ text_generator::text_generator(std::ostream& os, text_generator_options options)
 text_generator::~text_generator() {
   using unique_string = unique_cmark<char, free>;
   unique_string str{cmark_render_plaintext(root.get(), CMARK_OPT_NOBREAKS, 0)};
-  out_ << str.get();
+  out << str.get();
 }
 
 void text_generator::visit(link& link) {

@@ -15,7 +15,7 @@
 
 namespace standardese::model {
 
-struct unordered_entities::impl {
+struct unordered_entities::unordered_entities_implementation {
   struct hash {
     size_t operator()(const entity&) const;
   };
@@ -28,25 +28,25 @@ struct unordered_entities::impl {
 };
 
 template <bool is_const>
-struct unordered_entities::unordered_iterator<is_const>::impl {
+struct unordered_entities::unordered_iterator<is_const>::unordered_iterator_implementation {
   boost::unordered_set<entity>::iterator self;
 };
 
-unordered_entities::unordered_entities() noexcept : impl_(new impl{}) {}
+unordered_entities::unordered_entities() noexcept : self(new unordered_entities_implementation{}) {}
 
 unordered_entities::~unordered_entities() noexcept {}
 
 unordered_entities::unordered_entities(std::initializer_list<model::entity> init) : unordered_entities(init.begin(), init.end()) {}
 
-unordered_entities::unordered_entities(unordered_entities&& rhs) noexcept : impl_(std::move(rhs.impl_)) {}
+unordered_entities::unordered_entities(unordered_entities&& rhs) noexcept : self(std::move(rhs.self)) {}
 
 unordered_entities& unordered_entities::operator=(unordered_entities&& rhs) noexcept {
-  impl_ = std::move(rhs.impl_);
+  self = std::move(rhs.self);
   return *this;
 }
 
 bool unordered_entities::insert(value_type value) {
-  auto [pos, inserted] = impl_->items.insert(value);
+  auto [pos, inserted] = self->items.insert(value);
   return inserted;
 }
 
@@ -64,37 +64,37 @@ unordered_entities::const_iterator unordered_entities::find_cpp_entity(const cpp
     }
   };
 
-  auto it =  impl_->items.find(entity, hash{}, equality{});
+  auto it =  self->items.find(entity, hash{}, equality{});
 
   const_iterator ret;
-  ret.impl_->self = it;
+  ret.self->self = it;
 
   return ret;
 }
 
 unordered_entities::iterator unordered_entities::find_cpp_entity(const cppast::cpp_entity& entity) {
-  auto it = const_cast<const unordered_entities*>(this)->find_cpp_entity(entity).impl_->self;
+  auto it = const_cast<const unordered_entities*>(this)->find_cpp_entity(entity).self->self;
 
   iterator ret;
-  ret.impl_->self = it;
+  ret.self->self = it;
 
   return ret;
 }
 
 unordered_entities::const_iterator unordered_entities::find_module(const std::string& name) const {
-  auto it = impl_->items.find(model::module(name));
+  auto it = self->items.find(model::module(name));
 
   const_iterator ret;
-  ret.impl_->self = it;
+  ret.self->self = it;
 
   return ret;
 }
 
 unordered_entities::iterator unordered_entities::find_module(const std::string& name) {
-  auto it = const_cast<const unordered_entities*>(this)->find_module(name).impl_->self;
+  auto it = const_cast<const unordered_entities*>(this)->find_module(name).self->self;
 
   iterator ret;
-  ret.impl_->self = it;
+  ret.self->self = it;
 
   return ret;
 }
@@ -127,55 +127,55 @@ model::module& unordered_entities::module(const std::string& name) {
 
 unordered_entities::const_iterator unordered_entities::begin() const {
   const_iterator ret;
-  ret.impl_->self = impl_->items.begin();
+  ret.self->self = self->items.begin();
   return ret;
 }
 
 unordered_entities::const_iterator unordered_entities::end() const {
   const_iterator ret;
-  ret.impl_->self = impl_->items.end();
+  ret.self->self = self->items.end();
   return ret;
 }
 
 unordered_entities::iterator unordered_entities::begin() {
   iterator ret;
-  ret.impl_->self = impl_->items.begin();
+  ret.self->self = self->items.begin();
   return ret;
 }
 
 unordered_entities::iterator unordered_entities::end() {
   iterator ret;
-  ret.impl_->self = impl_->items.end();
+  ret.self->self = self->items.end();
   return ret;
 }
 
 template <bool is_const>
-unordered_entities::unordered_iterator<is_const>::unordered_iterator() noexcept : impl_(new impl{}) {};
+unordered_entities::unordered_iterator<is_const>::unordered_iterator() noexcept : self(new unordered_iterator_implementation{}) {};
 
 template <bool is_const>
-unordered_entities::unordered_iterator<is_const>::unordered_iterator(const unordered_iterator& value) noexcept : impl_(new impl{value.impl_->self}) {}
+unordered_entities::unordered_iterator<is_const>::unordered_iterator(const unordered_iterator& value) noexcept : self(new unordered_iterator_implementation{value.self->self}) {}
 
 template <bool is_const>
-unordered_entities::unordered_iterator<is_const>::unordered_iterator(unordered_iterator&& value) noexcept : impl_(std::move(value.impl_)) {}
+unordered_entities::unordered_iterator<is_const>::unordered_iterator(unordered_iterator&& value) noexcept : self(std::move(value.self)) {}
 
 template <bool is_const>
 unordered_entities::unordered_iterator<is_const>::~unordered_iterator() noexcept {}
 
 template <bool is_const>
 unordered_entities::unordered_iterator<is_const>& unordered_entities::unordered_iterator<is_const>::operator=(const unordered_iterator& rhs) noexcept {
-  impl_->self = rhs.impl_->self;
+  self->self = rhs.self->self;
   return *this;
 }
 
 template <bool is_const>
 unordered_entities::unordered_iterator<is_const>& unordered_entities::unordered_iterator<is_const>::operator=(unordered_iterator&& rhs) noexcept {
-  impl_ = std::move(rhs.impl_);
+  self = std::move(rhs.self);
   return *this;
 }
 
 template <bool is_const>
 bool unordered_entities::unordered_iterator<is_const>::operator==(const unordered_iterator& rhs) const {
-  return impl_->self == rhs.impl_->self;
+  return self->self == rhs.self->self;
 }
 
 template <bool is_const>
@@ -185,29 +185,29 @@ bool unordered_entities::unordered_iterator<is_const>::operator!=(const unordere
 
 template <bool is_const>
 unordered_entities::unordered_iterator<is_const>& unordered_entities::unordered_iterator<is_const>::operator++() {
-  impl_->self++;
+  self->self++;
   return *this;
 }
 
 template <bool is_const>
 std::conditional_t<is_const, const entity&, entity&> unordered_entities::unordered_iterator<is_const>::operator*() const {
   if constexpr (is_const) {
-    return *impl_->self;
+    return *self->self;
   } else {
-    return const_cast<entity&>(*impl_->self);
+    return const_cast<entity&>(*self->self);
   }
 }
 
 template <bool is_const>
 std::conditional_t<is_const, const entity*, entity*> unordered_entities::unordered_iterator<is_const>::operator->() const {
   if constexpr (is_const) {
-    return &*impl_->self;
+    return &*self->self;
   } else {
-    return const_cast<entity*>(&*impl_->self);
+    return const_cast<entity*>(&*self->self);
   }
 }
 
-size_t unordered_entities::impl::hash::operator()(const entity& self) const {
+size_t unordered_entities::unordered_entities_implementation::hash::operator()(const entity& self) const {
   return visitor::visit([&](auto&& entity) {
     using T = std::decay_t<decltype(entity)>;
     // TODO(0.6.0-rc): Handle group_documentation?
@@ -221,7 +221,7 @@ size_t unordered_entities::impl::hash::operator()(const entity& self) const {
   }, self);
 }
 
-bool unordered_entities::impl::equality::operator()(const entity& lhs, const entity& rhs) const {
+bool unordered_entities::unordered_entities_implementation::equality::operator()(const entity& lhs, const entity& rhs) const {
   return visitor::visit([&](auto&& lentity) {
       using T = std::decay_t<decltype(lentity)>;
       // TODO(0.6.0-rc): Handle group_documentation?

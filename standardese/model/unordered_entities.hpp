@@ -92,14 +92,14 @@ class unordered_entities {
       unordered_iterator() noexcept;
       friend class unordered_entities;
 
-      struct impl;
+      struct unordered_iterator_implementation;
 
-      std::unique_ptr<impl> impl_;
+      std::unique_ptr<unordered_iterator_implementation> self;
     };
 
-    struct impl;
+    struct unordered_entities_implementation;
 
-    std::unique_ptr<impl> impl_;
+    std::unique_ptr<unordered_entities_implementation> self;
 };
 
 }

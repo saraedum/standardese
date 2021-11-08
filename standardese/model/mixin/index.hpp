@@ -17,7 +17,7 @@ namespace standardese::model::mixin
         index(std::string id, heading heading, Args&&... children) : anchored_container<T>(std::move(id), std::forward<Args>(children)...), heading_(std::move(heading)) {}
 
     private:
-        heading heading_;
+        heading heading;
     };
 
 

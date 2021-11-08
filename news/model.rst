@@ -119,6 +119,11 @@
   cluttered the current directory with output files which is annoying if you
   just call `standardese .` to see what happens.
 
+* We are not using trailing underscores `_` on member variables anymore to
+  indicate that they are private. Instead, we use a trailing underscore simply
+  to avoid a name clash, when there is a (private) member variable and a method
+  of the same name.
+
 **Removed:**
 
 * Some of the `--input.*` flags have been removed completely from the
