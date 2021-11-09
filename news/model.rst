@@ -69,7 +69,7 @@
   * `standardese::model`: the internal representation of both parsed comments,
     output document outlines and markup; this combines some of the things that
     used to be in `standardese::comment` and `standardese::markup`.
-  * `standardese::transformation`: transformations that modify documents, e.g.,
+  * `standardese::transformer`: transformers that modify documents, e.g.,
     to generate a code synopsis for every entity.
   * `standardese::output_generator`: emitters that write documents out to
     output files in various formats such as MarkDown.

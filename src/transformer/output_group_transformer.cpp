@@ -1,0 +1,80 @@
+// Copyright (C) 2021 Julian Rüth <julian.rueth@fsfe.org>
+// This file is subject to the license terms in the LICENSE file
+// found in the top-level directory of this distribution.
+
+#include <cppast/cpp_class.hpp>
+#include <stack>
+
+#include "../../standardese/transformer/output_group_transformer.hpp"
+#include "../../standardese/model/visitor/visit.hpp"
+#include "../../standardese/model/entity.hpp"
+#include "../../standardese/model/mixin/documentation.hpp"
+#include "../../standardese/parser/markdown_parser.hpp"
+#include "../../standardese/model/document.hpp"
+#include "../../standardese/logger.hpp"
+
+namespace standardese::transformer {
+
+void output_group_transformer::do_transform(model::entity& document) {
+  std::stack<std::vector<model::entity>> containers;
+  containers.push({});
+
+  std::stack<bool> has_output_section;
+
+  int delta = 0;
+
+  std::stack<int> level;
+  level.push(1);
+
+  model::visitor::visit([&](auto&& entity, auto&& recurse) {
+    using T = std::decay_t<decltype(entity)>;
+
+    if constexpr (std::is_base_of_v<model::mixin::documentation, T>) {
+      // TODO(0.6.0-beta): Make configurable
+      if (entity.output_section.has_value() && !entity.group.has_value()) {
+        if (!has_output_section.top())
+          delta++;
+
+        auto heading = model::markup::heading(level.top());
+        auto title = parser::markdown_parser{}.parse(entity.output_section.value()).children.begin()->template as<model::markup::paragraph>();
+        // TODO(0.6.0-rc): We do this a lot: Parse and treat it as inline.
+        for (auto& child : title.children) {
+          heading.children.push_back(std::move(child));
+        }
+
+        containers.top().emplace_back(heading);
+        has_output_section.top() = true;
+      }
+    }
+
+    if constexpr (std::is_same_v<T, model::markup::heading>) {
+      // TODO(0.6.0-beta): Cap at 5 in a separate transformer.
+      entity.level += delta;
+      if (!has_output_section.top())
+        level.top() = entity.level + 1;
+    }
+
+    if constexpr (std::is_base_of_v<model::mixin::container<>, T>) {
+      containers.push({});
+      has_output_section.push(false);
+      level.push(level.top());
+
+      recurse();
+
+      if (has_output_section.top())
+        delta--;
+      level.pop();
+      has_output_section.pop();
+
+      entity.children.clear();
+      for (auto& child : containers.top()) entity.children.emplace_back(std::move(child));
+
+      containers.pop();
+    }
+
+    containers.top().emplace_back(entity);
+  }, document);
+}
+
+}
+

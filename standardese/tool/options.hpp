@@ -8,7 +8,7 @@
 
 #include <string>
 
-#include "transformations.hpp"
+#include "transformers.hpp"
 #include "parsers.hpp"
 #include "document_builders.hpp"
 #include "output_generators.hpp"
@@ -53,9 +53,9 @@ class options {
   /// Options that control which output documents are created.
   struct tool::document_builders::options document_builder_options;
 
-  /// Options that control transformations, i.e., how parsed markdown gets
+  /// Options that control transformers, i.e., how parsed markdown gets
   /// turned into the exact content of the output documents.
-  struct tool::transformations::options transformation_options;
+  struct tool::transformers::options transformer_options;
 
   /// Options that control how the output documents are emitted.
   struct tool::output_generators::options output_generator_options;

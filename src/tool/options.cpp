@@ -622,10 +622,10 @@ void options_parser::process_legacy_comment_options(po::variables_map& parsed) {
       if (!std::regex_match(external, match, util::regex::options_parser_process_legacy_comment_options_syntax)) {
         logger::error(fmt::format("Ignoring malformed argument for --external. Must be `NAMESPACE=URL` and URL must contain $$ but found `{}`.", external));
       } else {
-        transformations::options::external_legacy_options external_options;
+        transformers::options::external_legacy_options external_options;
         external_options.options.namspace = match[1];
         external_options.options.url = match[2];
-        options.transformation_options.external_link_options.push_back(external_options);
+        options.transformer_options.external_link_options.push_back(external_options);
       }
     }
     logger::warn(fmt::format("--comment.external_doc is deprecated. Use --external instead."));
@@ -779,17 +779,17 @@ void options_parser::process_external_options(po::variables_map& parsed) {
       }
 
       if (match[1] == "sphinx") {
-        transformations::options::external_sphinx_options entry;
+        transformers::options::external_sphinx_options entry;
         entry.options.schema = match[2];
         entry.inventory = match[3];
         entry.options.url = match[4];
-        options.transformation_options.external_link_options.emplace_back(entry);
+        options.transformer_options.external_link_options.emplace_back(entry);
       } else if (match[1] == "doxygen") {
-        transformations::options::external_doxygen_options entry;
+        transformers::options::external_doxygen_options entry;
         entry.options.schema = match[2];
         entry.inventory = match[3];
         entry.options.url = match[4];
-        options.transformation_options.external_link_options.emplace_back(entry);
+        options.transformer_options.external_link_options.emplace_back(entry);
       } else {
         logger::error(fmt::format("Ignoring malformed command line flag for --external. Must start with one of `sphinx` or `doxygen` but found `{}`.", match[1].str()));
         continue;
@@ -824,13 +824,13 @@ void options_parser::process_composition_options(po::variables_map& parsed) {
         // TODO(0.6.0-beta): Can we make this more convenient? Or should we rather expose a
         // variable in the template to understand in which context we are
         // formatting?
-        options.transformation_options.entity_heading_options.inja_formatter_options.type_format = format;
-        options.transformation_options.entity_heading_options.inja_formatter_options.return_type_format = format;
-        options.transformation_options.entity_heading_options.inja_formatter_options.parameter_type_format = format;
+        options.transformer_options.entity_heading_options.inja_formatter_options.type_format = format;
+        options.transformer_options.entity_heading_options.inja_formatter_options.return_type_format = format;
+        options.transformer_options.entity_heading_options.inja_formatter_options.parameter_type_format = format;
       } else if (name == "return_type") {
-        options.transformation_options.entity_heading_options.inja_formatter_options.return_type_format = format;
+        options.transformer_options.entity_heading_options.inja_formatter_options.return_type_format = format;
       } else if (name == "parameter_type") {
-        options.transformation_options.entity_heading_options.inja_formatter_options.parameter_type_format = format;
+        options.transformer_options.entity_heading_options.inja_formatter_options.parameter_type_format = format;
       } else {
         // TODO(0.6.0-alpha): Implement me.
         logger::error(fmt::format("Ignoring malformed command line flag for --format. Unknown name `{}`.", name));
@@ -856,51 +856,51 @@ po::options_description options_parser::output_options() const {
 void options_parser::process_output_options(po::variables_map& parsed) {
   if (parsed.count("exclude")) {
     for (auto& pattern : parsed.at("exclude").as<std::vector<std::string>>())
-      options.transformation_options.exclude_pattern_options.excluded.emplace_back(pattern);
+      options.transformer_options.exclude_pattern_options.excluded.emplace_back(pattern);
   }
 
   if (parsed.count("exclude-uncommented")) {
-    using mode = transformation::exclude_uncommented_transformation::options::mode;
+    using mode = transformer::exclude_uncommented_transformer::options::mode;
 
     switch(parsed.at("exclude-uncommented").as<counter>().count) {
       case 2:
-        options.transformation_options.synopsis_options.exclude_uncommented = true;
+        options.transformer_options.synopsis_options.exclude_uncommented = true;
         [[fallthrough]];
       case 1:
-        options.transformation_options.exclude_uncommented_options.exclude_file = mode::include;
-        options.transformation_options.exclude_uncommented_options.exclude_namespace = mode::skip;
-        options.transformation_options.exclude_uncommented_options.exclude_class = mode::exclude_if_empty;
-        options.transformation_options.exclude_uncommented_options.exclude_alias = mode::exclude;
-        options.transformation_options.exclude_uncommented_options.exclude_function = mode::exclude;
-        options.transformation_options.exclude_uncommented_options.exclude_variable = mode::exclude;
-        options.transformation_options.exclude_uncommented_options.exclude_friend = mode::exclude;
-        options.transformation_options.exclude_uncommented_options.exclude_macro = mode::exclude;
+        options.transformer_options.exclude_uncommented_options.exclude_file = mode::include;
+        options.transformer_options.exclude_uncommented_options.exclude_namespace = mode::skip;
+        options.transformer_options.exclude_uncommented_options.exclude_class = mode::exclude_if_empty;
+        options.transformer_options.exclude_uncommented_options.exclude_alias = mode::exclude;
+        options.transformer_options.exclude_uncommented_options.exclude_function = mode::exclude;
+        options.transformer_options.exclude_uncommented_options.exclude_variable = mode::exclude;
+        options.transformer_options.exclude_uncommented_options.exclude_friend = mode::exclude;
+        options.transformer_options.exclude_uncommented_options.exclude_macro = mode::exclude;
         break;
       case 3:
-        options.transformation_options.exclude_uncommented_options.exclude_file = mode::include;
-        options.transformation_options.exclude_uncommented_options.exclude_namespace = mode::skip;
-        options.transformation_options.exclude_uncommented_options.exclude_class = mode::exclude;
-        options.transformation_options.exclude_uncommented_options.exclude_alias = mode::exclude;
-        options.transformation_options.exclude_uncommented_options.exclude_function = mode::exclude;
-        options.transformation_options.exclude_uncommented_options.exclude_variable = mode::exclude;
-        options.transformation_options.exclude_uncommented_options.exclude_friend = mode::exclude;
-        options.transformation_options.exclude_uncommented_options.exclude_macro = mode::exclude;
+        options.transformer_options.exclude_uncommented_options.exclude_file = mode::include;
+        options.transformer_options.exclude_uncommented_options.exclude_namespace = mode::skip;
+        options.transformer_options.exclude_uncommented_options.exclude_class = mode::exclude;
+        options.transformer_options.exclude_uncommented_options.exclude_alias = mode::exclude;
+        options.transformer_options.exclude_uncommented_options.exclude_function = mode::exclude;
+        options.transformer_options.exclude_uncommented_options.exclude_variable = mode::exclude;
+        options.transformer_options.exclude_uncommented_options.exclude_friend = mode::exclude;
+        options.transformer_options.exclude_uncommented_options.exclude_macro = mode::exclude;
         break;
       default:
-        options.transformation_options.exclude_uncommented_options.exclude_file = mode::exclude;
-        options.transformation_options.exclude_uncommented_options.exclude_namespace = mode::skip;
-        options.transformation_options.exclude_uncommented_options.exclude_class = mode::exclude;
-        options.transformation_options.exclude_uncommented_options.exclude_alias = mode::exclude;
-        options.transformation_options.exclude_uncommented_options.exclude_function = mode::exclude;
-        options.transformation_options.exclude_uncommented_options.exclude_variable = mode::exclude;
-        options.transformation_options.exclude_uncommented_options.exclude_friend = mode::exclude;
-        options.transformation_options.exclude_uncommented_options.exclude_macro = mode::exclude;
+        options.transformer_options.exclude_uncommented_options.exclude_file = mode::exclude;
+        options.transformer_options.exclude_uncommented_options.exclude_namespace = mode::skip;
+        options.transformer_options.exclude_uncommented_options.exclude_class = mode::exclude;
+        options.transformer_options.exclude_uncommented_options.exclude_alias = mode::exclude;
+        options.transformer_options.exclude_uncommented_options.exclude_function = mode::exclude;
+        options.transformer_options.exclude_uncommented_options.exclude_variable = mode::exclude;
+        options.transformer_options.exclude_uncommented_options.exclude_friend = mode::exclude;
+        options.transformer_options.exclude_uncommented_options.exclude_macro = mode::exclude;
         break;
     }
   }
 
   if (parsed.count("private")) {
-    options.transformation_options.exclude_access_options.exclude_private = !parsed.at("private").as<bool>();
+    options.transformer_options.exclude_access_options.exclude_private = !parsed.at("private").as<bool>();
   }
 
   if (parsed.count("outdir")) {

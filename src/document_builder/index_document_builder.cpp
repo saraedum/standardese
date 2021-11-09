@@ -41,8 +41,8 @@ model::document index_document_builder::build(const std::string& name, const std
             target = model::link_target::module_target(documentation.name);
           }
 
-          // We create a link with a target but no "text". A transformation
-          // such as the anchor_text_transformation will fill in that text.
+          // We create a link with a target but no "text". A transformer
+          // such as the anchor_text_transformer will fill in that text.
           auto link = model::markup::link(target, "");
 
           list.children.push_back(model::markup::list_item({link}));

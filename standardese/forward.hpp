@@ -126,18 +126,18 @@ class entity_document_builder;
 
 }
 
-namespace standardese::transformation
+namespace standardese::transformer
 {
 
-class link_target_internal_transformation;
-class link_target_external_transformation;
-class link_href_internal_transformation;
-class link_sphinx_transformation;
-class link_external_legacy_transformation;
-class anchor_transformation;
-class exclude_pattern_transformation;
-class exclude_access_transformation;
-class synopsis_transformation;
+class link_target_internal_transformer;
+class link_target_external_transformer;
+class link_href_internal_transformer;
+class link_sphinx_transformer;
+class link_external_legacy_transformer;
+class anchor_transformer;
+class exclude_pattern_transformer;
+class exclude_access_transformer;
+class synopsis_transformer;
 
 }
 
@@ -161,7 +161,7 @@ namespace standardese::tool
 class options;
 class parsers;
 class document_builders;
-class transformations;
+class transformers;
 class output_generators;
 
 }

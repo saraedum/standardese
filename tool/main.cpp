@@ -6,7 +6,7 @@
 #include "../standardese/tool/options.hpp"
 #include "../standardese/tool/parsers.hpp"
 #include "../standardese/tool/document_builders.hpp"
-#include "../standardese/tool/transformations.hpp"
+#include "../standardese/tool/transformers.hpp"
 #include "../standardese/tool/output_generators.hpp"
 #include "../standardese/model/unordered_entities.hpp"
 #include "../standardese/logger.hpp"
@@ -26,8 +26,8 @@ int main(int argc, const char* argv[])
     // Create output document outlines.
     auto documents = standardese::tool::document_builders(options.document_builder_options).create(parsed, context);
 
-    // Apply transformations to output documents.
-    standardese::tool::transformations(options.transformation_options).transform(documents, context);
+    // Apply transformers to output documents.
+    standardese::tool::transformers(options.transformer_options).transform(documents, context);
 
     // Emit output documents.
     standardese::tool::output_generators(options.output_generator_options).emit(documents);

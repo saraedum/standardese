@@ -19,12 +19,12 @@ struct regex {
   static std::regex options_parser_process_external_options_syntax;
   static std::regex options_parser_escape_inja_control;
   static std::regex options_parser_process_parser_options_macro;
-  static std::regex anchor_transformation_strip;
-  static std::regex anchor_transformation_escape;
-  static std::regex link_external_legacy_transformation_pattern;
-  static std::regex link_external_legacy_transformation_replace;
-  static std::regex link_target_internal_transformation_entity_pattern;
-  static std::regex link_target_internal_transformation_uri_pattern;
+  static std::regex anchor_transformer_strip;
+  static std::regex anchor_transformer_escape;
+  static std::regex link_external_legacy_transformer_pattern;
+  static std::regex link_external_legacy_transformer_replace;
+  static std::regex link_target_internal_transformer_entity_pattern;
+  static std::regex link_target_internal_transformer_uri_pattern;
 };
 
 }

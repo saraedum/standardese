@@ -107,7 +107,7 @@ model::entity markdown_parser::parse(cmark_node* node) const
           //       * when there is standardese://kind/* do a fuzzy lookup with a fixed type.
           //       * when there is standardese://kind/ do a lookup with a fixed type.
           // TODO(0.6.0-alpha): Leave the text empty for links with [entity]() syntax. The
-          // anchor_text_transformation will fill the text in.
+          // anchor_text_transformer will fill the text in.
 
           std::string target = std::string(cmark_node_get_url(node));
           std::string title = std::string(cmark_node_get_title(node));

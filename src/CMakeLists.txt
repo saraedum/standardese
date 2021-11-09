@@ -26,21 +26,21 @@ set(src
     inventory/cppast_inventory.cpp
     inventory/sphinx/entry.cpp
     inventory/sphinx/documentation_set.cpp
-    transformation/transformation.cpp
-    transformation/group_uncommented_transformation.cpp
-    transformation/group_transformation.cpp
-    transformation/link_text_transformation.cpp
-    transformation/link_target_internal_transformation.cpp
-    transformation/link_target_external_transformation.cpp
-    transformation/link_external_legacy_transformation.cpp
-    transformation/link_target_unresolved_transformation.cpp
-    transformation/link_href_internal_transformation.cpp
-    transformation/link_sphinx_transformation.cpp
-    transformation/entity_heading_transformation.cpp
-    transformation/synopsis_transformation.cpp
-    transformation/exclude_uncommented_transformation.cpp
-    transformation/output_group_transformation.cpp
-    transformation/anchor_transformation.cpp
+    transformer/transformer.cpp
+    transformer/group_uncommented_transformer.cpp
+    transformer/group_transformer.cpp
+    transformer/link_text_transformer.cpp
+    transformer/link_target_internal_transformer.cpp
+    transformer/link_target_external_transformer.cpp
+    transformer/link_external_legacy_transformer.cpp
+    transformer/link_target_unresolved_transformer.cpp
+    transformer/link_href_internal_transformer.cpp
+    transformer/link_sphinx_transformer.cpp
+    transformer/entity_heading_transformer.cpp
+    transformer/synopsis_transformer.cpp
+    transformer/exclude_uncommented_transformer.cpp
+    transformer/output_group_transformer.cpp
+    transformer/anchor_transformer.cpp
     formatter/inja_formatter.cpp
     formatter/inja_formatter.parse.cpp
     formatter/inja_formatter.json.cpp
@@ -99,7 +99,7 @@ set(src
     threading/threaded_pool.cpp
     threading/unthreaded_pool.cpp
     tool/document_builders.cpp
-    tool/transformations.cpp
+    tool/transformers.cpp
     tool/output_generators.cpp
     tool/options.cpp
     tool/parsers.cpp

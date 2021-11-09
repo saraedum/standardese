@@ -97,12 +97,12 @@ namespace standardese::parser
 
         /// Add all entities from this file to the parse result that are
         /// lacking explicit comments.
-        /// TODO(0.6.0-alpha): Should be a transformation? Anyway, it should not live here.
+        /// TODO(0.6.0-alpha): Should be a transformer? Anyway, it should not live here.
         void add_uncommented_entities(model::unordered_entities&, const cppast::cpp_file&) const;
 
         /// Add modules to the parse result that are mentioned in other
         /// comments but lack explicit documentation.
-        /// TODO(0.6.0-alpha): Should be a transformation? Anyway, it should not live here.
+        /// TODO(0.6.0-alpha): Should be a transformer? Anyway, it should not live here.
         void add_uncommented_modules(model::unordered_entities&) const;
 
     private:

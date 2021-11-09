@@ -21,12 +21,12 @@ set(tests
     model/markup/phrasing.cpp
     model/markup/block_quote.cpp
     model/markup/thematic_break.cpp
-    transformation/link_target_internal_transformation.cpp
-    transformation/link_target_external_transformation.cpp
-    transformation/link_external_legacy_transformation.cpp
-    transformation/link_text_transformation.cpp
-    transformation/entity_heading_transformation.cpp
-    transformation/group_transformation.cpp
+    transformer/link_target_internal_transformer.cpp
+    transformer/link_target_external_transformer.cpp
+    transformer/link_external_legacy_transformer.cpp
+    transformer/link_text_transformer.cpp
+    transformer/entity_heading_transformer.cpp
+    transformer/group_transformer.cpp
     formatter/inja_formatter.cpp
     formatter/code_formatter.cpp
     comment.cpp

@@ -48,7 +48,7 @@ model::document synopsis_formatter::build(const model::cpp_entity_documentation&
       }
 
       std::string href = "";
-      // // TODO(0.6.0-alpha): Use an inja callback instead and put this reference into some state bag. See the corresponding hack in link_target_transformation.
+      // // TODO(0.6.0-alpha): Use an inja callback instead and put this reference into some state bag. See the corresponding hack in link_target_transformer.
       // if (declaration.has_value()) {
       //   std::stringstream s;
       //   s << "standardese://@";
