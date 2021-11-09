@@ -2,13 +2,17 @@
 // This file is subject to the license terms in the LICENSE file
 // found in the top-level directory of this distribution.
 
-#include "../../include/standardese/doc_entity.hpp"
+// TODO: Bring these tests back in some form.
 
+/*
 #include "../external/catch/single_include/catch2/catch.hpp"
 
-#include "test_parser.hpp"
+TEST_CASE("doc_entity")
+{
+    REQUIRE(false);
+}
 
-using namespace standardese;
+#include "../../include/standardese/doc_entity.hpp"
 
 std::string debug_string(const standardese::doc_entity& entity, unsigned level = 0)
 {
@@ -277,3 +281,4 @@ file - doc_entity__base_inline
 )");
     }
 }
+*/
