@@ -217,7 +217,7 @@ model::entity synopsis(const cppast::cpp_entity& entity) {
 
   cppast::generate_code(generator, entity);
 
-  return model::markup::code_block("cpp", generator.code);
+  return model::markup::code_block("cpp", {model::markup::text{generator.code}});
 }
 
 }

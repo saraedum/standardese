@@ -49,7 +49,7 @@ model::document markdown_parser::parse(const std::string& comment) const {
     using unique_node = unique_cmark<cmark_node, cmark_node_free>;
     auto root = unique_node(cmark_parser_finish(parser.get()));
 
-    model::document doc{"", ""};
+    model::document doc = model::document::anonymous();
     visit_children(root.get(), [&](cmark_node* child) { doc.add_child(parse(child)); });
 
     return doc;
@@ -90,7 +90,7 @@ model::entity markdown_parser::parse(cmark_node* node) const
         assert(literal != nullptr && "code literal must be set");
         if (strlen(literal) == 0)
           return model::markup::code{};
-        return model::markup::code(literal);
+        return model::markup::code{model::markup::text{literal}};
       }
       case CMARK_NODE_EMPH:
         return parse_into(node, model::markup::emphasis());
@@ -143,7 +143,7 @@ model::entity markdown_parser::parse(cmark_node* node) const
       case CMARK_NODE_ITEM:
         return parse_into(node, model::markup::list_item());
       case CMARK_NODE_CODE_BLOCK:
-        return model::markup::code_block(cmark_node_get_fence_info(node), cmark_node_get_literal(node));
+        return model::markup::code_block(cmark_node_get_fence_info(node), {model::markup::text{cmark_node_get_literal(node)}});
       case CMARK_NODE_HEADING:
         return parse_into(node, model::markup::heading(cmark_node_get_heading_level(node)));
       case CMARK_NODE_THEMATIC_BREAK:

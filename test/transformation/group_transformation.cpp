@@ -25,13 +25,13 @@ TEST_CASE("Sections of Groups are Merged", "[group_transformation]") {
       void f(char);
     )");
 
-    auto principal = model::cpp_entity_documentation(header["f()"], header, model::section(parser::commands::section_command::brief, "A brief for f"));
+    auto principal = model::cpp_entity_documentation(header["f()"], header, {model::section(parser::commands::section_command::brief, {model::markup::text{"A brief for f"}})});
     auto secondary = model::cpp_entity_documentation(header["f(int)"], header);
     auto tertiary = model::cpp_entity_documentation(header["f(char)"], header);
 
     principal.group = secondary.group = tertiary.group = "group";
 
-    auto documents = model::unordered_entities{model::document::anonymous(principal, secondary, tertiary)};
+    auto documents = model::unordered_entities{model::document::anonymous({principal, secondary, tertiary})};
 
     standardese::transformation::group_transformation{documents, {}}.transform();
 
@@ -52,13 +52,13 @@ TEST_CASE("Sections of Groups are Merged", "[group_transformation]") {
       void f(char);
     )");
 
-    auto principal = model::cpp_entity_documentation(header["f()"], header, model::section(parser::commands::section_command::brief, "A brief for f"));
+    auto principal = model::cpp_entity_documentation(header["f()"], header, {model::section(parser::commands::section_command::brief, {model::markup::text{"A brief for f"}})});
     auto secondary = model::cpp_entity_documentation(header["f(int)"], header);
     auto tertiary = model::cpp_entity_documentation(header["f(char)"], header);
 
     principal.group = tertiary.group = "group";
 
-    auto documents = model::unordered_entities{model::document::anonymous(principal, secondary, tertiary)};
+    auto documents = model::unordered_entities{model::document::anonymous({principal, secondary, tertiary})};
 
     standardese::transformation::group_transformation{documents, {}}.transform();
 

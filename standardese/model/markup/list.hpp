@@ -16,8 +16,7 @@ namespace standardese::model::markup
     class list final : public mixin::container<list_item>, public mixin::visitable<list>
     {
     public:
-        template <typename ...Args>
-        explicit list(bool ordered=false, Args&&... children) : ordered(ordered), mixin::container<list_item>(std::forward<Args>(children)...) {}
+        explicit list(bool ordered=false, std::initializer_list<list_item> children={}) : ordered(ordered), mixin::container<list_item>(std::move(children)) {}
 
         bool ordered;
     };

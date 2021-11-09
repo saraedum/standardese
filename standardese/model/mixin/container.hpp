@@ -19,20 +19,6 @@ namespace standardese::model::mixin
     template <typename T = entity>
     class container
     {
-        // TODO(0.6.0-alpha): Maybe this sugar is not worth it. At least not outside of the constructor.
-        model::markup::text convert(std::string text) {
-            return model::markup::text(std::move(text));
-        }
-
-        model::markup::text convert(const char* text) {
-            return model::markup::text(std::move(text));
-        }
-
-        template <typename S>
-        T convert(S&& s) {
-          return std::forward<S>(s);
-        }
-
     public:
         using entity = T;
         using iterator = typename std::vector<T>::iterator;
@@ -42,8 +28,7 @@ namespace standardese::model::mixin
 
         container() noexcept = default;
 
-        template <typename ...Args>
-        explicit container(Args&&... args) : children{convert(std::forward<Args>(args))...} {}
+        explicit container(std::initializer_list<T> children) : children(std::move(children)) {}
 
         // TODO(0.6.0-alpha): Rename to emplace_back()
         template <typename ...Args>
@@ -54,13 +39,13 @@ namespace standardese::model::mixin
         // TODO(0.6.0-alpha): Rename to push_back()
         template <typename S>
         void add_child(S&& child) {
-            children.push_back(convert(std::forward<S>(child)));
+            children.push_back(std::forward<S>(child));
         }
 
         template <typename S>
         void insert_child(S&& child) {
             using std::begin;
-            children.insert(begin(children), convert(std::forward<S>(child)));
+            children.insert(begin(children), std::forward<S>(child));
         }
 
         void clear() {

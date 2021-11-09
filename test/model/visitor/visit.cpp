@@ -19,12 +19,12 @@ TEST_CASE("Visitors Created from Lambdas", "[visitor]") {
   // ```
   // some text*some emphasized text*
   // ```
-  standardese::model::entity root = standardese::model::markup::paragraph{
+  standardese::model::entity root = standardese::model::markup::paragraph{{
     standardese::model::markup::text("some text"),
     standardese::model::markup::emphasis(
-      standardese::model::markup::text("some emphasized text")
+        {standardese::model::markup::text("some emphasized text")}
     ),
-  };
+  }};
 
   const auto& croot = root;
 

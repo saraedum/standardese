@@ -13,16 +13,14 @@ namespace standardese::model
     /// An output file, e.g., the description of a header file.
     class document final : public mixin::visitable<document>, public mixin::anchored_container<> {
       public:
-        template <typename ...Args>
-        document(std::string name, std::string path, Args&&... args) : name(std::move(name)), path(std::move(path)), mixin::anchored_container<>(std::forward<Args>(args)...) {}
+        document(std::string name, std::string path, std::initializer_list<model::entity> children={}) : name(std::move(name)), path(std::move(path)), mixin::anchored_container<>(std::move(children)) {}
 
         /// Return a container for block entities.
         /// Internally, it is often necessary to store some paragraphs or other
         /// blocks in a container. We use such an unnamed document for this
         /// purpose.
-        template <typename ...Args>
-        static document anonymous(Args&&... args) {
-          return document{"", "", std::forward<Args>(args)...};
+        static document anonymous(std::initializer_list<model::entity> children={}) {
+          return document{"", "", std::move(children)};
         }
 
         /// Return the unique block of this document.

@@ -11,12 +11,12 @@
 
 namespace standardese::model::mixin
 {
+    // TODO(0.6.0-alpha): What is the point of this? Shouldn't we just inherit from both instead?
     template <typename T = entity>
     class anchored_container : public mixin::anchored, public mixin::container<T>
     {
     public:
-        template <typename ...Args>
-        explicit anchored_container(Args&&... children) : mixin::anchored(), mixin::container<T>(std::forward<Args>(children)...) {}
+        explicit anchored_container(std::initializer_list<T> children={}) : mixin::anchored(), mixin::container<T>(std::move(children)) {}
     };
 }
 

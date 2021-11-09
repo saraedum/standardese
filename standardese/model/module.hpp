@@ -15,8 +15,7 @@ namespace standardese::model
     class module final : public mixin::visitable<module>, public mixin::documentation
     {
       public:
-        template <typename ...Args>
-        module(std::string name, Args&&... args) : name(std::move(name)), mixin::documentation(std::forward<Args>(args)...) {}
+        explicit module(std::string name, std::initializer_list<model::entity> children={}) : name(std::move(name)), mixin::documentation(std::move(children)) {}
 
         std::string name;
     };

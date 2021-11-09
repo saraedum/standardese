@@ -16,9 +16,8 @@ namespace standardese::model::markup {
     {
 
     public:
-        template <typename ...Args>
-        explicit code_block(std::string language, Args&&... children)
-        : language(std::move(language)), mixin::container<>{std::forward<Args>(children)...}
+        explicit code_block(std::string language, std::initializer_list<model::entity> children={})
+        : language(std::move(language)), mixin::container<>{std::move(children)}
         {}
 
         std::string language;

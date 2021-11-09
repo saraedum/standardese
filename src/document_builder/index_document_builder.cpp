@@ -45,13 +45,13 @@ model::document index_document_builder::build(const std::string& name, const std
           // such as the anchor_text_transformation will fill in that text.
           auto link = model::markup::link(target, "");
 
-          list.add_child(model::markup::list_item(link));
+          list.add_child(model::markup::list_item({link}));
         } else {
           throw std::logic_error("unexpected entity in index document builder");
         }
       }, entity);
 
-  return model::document(name, path, std::move(list));
+  return model::document(name, path, {std::move(list)});
 }
 
 bool index_document_builder::is_header_file(const model::entity& entity) {

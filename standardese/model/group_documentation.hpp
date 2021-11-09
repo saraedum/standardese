@@ -17,9 +17,8 @@ namespace standardese::model {
 
 class group_documentation final : public mixin::documentation, public mixin::visitable<group_documentation> {
   public:
-    template <typename ...Args>
-    explicit group_documentation(parser::cpp_context context, Args&&... children)
-    : context_(std::move(context)), mixin::documentation(std::forward<Args>(children)...) {}
+    explicit group_documentation(parser::cpp_context context, std::initializer_list<model::entity> children={})
+    : context_(std::move(context)), mixin::documentation(std::move(children)) {}
 
     const parser::cpp_context& context() const { return context_; }
 

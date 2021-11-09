@@ -18,8 +18,7 @@ namespace standardese::model::markup
     class heading final : public mixin::anchored_container<>, public mixin::visitable<heading>
     {
     public:
-        template <typename ...Args>
-        explicit heading(int level, Args&&... children) : level(level), mixin::anchored_container<>(std::forward<Args>(children)...) {}
+        explicit heading(int level, std::initializer_list<model::entity> children={}) : level(level), mixin::anchored_container<>(std::move(children)) {}
 
         int level;
     };

@@ -17,9 +17,8 @@ namespace standardese::model
     class section final : public mixin::visitable<section>, public mixin::container<>
     {
     public:
-        template <typename ...Args>
-        section(parser::commands::section_command type, Args&&... args)
-        : type(type), mixin::container<>(std::forward<Args>(args)...)
+        explicit section(parser::commands::section_command type, std::initializer_list<model::entity> children={})
+        : type(type), mixin::container<>(std::move(children))
         {}
 
         parser::commands::section_command type;

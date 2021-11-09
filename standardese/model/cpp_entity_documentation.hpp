@@ -23,9 +23,8 @@ namespace standardese::model
                                        public mixin::visitable<cpp_entity_documentation>
     {
     public:
-        template <typename ...Args>
-        explicit cpp_entity_documentation(const cppast::cpp_entity& entity, parser::cpp_context context, Args&&... children)
-        : entity_(entity), context_(std::move(context)), mixin::documentation(std::forward<Args>(children)...) {}
+        explicit cpp_entity_documentation(const cppast::cpp_entity& entity, parser::cpp_context context, std::initializer_list<model::entity> children={})
+        : entity_(entity), context_(std::move(context)), mixin::documentation(std::move(children)) {}
 
         const cppast::cpp_entity& entity() const { return *entity_; }
 

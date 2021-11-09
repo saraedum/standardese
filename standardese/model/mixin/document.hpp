@@ -14,8 +14,7 @@ namespace standardese::model::mixin {
     // A top-level document that will eventually be rendered as a single output file.
     class document : public anchored_container<model::entity> {
     public:
-        template <typename ...Args>
-        explicit document(std::string path, Args&&... children) : path(std::move(path)), anchored_container<model::entity>(std::forward<Args>(children)...) {}
+        explicit document(std::string path, std::initializer_list<model::entity> children) : path(std::move(path)), anchored_container<model::entity>(std::move(children)) {}
 
         std::string path;
     };
