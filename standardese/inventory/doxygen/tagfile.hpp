@@ -26,7 +26,6 @@ namespace standardese::inventory::doxygen {
 /// For the precise structure of a tagfile see
 /// https://github.com/doxygen/doxygen/blob/master/src/tagreader.cpp.
 struct tagfile : public inventory {
-  // TODO(0.6.0-alpha): Move members to separate files?
   // Corresponds to `TagEnumValueInfo` in doxygen.
   struct enum_value {
     std::string name;
