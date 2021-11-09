@@ -11,9 +11,8 @@
 
 namespace standardese::model
 {
-    /// A named section like `\effects` or `\returns`.
-    /// This cannot be used for brief or details.
-    /// TODO(0.6.0-alpha): There is no good reason for this legacy anymore. Drop this limitation.
+    /// A named section like `\effects` or `\returns` or an implicit section
+    /// such as the brief or the details.
     class section final : public mixin::visitable<section>, public mixin::container<>
     {
     public:
