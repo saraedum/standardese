@@ -11,7 +11,8 @@
 
 #include <cppast/cppast_fwd.hpp>
 
-#include "anchored_container.hpp"
+#include "anchored.hpp"
+#include "container.hpp"
 #include "../markup/code_block.hpp"
 #include "../section.hpp"
 #include "../exclude_mode.hpp"
@@ -21,10 +22,10 @@ namespace standardese::model::mixin
 
 /// Documentation for something in the C++ source code such as a file, a class,
 /// a parameter, or a module.
-class documentation : public anchored_container<>
+class documentation : public anchored, public container<>
 {
 public:
-    using anchored_container<entity>::anchored_container;
+    using container<>::container;
 
     type_safe::optional_ref<model::section> section(parser::commands::section_command type) {
         for (auto& child : *this)

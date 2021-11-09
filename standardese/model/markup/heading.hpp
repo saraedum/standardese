@@ -8,17 +8,18 @@
 
 #include "text.hpp"
 #include "../mixin/visitable.hpp"
-#include "../mixin/anchored_container.hpp"
+#include "../mixin/anchored.hpp"
+#include "../mixin/container.hpp"
 
 namespace standardese::model::markup
 {
     // TODO(0.6.0-beta): It's probably good if virtually all entities had something like a
     // "source". Explaining what made them so we can properly render things
     // out, e.g., when rendering for YAML.
-    class heading final : public mixin::anchored_container<>, public mixin::visitable<heading>
+    class heading final : public mixin::anchored, public mixin::container<>, public mixin::visitable<heading>
     {
     public:
-        explicit heading(int level, std::initializer_list<model::entity> children={}) : level(level), mixin::anchored_container<>(std::move(children)) {}
+        explicit heading(int level, std::initializer_list<model::entity> children={}) : level(level), mixin::container<>(std::move(children)) {}
 
         int level;
     };

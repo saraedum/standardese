@@ -7,14 +7,15 @@
 
 #include <string>
 
-#include "anchored_container.hpp"
+#include "anchored.hpp"
+#include "container.hpp"
 
 namespace standardese::model::mixin {
 
     // A top-level document that will eventually be rendered as a single output file.
-    class document : public anchored_container<model::entity> {
+    class document : public anchored, public container<model::entity> {
     public:
-        explicit document(std::string path, std::initializer_list<model::entity> children) : path(std::move(path)), anchored_container<model::entity>(std::move(children)) {}
+        explicit document(std::string path, std::initializer_list<model::entity> children) : path(std::move(path)), container<model::entity>(std::move(children)) {}
 
         std::string path;
     };
