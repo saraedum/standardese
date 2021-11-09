@@ -83,7 +83,7 @@ TEST_CASE("Visitors Created from Lambdas", "[visitor]") {
       visit([&](auto&& entity) {
         using T = std::decay_t<decltype(entity)>;
         if constexpr (std::is_same_v<T, standardese::model::markup::paragraph>) {
-          entity.clear();
+          entity.children.clear();
         }
       }, root);
     }
@@ -92,7 +92,7 @@ TEST_CASE("Visitors Created from Lambdas", "[visitor]") {
       REQUIRE(visit([&](auto&& entity) {
         using T = std::decay_t<decltype(entity)>;
         if constexpr (std::is_same_v<T, standardese::model::markup::paragraph>) {
-          entity.clear();
+          entity.children.clear();
           return 1;
         }
         return 0;

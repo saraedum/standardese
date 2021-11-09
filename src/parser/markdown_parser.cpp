@@ -50,7 +50,7 @@ model::document markdown_parser::parse(const std::string& comment) const {
     auto root = unique_node(cmark_parser_finish(parser.get()));
 
     model::document doc = model::document::anonymous();
-    visit_children(root.get(), [&](cmark_node* child) { doc.push_back(parse(child)); });
+    visit_children(root.get(), [&](cmark_node* child) { doc.children.push_back(parse(child)); });
 
     return doc;
 }
@@ -63,12 +63,12 @@ model::entity markdown_parser::parse(cmark_node* node) const
       visit_children(parent, [&](cmark_node* child) {
         auto parsed = parse(child);
         if constexpr (std::is_same_v<T, model::entity>) {
-          container.push_back(parsed);
+          container.children.push_back(parsed);
         } else {
           if (!parsed.is<T>())
             logger::error(fmt::format("Ignoring child node of unexpected type. Cannot add this MarkDown node here: `{}`", cmark_extension::cmark_extension::to_xml(child)));
           else
-            container.push_back(parsed.as<T>());
+            container.children.push_back(parsed.as<T>());
         }
       });
       return container;

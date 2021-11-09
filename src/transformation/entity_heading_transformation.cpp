@@ -58,13 +58,13 @@ void entity_heading_transformation::do_transform(model::entity& document) {
 
     if constexpr (std::is_same_v<model::cpp_entity_documentation, T> || std::is_same_v<model::group_documentation, T>) {
       auto doc = heading<T>(entity, cpp_context, level.size() ? level.back() : type_safe::nullopt, options);
-      bool has_scope = doc.begin() != doc.end() && doc.begin()->template is<model::markup::heading>();
-      for (auto paragraph = doc.rbegin(); paragraph != doc.rend(); ++paragraph) {
+      bool has_scope = doc.children.begin() != doc.children.end() && doc.children.begin()->template is<model::markup::heading>();
+      for (auto paragraph = doc.children.rbegin(); paragraph != doc.children.rend(); ++paragraph) {
         if (paragraph->template is<model::markup::heading>())
           // TODO(0.6.0-alpha): Cap at 5?
           paragraph->template as<model::markup::heading>().level += level.size();
 
-        entity.insert(std::move(*paragraph));
+        entity.children.insert(begin(entity.children), std::move(*paragraph));
       }
 
       if (has_scope) {
@@ -137,9 +137,9 @@ model::document heading(T& documentation, parser::cpp_context cpp_context, type_
 
     // TODO(0.6.0-alpha): Actually parse argument.
 
-    for (auto section = documentation.begin(); section != documentation.end(); ++section) {
+    for (auto section = documentation.children.begin(); section != documentation.children.end(); ++section) {
       if (section->template is<model::section>() && section->template as<model::section>().type == parser::commands::section_command::brief) {
-        documentation.erase(section);
+        documentation.children.erase(section);
         return;
       }
     }

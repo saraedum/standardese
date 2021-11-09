@@ -33,8 +33,8 @@ void anchor_transformation::do_transform(model::entity& document) {
       // TODO(0.6.0-beta): Complain when the anchor is not unique (and offer a solution?)
 
       // TODO(0.6.0-beta): What can we do when there is no heading?
-      if (entity.begin() != entity.end() && entity.begin()->template is<model::markup::heading>()) {
-        auto& heading = entity.begin()->template as<model::markup::heading>();
+      if (entity.children.begin() != entity.children.end() && entity.children.begin()->template is<model::markup::heading>()) {
+        auto& heading = entity.children.begin()->template as<model::markup::heading>();
 
         std::string inner;
         model::visitor::visit([&](auto&& node, auto&& recurse) {

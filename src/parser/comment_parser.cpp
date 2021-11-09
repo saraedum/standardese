@@ -315,7 +315,7 @@ void comment_parser::parse(cmark_node* node, T& model) const
     if (cmark_node_get_type(node) == special_command)
         apply_command(node, model);
     else if (cmark_node_get_type(node) == section_command)
-        model.push_back(parse_section(node));
+        model.children.push_back(parse_section(node));
     else
         throw std::logic_error("not implemented: unexpected top-level node in parsed comment: " + std::string(cmark_node_get_type_string(node)));
 }
@@ -436,7 +436,7 @@ model::entity comment_parser::parse_section(cmark_node* node) const
 
     const auto parse_into = [&](cmark_node* parent, auto&& container) {
       visit_children(parent, [&](cmark_node* child) {
-        container.push_back(parse(child));
+        container.children.push_back(parse(child));
       });
       return container;
     };

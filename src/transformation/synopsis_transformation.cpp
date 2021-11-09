@@ -234,7 +234,7 @@ void synopsis_transformation::do_transform(model::entity& document) {
         case cppast::cpp_entity_kind::class_t:
           switch (static_cast<const cppast::cpp_class&>(entity).class_kind()) {
             case cppast::cpp_class_kind::struct_t:
-              documentation.insert(synopsis(documentation.entity()));
+              documentation.children.insert(begin(documentation.children), synopsis(documentation.entity()));
               break;
             default:
               break;

@@ -99,7 +99,7 @@ void visitor::operator()(T&& documentation) {
         break;
       case cppast::cpp_entity_kind::class_template_t:
         add_entity(entity);
-        add_contents(static_cast<const cppast::cpp_class_template&>(entity).class_(), root->rbegin()->as<model::mixin::container<>>());
+        add_contents(static_cast<const cppast::cpp_class_template&>(entity).class_(), root->children.rbegin()->as<model::mixin::container<>>());
         break;
       case cppast::cpp_entity_kind::function_template_t:
       case cppast::cpp_entity_kind::template_type_parameter_t:
@@ -179,14 +179,14 @@ void visitor::operator()(T&& documentation) {
 model::section& visitor::ensure_section(model::cpp_entity_documentation& parent, parser::commands::section_command section) {
   auto search = parent.section(section);
   if (!search)
-    parent.push_back(model::section(section));
+    parent.children.push_back(model::section(section));
   return parent.section(section).value();
 }
 
 void visitor::add_template_parameters(const cppast::cpp_template& entity) {
   for (const auto& tparam: entity.parameters()) {
-    assert(root->rbegin() != root->rend() && "Cannot add template parameters if parent entity has not been added itself.");
-    auto& parent = root->rbegin()->as<model::cpp_entity_documentation>();
+    assert(root->children.rbegin() != root->children.rend() && "Cannot add template parameters if parent entity has not been added itself.");
+    auto& parent = root->children.rbegin()->as<model::cpp_entity_documentation>();
     auto& section = ensure_section(parent, parser::commands::section_command::requires);
 
     visitor v(section, entities);
@@ -202,7 +202,7 @@ void visitor::add_template_parameters(const cppast::cpp_template& entity) {
 
 void visitor::add_function_parameters(const cppast::cpp_function_base& entity) {
   for (const auto& param: entity.parameters()) {
-    auto& parent = root->rbegin()->as<model::cpp_entity_documentation>();
+    auto& parent = root->children.rbegin()->as<model::cpp_entity_documentation>();
     auto& section = ensure_section(parent, parser::commands::section_command::parameters);
 
     visitor v(section, entities);
@@ -218,7 +218,7 @@ void visitor::add_function_parameters(const cppast::cpp_function_base& entity) {
 
 void visitor::add_macro_parameters(const cppast::cpp_macro_definition& entity) {
   for (const auto& param: entity.parameters()) {
-    auto& parent = root->rbegin()->as<model::cpp_entity_documentation>();
+    auto& parent = root->children.rbegin()->as<model::cpp_entity_documentation>();
     auto& section = ensure_section(parent, parser::commands::section_command::parameters);
 
     visitor v(section, entities);
@@ -234,7 +234,7 @@ void visitor::add_macro_parameters(const cppast::cpp_macro_definition& entity) {
 
 void visitor::add_bases(const cppast::cpp_entity& entity) {
   for (const auto& base: static_cast<const cppast::cpp_class&>(entity).bases()) {
-    auto& parent = root->rbegin()->as<model::cpp_entity_documentation>();
+    auto& parent = root->children.rbegin()->as<model::cpp_entity_documentation>();
     auto& section = ensure_section(parent, parser::commands::section_command::bases);
 
     visitor v(section, entities);
@@ -254,7 +254,7 @@ void visitor::add_entity(const cppast::cpp_entity& entity) {
       logger::warn(fmt::format("Not adding `{}` to documentation since no documentation entity could be found for it, not even an empty one.", entity.name()));
       return;
     }
-    root->push_back(*search);
+    root->children.push_back(*search);
 }
 
 void visitor::add_friend(const cppast::cpp_friend& friend_entity) {
@@ -286,17 +286,17 @@ void visitor::add_friend(const cppast::cpp_friend& friend_entity) {
 
   // We now move the contents of the friended entity to the friend, i.e., we
   // drop the extra layer created by the friended entity itself.
-  this->root->push_back(root);
-  auto& frend = this->root->rbegin()->as<model::cpp_entity_documentation>();
-  frend.clear();
-  for (auto& child : root)
-    frend.push_back(child);
+  this->root->children.push_back(root);
+  auto& frend = this->root->children.rbegin()->as<model::cpp_entity_documentation>();
+  frend.children.clear();
+  for (auto& child : root.children)
+    frend.children.push_back(child);
 }
 
 void visitor::add_container(const cppast::cpp_entity& container) {
     // Add this entity to the document and recursively all of its children.
     add_entity(container);
-    add_contents(container, root->rbegin()->as<model::mixin::container<>>());
+    add_contents(container, root->children.rbegin()->as<model::mixin::container<>>());
 }
 
 void visitor::add_contents(const cppast::cpp_entity& container, model::mixin::container<>& under) {

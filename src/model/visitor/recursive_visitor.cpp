@@ -33,7 +33,8 @@ namespace {
 template <typename T, typename S>
 void visit_children(T&& parent, S&& visitor)
 {
-    for (auto& child : parent) child.accept(visitor);
+    for (auto& child : parent.children)
+      child.accept(visitor);
 }
 
 }

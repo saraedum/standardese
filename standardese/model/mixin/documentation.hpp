@@ -28,7 +28,7 @@ public:
     using container<>::container;
 
     type_safe::optional_ref<model::section> section(parser::commands::section_command type) {
-        for (auto& child : *this)
+        for (auto& child : children)
             if (child.is<model::section>() && child.as<model::section>().type == type)
                 return type_safe::ref(child.as<model::section>());
         return type_safe::nullopt;

@@ -25,7 +25,7 @@ void link_text_transformation::do_transform(model::entity& root) {
     using T = std::decay_t<decltype(link)>;
 
     if constexpr (std::is_same_v<T, model::markup::link>) {
-      if (link.begin() == link.end()) {
+      if (link.children.begin() == link.children.end()) {
         link.target.accept([&](auto&& target) {
           using T = std::decay_t<decltype(target)>;
 
@@ -34,9 +34,9 @@ void link_text_transformation::do_transform(model::entity& root) {
 
             auto rendered = inja.parse(inja.format(format));
 
-            auto paragraph = rendered.begin();
+            auto paragraph = rendered.children.begin();
 
-            if (paragraph == rendered.end()) {
+            if (paragraph == rendered.children.end()) {
               // Format string produced an empty markup tree.
               return;
             }
@@ -46,8 +46,8 @@ void link_text_transformation::do_transform(model::entity& root) {
               return;
             }
 
-            for (auto& child : paragraph->template as<model::markup::paragraph>()) {
-              link.push_back(std::move(child));
+            for (auto& child : paragraph->template as<model::markup::paragraph>().children) {
+              link.children.push_back(std::move(child));
             }
           };
 

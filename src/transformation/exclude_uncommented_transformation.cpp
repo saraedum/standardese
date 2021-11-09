@@ -163,9 +163,9 @@ void visitor::operator()(T& entity) {
   model::visitor::recursive_visitor<false>::visit(entity);
 
   if constexpr (std::is_base_of_v<model::mixin::container<>, T>) {
-    entity.clear();
+    entity.children.clear();
     for (auto& child : containers.top())
-      entity.emplace_back(std::move(child));
+      entity.children.emplace_back(std::move(child));
   }
   containers.pop();
 
@@ -179,7 +179,7 @@ void visitor::operator()(T& entity) {
         break;
       case exclusion::skip:
         empty.top() = false;
-        for (auto& child: entity)
+        for (auto& child: entity.children)
           containers.top().emplace_back(std::move(child));
         break;
     }

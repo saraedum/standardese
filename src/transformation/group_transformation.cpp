@@ -30,8 +30,8 @@ void group_transformation::do_transform(model::entity& document) {
 
       recurse();
 
-      entity.clear();
-      for (auto& child : containers.top()) entity.emplace_back(std::move(child));
+      entity.children.clear();
+      for (auto& child : containers.top()) entity.children.emplace_back(std::move(child));
       containers.pop();
     }
 
@@ -77,19 +77,19 @@ void group_transformation::merge(model::group_documentation& group, model::cpp_e
     group.module = entity.module;
   }
   
-  for (auto& child : entity) {
+  for (auto& child : entity.children) {
     if (child.is<model::section>()) {
       auto& section = child.as<model::section>();
       // Search for any existing section of the same type in the group.
       auto existing = [&]() {
-        for (auto existing = group.begin(); existing != group.end(); ++existing)
+        for (auto existing = group.children.begin(); existing != group.children.end(); ++existing)
           if (existing->is<model::section>() && existing->as<model::section>().type == section.type)
             return existing;
-        return group.end();
+        return group.children.end();
       }();
-      if (existing != group.end()) {
-        if (existing->as<model::section>().begin() != existing->as<model::section>().end()) {
-          if (section.begin() == section.end())
+      if (existing != group.children.end()) {
+        if (existing->as<model::section>().children.begin() != existing->as<model::section>().children.end()) {
+          if (section.children.begin() == section.children.end())
             // Keep the existing section and drop the one coming from this
             // child since it is empty anyway.
             continue;
@@ -98,13 +98,13 @@ void group_transformation::merge(model::group_documentation& group, model::cpp_e
           // logger::warn(fmt::format("Multiple members of the group {} define a non-empty {} section. The sections will show up in the generated documentation but there will be no indication which section came from which group member originally. Namely, we found {} and then {}.", entity.group.value(), section.type, output_generator::xml::xml_generator::xml_generator::render(*existing), output_generator::xml::xml_generator::xml_generator::render(section)));
         } else
           // Replace existing section since it is empty.
-          group.erase(existing);
+          group.children.erase(existing);
       };
     }
-    group.push_back(std::move(child));
+    group.children.push_back(std::move(child));
   }
 
-  entity.clear();
+  entity.children.clear();
 
   group.entities.push_back(std::move(entity));
 }
