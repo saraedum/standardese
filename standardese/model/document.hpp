@@ -13,9 +13,17 @@ namespace standardese::model
     /// An output file, e.g., the description of a header file.
     class document final : public mixin::visitable<document>, public mixin::anchored_container<> {
       public:
-        // TODO(0.6.0-alpha): Since we are using unnamed documents as containers frequently, it might make sense to have an explicit default constructor as well.
         template <typename ...Args>
         document(std::string name, std::string path, Args&&... args) : name(std::move(name)), path(std::move(path)), mixin::anchored_container<>(std::forward<Args>(args)...) {}
+
+        /// Return a container for block entities.
+        /// Internally, it is often necessary to store some paragraphs or other
+        /// blocks in a container. We use such an unnamed document for this
+        /// purpose.
+        template <typename ...Args>
+        static document anonymous(Args&&... args) {
+          return document{"", "", std::forward<Args>(args)...};
+        }
 
         /// Return the unique block of this document.
         /// Returns an empty paragraph if this document is empty.

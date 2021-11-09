@@ -209,7 +209,7 @@ TEST_CASE("Strings from Inja Templates", "[inja_formatter]") {
       util::cpp_file header;
 
       auto inja = inja_formatter({}, header);
-      auto document = model::document{"", ""};
+      auto document = model::document::anonymous();
 
       SECTION("Directly Invoking the Command") {
         REQUIRE(inja.md(document) == "\n");

@@ -31,7 +31,7 @@ TEST_CASE("Sections of Groups are Merged", "[group_transformation]") {
 
     principal.group = secondary.group = tertiary.group = "group";
 
-    auto documents = model::unordered_entities{model::document{"", "", principal, secondary, tertiary}};
+    auto documents = model::unordered_entities{model::document::anonymous(principal, secondary, tertiary)};
 
     standardese::transformation::group_transformation{documents, {}}.transform();
 
@@ -58,7 +58,7 @@ TEST_CASE("Sections of Groups are Merged", "[group_transformation]") {
 
     principal.group = tertiary.group = "group";
 
-    auto documents = model::unordered_entities{model::document{"", "", principal, secondary, tertiary}};
+    auto documents = model::unordered_entities{model::document::anonymous(principal, secondary, tertiary)};
 
     standardese::transformation::group_transformation{documents, {}}.transform();
 
