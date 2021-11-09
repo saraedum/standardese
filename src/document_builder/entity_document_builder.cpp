@@ -179,7 +179,7 @@ void visitor::operator()(T&& documentation) {
 model::section& visitor::ensure_section(model::cpp_entity_documentation& parent, parser::commands::section_command section) {
   auto search = parent.section(section);
   if (!search)
-    parent.add_child(model::section(section));
+    parent.push_back(model::section(section));
   return parent.section(section).value();
 }
 
@@ -254,7 +254,7 @@ void visitor::add_entity(const cppast::cpp_entity& entity) {
       logger::warn(fmt::format("Not adding `{}` to documentation since no documentation entity could be found for it, not even an empty one.", entity.name()));
       return;
     }
-    root->add_child(*search);
+    root->push_back(*search);
 }
 
 void visitor::add_friend(const cppast::cpp_friend& friend_entity) {
@@ -286,11 +286,11 @@ void visitor::add_friend(const cppast::cpp_friend& friend_entity) {
 
   // We now move the contents of the friended entity to the friend, i.e., we
   // drop the extra layer created by the friended entity itself.
-  this->root->add_child(root);
+  this->root->push_back(root);
   auto& frend = this->root->rbegin()->as<model::cpp_entity_documentation>();
   frend.clear();
   for (auto& child : root)
-    frend.add_child(child);
+    frend.push_back(child);
 }
 
 void visitor::add_container(const cppast::cpp_entity& container) {

@@ -165,7 +165,7 @@ void visitor::operator()(T& entity) {
   if constexpr (std::is_base_of_v<model::mixin::container<>, T>) {
     entity.clear();
     for (auto& child : containers.top())
-      entity.emplace_child(std::move(child));
+      entity.emplace_back(std::move(child));
   }
   containers.pop();
 

@@ -29,9 +29,9 @@ TEST_CASE("paragraph", "[markup]")
 )";
 
     paragraph builder;
-    builder.add_child(text("a"));
-    builder.add_child(emphasis(text("b")));
-    builder.add_child(code(emphasis(text("c")), text("d")));
+    builder.push_back(text("a"));
+    builder.push_back(emphasis(text("b")));
+    builder.push_back(code(emphasis(text("c")), text("d")));
     REQUIRE(html_generator::render(builder) == html);
     REQUIRE(xml_generator::render(builder) == xml);
     REQUIRE(markdown_generator::render(builder) == md);

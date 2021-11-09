@@ -62,14 +62,14 @@ model::markup::paragraph inja_formatter::code(const model::entity& entity) const
       auto code = model::markup::paragraph{};
       for (auto&& child : e)
         for (auto&& converted : this->code(child))
-          code.add_child(std::move(converted));
+          code.push_back(std::move(converted));
       return code;
     } else if constexpr (std::is_same_v<model::markup::link, T>) {
       auto link = e;
       link.clear();
       for (auto&& child : e)
         for (auto&& converted : this->code(child))
-          link.add_child(std::move(converted));
+          link.push_back(std::move(converted));
       return model::markup::paragraph{link};
     } else {
       logger::error(fmt::format("Callback code() is not supported for this kind of entity: {}", md(e)));

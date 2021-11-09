@@ -107,9 +107,9 @@ namespace
 standardese::model::document_entity get_index_document(
     standardese::model::index_entity index, const char* title, const char* name)
 {
-    throw std::logic_error("not implemented: add_child");
+    throw std::logic_error("not implemented: push_back");
     standardese::model::subdocument document(title, name);
-    document.add_child(std::move(index));
+    document.push_back(std::move(index));
     return document;
 }
 } // namespace
@@ -138,7 +138,7 @@ documents standardese_tool::generate(
                                                                    "doc_"
                                                                        + get_output_file_name(
                                                                              file->output_name()));
-                document.add_child(
+                document.push_back(
                     standardese::generate_documentation(gen_config, syn_config, index, *file));
                 auto finished_doc = document.finish();
 

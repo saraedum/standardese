@@ -24,8 +24,8 @@ model::entity synopsis(const cppast::cpp_entity& entity) {
       {
           // only generate link if the entity has actual documentation
           standardese::model::documentation_link link(entity.link_name());
-          link.add_child(standardese::model::code_block::identifier::build(name.c_str()));
-          builder_.add_child(link.finish());
+          link.push_back(standardese::model::code_block::identifier::build(name.c_str()));
+          builder_.push_back(link.finish());
       }
       else if (entity.is_excluded())
       {
@@ -234,7 +234,7 @@ void synopsis_transformation::do_transform(model::entity& document) {
         case cppast::cpp_entity_kind::class_t:
           switch (static_cast<const cppast::cpp_class&>(entity).class_kind()) {
             case cppast::cpp_class_kind::struct_t:
-              documentation.insert_child(synopsis(documentation.entity()));
+              documentation.insert(synopsis(documentation.entity()));
               break;
             default:
               break;

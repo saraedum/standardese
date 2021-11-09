@@ -127,8 +127,8 @@ std::string remove_trailing_ws(const std::string& string)
 TEST_CASE("markup::file_index", "[markup]")
 {
     file_index b("file-index", heading(1, "The file index"));
-    b.add_child(entity_index_item("a.hpp", term("a.hpp")));
-    b.add_child(entity_index_item("b.hpp", term("b.hpp"),
+    b.push_back(entity_index_item("a.hpp", term("a.hpp")));
+    b.push_back(entity_index_item("b.hpp", term("b.hpp"),
                                          description("with brief")));
     auto xml  = R"(<file-index id="file-index">
 <heading>The file index</heading>
@@ -178,21 +178,21 @@ TEST_CASE("markup::entity_index", "[markup]")
     throw std::logic_error("not implemented: add sections");
     namespace_documentation ns1("ns1", type_safe::ref(ns.get()),
                                          documentation_header(heading("Namespace ns1")));
-    ns1.add_child(entity_index_item("a", term("Entity a")));
-    b.add_child(ns1);
+    ns1.push_back(entity_index_item("a", term("Entity a")));
+    b.push_back(ns1);
 
     namespace_documentation ns2(block_id("ns2"), type_safe::ref(ns.get()),
                                          documentation_header(heading("Namespace ns2"), "module"));
-    ns2.add_brief(brief_section().add_child(text::build("Brief documentation")).finish());
+    ns2.add_brief(brief_section().push_back(text::build("Brief documentation")).finish());
     ns2.add_details(details_section::builder()
-                        .add_child(paragraph::builder().add_child(text::build("Details")).finish())
+                        .push_back(paragraph::builder().push_back(text::build("Details")).finish())
                         .finish());
     namespace_documentation::builder ns3(type_safe::ref(ns.get()), block_id("ns3"),
                                          heading::build(block_id(), "Namespace ns3"));
-    ns3.add_brief(brief_section::builder().add_child(text::build("Brief")).finish());
-    ns2.add_child(ns3.finish());
-    ns2.add_child(entity_index_item::build(block_id("b"), term::build(text::build("Entity b"))));
-    b.add_child(ns2.finish());
+    ns3.add_brief(brief_section::builder().push_back(text::build("Brief")).finish());
+    ns2.push_back(ns3.finish());
+    ns2.push_back(entity_index_item::build(block_id("b"), term::build(text::build("Entity b"))));
+    b.push_back(ns2.finish());
 
     auto xml  = R"(<entity-index id="entity-index">
 <heading>The entity index</heading>
@@ -287,20 +287,20 @@ TEST_CASE("markup::module_index", "[markup]")
     module_index b(heading("The module index"));
 
     module_documentation module1(block_id("module1"), heading("Module 1"));
-    module1.add_child(
+    module1.push_back(
         entity_index_item::build(block_id("a"), term::build(text::build("Entity a"))));
-    b.add_child(module1.finish());
+    b.push_back(module1.finish());
 
     module_documentation::builder module2(block_id("module2"),
                                           heading::build(block_id(), "Module 2"));
-    module2.add_brief(brief_section::builder().add_child(text::build("Brief")).finish());
+    module2.add_brief(brief_section::builder().push_back(text::build("Brief")).finish());
     module2.add_details(
         details_section::builder()
-            .add_child(paragraph::builder().add_child(text::build("Details")).finish())
+            .push_back(paragraph::builder().push_back(text::build("Details")).finish())
             .finish());
-    module2.add_child(
+    module2.push_back(
         entity_index_item::build(block_id("b"), term::build(text::build("Entity b"))));
-    b.add_child(module2.finish());
+    b.push_back(module2.finish());
 
     auto index = b.finish();
 

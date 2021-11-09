@@ -31,7 +31,7 @@ void group_transformation::do_transform(model::entity& document) {
       recurse();
 
       entity.clear();
-      for (auto& child : containers.top()) entity.emplace_child(std::move(child));
+      for (auto& child : containers.top()) entity.emplace_back(std::move(child));
       containers.pop();
     }
 
@@ -101,7 +101,7 @@ void group_transformation::merge(model::group_documentation& group, model::cpp_e
           group.erase(existing);
       };
     }
-    group.add_child(std::move(child));
+    group.push_back(std::move(child));
   }
 
   entity.clear();

@@ -66,17 +66,17 @@ The details documentation.
     throw std::logic_error("not implemented: add sections");
     file_documentation builder(block_id("file-hpp"), type_safe::ref(file.get()), heading("A file"), code_block(block_id{}, "cpp", "the synopsis();"));
     builder.add_brief(
-        brief_section::builder().add_child(text::build("The brief documentation.")).finish());
+        brief_section::builder().push_back(text::build("The brief documentation.")).finish());
     builder.add_section(inline_section::builder(section_type::effects, "Effects")
-                            .add_child(text::build("The effects of the - eh - file."))
+                            .push_back(text::build("The effects of the - eh - file."))
                             .finish());
     builder.add_section(inline_section::builder(section_type::notes, "Notes")
-                            .add_child(text::build("Some notes."))
+                            .push_back(text::build("Some notes."))
                             .finish());
     builder.add_details(
         details_section::builder()
-            .add_child(
-                paragraph::builder().add_child(text::build("The details documentation.")).finish())
+            .push_back(
+                paragraph::builder().push_back(text::build("The details documentation.")).finish())
             .finish());
 
     REQUIRE(html_generator::render(builder) == html);
@@ -144,13 +144,13 @@ The details documentation.
                                     code_block(block_id(), "cpp", "void b();"));
     throw std::logic_error("not implemented: add sections");
     b.add_brief(
-        brief_section::builder().add_child(text::build("The brief documentation.")).finish());
+        brief_section::builder().push_back(text::build("The brief documentation.")).finish());
     b.add_details(
         details_section::builder()
-            .add_child(
-                paragraph::builder().add_child(text::build("The details documentation.")).finish())
+            .push_back(
+                paragraph::builder().push_back(text::build("The details documentation.")).finish())
             .finish());
-    a.add_child(b.finish());
+    a.push_back(b.finish());
 
     auto ptr = a.finish()->clone();
     REQUIRE(html_generator::render(*ptr) == html);

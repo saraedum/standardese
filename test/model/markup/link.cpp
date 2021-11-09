@@ -20,8 +20,8 @@ using standardese::output::markdown::markdown_generator;
 TEST_CASE("external_link", "[markup]")
 {
     external_link a(url("http://foonathan.net/"));
-    a.add_child(emphasis(text("awesome")));
-    a.add_child(text(" website"));
+    a.push_back(emphasis(text("awesome")));
+    a.push_back(text(" website"));
 
     REQUIRE(html_generator::render(a) == "<a href=\"http://foonathan.net/\"><em>awesome</em> website</a>");
     REQUIRE(
@@ -31,7 +31,7 @@ TEST_CASE("external_link", "[markup]")
 )*");
 
     external_link b("title\"", url("foo/bar/< &>"));
-    b.add_child(text("with title"));
+    b.push_back(text("with title"));
 
     REQUIRE(html_generator::render(b)
             == "<a href=\"foo/bar/%3C%20&amp;%3E\" title=\"title&quot;\">with title</a>");
@@ -48,7 +48,7 @@ TEST_CASE("documentation_link", "[markup]")
     // non existing link, but doesn't matter
     documentation_link builder2("", block_reference(output_name::from_name("doc2"),
                                                              block_id("p3")));
-    builder2.add_child(text("link 3"));
+    builder2.push_back(text("link 3"));
 
     REQUIRE(html_generator::render(builder2) == R"(<a href="doc2.html#standardese-p3">link 3</a>)");
     REQUIRE(
@@ -59,7 +59,7 @@ TEST_CASE("documentation_link", "[markup]")
 
     // URL link
     auto ptr3 = documentation_link("");
-    ptr3.add_child(text("link 4"));
+    ptr3.push_back(text("link 4"));
     ptr3->resolve_destination(url("http://foonathan.net"));
     REQUIRE(html_generator::render(*ptr3->clone()) == R"(<a href="http://foonathan.net">link 4</a>)");
     REQUIRE(

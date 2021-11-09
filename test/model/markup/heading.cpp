@@ -28,9 +28,9 @@ TEST_CASE("heading", "[markup]")
 )";
 
     heading builder(block_id{});
-    builder.add_child(text("A "));
-    builder.add_child(emphasis(text("heading")));
-    builder.add_child(text("!"));
+    builder.push_back(text("A "));
+    builder.push_back(emphasis(text("heading")));
+    builder.push_back(text("!"));
 
     REQUIRE(html_generator::render(builder) == html);
     REQUIRE(xml_generator::render(builder) == xml);
@@ -47,9 +47,9 @@ TEST_CASE("subheading", "[markup]")
 )";
 
     subheading builder(block_id{});
-    builder.add_child(text("A "));
-    builder.add_child(emphasis(text("subheading")));
-    builder.add_child(text("!"));
+    builder.push_back(text("A "));
+    builder.push_back(emphasis(text("subheading")));
+    builder.push_back(text("!"));
 
     REQUIRE(html_generator::render(builder) == html);
     REQUIRE(xml_generator::render(builder) == xml);

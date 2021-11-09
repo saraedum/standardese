@@ -42,12 +42,12 @@ TEST_CASE("block_quote", "[markup]")
     block_quote builder;
 
     paragraph paragraph0{};
-    paragraph0.add_child(text("some text"));
-    builder.add_child(paragraph0);
+    paragraph0.push_back(text("some text"));
+    builder.push_back(paragraph0);
 
     paragraph paragraph1{};
-    paragraph1.add_child(text("some text"));
-    builder.add_child(paragraph1);
+    paragraph1.push_back(text("some text"));
+    builder.push_back(paragraph1);
 
     REQUIRE(html_generator::render(builder) == html);
     REQUIRE(xml_generator::render(builder) == xml);

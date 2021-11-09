@@ -47,7 +47,7 @@ void link_text_transformation::do_transform(model::entity& root) {
             }
 
             for (auto& child : paragraph->template as<model::markup::paragraph>()) {
-              link.add_child(std::move(child));
+              link.push_back(std::move(child));
             }
           };
 

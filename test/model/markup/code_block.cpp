@@ -82,19 +82,19 @@ TEST_CASE("code-block", "[markup]")
 )";
 
     code_block::builder builder(block_id("foo"), "cpp");
-    builder.add_child(code_block::keyword::build("template"));
-    builder.add_child(text::build(" "));
-    builder.add_child(code_block::punctuation::build("<"));
-    builder.add_child(code_block::keyword::build("typename"));
-    builder.add_child(text::build(" "));
-    builder.add_child(code_block::identifier::build("T"));
-    builder.add_child(code_block::punctuation::build(">"));
-    builder.add_child(text::build("\n"));
-    builder.add_child(code_block::keyword::build("void"));
-    builder.add_child(text::build(" "));
-    builder.add_child(code_block::identifier::build("foo"));
-    builder.add_child(code_block::punctuation::build("();"));
-    builder.add_child(text::build("\n"));
+    builder.push_back(code_block::keyword::build("template"));
+    builder.push_back(text::build(" "));
+    builder.push_back(code_block::punctuation::build("<"));
+    builder.push_back(code_block::keyword::build("typename"));
+    builder.push_back(text::build(" "));
+    builder.push_back(code_block::identifier::build("T"));
+    builder.push_back(code_block::punctuation::build(">"));
+    builder.push_back(text::build("\n"));
+    builder.push_back(code_block::keyword::build("void"));
+    builder.push_back(text::build(" "));
+    builder.push_back(code_block::identifier::build("foo"));
+    builder.push_back(code_block::punctuation::build("();"));
+    builder.push_back(text::build("\n"));
 
     auto ptr = builder.finish();
     REQUIRE(html_generator::render(*ptr) == html);

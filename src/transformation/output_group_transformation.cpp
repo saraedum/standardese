@@ -39,7 +39,7 @@ void output_group_transformation::do_transform(model::entity& document) {
         auto title = parser::markdown_parser{}.parse(entity.output_section.value()).begin()->template as<model::markup::paragraph>();
         // TODO(0.6.0-rc): We do this a lot: Parse and treat it as inline.
         for (auto& child : title) {
-          heading.add_child(std::move(child));
+          heading.push_back(std::move(child));
         }
 
         containers.top().emplace_back(heading);
@@ -67,7 +67,7 @@ void output_group_transformation::do_transform(model::entity& document) {
       has_output_section.pop();
 
       entity.clear();
-      for (auto& child : containers.top()) entity.emplace_child(std::move(child));
+      for (auto& child : containers.top()) entity.emplace_back(std::move(child));
 
       containers.pop();
     }

@@ -572,10 +572,10 @@ namespace ns
 
         auto target_doc = model::main_document("target", "target");
         throw std::logic_error("build document");
-        target_doc.add_child(generate_documentation({}, {}, index, *target_file))
+        target_doc.push_back(generate_documentation({}, {}, index, *target_file))
                               .finish();
         auto doc = model::main_document::builder("doc", "doc")
-                       .add_child(generate_documentation({}, {}, index, *file))
+                       .push_back(generate_documentation({}, {}, index, *file))
                        .finish();
 
         linker l;

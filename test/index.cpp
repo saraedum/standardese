@@ -54,7 +54,7 @@ using z = int;
 )");
 
     auto brief_doc = output::markup::brief_section();
-    brief_doc.add_child(output::markup::text("some brief documentation"));
+    brief_doc.push_back(output::markup::text("some brief documentation"));
 
     entity_index index;
     cppast::visit(*file, [&](const cppast::cpp_entity& e, cppast::visitor_info info) {
@@ -69,7 +69,7 @@ using z = int;
                         output::markup::heading::build(output::markup::block_id(), "no heading"));
             if (e.name() == "ns2")
                 ns_doc.add_brief(output::markup::brief_section::builder()
-                                     .add_child(output::markup::text::build("some brief documentation"))
+                                     .push_back(output::markup::text::build("some brief documentation"))
                                      .finish());
             index.register_namespace(static_cast<const cppast::cpp_namespace&>(e),
                                      std::move(ns_doc));
@@ -189,7 +189,7 @@ using z = int;
 TEST_CASE("file_index")
 {
     auto brief_doc = output::markup::brief_section::builder()
-                         .add_child(output::markup::text::build("some brief documentation"))
+                         .push_back(output::markup::text::build("some brief documentation"))
                          .finish();
 
     auto file_a = cppast::cpp_file::builder("a.cpp").finish({});
@@ -235,7 +235,7 @@ TEST_CASE("module_index")
     index.register_module(std::move(module_a));
 
     auto brief_doc
-        = output::markup::brief_section::builder().add_child(output::markup::text::build("brief")).finish();
+        = output::markup::brief_section::builder().push_back(output::markup::text::build("brief")).finish();
 
     REQUIRE(
         index.register_entity("module-a", "foo",

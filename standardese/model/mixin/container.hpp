@@ -30,20 +30,18 @@ namespace standardese::model::mixin
 
         explicit container(std::initializer_list<T> children) : children(std::move(children)) {}
 
-        // TODO(0.6.0-alpha): Rename to emplace_back()
         template <typename ...Args>
-        void emplace_child(Args&&... args) {
+        void emplace_back(Args&&... args) {
             children.emplace_back(std::forward<Args>(args)...);
         }
 
-        // TODO(0.6.0-alpha): Rename to push_back()
         template <typename S>
-        void add_child(S&& child) {
+        void push_back(S&& child) {
             children.push_back(std::forward<S>(child));
         }
 
         template <typename S>
-        void insert_child(S&& child) {
+        void insert(S&& child) {
             using std::begin;
             children.insert(begin(children), std::forward<S>(child));
         }

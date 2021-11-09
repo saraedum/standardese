@@ -55,16 +55,16 @@ void test_phrasing(const std::string& html, const std::string& xml, const std::s
     REQUIRE(markdown_generator::render(a) == markdownify_str(markdown, "foo"));
 
     a = T();
-    a.add_child(text("foo"));
-    a.add_child(text("bar"));
+    a.push_back(text("foo"));
+    a.push_back(text("bar"));
 
     REQUIRE(html_generator::render(a) == tag_str(html, "foobar"));
     REQUIRE(xml_generator::render(a) == tag_str(xml, "foobar"));
     REQUIRE(markdown_generator::render(a) == markdownify_str(markdown, "foobar"));
 
     a = T();
-    a.add_child(emphasis("foo"));
-    a.add_child(text(">bar"));
+    a.push_back(emphasis("foo"));
+    a.push_back(text(">bar"));
 
     REQUIRE(html_generator::render(a) == tag_str(html, "<em>foo</em>&gt;bar"));
     REQUIRE(xml_generator::render(a) == tag_str(xml, "<emphasis>foo</emphasis>&gt;bar"));
