@@ -290,41 +290,6 @@ standardese::generation_config get_generation_config(const po::variables_map& op
     return config;
 }
 
-std::vector<std::pair<standardese::markup::generator, const char*>> get_formats(
-    const po::variables_map& options)
-{
-    std::vector<std::pair<standardese::markup::generator, const char*>> formats;
-
-    auto link_prefix    = get_option<std::string>(options, "output.link_prefix").value_or("");
-    auto link_extension = get_option<std::string>(options, "output.link_extension");
-
-    auto option = get_option<std::vector<std::string>>(options, "output.format").value();
-    for (auto& format : option)
-        if (format == "html")
-            formats.emplace_back(standardese::markup::html_generator(link_prefix,
-                                                                     link_extension.value_or(
-                                                                         "html")),
-                                 "html");
-        else if (format == "xml")
-            formats.emplace_back(standardese::markup::xml_generator(), "xml");
-        else if (format == "commonmark")
-            formats.emplace_back(standardese::markup::markdown_generator(false, link_prefix,
-                                                                         link_extension.value_or(
-                                                                             "md")),
-                                 "md");
-        else if (format == "commonmark_html")
-            formats.emplace_back(standardese::markup::markdown_generator(true, link_prefix,
-                                                                         link_extension.value_or(
-                                                                             "md")),
-                                 "md");
-        else if (format == "text")
-            formats.emplace_back(standardese::markup::text_generator(), "txt");
-        else
-            throw std::invalid_argument("unknown format '" + format + "'");
-
-    return formats;
-}
-
 standardese::entity_blacklist get_blacklist(const po::variables_map& options)
 {
     standardese::entity_blacklist blacklist(

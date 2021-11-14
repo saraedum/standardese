@@ -17,6 +17,7 @@ namespace standardese::tool {
 /// This wraps the different documents builder types into single interface.
 class document_builders {
  public:
+  // TODO(0.6.0-alpha): rename to document_builders_options.
   struct options {
     /// The name of the output file (without the suffix).
     /// The default is to take a cleaned-up name of what we are documenting.

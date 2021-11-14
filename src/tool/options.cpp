@@ -235,7 +235,7 @@ struct options_parser {
     void process_positional_options(po::variables_map&);
 
     /// Helper function to specify the principal output format.
-    void select_output_format(po::variables_map& parsed, const std::string& key, output_generators::options::output_format format);
+    void select_output_format(po::variables_map& parsed, const std::string& key, output_generators::output_generators_options::output_format format);
 
     /// Return `input` with all inja-specific markup escaped.
     // TODO(0.6.0-alpha): Move to inja_formatter.
@@ -846,7 +846,7 @@ po::options_description options_parser::output_options() const {
     ("exclude", po::value<std::vector<std::string>>()->value_name("regex"), "Exclude C/C++ entities whose full name matches this regular expression.")
     ("exclude-uncommented,X", po::value<counter>()->zero_tokens(), "No output for uncommented C/C++ entities, can be specified multiple times.\n-XXXX no output at all.\n-XXX do not apply this to files.\n-XX also do not apply to parents with commented members.\n-X also show uncommented members in their parent's synopsis.")
     ("private", po::value<bool>()->default_value(false)->implicit_value(true)->zero_tokens(), "Include private members and base classes.")
-    ("outdir,O", po::value<boost::filesystem::path>()->value_name("dir")->default_value((struct output_generators::options){}.output_directory), "Output directory for generated files.")
+    ("outdir,O", po::value<boost::filesystem::path>()->value_name("dir")->default_value((struct output_generators::output_generators_options){}.output_directory), "Output directory for generated files.")
     // TODO(0.6.0-alpha): Document & Test
     ("vpath", po::value<std::string>()->default_value(options.document_builder_options.document_path, "")->value_name("template"));
 
@@ -923,7 +923,7 @@ po::options_description options_parser::markdown_options() const {
 }
 
 void options_parser::process_markdown_options(po::variables_map& parsed) {
-  select_output_format(parsed, "md", output_generators::options::output_format::markdown);
+  select_output_format(parsed, "md", output_generators::output_generators_options::output_format::markdown);
 
   if (parsed.count("md-anchors")) {
     const auto value = parsed.at("md-anchors").as<std::string>();
@@ -947,7 +947,7 @@ po::options_description options_parser::html_options() const {
 }
 
 void options_parser::process_html_options(po::variables_map& parsed) {
-  select_output_format(parsed, "html", output_generators::options::output_format::html);
+  select_output_format(parsed, "html", output_generators::output_generators_options::output_format::html);
 }
 
 po::options_description options_parser::xml_options() const {
@@ -960,7 +960,7 @@ po::options_description options_parser::xml_options() const {
 }
 
 void options_parser::process_xml_options(po::variables_map& parsed) {
-  select_output_format(parsed, "xml", output_generators::options::output_format::xml);
+  select_output_format(parsed, "xml", output_generators::output_generators_options::output_format::xml);
 }
 
 po::options_description options_parser::text_options() const {
@@ -973,7 +973,7 @@ po::options_description options_parser::text_options() const {
 }
 
 void options_parser::process_text_options(po::variables_map& parsed) {
-  select_output_format(parsed, "text", output_generators::options::output_format::text);
+  select_output_format(parsed, "text", output_generators::output_generators_options::output_format::text);
 }
 
 po::options_description options_parser::doxygen_options() const {
@@ -1038,7 +1038,7 @@ void options_parser::parse_config_file(const fs::path& path, po::variables_map& 
   po::notify(parsed);
 }
 
-void options_parser::select_output_format(po::variables_map& parsed, const std::string& key, output_generators::options::output_format format) {
+void options_parser::select_output_format(po::variables_map& parsed, const std::string& key, output_generators::output_generators_options::output_format format) {
   if (parsed.count(key)) {
     const bool enable = parsed.at(key).as<bool>();
     if (enable) {

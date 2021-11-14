@@ -239,7 +239,7 @@ TEST_CASE("Parsing of Legacy --output.* Options", "[tool]") {
       auto options = options::parse(sizeof(argv)/sizeof(*argv), argv, {});
 
       CHECK(logstream.str() != "");
-      CHECK(options.output_generator_options.primary_format == standardese::tool::output_generators::options::output_format::html);
+      CHECK(options.output_generator_options.primary_format == standardese::tool::output_generators::output_generators_options::output_format::html);
     }
 
     SECTION("XML Output") {
@@ -247,7 +247,7 @@ TEST_CASE("Parsing of Legacy --output.* Options", "[tool]") {
       auto options = options::parse(sizeof(argv)/sizeof(*argv), argv, {});
 
       CHECK(logstream.str() != "");
-      CHECK(options.output_generator_options.primary_format == standardese::tool::output_generators::options::output_format::xml);
+      CHECK(options.output_generator_options.primary_format == standardese::tool::output_generators::output_generators_options::output_format::xml);
     }
 
     SECTION("MarkDown Output") {
@@ -255,7 +255,7 @@ TEST_CASE("Parsing of Legacy --output.* Options", "[tool]") {
       auto options = options::parse(sizeof(argv)/sizeof(*argv), argv, {});
 
       CHECK(logstream.str() != "");
-      CHECK(options.output_generator_options.primary_format == standardese::tool::output_generators::options::output_format::markdown);
+      CHECK(options.output_generator_options.primary_format == standardese::tool::output_generators::output_generators_options::output_format::markdown);
       CHECK(options.output_generator_options.markdown_options.anchors == output_generator::markdown::markdown_generator::markdown_generator_options::anchors::plain);
     }
 
@@ -264,7 +264,7 @@ TEST_CASE("Parsing of Legacy --output.* Options", "[tool]") {
       auto options = options::parse(sizeof(argv)/sizeof(*argv), argv, {});
 
       CHECK(logstream.str() != "");
-      CHECK(options.output_generator_options.primary_format == standardese::tool::output_generators::options::output_format::markdown);
+      CHECK(options.output_generator_options.primary_format == standardese::tool::output_generators::output_generators_options::output_format::markdown);
       CHECK(options.output_generator_options.markdown_options.anchors == output_generator::markdown::markdown_generator::markdown_generator_options::anchors::html);
     }
 
@@ -273,7 +273,7 @@ TEST_CASE("Parsing of Legacy --output.* Options", "[tool]") {
       auto options = options::parse(sizeof(argv)/sizeof(*argv), argv, {});
 
       CHECK(logstream.str() != "");
-      CHECK(options.output_generator_options.primary_format == standardese::tool::output_generators::options::output_format::text);
+      CHECK(options.output_generator_options.primary_format == standardese::tool::output_generators::output_generators_options::output_format::text);
     }
   }
 
@@ -316,7 +316,7 @@ TEST_CASE("Parsing of Parser Options", "[tool]") {
     const auto flags = cppast::detail::libclang_compile_config_access::flags(options.parser_options.cppast_options.clang_config);
     CAPTURE(flags);
 
-    CHECK(std::find(begin(flags), end(flags), "-std=c++1z") != end(flags));
+    CHECK(std::find(begin(flags), end(flags), "-std=c++17") != end(flags));
   }
 
   SECTION("--free-file-comments") {
@@ -506,14 +506,14 @@ TEST_CASE("Parsing of MarkDown Output Options", "[tool]") {
     const char* argv[] = {"standardese", "header.h"};
     auto options = options::parse(sizeof(argv)/sizeof(*argv), argv, {});
 
-    CHECK(options.output_generator_options.primary_format == standardese::tool::output_generators::options::output_format::markdown);
+    CHECK(options.output_generator_options.primary_format == standardese::tool::output_generators::output_generators_options::output_format::markdown);
   }
 
   SECTION("--md") {
     const char* argv[] = {"standardese", "--md", "header.h"};
     auto options = options::parse(sizeof(argv)/sizeof(*argv), argv, {});
 
-    CHECK(options.output_generator_options.primary_format == standardese::tool::output_generators::options::output_format::markdown);
+    CHECK(options.output_generator_options.primary_format == standardese::tool::output_generators::output_generators_options::output_format::markdown);
   }
 }
 
@@ -524,7 +524,7 @@ TEST_CASE("Parsing of HTML Output Options", "[tool]") {
     const char* argv[] = {"standardese", "--html", "header.h"};
     auto options = options::parse(sizeof(argv)/sizeof(*argv), argv, {});
 
-    CHECK(options.output_generator_options.primary_format == standardese::tool::output_generators::options::output_format::html);
+    CHECK(options.output_generator_options.primary_format == standardese::tool::output_generators::output_generators_options::output_format::html);
   }
 }
 
@@ -535,7 +535,7 @@ TEST_CASE("Parsing of XML Output Options", "[tool]") {
     const char* argv[] = {"standardese", "--xml", "header.h"};
     auto options = options::parse(sizeof(argv)/sizeof(*argv), argv, {});
 
-    CHECK(options.output_generator_options.primary_format == standardese::tool::output_generators::options::output_format::xml);
+    CHECK(options.output_generator_options.primary_format == standardese::tool::output_generators::output_generators_options::output_format::xml);
   }
 }
 
@@ -546,7 +546,7 @@ TEST_CASE("Parsing of Plain Text Output Options", "[tool]") {
     const char* argv[] = {"standardese", "--text", "header.h"};
     auto options = options::parse(sizeof(argv)/sizeof(*argv), argv, {});
 
-    CHECK(options.output_generator_options.primary_format == standardese::tool::output_generators::options::output_format::text);
+    CHECK(options.output_generator_options.primary_format == standardese::tool::output_generators::output_generators_options::output_format::text);
   }
 }
 

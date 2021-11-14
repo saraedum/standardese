@@ -11,8 +11,6 @@
 
 // TODO(0.6.0-beta): Namespaces are missing in the output.
 
-// TODO(0.6.0-beta): Create a parser::intersphinx::document_set here and then dump it out.
-
 namespace standardese::output_generator::sphinx
 {
 

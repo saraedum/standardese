@@ -47,7 +47,8 @@ class xml_generator : public stream_generator {
     pugi::xml_document xml_document;
 
     /// The XML node we are adding content to currently. Starts identical to
-    /// document and is then changed as we recurse through the tree of entities.
+    /// xml_document and is then changed as we recurse through the tree of
+    /// entities.
     pugi::xml_node top;
 };
 

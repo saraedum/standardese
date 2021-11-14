@@ -10,19 +10,15 @@
 namespace standardese::test::util {
 
 tmp_file::tmp_file(const std::string& name, const std::string& content) :
-  parent(boost::filesystem::temp_directory_path() / boost::filesystem::unique_path()),
-  path([&]() {
-    if (!boost::filesystem::create_directories(parent))
-      throw std::logic_error("Temporary directory with random name already exists. We will not write to it as we can not safely remove it.");
-    return parent / name;
-  }()) {
+  parent(),
+  path(parent.path / name) {
     boost::filesystem::ofstream stream{path};
     stream << content;
     stream.close();
   }
 
 tmp_file::~tmp_file() {
-  boost::filesystem::remove_all(this->parent);
+  // No need to clean up anything. The tmp_dir destructor will take care of that for us.
 }
 
 }

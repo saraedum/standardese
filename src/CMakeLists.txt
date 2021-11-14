@@ -20,6 +20,7 @@ set(src
     parser/cppast_parser.cpp
     parser/comment_collector.cpp
     parser/cpp_context.cpp
+    inventory/doxygen/tagfile.cpp
     inventory/files.cpp
     inventory/symbols.cpp
     inventory/inventory.cpp
@@ -84,6 +85,7 @@ set(src
     formatter/synopsis_formatter.cpp
     formatter/code_formatter.cpp
     output_generator/cmark_generator.cpp
+    output_generator/doxygen/tagfile_generator.cpp
     output_generator/html/html_generator.cpp
     output_generator/markdown/markdown_generator.cpp
     output_generator/text/text_generator.cpp

@@ -27,6 +27,7 @@ namespace standardese::tool {
 /// performs.
 class transformers {
  public:
+  // TODO(0.6.0-alpha): rename to document_builders_options.
   struct options {
     struct transformer::group_uncommented_transformer::group_uncommented_options group_uncommented_options;
     struct transformer::group_transformer::group_options group_options;

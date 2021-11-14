@@ -18,7 +18,7 @@ namespace standardese::tool {
 /// This wraps all the output generators that the standardese executable uses.
 class output_generators {
  public:
-  struct options {
+  struct output_generators_options {
     enum class output_format {
       markdown,
       html,
@@ -26,39 +26,36 @@ class output_generators {
       xml,
     };
 
-    // TODO(0.6.0-alpha): Implement me
-    /// The format actual documentation is emitted in.
+    /// The format we emit documentation in.
     /// Supplementary files, such as inventories, might be generated in
     /// additional formats.
     output_format primary_format = output_format::markdown;
 
-    // TODO(0.6.0-alpha): Implement me
     /// The name of the intersphinx inventory to create.
-    /// No inventory is created if empty.
+    /// No inventory is created if this is the empty string.
     std::string intersphinx_inventory = "objects.inv";
 
-    // TODO(0.6.0-alpha): Implement me
     /// The name of the doxygen tagfile to create.
-    /// No tagfile is created if empty.
+    /// No tagfile is created if this is the empty string.
     std::string doxygen_tagfile = "tagfile.xml";
 
-    /// Options affecting MarkDown output if [primary_format]() is set to `markdown`.
+    /// Options affecting MarkDown output if [primary_format]() is set to
+    /// `markdown`.
     output_generator::markdown::markdown_generator::markdown_generator_options markdown_options;
 
-    // TODO(0.6.0-alpha): Implement me
-    /// Directory the hierarchy of output files is built in.
+    /// The directory to build the output files in.
     /// The directory is created (but not cleared) if it does not already
     /// exist.
     boost::filesystem::path output_directory = "standardese";
   };
 
-  output_generators(struct options);
+  output_generators(output_generators_options);
 
   /// Write the output files.
   void emit(model::unordered_entities& documents);
 
  private:
-  struct options options;
+  struct output_generators_options options;
 };
 
 }

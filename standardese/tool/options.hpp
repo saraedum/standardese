@@ -58,7 +58,7 @@ class options {
   struct tool::transformers::options transformer_options;
 
   /// Options that control how the output documents are emitted.
-  struct tool::output_generators::options output_generator_options;
+  struct tool::output_generators::output_generators_options output_generator_options;
 };
 
 }

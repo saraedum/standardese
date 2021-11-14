@@ -8,6 +8,7 @@ set(tests
     inventory/cppast_inventory.cpp
     inventory/sphinx/documentation_set.cpp
     tool/options.cpp
+    tool/output_generators.cpp
     tool/parsers.cpp
     document_builder/entity_document_builder.cpp
     document_builder/index_document_builder.cpp
@@ -37,6 +38,7 @@ set(tests
     util/unindent.cpp
     util/cpp_file.cpp
     util/tmp_file.cpp
+    util/tmp_dir.cpp
     util/logger.cpp
     util/parsed_comments.cpp)
 

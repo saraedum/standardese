@@ -20,6 +20,8 @@
 
 // TODO(0.6.0-beta): Can we somehow disable the XML document type for error messages and testing?
 
+// TODO(0.6.0-rc): Check the output of append_child and append_attribute for errors, see tagfile output.
+
 namespace standardese::output_generator::xml
 {
 

@@ -177,14 +177,28 @@ namespace standardese::output_generator::html {
 class html_generator;
 
 }
+
 namespace standardese::output_generator::markdown {
 
 class markdown_generator;
 
 }
+
 namespace standardese::output_generator::xml {
 
 class xml_generator;
+
+}
+
+namespace standardese::output_generator::sphinx {
+
+class inventory_generator;
+
+}
+
+namespace standardese::output_generator::doxygen {
+
+class tagfile_generator;
 
 }
 

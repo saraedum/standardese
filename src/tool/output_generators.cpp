@@ -14,11 +14,12 @@
 #include "../../standardese/output_generator/markdown/markdown_generator.hpp"
 #include "../../standardese/output_generator/xml/xml_generator.hpp"
 #include "../../standardese/output_generator/sphinx/inventory_generator.hpp"
+#include "../../standardese/output_generator/doxygen/tagfile_generator.hpp"
 #include "../../standardese/logger.hpp"
 
 namespace standardese::tool {
 
-output_generators::output_generators(struct options options) : options(options) {}
+output_generators::output_generators(output_generators_options options) : options(options) {}
 
 void output_generators::emit(model::unordered_entities& documents) {
   logger::info("Rendering output documents.");
@@ -29,22 +30,39 @@ void output_generators::emit(model::unordered_entities& documents) {
     return std::ofstream{path};
   };
 
-  for (auto& document : documents) {
-    auto out = open(options.output_directory / (document.as<model::document>().name + ".md"));
-    auto generator = output_generator::markdown::markdown_generator{out};
-    document.accept(generator);
+  // TODO(0.6.0-beta): Be error tolerant everywhere. Catch and report errors in every step.
+
+  // TODO(0.6.0-beta): Write outputs in parallel.
+
+  if (options.primary_format == output_generators_options::output_format::markdown) {
+    for (auto& document : documents) {
+      auto out = open(options.output_directory / (document.as<model::document>().name + ".md"));
+      auto generator = output_generator::markdown::markdown_generator{out, options.markdown_options};
+      document.accept(generator);
+    }
+  } else if (options.primary_format == output_generators_options::output_format::xml) {
+    for (auto& document : documents) {
+      auto out = open(options.output_directory / (document.as<model::document>().name + ".xml"));
+      auto generator = output_generator::xml::xml_generator{out};
+      document.accept(generator);
+    }
   }
 
-  // TODO(0.6.0-alpha): Only render when requested.
-  for (auto& document : documents) {
-    auto out = open(options.output_directory / (document.as<model::document>().name + ".xml"));
-    auto generator = output_generator::xml::xml_generator{out};
-    document.accept(generator);
-  }
+  // TODO(0.6.0-alpha): HTML output.
 
-  {
-    auto out = open(options.output_directory / "objects.inv");
+  // TODO(0.6.0-alpha): Text output.
+
+  if (!options.intersphinx_inventory.empty()) {
+    auto out = open(options.output_directory / options.intersphinx_inventory);
     auto generator = output_generator::sphinx::inventory_generator{out};
+    for (auto& document : documents) {
+      document.accept(generator);
+    }
+  }
+
+  if (!options.doxygen_tagfile.empty()) {
+    auto out = open(options.output_directory / options.doxygen_tagfile);
+    auto generator = output_generator::doxygen::tagfile_generator{out};
     for (auto& document : documents) {
       document.accept(generator);
     }
