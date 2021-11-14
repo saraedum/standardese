@@ -59,8 +59,14 @@ std::istream& operator>>(std::istream& in, cpp_standard& std) {
     std = cpp_standard::cpp_11;
   else if (str == "c++14")
     std = cpp_standard::cpp_14;
-  else if (str == "c++1z" || str == "c++17")
+  else if (str == "c++1z")
     std = cpp_standard::cpp_1z;
+  else if (str == "c++17")
+    std = cpp_standard::cpp_17;
+  else if (str == "c++2a")
+    std = cpp_standard::cpp_2a;
+  else if (str == "c++20")
+    std = cpp_standard::cpp_20;
   else
     throw std::invalid_argument("Unsupported C++ standard " + str);
 
@@ -79,7 +85,13 @@ std::ostream& operator<<(std::ostream& os, const cpp_standard& std) {
     case cpp_standard::cpp_14:
       return os << "c++14";
     case cpp_standard::cpp_1z:
+      return os << "c++1z";
+    case cpp_standard::cpp_17:
       return os << "c++17";
+    case cpp_standard::cpp_2a:
+      return os << "c++2a";
+    case cpp_standard::cpp_20:
+      return os << "c++20";
   }
 
   throw std::logic_error("not implemented: unsupported C++ standard");
