@@ -8,7 +8,7 @@
 
 #include <cppast/cpp_file.hpp>
 
-#include "../../standardese/transformer/link_target_internal_transformer.hpp"
+#include "../../standardese/transformer/set_target_internal_transformer.hpp"
 #include "../../standardese/model/visitor/visit.hpp"
 #include "../../standardese/model/markup/link.hpp"
 #include "../../standardese/model/cpp_entity_documentation.hpp"
@@ -20,7 +20,7 @@
 
 namespace standardese::transformer {
 
-link_target_internal_transformer::link_target_internal_transformer(model::unordered_entities& documents, const parser::cpp_context& context) :
+set_target_internal_transformer::set_target_internal_transformer(model::unordered_entities& documents, const parser::cpp_context& context) :
   transformer(documents),
   inventory([&]() {
     // Create an inventory of all the C++ entities that are documented in all the documents.
@@ -56,7 +56,7 @@ link_target_internal_transformer::link_target_internal_transformer(model::unorde
   }()) {
 }
 
-void link_target_internal_transformer::do_transform(model::entity& document) {
+void set_target_internal_transformer::do_transform(model::entity& document) {
   inventory::symbols symbols{inventory};
   std::stack<type_safe::object_ref<const cppast::cpp_entity>> relative;
 

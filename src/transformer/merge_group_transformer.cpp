@@ -7,7 +7,7 @@
 #include <vector>
 #include <fmt/format.h>
 
-#include "../../standardese/transformer/group_transformer.hpp"
+#include "../../standardese/transformer/merge_group_transformer.hpp"
 
 #include "../../standardese/model/group_documentation.hpp"
 #include "../../standardese/model/visitor/visit.hpp"
@@ -16,9 +16,9 @@
 
 namespace standardese::transformer {
 
-group_transformer::group_transformer(model::unordered_entities& documents, group_options options) : transformer(documents), options(std::move(options)) {}
+merge_group_transformer::merge_group_transformer(model::unordered_entities& documents, group_options options) : transformer(documents), options(std::move(options)) {}
 
-void group_transformer::do_transform(model::entity& document) {
+void merge_group_transformer::do_transform(model::entity& document) {
   std::stack<std::vector<model::entity>> containers;
   containers.push({});
 
@@ -60,7 +60,7 @@ void group_transformer::do_transform(model::entity& document) {
   }, document);
 }
 
-void group_transformer::merge(model::group_documentation& group, model::cpp_entity_documentation&& entity) const {
+void merge_group_transformer::merge(model::group_documentation& group, model::cpp_entity_documentation&& entity) const {
   if (entity.synopsis.has_value()) {
     if (group.synopsis.has_value() && group.synopsis.value() != entity.synopsis.value())
       logger::warn(fmt::format("Only one entity of a group can define a synopsis. Ignoring synopsis {} of group {}.", group.synopsis.value(), entity.group.value()));

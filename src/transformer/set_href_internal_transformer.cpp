@@ -7,7 +7,7 @@
 #include <regex>
 #include <cstdlib>
 
-#include "../../standardese/transformer/link_href_internal_transformer.hpp"
+#include "../../standardese/transformer/set_href_internal_transformer.hpp"
 #include "../../standardese/formatter/inja_formatter.hpp"
 #include "../../standardese/model/visitor/visit.hpp"
 #include "../../standardese/model/markup/link.hpp"
@@ -22,7 +22,7 @@
 namespace standardese::transformer
 {
 
-link_href_internal_transformer::link_href_internal_transformer(model::unordered_entities& documents, parser::cpp_context context) :
+set_href_internal_transformer::set_href_internal_transformer(model::unordered_entities& documents, parser::cpp_context context) :
   transformer(documents),
   context(context),
   anchors([&]() {
@@ -50,7 +50,7 @@ link_href_internal_transformer::link_href_internal_transformer(model::unordered_
   }()) {
 }
 
-void link_href_internal_transformer::do_transform(model::entity& document) {
+void set_href_internal_transformer::do_transform(model::entity& document) {
   model::visitor::visit([&](auto&& entity, auto&& recurse) {
     using T = std::decay_t<decltype(entity)>;
     if constexpr (std::is_same_v<T, model::markup::link>) {

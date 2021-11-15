@@ -2,8 +2,8 @@
 // This file is subject to the license terms in the LICENSE file
 // found in the top-level directory of this distribution.
 
-#ifndef STANDARDESE_TRANSFORMER_LINK_TARGET_EXTERNAL_TRANSFORMER_HPP_INCLUDED
-#define STANDARDESE_TRANSFORMER_LINK_TARGET_EXTERNAL_TRANSFORMER_HPP_INCLUDED
+#ifndef STANDARDESE_TRANSFORMER_SET_TARGET_EXTERNAL_TRANSFORMER_HPP_INCLUDED
+#define STANDARDESE_TRANSFORMER_SET_TARGET_EXTERNAL_TRANSFORMER_HPP_INCLUDED
 
 #include "transformer.hpp"
 #include "../inventory/symbols.hpp"
@@ -17,7 +17,7 @@ namespace standardese::transformer
 /// Resolves links in MarkDown that use standardese syntax to link to an
 /// external target such another standardese project, or documentation
 /// generated with doxygen or sphinx.
-class link_target_external_transformer : public transformer {
+class set_target_external_transformer : public transformer {
   public:
     struct options {
       /// A URI schema to explicitly link to some external documentation such
@@ -32,7 +32,7 @@ class link_target_external_transformer : public transformer {
       bool require_schema = false;
     };
 
-    link_target_external_transformer(model::unordered_entities& documents, inventory::symbols symbols);
+    set_target_external_transformer(model::unordered_entities& documents, inventory::symbols symbols);
 
   protected:
     void do_transform(model::entity&) override;

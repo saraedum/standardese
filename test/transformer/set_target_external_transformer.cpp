@@ -6,7 +6,7 @@
 
 #include "../external/catch/single_include/catch2/catch.hpp"
 
-#include "../../standardese/transformer/link_target_external_transformer.hpp"
+#include "../../standardese/transformer/set_target_external_transformer.hpp"
 #include "../../standardese/inventory/sphinx/documentation_set.hpp"
 #include "../../standardese/inventory/symbols.hpp"
 #include "../../standardese/model/visitor/visit.hpp"
@@ -21,7 +21,7 @@ namespace standardese::test::transformer {
 
 using standardese::test::util::cpp_file;
 
-TEST_CASE("Links to Sphinx Documentation Are Resolved", "[link_target_external_transformer]") {
+TEST_CASE("Links to Sphinx Documentation Are Resolved", "[set_target_external_transformer]") {
   auto logger = util::logger::throwing_logger();
   cpp_file header;
 
@@ -35,7 +35,7 @@ TEST_CASE("Links to Sphinx Documentation Are Resolved", "[link_target_external_t
     standardese::inventory::sphinx::documentation_set inventory;
     inventory.entries.emplace_back("X", "c++", "type", 0," /X", "class X");
 
-    standardese::transformer::link_target_external_transformer{parsed.entities, inventory::symbols{inventory}}.transform();
+    standardese::transformer::set_target_external_transformer{parsed.entities, inventory::symbols{inventory}}.transform();
 
     CAPTURE(output_generator::xml::xml_generator::render(parsed));
 

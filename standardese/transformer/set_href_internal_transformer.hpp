@@ -3,8 +3,8 @@
 // This file is subject to the license terms in the LICENSE file
 // found in the top-level directory of this distribution.
 
-#ifndef STANDARDESE_TRANSFORMER_LINK_HREF_INTERNAL_TRANSFORMER_HPP_INCLUDED
-#define STANDARDESE_TRANSFORMER_LINK_HREF_INTERNAL_TRANSFORMER_HPP_INCLUDED
+#ifndef STANDARDESE_TRANSFORMER_SET_HREF_INTERNAL_TRANSFORMER_HPP_INCLUDED
+#define STANDARDESE_TRANSFORMER_SET_HREF_INTERNAL_TRANSFORMER_HPP_INCLUDED
 
 #include <unordered_map>
 
@@ -16,9 +16,9 @@ namespace standardese::transformer
 {
 
 /// Rewrites MarkDown links that target a C++ entity as a link to an actual URL.
-class link_href_internal_transformer : public transformer {
+class set_href_internal_transformer : public transformer {
   public:
-    link_href_internal_transformer(model::unordered_entities& documents, parser::cpp_context);
+    set_href_internal_transformer(model::unordered_entities& documents, parser::cpp_context);
 
   protected:
     void do_transform(model::entity&) override;

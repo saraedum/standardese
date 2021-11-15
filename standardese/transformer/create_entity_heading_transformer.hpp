@@ -3,8 +3,8 @@
 // This file is subject to the license terms in the LICENSE file
 // found in the top-level directory of this distribution.
 
-#ifndef STANDARDESE_TRANSFORMER_ENTITY_HEADING_TRANSFORMER_HPP_INCLUDED
-#define STANDARDESE_TRANSFORMER_ENTITY_HEADING_TRANSFORMER_HPP_INCLUDED
+#ifndef STANDARDESE_TRANSFORMER_CREATE_ENTITY_HEADING_TRANSFORMER_HPP_INCLUDED
+#define STANDARDESE_TRANSFORMER_CREATE_ENTITY_HEADING_TRANSFORMER_HPP_INCLUDED
 
 #include "transformer.hpp"
 #include "../formatter/inja_formatter.hpp"
@@ -18,10 +18,10 @@ namespace standardese::transformer {
 /// entity.
 /// This is also used to create the headings for all sections that are
 /// created in the source code with commands such as `\returns`.
-class entity_heading_transformer : public transformer {
+class create_entity_heading_transformer : public transformer {
   public:
-    struct entity_heading_transformer_options {
-      entity_heading_transformer_options(formatter::inja_formatter::inja_formatter_options = {});
+    struct create_entity_heading_transformer_options {
+      create_entity_heading_transformer_options(formatter::inja_formatter::inja_formatter_options = {});
 
       std::string format;
       std::string group_format;
@@ -29,13 +29,13 @@ class entity_heading_transformer : public transformer {
       formatter::inja_formatter::inja_formatter_options inja_formatter_options;
     };
 
-    entity_heading_transformer(model::unordered_entities& entities, parser::cpp_context, entity_heading_transformer_options = {});
+    create_entity_heading_transformer(model::unordered_entities& entities, parser::cpp_context, create_entity_heading_transformer_options = {});
 
   protected:
     void do_transform(model::entity& root) override;
 
   private:
-    struct entity_heading_transformer_options options;
+    create_entity_heading_transformer_options options;
     parser::cpp_context cpp_context;
 };
 

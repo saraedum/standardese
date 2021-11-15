@@ -2,7 +2,7 @@
 // This file is subject to the license terms in the LICENSE file
 // found in the top-level directory of this distribution.
 
-#include "../../standardese/transformer/link_external_legacy_transformer.hpp"
+#include "../../standardese/transformer/set_href_external_legacy_transformer.hpp"
 #include "../../standardese/model/visitor/visit.hpp"
 #include "../../standardese/model/markup/link.hpp"
 #include "../../standardese/model/entity.hpp"
@@ -12,9 +12,9 @@
 
 namespace standardese::transformer {
 
-link_external_legacy_transformer::link_external_legacy_transformer(model::unordered_entities& documents, struct options options): transformer(documents), options(options) {}
+set_href_external_legacy_transformer::set_href_external_legacy_transformer(model::unordered_entities& documents, struct options options): transformer(documents), options(options) {}
 
-void link_external_legacy_transformer::do_transform(model::entity& document) {
+void set_href_external_legacy_transformer::do_transform(model::entity& document) {
   model::visitor::visit([&](auto&& link, auto&& recurse) {
     using T = std::decay_t<decltype(link)>;
     if constexpr (std::is_same_v<T, model::markup::link>) {

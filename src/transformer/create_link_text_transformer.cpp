@@ -6,7 +6,7 @@
 #include <fmt/format.h>
 #include <nlohmann/json.hpp>
 
-#include "../../standardese/transformer/link_text_transformer.hpp"
+#include "../../standardese/transformer/create_link_text_transformer.hpp"
 #include "../../standardese/model/visitor/visit.hpp"
 #include "../../standardese/formatter/inja_formatter.hpp"
 #include "../../standardese/model/link_target.hpp"
@@ -17,10 +17,10 @@ template<class> inline constexpr bool always_false_v = false;
 
 namespace standardese::transformer {
 
-  link_text_transformer::link_text_transformer(model::unordered_entities& documents, parser::cpp_context context, link_text_transformer_options options) : transformer(documents), options(std::move(options)), context(std::move(context)) {
+create_link_text_transformer::create_link_text_transformer(model::unordered_entities& documents, parser::cpp_context context, link_text_transformer_options options) : transformer(documents), options(std::move(options)), context(std::move(context)) {
 }
 
-void link_text_transformer::do_transform(model::entity& root) {
+void create_link_text_transformer::do_transform(model::entity& root) {
   model::visitor::visit([&](auto& link, auto&& recurse) {
     using T = std::decay_t<decltype(link)>;
 

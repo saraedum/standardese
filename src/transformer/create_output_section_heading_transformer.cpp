@@ -5,7 +5,7 @@
 #include <cppast/cpp_class.hpp>
 #include <stack>
 
-#include "../../standardese/transformer/output_group_transformer.hpp"
+#include "../../standardese/transformer/create_output_section_heading_transformer.hpp"
 #include "../../standardese/model/visitor/visit.hpp"
 #include "../../standardese/model/entity.hpp"
 #include "../../standardese/model/mixin/documentation.hpp"
@@ -15,7 +15,7 @@
 
 namespace standardese::transformer {
 
-void output_group_transformer::do_transform(model::entity& document) {
+void create_output_section_heading_transformer::do_transform(model::entity& document) {
   std::stack<std::vector<model::entity>> containers;
   containers.push({});
 

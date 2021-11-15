@@ -13,7 +13,10 @@ namespace standardese::model::mixin
     class anchored
     {
     public:
-        std::string id;
+      /// The `id` that can be linked to.
+      /// In HTML output, this is the actual [id
+      /// attribute](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/id)
+      std::string id;
     };
 }
 

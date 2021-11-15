@@ -29,19 +29,19 @@ set(src
     inventory/sphinx/documentation_set.cpp
     transformer/transformer.cpp
     transformer/group_uncommented_transformer.cpp
-    transformer/group_transformer.cpp
-    transformer/link_text_transformer.cpp
-    transformer/link_target_internal_transformer.cpp
-    transformer/link_target_external_transformer.cpp
-    transformer/link_external_legacy_transformer.cpp
-    transformer/link_target_unresolved_transformer.cpp
-    transformer/link_href_internal_transformer.cpp
-    transformer/link_sphinx_transformer.cpp
-    transformer/entity_heading_transformer.cpp
-    transformer/synopsis_transformer.cpp
+    transformer/merge_group_transformer.cpp
+    transformer/create_link_text_transformer.cpp
+    transformer/set_href_internal_transformer.cpp
+    transformer/set_target_external_transformer.cpp
+    transformer/set_href_external_legacy_transformer.cpp
+    transformer/warn_target_unresolved_transformer.cpp
+    transformer/set_target_internal_transformer.cpp
+    transformer/set_href_sphinx_transformer.cpp
+    transformer/create_entity_heading_transformer.cpp
+    transformer/create_synopsis_transformer.cpp
     transformer/exclude_uncommented_transformer.cpp
-    transformer/output_group_transformer.cpp
-    transformer/anchor_transformer.cpp
+    transformer/create_output_section_heading_transformer.cpp
+    transformer/set_id_transformer.cpp
     formatter/inja_formatter.cpp
     formatter/inja_formatter.parse.cpp
     formatter/inja_formatter.json.cpp

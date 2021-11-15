@@ -8,7 +8,7 @@
 #include "../../standardese/model/section.hpp"
 #include "../../standardese/model/cpp_entity_documentation.hpp"
 #include "../../standardese/parser/commands/section_command.hpp"
-#include "../../standardese/transformer/group_transformer.hpp"
+#include "../../standardese/transformer/merge_group_transformer.hpp"
 #include "../../standardese/model/unordered_entities.hpp"
 #include "../../standardese/output_generator/xml/xml_generator.hpp"
 
@@ -33,7 +33,7 @@ TEST_CASE("Sections of Groups are Merged", "[group_transformer]") {
 
     auto documents = model::unordered_entities{model::document::anonymous({principal, secondary, tertiary})};
 
-    standardese::transformer::group_transformer{documents, {}}.transform();
+    standardese::transformer::merge_group_transformer{documents, {}}.transform();
 
     REQUIRE(output_generator::xml::xml_generator::render(*documents.begin()) == util::unindent(R"(
     <?xml version="1.0"?>
@@ -60,7 +60,7 @@ TEST_CASE("Sections of Groups are Merged", "[group_transformer]") {
 
     auto documents = model::unordered_entities{model::document::anonymous({principal, secondary, tertiary})};
 
-    standardese::transformer::group_transformer{documents, {}}.transform();
+    standardese::transformer::merge_group_transformer{documents, {}}.transform();
 
     REQUIRE(output_generator::xml::xml_generator::render(*documents.begin()) == util::unindent(R"(
     <?xml version="1.0"?>

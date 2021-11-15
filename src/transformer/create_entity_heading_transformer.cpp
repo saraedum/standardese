@@ -12,7 +12,7 @@
 #include <nlohmann/json.hpp>
 #include <type_traits>
 
-#include "../../standardese/transformer/entity_heading_transformer.hpp"
+#include "../../standardese/transformer/create_entity_heading_transformer.hpp"
 #include "../../standardese/model/visitor/visit.hpp"
 #include "../../standardese/model/entity.hpp"
 #include "../../standardese/model/cpp_entity_documentation.hpp"
@@ -31,13 +31,13 @@ namespace standardese::transformer {
 namespace {
 
 template <typename T>
-model::document heading(T& documentation, parser::cpp_context, type_safe::optional_ref<const cppast::cpp_entity>, const entity_heading_transformer::entity_heading_transformer_options&);
+model::document heading(T& documentation, parser::cpp_context, type_safe::optional_ref<const cppast::cpp_entity>, const create_entity_heading_transformer::create_entity_heading_transformer_options&);
 
 }
 
-entity_heading_transformer::entity_heading_transformer(model::unordered_entities& entities, parser::cpp_context cpp_context, struct entity_heading_transformer_options options) : transformer(entities), options(options), cpp_context(std::move(cpp_context)) {}
+create_entity_heading_transformer::create_entity_heading_transformer(model::unordered_entities& entities, parser::cpp_context cpp_context, struct create_entity_heading_transformer_options options) : transformer(entities), options(options), cpp_context(std::move(cpp_context)) {}
 
-entity_heading_transformer::entity_heading_transformer_options::entity_heading_transformer_options(formatter::inja_formatter::inja_formatter_options inja_formatter_options) : 
+create_entity_heading_transformer::create_entity_heading_transformer_options::create_entity_heading_transformer_options(formatter::inja_formatter::inja_formatter_options inja_formatter_options) : 
   // TODO(0.6.0-alpha): Read from CLI and reset the default to standardese 0-5-0 equivalent.
   format(R"({% if cppast_kind == "file" %}# {{ join(reject("whitespace", list(md_escape(name), md(section("brief")))), " — ") }}{{ drop_section("brief") }}
         {%- else if cppast_kind in ["function", "member function", "conversion operator", "constructor", "destructor", "function template", "friend"] %}# {% if synopsis %}{{ md(code(md_escape(synopsis))) }}{% else %}{{ md(code(md_escape(text(format(option("cpp_format")))))) }}{% endif %}
@@ -50,7 +50,7 @@ entity_heading_transformer::entity_heading_transformer_options::entity_heading_t
 {% for member in entity %}({{ loop.index1 }}) {% if synopsis(entity(member)) %}{{ text(code(md_escape(synopsis(entity(member))))) }}{% else %}{{ text(code(format(option("cpp_format"), entity(member)))) }}{% endif %}{% endfor %}```)"),
   inja_formatter_options(std::move(inja_formatter_options)) {}
 
-void entity_heading_transformer::do_transform(model::entity& document) {
+void create_entity_heading_transformer::do_transform(model::entity& document) {
   std::vector<type_safe::optional_ref<const cppast::cpp_entity>> level;
 
   model::visitor::visit([&](auto&& entity, auto&& recurse) {
@@ -87,7 +87,7 @@ void entity_heading_transformer::do_transform(model::entity& document) {
 namespace {
 
 template <typename T>
-model::document heading(T& documentation, parser::cpp_context cpp_context, type_safe::optional_ref<const cppast::cpp_entity> context, const entity_heading_transformer::entity_heading_transformer_options& options) {
+model::document heading(T& documentation, parser::cpp_context cpp_context, type_safe::optional_ref<const cppast::cpp_entity> context, const create_entity_heading_transformer::create_entity_heading_transformer_options& options) {
   formatter::inja_formatter inja = [&]() {
     if (context.has_value())
       return formatter::inja_formatter{options.inja_formatter_options, cpp_context, context.value()};

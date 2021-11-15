@@ -3,22 +3,19 @@
 // This file is subject to the license terms in the LICENSE file
 // found in the top-level directory of this distribution.
 
-#ifndef STANDARDESE_TRANSFORMER_SYNOPSIS_TRANSFORMER_HPP_INCLUDED
-#define STANDARDESE_TRANSFORMER_SYNOPSIS_TRANSFORMER_HPP_INCLUDED
-
-#include <regex>
+#ifndef STANDARDESE_TRANSFORMER_SET_ID_TRANSFORMER_HPP_INCLUDED
+#define STANDARDESE_TRANSFORMER_SET_ID_TRANSFORMER_HPP_INCLUDED
 
 #include "transformer.hpp"
 
 namespace standardese::transformer {
 
-class synopsis_transformer : public transformer {
-  public:
-    struct options {
-      // TODO(0.6.0-alpha): Actually use this.
-      bool exclude_uncommented = false;
-    };
+// TODO(0.6.0-alpha): Clean up the mess we made with the "anchor" term. We should not use it. Use link instead.
 
+/// Establishes the [model::mixin::anchored::id]() for each entity that can be
+/// linked to in the output documents.
+class set_id_transformer : public transformer {
+  public:
     using transformer::transformer;
 
   protected:

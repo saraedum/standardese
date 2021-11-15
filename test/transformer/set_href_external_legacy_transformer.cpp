@@ -7,7 +7,7 @@
 
 #include "../external/catch/single_include/catch2/catch.hpp"
 
-#include "../../standardese/transformer/link_external_legacy_transformer.hpp"
+#include "../../standardese/transformer/set_href_external_legacy_transformer.hpp"
 #include "../../standardese/model/visitor/visit.hpp"
 #include "../../standardese/model/markup/link.hpp"
 
@@ -18,7 +18,7 @@
 namespace standardese::test::transformer {
 
 using standardese::test::util::cpp_file;
-using standardese::transformer::link_external_legacy_transformer;
+using standardese::transformer::set_href_external_legacy_transformer;
 
 TEST_CASE("External Legacy Legacy Links are Resolved", "[link_external_legacy_transformer]") {
   auto logger = util::logger::throwing_logger();
@@ -31,11 +31,11 @@ TEST_CASE("External Legacy Legacy Links are Resolved", "[link_external_legacy_tr
       [fully qualified vector](<> "::std::vector")
       )");
 
-    struct link_external_legacy_transformer::options options;
+    struct set_href_external_legacy_transformer::options options;
     options.namspace = "std";
     options.url = R"(http://en.cppreference.com/mwiki/index.php?title=Special%3ASearch&search=$$)";
 
-    standardese::transformer::link_external_legacy_transformer{parsed.entities, options}.transform();
+    standardese::transformer::set_href_external_legacy_transformer{parsed.entities, options}.transform();
 
     // Verify that all links could be resolved.
     for (auto& document: parsed.entities)

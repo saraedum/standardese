@@ -3,8 +3,8 @@
 // This file is subject to the license terms in the LICENSE file
 // found in the top-level directory of this distribution.
 
-#ifndef STANDARDESE_TRANSFORMER_ANCHOR_TEXT_TRANSFORMER_HPP_INCLUDED
-#define STANDARDESE_TRANSFORMER_ANCHOR_TEXT_TRANSFORMER_HPP_INCLUDED
+#ifndef STANDARDESE_TRANSFORMER_CREATE_LINK_TEXT_TRANSFORMER_HPP_INCLUDED
+#define STANDARDESE_TRANSFORMER_CREATE_LINK_TEXT_TRANSFORMER_HPP_INCLUDED
 
 #include "transformer.hpp"
 #include "../parser/cpp_context.hpp"
@@ -14,7 +14,7 @@ namespace standardese::transformer {
 /// Sets the displayed text for links that have an empty text.
 /// This affects, e.g., links that have been created from the `[entity]()`
 /// syntax.
-class link_text_transformer : public transformer {
+class create_link_text_transformer : public transformer {
   public:
     struct link_text_transformer_options {
       link_text_transformer_options();
@@ -48,7 +48,7 @@ class link_text_transformer : public transformer {
       std::string uri_format = "";
     };
 
-    link_text_transformer(model::unordered_entities& documents, parser::cpp_context, link_text_transformer_options options = {});
+    create_link_text_transformer(model::unordered_entities& documents, parser::cpp_context, link_text_transformer_options options = {});
 
   protected:
     void do_transform(model::entity& root) override;

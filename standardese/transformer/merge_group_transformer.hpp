@@ -3,8 +3,8 @@
 // This file is subject to the license terms in the LICENSE file
 // found in the top-level directory of this distribution.
 
-#ifndef STANDARDESE_TRANSFORMER_GROUP_TRANSFORMER_HPP_INCLUDED
-#define STANDARDESE_TRANSFORMER_GROUP_TRANSFORMER_HPP_INCLUDED
+#ifndef STANDARDESE_TRANSFORMER_MERGE_GROUP_TRANSFORMER_HPP_INCLUDED
+#define STANDARDESE_TRANSFORMER_MERGE_GROUP_TRANSFORMER_HPP_INCLUDED
 
 #include "transformer.hpp"
 
@@ -19,13 +19,13 @@ namespace standardese::transformer {
 /// (2) second_overload()
 /// …
 /// ```
-/// see [entity_heading_transformer]().
-class group_transformer : public transformer {
+/// see [create_entity_heading_transformer]().
+class merge_group_transformer : public transformer {
   public:
     struct group_options {
     };
 
-    explicit group_transformer(model::unordered_entities& documents, struct group_options options);
+    explicit merge_group_transformer(model::unordered_entities& documents, struct group_options options);
 
   protected:
     void do_transform(model::entity& root) override;

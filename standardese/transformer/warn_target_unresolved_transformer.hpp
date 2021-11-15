@@ -3,8 +3,8 @@
 // This file is subject to the license terms in the LICENSE file
 // found in the top-level directory of this distribution.
 
-#ifndef STANDARDESE_TRANSFORMER_LINK_TARGET_UNRESOLVED_TRANSFORMER_HPP_INCLUDED
-#define STANDARDESE_TRANSFORMER_LINK_TARGET_UNRESOLVED_TRANSFORMER_HPP_INCLUDED
+#ifndef STANDARDESE_TRANSFORMER_WARN_TARGET_UNRESOLVED_TRANSFORMER_HPP_INCLUDED
+#define STANDARDESE_TRANSFORMER_WARN_TARGET_UNRESOLVED_TRANSFORMER_HPP_INCLUDED
 
 #include "transformer.hpp"
 #include "../forward.hpp"
@@ -13,10 +13,10 @@ namespace standardese::transformer
 {
 
 /// Handle links in MarkDown that use standardese syntax but could not be
-/// resolved by other means, e.g., by emitting warnings for them.
-class link_target_unresolved_transformer : public transformer {
+/// resolved by emitting warnings for them.
+class warn_target_unresolved_transformer : public transformer {
   public:
-    link_target_unresolved_transformer(model::unordered_entities& documents);
+    warn_target_unresolved_transformer(model::unordered_entities& documents);
 
   protected:
     void do_transform(model::entity&) override;

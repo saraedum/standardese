@@ -3,15 +3,15 @@
 // This file is subject to the license terms in the LICENSE file
 // found in the top-level directory of this distribution.
 
-#ifndef STANDARDESE_TRANSFORMER_OUTPUT_GROUP_TRANSFORMER_HPP_INCLUDED
-#define STANDARDESE_TRANSFORMER_OUTPUT_GROUP_TRANSFORMER_HPP_INCLUDED
+#ifndef STANDARDESE_TRANSFORMER_CREATE_OUTPUT_SECTION_HEADING_TRANSFORMER_HPP_INCLUDED
+#define STANDARDESE_TRANSFORMER_CREATE_OUTPUT_SECTION_HEADING_TRANSFORMER_HPP_INCLUDED
 
 #include "transformer.hpp"
 
 namespace standardese::transformer {
 
-// TODO(0.6.0-alpha): Rename to output_section_transformer
-class output_group_transformer : public transformer {
+/// Create headings for entities that are grouped in an output section.
+class create_output_section_heading_transformer : public transformer {
   public:
     using transformer::transformer;
 

@@ -8,7 +8,7 @@
 
 #include "../external/catch/single_include/catch2/catch.hpp"
 
-#include "../../standardese/transformer/link_target_internal_transformer.hpp"
+#include "../../standardese/transformer/set_target_internal_transformer.hpp"
 #include "../../standardese/model/visitor/visit.hpp"
 #include "../../standardese/model/markup/link.hpp"
 #include "../../standardese/output_generator/xml/xml_generator.hpp"
@@ -34,7 +34,7 @@ TEST_CASE("Links to Header Files are Resolved", "[link_target_internal_transform
       [partial absolute path](<> "$path/header.hpp")
       )"), "$path", header.path().parent_path().filename().native()));
 
-    standardese::transformer::link_target_internal_transformer{parsed.entities, header}.transform();
+    standardese::transformer::set_target_internal_transformer{parsed.entities, header}.transform();
 
     CAPTURE(output_generator::xml::xml_generator::render(parsed));
 

@@ -8,7 +8,7 @@
 
 #include <cppast/cpp_file.hpp>
 
-#include "../../standardese/transformer/link_target_external_transformer.hpp"
+#include "../../standardese/transformer/set_target_external_transformer.hpp"
 #include "../../standardese/model/visitor/visit.hpp"
 #include "../../standardese/model/markup/link.hpp"
 #include "../../standardese/model/entity.hpp"
@@ -16,11 +16,11 @@
 namespace standardese::transformer
 {
 
-link_target_external_transformer::link_target_external_transformer(model::unordered_entities& documents, inventory::symbols symbols) :
+set_target_external_transformer::set_target_external_transformer(model::unordered_entities& documents, inventory::symbols symbols) :
   transformer(documents),
   symbols(std::move(symbols)) {}
 
-void link_target_external_transformer::do_transform(model::entity& document) {
+void set_target_external_transformer::do_transform(model::entity& document) {
   model::visitor::visit([&](auto&& link, auto&& recurse) {
     using T = std::decay_t<decltype(link)>;
     if constexpr (std::is_same_v<T, model::markup::link>) {

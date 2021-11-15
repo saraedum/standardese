@@ -4,7 +4,7 @@
 
 #include <sstream>
 
-#include "../../standardese/transformer/anchor_transformer.hpp"
+#include "../../standardese/transformer/set_id_transformer.hpp"
 #include "../../standardese/model/mixin/anchored.hpp"
 #include "../../standardese/model/unordered_entities.hpp"
 #include "../../standardese/model/visitor/visit.hpp"
@@ -12,7 +12,7 @@
 
 namespace standardese::transformer {
 
-void anchor_transformer::do_transform(model::entity& document) {
+void set_id_transformer::do_transform(model::entity& document) {
   std::string path;
 
   model::visitor::visit([&](auto&& entity, auto&& recurse) {

@@ -3,16 +3,23 @@
 // This file is subject to the license terms in the LICENSE file
 // found in the top-level directory of this distribution.
 
-#ifndef STANDARDESE_TRANSFORMER_ANCHOR_TRANSFORMER_HPP_INCLUDED
-#define STANDARDESE_TRANSFORMER_ANCHOR_TRANSFORMER_HPP_INCLUDED
+#ifndef STANDARDESE_TRANSFORMER_CREATE_SYNOPSIS_TRANSFORMER_HPP_INCLUDED
+#define STANDARDESE_TRANSFORMER_CREATE_SYNOPSIS_TRANSFORMER_HPP_INCLUDED
+
+#include <regex>
 
 #include "transformer.hpp"
 
 namespace standardese::transformer {
 
-// TODO(0.6.0-alpha): This should be called identifier transformer. Clean up the mess we made with the "anchor" term. We should not use it. Use link instead.
-class anchor_transformer : public transformer {
+/// Create a synopsis section for each entity.
+class create_synopsis_transformer : public transformer {
   public:
+    struct options {
+      // TODO(0.6.0-alpha): Actually use this.
+      bool exclude_uncommented = false;
+    };
+
     using transformer::transformer;
 
   protected:

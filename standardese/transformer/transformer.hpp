@@ -9,6 +9,7 @@
 
 namespace standardese::transformer {
 
+/// Base class for all transformers.
 class transformer {
   public:
     explicit transformer(model::unordered_entities& entities);

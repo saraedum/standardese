@@ -2,7 +2,7 @@
 // This file is subject to the license terms in the LICENSE file
 // found in the top-level directory of this distribution.
 
-#include "../../standardese/transformer/entity_heading_transformer.hpp"
+#include "../../standardese/transformer/create_entity_heading_transformer.hpp"
 
 #include "../external/catch/single_include/catch2/catch.hpp"
 #include "../../standardese/document_builder/entity_document_builder.hpp"
@@ -16,9 +16,9 @@
 
 namespace standardese::test::transformer {
 
-using standardese::transformer::entity_heading_transformer;
+using standardese::transformer::create_entity_heading_transformer;
 
-TEST_CASE("Headings are Generated for C++ Entities", "[entity_heading_transformer]") {
+TEST_CASE("Headings are Generated for C++ Entities", "[create_entity_heading_transformer]") {
   auto logger = util::logger::throwing_logger();
 
   const auto visit_heading = [](auto&& visitor, const auto& entities) {

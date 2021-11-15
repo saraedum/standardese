@@ -5,7 +5,7 @@
 #include <cppast/code_generator.hpp>
 #include <cppast/cpp_class.hpp>
 
-#include "../../standardese/transformer/synopsis_transformer.hpp"
+#include "../../standardese/transformer/create_synopsis_transformer.hpp"
 #include "../../standardese/model/visitor/visit.hpp"
 #include "../../standardese/model/entity.hpp"
 #include "../../standardese/logger.hpp"
@@ -222,7 +222,7 @@ model::entity synopsis(const cppast::cpp_entity& entity) {
 
 }
 
-void synopsis_transformer::do_transform(model::entity& document) {
+void create_synopsis_transformer::do_transform(model::entity& document) {
   model::visitor::visit([&](auto&& documentation, auto&& recurse) {
     using T = std::decay_t<decltype(documentation)>;
 

@@ -9,8 +9,8 @@
 #include "../../standardese/document_builder/entity_document_builder.hpp"
 #include "../../standardese/model/document.hpp"
 #include "../../standardese/output_generator/xml/xml_generator.hpp"
-#include "../../standardese/transformer/link_href_internal_transformer.hpp"
-#include "../../standardese/transformer/anchor_transformer.hpp"
+#include "../../standardese/transformer/set_href_internal_transformer.hpp"
+#include "../../standardese/transformer/set_id_transformer.hpp"
 
 #include "../util/parsed_comments.hpp"
 #include "../util/cpp_file.hpp"
@@ -44,7 +44,7 @@ TEST_CASE("Typical Index Files can be Generated", "[index_document_builder]")
     {
       standardese::model::unordered_entities documents{std::vector{std::move(index)}};
 
-      CHECK_THROWS(transformer::link_href_internal_transformer(documents, header).transform());
+      CHECK_THROWS(transformer::set_href_internal_transformer(documents, header).transform());
     }
 
     SECTION("Links Can be Emitted With a Header File Entity")
@@ -54,9 +54,9 @@ TEST_CASE("Typical Index Files can be Generated", "[index_document_builder]")
 
       standardese::model::unordered_entities documents{std::vector{std::move(index), std::move(header_documentation)}};
 
-      transformer::anchor_transformer(documents).transform();
+      transformer::set_id_transformer(documents).transform();
 
-      transformer::link_href_internal_transformer(documents, header).transform();
+      transformer::set_href_internal_transformer(documents, header).transform();
 
       CHECK(xml_generator::render(*++documents.begin()) == unindent(R"(
         <?xml version="1.0"?>

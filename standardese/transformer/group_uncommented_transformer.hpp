@@ -10,6 +10,7 @@
 
 namespace standardese::transformer {
 
+/// Group uncommented entities with the preceding commented entity.
 class group_uncommented_transformer : public transformer {
   public:
     struct group_uncommented_options {

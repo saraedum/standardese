@@ -9,16 +9,16 @@
 
 #include <cppast/cpp_file.hpp>
 
-#include "../../standardese/transformer/link_target_unresolved_transformer.hpp"
+#include "../../standardese/transformer/warn_target_unresolved_transformer.hpp"
 #include "../../standardese/model/visitor/visit.hpp"
 #include "../../standardese/model/markup/link.hpp"
 #include "../../standardese/logger.hpp"
 
 namespace standardese::transformer {
 
-link_target_unresolved_transformer::link_target_unresolved_transformer(model::unordered_entities& documents) : transformer(documents) {}
+warn_target_unresolved_transformer::warn_target_unresolved_transformer(model::unordered_entities& documents) : transformer(documents) {}
 
-void link_target_unresolved_transformer::do_transform(model::entity& document) {
+void warn_target_unresolved_transformer::do_transform(model::entity& document) {
   model::visitor::visit([](auto&& link, auto&& recurse) {
     using T = std::decay_t<decltype(link)>;
     if constexpr (std::is_same_v<T, model::markup::link>) {

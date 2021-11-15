@@ -11,13 +11,13 @@
 #include "../transformer/exclude_pattern_transformer.hpp"
 #include "../transformer/exclude_access_transformer.hpp"
 #include "../transformer/exclude_uncommented_transformer.hpp"
-#include "../transformer/synopsis_transformer.hpp"
-#include "../transformer/link_target_external_transformer.hpp"
-#include "../transformer/link_external_legacy_transformer.hpp"
-#include "../transformer/link_sphinx_transformer.hpp"
+#include "../transformer/create_synopsis_transformer.hpp"
+#include "../transformer/set_target_external_transformer.hpp"
+#include "../transformer/set_href_external_legacy_transformer.hpp"
+#include "../transformer/set_href_sphinx_transformer.hpp"
 #include "../transformer/group_uncommented_transformer.hpp"
-#include "../transformer/group_transformer.hpp"
-#include "../transformer/entity_heading_transformer.hpp"
+#include "../transformer/merge_group_transformer.hpp"
+#include "../transformer/create_entity_heading_transformer.hpp"
 
 namespace standardese::tool {
 
@@ -30,29 +30,29 @@ class transformers {
   // TODO(0.6.0-alpha): rename to document_builders_options.
   struct options {
     struct transformer::group_uncommented_transformer::group_uncommented_options group_uncommented_options;
-    struct transformer::group_transformer::group_options group_options;
+    struct transformer::merge_group_transformer::group_options group_options;
     struct transformer::exclude_pattern_transformer::options exclude_pattern_options;
     struct transformer::exclude_access_transformer::options exclude_access_options;
     struct transformer::exclude_uncommented_transformer::options exclude_uncommented_options;
-    struct transformer::synopsis_transformer::options synopsis_options;
-    struct transformer::entity_heading_transformer::entity_heading_transformer_options entity_heading_options;
+    struct transformer::create_synopsis_transformer::options synopsis_options;
+    struct transformer::create_entity_heading_transformer::create_entity_heading_transformer_options entity_heading_options;
 
     struct external_sphinx_options {
       /// The local path of the inventory file.
       boost::filesystem::path inventory;
 
-      struct transformer::link_sphinx_transformer::options options;
+      struct transformer::set_href_sphinx_transformer::options options;
     };
 
     struct external_doxygen_options {
       /// The local path of the inventory file.
       boost::filesystem::path inventory;
 
-      struct transformer::link_sphinx_transformer::options options;
+      struct transformer::set_href_sphinx_transformer::options options;
     };
 
     struct external_legacy_options {
-      struct transformer::link_external_legacy_transformer::options options;
+      struct transformer::set_href_external_legacy_transformer::options options;
     };
 
     using external_link_option = std::variant<external_sphinx_options, external_doxygen_options, external_legacy_options>;
