@@ -16,7 +16,7 @@
 
 namespace standardese::transformer {
 
-merge_group_transformer::merge_group_transformer(model::unordered_entities& documents, group_options options) : transformer(documents), options(std::move(options)) {}
+merge_group_transformer::merge_group_transformer(model::unordered_entities& documents, group_options options) : inner_transformer(documents), options(std::move(options)) {}
 
 void merge_group_transformer::do_transform(model::entity& document) {
   std::stack<std::vector<model::entity>> containers;

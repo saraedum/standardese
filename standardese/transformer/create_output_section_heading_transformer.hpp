@@ -6,14 +6,14 @@
 #ifndef STANDARDESE_TRANSFORMER_CREATE_OUTPUT_SECTION_HEADING_TRANSFORMER_HPP_INCLUDED
 #define STANDARDESE_TRANSFORMER_CREATE_OUTPUT_SECTION_HEADING_TRANSFORMER_HPP_INCLUDED
 
-#include "transformer.hpp"
+#include "inner_transformer.hpp"
 
 namespace standardese::transformer {
 
 /// Create headings for entities that are grouped in an output section.
-class create_output_section_heading_transformer : public transformer {
+class create_output_section_heading_transformer : public inner_transformer {
   public:
-    using transformer::transformer;
+    using inner_transformer::inner_transformer;
 
   protected:
     void do_transform(model::entity& root) override;

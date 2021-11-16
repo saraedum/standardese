@@ -8,7 +8,7 @@
 
 #include <unordered_map>
 
-#include "transformer.hpp"
+#include "inner_transformer.hpp"
 #include "../model/unordered_entities.hpp"
 #include "../parser/cpp_context.hpp"
 
@@ -16,7 +16,7 @@ namespace standardese::transformer
 {
 
 /// Rewrites MarkDown links that target a C++ entity as a link to an actual URL.
-class set_href_internal_transformer : public transformer {
+class set_href_internal_transformer : public inner_transformer {
   public:
     set_href_internal_transformer(model::unordered_entities& documents, parser::cpp_context);
 

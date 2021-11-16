@@ -9,11 +9,12 @@
 
 namespace standardese::transformer {
 
-set_href_sphinx_transformer::set_href_sphinx_transformer(model::unordered_entities& documents, struct options options, inventory::sphinx::documentation_set inventory) : transformer(documents), options(std::move(options)), inventory(std::move(inventory)), target_transformer(documents, inventory::symbols(this->inventory)) {}
+set_href_sphinx_transformer::set_href_sphinx_transformer(model::unordered_entities& documents, struct options options, inventory::sphinx::documentation_set inventory) : inner_transformer(documents), options(std::move(options)), inventory(std::move(inventory)), target_transformer(documents, inventory::symbols(this->inventory)) {}
 
 void set_href_sphinx_transformer::transform(threading::pool::factory workers) {
+  // TODO(0.6.0-beta): Do not call target_transformer but require the input to have already been passed throught the target_transformer.
   target_transformer.transform(workers);
-  transformer::transform(workers);
+  inner_transformer::transform(workers);
 }
 
 void set_href_sphinx_transformer::do_transform(model::entity& document) {

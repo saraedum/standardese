@@ -6,7 +6,7 @@
 #ifndef STANDARDESE_TRANSFORMER_MERGE_GROUP_TRANSFORMER_HPP_INCLUDED
 #define STANDARDESE_TRANSFORMER_MERGE_GROUP_TRANSFORMER_HPP_INCLUDED
 
-#include "transformer.hpp"
+#include "inner_transformer.hpp"
 
 namespace standardese::transformer {
 
@@ -20,7 +20,7 @@ namespace standardese::transformer {
 /// …
 /// ```
 /// see [create_entity_heading_transformer]().
-class merge_group_transformer : public transformer {
+class merge_group_transformer : public inner_transformer {
   public:
     struct group_options {
     };

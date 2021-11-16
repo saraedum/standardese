@@ -23,7 +23,7 @@ namespace standardese::transformer
 {
 
 set_href_internal_transformer::set_href_internal_transformer(model::unordered_entities& documents, parser::cpp_context context) :
-  transformer(documents),
+  inner_transformer(documents),
   context(context),
   anchors([&]() {
     std::string path;

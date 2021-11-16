@@ -6,7 +6,7 @@
 #ifndef STANDARDESE_TRANSFORMER_CREATE_LINK_TEXT_TRANSFORMER_HPP_INCLUDED
 #define STANDARDESE_TRANSFORMER_CREATE_LINK_TEXT_TRANSFORMER_HPP_INCLUDED
 
-#include "transformer.hpp"
+#include "inner_transformer.hpp"
 #include "../parser/cpp_context.hpp"
 
 namespace standardese::transformer {
@@ -14,7 +14,7 @@ namespace standardese::transformer {
 /// Sets the displayed text for links that have an empty text.
 /// This affects, e.g., links that have been created from the `[entity]()`
 /// syntax.
-class create_link_text_transformer : public transformer {
+class create_link_text_transformer : public inner_transformer {
   public:
     struct link_text_transformer_options {
       link_text_transformer_options();

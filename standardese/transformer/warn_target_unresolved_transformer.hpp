@@ -6,7 +6,7 @@
 #ifndef STANDARDESE_TRANSFORMER_WARN_TARGET_UNRESOLVED_TRANSFORMER_HPP_INCLUDED
 #define STANDARDESE_TRANSFORMER_WARN_TARGET_UNRESOLVED_TRANSFORMER_HPP_INCLUDED
 
-#include "transformer.hpp"
+#include "inner_transformer.hpp"
 #include "../forward.hpp"
 
 namespace standardese::transformer
@@ -14,9 +14,9 @@ namespace standardese::transformer
 
 /// Handle links in MarkDown that use standardese syntax but could not be
 /// resolved by emitting warnings for them.
-class warn_target_unresolved_transformer : public transformer {
+class warn_target_unresolved_transformer : public inner_transformer {
   public:
-    warn_target_unresolved_transformer(model::unordered_entities& documents);
+    using inner_transformer::inner_transformer;
 
   protected:
     void do_transform(model::entity&) override;

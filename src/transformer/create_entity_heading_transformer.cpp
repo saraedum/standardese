@@ -35,7 +35,7 @@ model::document heading(T& documentation, parser::cpp_context, type_safe::option
 
 }
 
-create_entity_heading_transformer::create_entity_heading_transformer(model::unordered_entities& entities, parser::cpp_context cpp_context, struct create_entity_heading_transformer_options options) : transformer(entities), options(options), cpp_context(std::move(cpp_context)) {}
+create_entity_heading_transformer::create_entity_heading_transformer(model::unordered_entities& entities, parser::cpp_context cpp_context, struct create_entity_heading_transformer_options options) : inner_transformer(entities), options(options), cpp_context(std::move(cpp_context)) {}
 
 create_entity_heading_transformer::create_entity_heading_transformer_options::create_entity_heading_transformer_options(formatter::inja_formatter::inja_formatter_options inja_formatter_options) : 
   // TODO(0.6.0-alpha): Read from CLI and reset the default to standardese 0-5-0 equivalent.

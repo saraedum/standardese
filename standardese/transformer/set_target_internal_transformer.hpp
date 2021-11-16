@@ -6,7 +6,7 @@
 #ifndef STANDARDESE_TRANSFORMER_SET_TARGET_INTERNAL_TRANSFORMER_HPP_INCLUDED
 #define STANDARDESE_TRANSFORMER_SET_TARGET_INTERNAL_TRANSFORMER_HPP_INCLUDED
 
-#include "transformer.hpp"
+#include "inner_transformer.hpp"
 #include "../inventory/cppast_inventory.hpp"
 #include "../inventory/files.hpp"
 
@@ -14,7 +14,7 @@ namespace standardese::transformer
 {
 
 /// Resolves links in MarkDown that use standardese syntax to link to targets within the same project.
-class set_target_internal_transformer : public transformer {
+class set_target_internal_transformer : public inner_transformer {
   public:
     set_target_internal_transformer(model::unordered_entities& documents, const parser::cpp_context& context);
 

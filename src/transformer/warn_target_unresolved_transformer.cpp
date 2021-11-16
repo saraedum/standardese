@@ -16,8 +16,6 @@
 
 namespace standardese::transformer {
 
-warn_target_unresolved_transformer::warn_target_unresolved_transformer(model::unordered_entities& documents) : transformer(documents) {}
-
 void warn_target_unresolved_transformer::do_transform(model::entity& document) {
   model::visitor::visit([](auto&& link, auto&& recurse) {
     using T = std::decay_t<decltype(link)>;

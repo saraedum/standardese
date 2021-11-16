@@ -8,14 +8,14 @@
 
 #include <regex>
 
-#include "transformer.hpp"
+#include "inner_transformer.hpp"
 
 namespace standardese::transformer {
 
 // TODO(0.6.0-alpha): Implement me.
 
 /// Exclude entities from the output depending on their visibility (public/protected/private.)
-class exclude_access_transformer : public transformer {
+class exclude_access_transformer : public inner_transformer {
   public:
     struct options {
       bool exclude_public = false;

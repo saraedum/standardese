@@ -13,7 +13,7 @@ namespace standardese::transformer
 {
 
 /// Resolves links to project documentations generated with Sphinx.
-class set_href_sphinx_transformer : public transformer {
+class set_href_sphinx_transformer : public inner_transformer {
   public:
     struct options : set_target_external_transformer::options {
       /// The base URL of the external documentation.
@@ -22,7 +22,7 @@ class set_href_sphinx_transformer : public transformer {
 
     set_href_sphinx_transformer(model::unordered_entities& documents, options options, inventory::sphinx::documentation_set inventory);
 
-    void transform(threading::pool::factory workers=threading::unthreaded_pool::factory) override;
+    void transform(threading::pool::factory workers=threading::unthreaded_pool::factory);
 
   protected:
     void do_transform(model::entity&) override;

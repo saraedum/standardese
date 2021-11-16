@@ -21,7 +21,7 @@
 namespace standardese::transformer {
 
 set_target_internal_transformer::set_target_internal_transformer(model::unordered_entities& documents, const parser::cpp_context& context) :
-  transformer(documents),
+  inner_transformer(documents),
   inventory([&]() {
     // Create an inventory of all the C++ entities that are documented in all the documents.
     std::vector<const cppast::cpp_entity*> entities;

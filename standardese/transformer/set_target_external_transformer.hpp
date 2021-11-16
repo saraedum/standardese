@@ -5,7 +5,7 @@
 #ifndef STANDARDESE_TRANSFORMER_SET_TARGET_EXTERNAL_TRANSFORMER_HPP_INCLUDED
 #define STANDARDESE_TRANSFORMER_SET_TARGET_EXTERNAL_TRANSFORMER_HPP_INCLUDED
 
-#include "transformer.hpp"
+#include "inner_transformer.hpp"
 #include "../inventory/symbols.hpp"
 
 // TODO(0.6.0-alpha): Make sure that we have consistent calling conventions in constructors/factories everywhere but also make sure it's always documented when the caller is expected to keep something alive:
@@ -17,7 +17,7 @@ namespace standardese::transformer
 /// Resolves links in MarkDown that use standardese syntax to link to an
 /// external target such another standardese project, or documentation
 /// generated with doxygen or sphinx.
-class set_target_external_transformer : public transformer {
+class set_target_external_transformer : public inner_transformer {
   public:
     struct options {
       /// A URI schema to explicitly link to some external documentation such

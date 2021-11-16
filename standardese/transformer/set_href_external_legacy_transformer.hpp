@@ -5,14 +5,16 @@
 #ifndef STANDARDESE_TRANSFORMER_SET_HREF_EXTERNAL_LEGACY_TRANSFORMER_HPP_INCLUDED
 #define STANDARDESE_TRANSFORMER_SET_HREF_EXTERNAL_LEGACY_TRANSFORMER_HPP_INCLUDED
 
-#include "transformer.hpp"
+#include <string>
+
+#include "inner_transformer.hpp"
 
 namespace standardese::transformer
 {
 
 /// Resolve links to other documentations that use the deprecated
 /// `--comment.external_doc` flag to link to a fixed search page URL.
-class set_href_external_legacy_transformer : public transformer {
+class set_href_external_legacy_transformer : public inner_transformer {
   public:
     struct options {
       /// The base URL of the external documentation.

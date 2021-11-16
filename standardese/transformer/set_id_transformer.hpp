@@ -6,7 +6,7 @@
 #ifndef STANDARDESE_TRANSFORMER_SET_ID_TRANSFORMER_HPP_INCLUDED
 #define STANDARDESE_TRANSFORMER_SET_ID_TRANSFORMER_HPP_INCLUDED
 
-#include "transformer.hpp"
+#include "inner_transformer.hpp"
 
 namespace standardese::transformer {
 
@@ -14,9 +14,9 @@ namespace standardese::transformer {
 
 /// Establishes the [model::mixin::anchored::id]() for each entity that can be
 /// linked to in the output documents.
-class set_id_transformer : public transformer {
+class set_id_transformer : public inner_transformer {
   public:
-    using transformer::transformer;
+    using inner_transformer::inner_transformer;
 
   protected:
     void do_transform(model::entity& root) override;

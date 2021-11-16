@@ -6,12 +6,12 @@
 #ifndef STANDARDESE_TRANSFORMER_GROUP_UNCOMMENTED_TRANSFORMER_HPP_INCLUDED
 #define STANDARDESE_TRANSFORMER_GROUP_UNCOMMENTED_TRANSFORMER_HPP_INCLUDED
 
-#include "transformer.hpp"
+#include "inner_transformer.hpp"
 
 namespace standardese::transformer {
 
 /// Group uncommented entities with the preceding commented entity.
-class group_uncommented_transformer : public transformer {
+class group_uncommented_transformer : public inner_transformer {
   public:
     struct group_uncommented_options {
     };

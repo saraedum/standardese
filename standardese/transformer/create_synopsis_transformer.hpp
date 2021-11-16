@@ -8,19 +8,19 @@
 
 #include <regex>
 
-#include "transformer.hpp"
+#include "inner_transformer.hpp"
 
 namespace standardese::transformer {
 
 /// Create a synopsis section for each entity.
-class create_synopsis_transformer : public transformer {
+class create_synopsis_transformer : public inner_transformer {
   public:
     struct options {
       // TODO(0.6.0-alpha): Actually use this.
       bool exclude_uncommented = false;
     };
 
-    using transformer::transformer;
+    using inner_transformer::inner_transformer;
 
   protected:
     void do_transform(model::entity& root) override;

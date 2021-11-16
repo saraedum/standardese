@@ -6,14 +6,14 @@
 #ifndef STANDARDESE_TRANSFORMER_EXCLUDE_UNCOMMENTED_TRANSFORMER_HPP_INCLUDED
 #define STANDARDESE_TRANSFORMER_EXCLUDE_UNCOMMENTED_TRANSFORMER_HPP_INCLUDED
 
-#include "transformer.hpp"
+#include "inner_transformer.hpp"
 
 namespace standardese::transformer {
 
 // TODO(0.6.0-beta): Add options to only exclude uncommented entities if they are not linked to.
 
 /// Exclude uncommented entities from the output.
-class exclude_uncommented_transformer : public transformer {
+class exclude_uncommented_transformer : public inner_transformer {
   public:
     struct options {
       enum class mode {

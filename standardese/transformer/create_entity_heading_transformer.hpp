@@ -6,7 +6,7 @@
 #ifndef STANDARDESE_TRANSFORMER_CREATE_ENTITY_HEADING_TRANSFORMER_HPP_INCLUDED
 #define STANDARDESE_TRANSFORMER_CREATE_ENTITY_HEADING_TRANSFORMER_HPP_INCLUDED
 
-#include "transformer.hpp"
+#include "inner_transformer.hpp"
 #include "../formatter/inja_formatter.hpp"
 #include "../parser/cpp_context.hpp"
 
@@ -18,7 +18,7 @@ namespace standardese::transformer {
 /// entity.
 /// This is also used to create the headings for all sections that are
 /// created in the source code with commands such as `\returns`.
-class create_entity_heading_transformer : public transformer {
+class create_entity_heading_transformer : public inner_transformer {
   public:
     struct create_entity_heading_transformer_options {
       create_entity_heading_transformer_options(formatter::inja_formatter::inja_formatter_options = {});

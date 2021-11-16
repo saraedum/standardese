@@ -12,7 +12,7 @@
 
 namespace standardese::transformer {
 
-set_href_external_legacy_transformer::set_href_external_legacy_transformer(model::unordered_entities& documents, struct options options): transformer(documents), options(options) {}
+set_href_external_legacy_transformer::set_href_external_legacy_transformer(model::unordered_entities& documents, struct options options): inner_transformer(documents), options(options) {}
 
 void set_href_external_legacy_transformer::do_transform(model::entity& document) {
   model::visitor::visit([&](auto&& link, auto&& recurse) {

@@ -129,15 +129,24 @@ class entity_document_builder;
 namespace standardese::transformer
 {
 
-class link_target_internal_transformer;
-class link_target_external_transformer;
-class link_href_internal_transformer;
-class link_sphinx_transformer;
-class link_external_legacy_transformer;
-class anchor_transformer;
-class exclude_pattern_transformer;
+class create_entity_heading_transformer;
+class create_link_text_transformer;
+class create_output_section_heading_transformer;
+class create_synopsis_transformer;
 class exclude_access_transformer;
-class synopsis_transformer;
+class exclude_pattern_transformer;
+class exclude_uncommented_transformer;
+class group_uncommented_transformer;
+class inner_transformer;
+class merge_group_transformer;
+class outer_transformer;
+class set_href_external_legacy_transformer;
+class set_href_internal_transformer;
+class set_href_sphinx_transformer;
+class set_id_transformer;
+class set_target_external_transformer;
+class set_target_internal_transformer;
+class warn_target_unresolved_transformer;
 
 }
 
