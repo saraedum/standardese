@@ -17,7 +17,7 @@ namespace standardese::transformer {
 /// Exclude entities from the output depending on their visibility (public/protected/private.)
 class exclude_access_transformer : public inner_transformer {
   public:
-    struct options {
+    struct exclude_access_transformer_options {
       bool exclude_public = false;
       bool exclude_protected = false;
       bool exclude_private = true;

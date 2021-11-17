@@ -212,7 +212,7 @@ TEST_CASE("Parsing of Legacy --comment.* Options", "[tool]") {
     std::visit([&](const auto& option) {
       using T = std::decay_t<decltype(option)>;
       CAPTURE(boost::typeindex::type_id<T>().pretty_name());
-      if constexpr (std::is_same_v<T, standardese::tool::transformers::options::external_legacy_options>) {
+      if constexpr (std::is_same_v<T, standardese::tool::transformers::transformer_options::external_legacy_options>) {
         REQUIRE(option.options.namspace == "std");
       } else {
         REQUIRE(false);
@@ -398,7 +398,7 @@ TEST_CASE("Parsing of External Linking Options") {
       std::visit([&](const auto& option) {
         using T = std::decay_t<decltype(option)>;
         CAPTURE(boost::typeindex::type_id<T>().pretty_name());
-        if constexpr (std::is_same_v<T, standardese::tool::transformers::options::external_sphinx_options>) {
+        if constexpr (std::is_same_v<T, standardese::tool::transformers::transformer_options::external_sphinx_options>) {
           REQUIRE(option.options.schema == "py");
         } else {
           REQUIRE(false);
@@ -414,7 +414,7 @@ TEST_CASE("Parsing of External Linking Options") {
       std::visit([&](const auto& option) {
         using T = std::decay_t<decltype(option)>;
         CAPTURE(boost::typeindex::type_id<T>().pretty_name());
-        if constexpr (std::is_same_v<T, standardese::tool::transformers::options::external_sphinx_options>) {
+        if constexpr (std::is_same_v<T, standardese::tool::transformers::transformer_options::external_sphinx_options>) {
           REQUIRE(option.options.schema == "py");
         } else {
           REQUIRE(false);
@@ -423,7 +423,7 @@ TEST_CASE("Parsing of External Linking Options") {
       std::visit([&](const auto& option) {
         using T = std::decay_t<decltype(option)>;
         CAPTURE(boost::typeindex::type_id<T>().pretty_name());
-        if constexpr (std::is_same_v<T, standardese::tool::transformers::options::external_sphinx_options>) {
+        if constexpr (std::is_same_v<T, standardese::tool::transformers::transformer_options::external_sphinx_options>) {
           REQUIRE(option.options.schema == "py2");
         } else {
           REQUIRE(false);
@@ -441,7 +441,7 @@ TEST_CASE("Parsing of External Linking Options") {
       std::visit([&](const auto& option) {
         using T = std::decay_t<decltype(option)>;
         CAPTURE(boost::typeindex::type_id<T>().pretty_name());
-        if constexpr (std::is_same_v<T, standardese::tool::transformers::options::external_doxygen_options>) {
+        if constexpr (std::is_same_v<T, standardese::tool::transformers::transformer_options::external_doxygen_options>) {
           REQUIRE(option.options.schema == "std");
         } else {
           REQUIRE(false);
@@ -467,26 +467,26 @@ TEST_CASE("Parsing of Composition Options", "[tool]") {
       const char* argv[] = {"standardese", "-XXXX", "header.h"};
       auto options = options::parse(sizeof(argv)/sizeof(*argv), argv, {});
 
-      CHECK(options.transformer_options.exclude_uncommented_options.exclude_file == transformer::exclude_uncommented_transformer::options::mode::exclude);
+      CHECK(options.transformer_options.exclude_uncommented_options.exclude_file == transformer::exclude_uncommented_transformer::exclude_uncommented_transformer_options::mode::exclude);
     }
     SECTION("-XXX") {
       const char* argv[] = {"standardese", "-XXX", "header.h"};
       auto options = options::parse(sizeof(argv)/sizeof(*argv), argv, {});
 
-      CHECK(options.transformer_options.exclude_uncommented_options.exclude_class == transformer::exclude_uncommented_transformer::options::mode::exclude);
+      CHECK(options.transformer_options.exclude_uncommented_options.exclude_class == transformer::exclude_uncommented_transformer::exclude_uncommented_transformer_options::mode::exclude);
     }
     SECTION("-XX") {
       const char* argv[] = {"standardese", "-XX", "header.h"};
       auto options = options::parse(sizeof(argv)/sizeof(*argv), argv, {});
 
-      CHECK(options.transformer_options.exclude_uncommented_options.exclude_class == transformer::exclude_uncommented_transformer::options::mode::exclude_if_empty);
+      CHECK(options.transformer_options.exclude_uncommented_options.exclude_class == transformer::exclude_uncommented_transformer::exclude_uncommented_transformer_options::mode::exclude_if_empty);
       CHECK(options.transformer_options.synopsis_options.exclude_uncommented);
     }
     SECTION("-X") {
       const char* argv[] = {"standardese", "-X", "header.h"};
       auto options = options::parse(sizeof(argv)/sizeof(*argv), argv, {});
 
-      CHECK(options.transformer_options.exclude_uncommented_options.exclude_class == transformer::exclude_uncommented_transformer::options::mode::exclude_if_empty);
+      CHECK(options.transformer_options.exclude_uncommented_options.exclude_class == transformer::exclude_uncommented_transformer::exclude_uncommented_transformer_options::mode::exclude_if_empty);
       CHECK(!options.transformer_options.synopsis_options.exclude_uncommented);
     }
   }

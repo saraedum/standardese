@@ -19,9 +19,9 @@ namespace {
 
 /// Removes documentation from an entity tree that should be excluded.
 struct visitor : model::visitor::generic_visitor<visitor, model::visitor::recursive_visitor<false>> {
-  visitor(const struct exclude_uncommented_transformer::options& options);
+  visitor(const struct exclude_uncommented_transformer::exclude_uncommented_transformer_options& options);
 
-  exclude_uncommented_transformer::options::mode mode(const cppast::cpp_entity& entity) const;
+  exclude_uncommented_transformer::exclude_uncommented_transformer_options::mode mode(const cppast::cpp_entity& entity) const;
 
   enum class exclusion {
     exclude,
@@ -29,7 +29,7 @@ struct visitor : model::visitor::generic_visitor<visitor, model::visitor::recurs
     include,
   };
 
-  exclusion exclude(exclude_uncommented_transformer::options::mode mode, bool empty, model::exclude_mode uncommented) const;
+  exclusion exclude(exclude_uncommented_transformer::exclude_uncommented_transformer_options::mode mode, bool empty, model::exclude_mode uncommented) const;
 
   /// Push true to `empty`.
   void push();
@@ -43,12 +43,12 @@ struct visitor : model::visitor::generic_visitor<visitor, model::visitor::recurs
   std::stack<bool> empty;
   std::stack<std::vector<model::entity>> containers;
 
-  const struct exclude_uncommented_transformer::options& options;
+  const struct exclude_uncommented_transformer::exclude_uncommented_transformer_options& options;
 };
 
 }
 
-exclude_uncommented_transformer::exclude_uncommented_transformer(model::unordered_entities& documents, struct options options) : inner_transformer(documents), options(std::move(options)) {}
+exclude_uncommented_transformer::exclude_uncommented_transformer(model::unordered_entities& documents, exclude_uncommented_transformer_options options) : inner_transformer(documents), options(std::move(options)) {}
 
 void exclude_uncommented_transformer::do_transform(model::entity& document) {
   visitor v{options};
@@ -57,12 +57,12 @@ void exclude_uncommented_transformer::do_transform(model::entity& document) {
 
 namespace {
 
-visitor::visitor(const struct exclude_uncommented_transformer::options& options) : options(options) {
+visitor::visitor(const struct exclude_uncommented_transformer::exclude_uncommented_transformer_options& options) : options(options) {
   containers.push({});
   push();
 }
 
-exclude_uncommented_transformer::options::mode visitor::mode(const cppast::cpp_entity& entity) const {
+exclude_uncommented_transformer::exclude_uncommented_transformer_options::mode visitor::mode(const cppast::cpp_entity& entity) const {
   switch(entity.kind()) {
     case cppast::cpp_entity_kind::access_specifier_t:
     case cppast::cpp_entity_kind::base_class_t:
@@ -78,7 +78,7 @@ exclude_uncommented_transformer::options::mode visitor::mode(const cppast::cpp_e
     case cppast::cpp_entity_kind::unexposed_t:
     case cppast::cpp_entity_kind::using_directive_t:
     case cppast::cpp_entity_kind::using_declaration_t:
-      return exclude_uncommented_transformer::options::mode::exclude_if_empty;
+      return exclude_uncommented_transformer::exclude_uncommented_transformer_options::mode::exclude_if_empty;
     case cppast::cpp_entity_kind::alias_template_t:
     case cppast::cpp_entity_kind::type_alias_t:
       return options.exclude_alias;
@@ -111,11 +111,11 @@ exclude_uncommented_transformer::options::mode visitor::mode(const cppast::cpp_e
       return options.exclude_namespace;
     default:
       logger::error(fmt::format("Ignoring unexpected C++ entity `{}` if uncommented.", entity.name()));
-      return exclude_uncommented_transformer::options::mode::exclude;
+      return exclude_uncommented_transformer::exclude_uncommented_transformer_options::mode::exclude;
   }
 }
 
-visitor::exclusion visitor::exclude(exclude_uncommented_transformer::options::mode mode, bool empty, model::exclude_mode uncommented) const {
+visitor::exclusion visitor::exclude(exclude_uncommented_transformer::exclude_uncommented_transformer_options::mode mode, bool empty, model::exclude_mode uncommented) const {
   switch(uncommented) {
     case model::exclude_mode::exclude:
       return exclusion::exclude;
@@ -126,14 +126,14 @@ visitor::exclusion visitor::exclude(exclude_uncommented_transformer::options::mo
   }
 
   switch(mode) {
-    case exclude_uncommented_transformer::options::mode::exclude:
+    case exclude_uncommented_transformer::exclude_uncommented_transformer_options::mode::exclude:
       return exclusion::exclude;
-    case exclude_uncommented_transformer::options::mode::exclude_if_empty:
+    case exclude_uncommented_transformer::exclude_uncommented_transformer_options::mode::exclude_if_empty:
       if (empty) return exclusion::exclude;
       else return exclusion::include;
-    case exclude_uncommented_transformer::options::mode::skip:
+    case exclude_uncommented_transformer::exclude_uncommented_transformer_options::mode::skip:
       return exclusion::skip;
-    case exclude_uncommented_transformer::options::mode::include:
+    case exclude_uncommented_transformer::exclude_uncommented_transformer_options::mode::include:
       return exclusion::include;;
   }
 

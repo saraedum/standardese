@@ -10,7 +10,7 @@
 
 namespace standardese::parser {
 
-comment_collector::comment_collector(struct options options) : options(options) {}
+comment_collector::comment_collector(comment_collector_options options) : options(options) {}
 
 std::vector<comment_collector::comment> comment_collector::collect(const cppast::cpp_file& cpp_file) {
   std::vector<comment> comments;

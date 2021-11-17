@@ -27,7 +27,7 @@ namespace standardese::tool {
 
 template<class> inline constexpr bool always_false_v = false;
 
-transformers::transformers(struct options options) : options(options) {}
+transformers::transformers(transformer_options options) : options(options) {}
 
 void transformers::transform(model::unordered_entities& entities, const parser::cpp_context& context) {
   // TODO(0.6.0-alpha): Make this configurable
@@ -51,12 +51,12 @@ void transformers::transform(model::unordered_entities& entities, const parser::
   for (auto& option : options.external_link_options)
     std::visit([&](const auto& external) {
       using T = std::decay_t<decltype(external)>;
-      if constexpr (std::is_same_v<T, options::external_sphinx_options>) {
+      if constexpr (std::is_same_v<T, transformer_options::external_sphinx_options>) {
         transformer::set_href_sphinx_transformer{entities, external.options, inventory::sphinx::documentation_set::parse(external.inventory.native())}.transform();
-      } else if constexpr (std::is_same_v<T, options::external_doxygen_options>) {
+      } else if constexpr (std::is_same_v<T, transformer_options::external_doxygen_options>) {
         // TODO(0.6.0-alpha): implement me.
         throw std::logic_error("not implemented: doxygen linking");
-      } else if constexpr (std::is_same_v<T, options::external_legacy_options>) {
+      } else if constexpr (std::is_same_v<T, transformer_options::external_legacy_options>) {
         transformer::set_href_external_legacy_transformer{entities, external.options}.transform();
         throw std::logic_error("not implemented: legacy linking");
       } else {

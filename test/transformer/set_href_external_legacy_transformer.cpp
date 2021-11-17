@@ -31,7 +31,7 @@ TEST_CASE("External Legacy Legacy Links are Resolved", "[link_external_legacy_tr
       [fully qualified vector](<> "::std::vector")
       )");
 
-    struct set_href_external_legacy_transformer::options options;
+    struct set_href_external_legacy_transformer::set_href_external_legacy_transformer_options options;
     options.namspace = "std";
     options.url = R"(http://en.cppreference.com/mwiki/index.php?title=Special%3ASearch&search=$$)";
 

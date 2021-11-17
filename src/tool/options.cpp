@@ -634,7 +634,7 @@ void options_parser::process_legacy_comment_options(po::variables_map& parsed) {
       if (!std::regex_match(external, match, util::regex::options_parser_process_legacy_comment_options_syntax)) {
         logger::error(fmt::format("Ignoring malformed argument for --external. Must be `NAMESPACE=URL` and URL must contain $$ but found `{}`.", external));
       } else {
-        transformers::options::external_legacy_options external_options;
+        transformers::transformer_options::external_legacy_options external_options;
         external_options.options.namspace = match[1];
         external_options.options.url = match[2];
         options.transformer_options.external_link_options.push_back(external_options);
@@ -791,13 +791,13 @@ void options_parser::process_external_options(po::variables_map& parsed) {
       }
 
       if (match[1] == "sphinx") {
-        transformers::options::external_sphinx_options entry;
+        transformers::transformer_options::external_sphinx_options entry;
         entry.options.schema = match[2];
         entry.inventory = match[3];
         entry.options.url = match[4];
         options.transformer_options.external_link_options.emplace_back(entry);
       } else if (match[1] == "doxygen") {
-        transformers::options::external_doxygen_options entry;
+        transformers::transformer_options::external_doxygen_options entry;
         entry.options.schema = match[2];
         entry.inventory = match[3];
         entry.options.url = match[4];
@@ -872,7 +872,7 @@ void options_parser::process_output_options(po::variables_map& parsed) {
   }
 
   if (parsed.count("exclude-uncommented")) {
-    using mode = transformer::exclude_uncommented_transformer::options::mode;
+    using mode = transformer::exclude_uncommented_transformer::exclude_uncommented_transformer_options::mode;
 
     switch(parsed.at("exclude-uncommented").as<counter>().count) {
       case 2:

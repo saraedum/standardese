@@ -16,7 +16,7 @@ namespace standardese::transformer
 /// `--comment.external_doc` flag to link to a fixed search page URL.
 class set_href_external_legacy_transformer : public inner_transformer {
   public:
-    struct options {
+    struct set_href_external_legacy_transformer_options {
       /// The base URL of the external documentation.
       std::string url;
 
@@ -24,13 +24,13 @@ class set_href_external_legacy_transformer : public inner_transformer {
       std::string namspace;
     };
 
-    set_href_external_legacy_transformer(model::unordered_entities& documents, options);
+    set_href_external_legacy_transformer(model::unordered_entities& documents, set_href_external_legacy_transformer_options);
 
   protected:
     void do_transform(model::entity&) override;
 
   private:
-    const options options;
+    const set_href_external_legacy_transformer_options options;
 };
 
 }

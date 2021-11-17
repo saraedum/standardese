@@ -47,14 +47,14 @@ class options {
   static options parse(int argc, const char* argv[], struct options_options);
 
   /// Options that control how source code and comments are parsed.
-  struct tool::parsers::options parser_options;
+  tool::parsers::parser_options parser_options;
 
   /// Options that control transformers, i.e., how parsed markdown gets
   /// turned into the exact content of the output documents.
-  struct tool::transformers::options transformer_options;
+  tool::transformers::transformer_options transformer_options;
 
   /// Options that control how the output documents are emitted.
-  struct tool::output_generators::output_generators_options output_generator_options;
+  tool::output_generators::output_generators_options output_generator_options;
 };
 
 }

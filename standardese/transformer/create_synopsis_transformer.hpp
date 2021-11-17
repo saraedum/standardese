@@ -15,7 +15,7 @@ namespace standardese::transformer {
 /// Create a synopsis section for each entity.
 class create_synopsis_transformer : public inner_transformer {
   public:
-    struct options {
+    struct create_synopsis_transformer_options {
       // TODO(0.6.0-alpha): Actually use this.
       bool exclude_uncommented = false;
     };

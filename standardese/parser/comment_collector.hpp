@@ -16,17 +16,17 @@ namespace standardese::parser
     class comment_collector
     {
     public:
-        struct options {
+        struct comment_collector_options {
         };
 
-        explicit comment_collector(options options);
+        explicit comment_collector(comment_collector_options options);
 
         using comment = std::tuple<std::string, type_safe::object_ref<const cppast::cpp_entity>>;
 
         std::vector<comment> collect(const cppast::cpp_file& header);
 
       private:
-        struct options options;
+        comment_collector_options options;
     };
 }
 #endif

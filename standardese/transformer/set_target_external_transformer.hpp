@@ -19,7 +19,7 @@ namespace standardese::transformer
 /// generated with doxygen or sphinx.
 class set_target_external_transformer : public inner_transformer {
   public:
-    struct options {
+    struct set_target_external_transformer_options {
       /// A URI schema to explicitly link to some external documentation such
       /// as `std` to use `std://` to link to the standard library.
       /// TODO(0.6.0-alpha): Implement this.

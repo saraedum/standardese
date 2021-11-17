@@ -17,7 +17,7 @@ namespace standardese::transformer {
 /// Exclude entities from the output if they match a regular expression.
 class exclude_pattern_transformer : public inner_transformer {
   public:
-    struct options {
+    struct exclude_pattern_transformer_options {
       std::vector<std::regex> excluded;
     };
 

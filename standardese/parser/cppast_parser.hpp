@@ -22,8 +22,8 @@ namespace standardese::parser {
 /// source code.
 class cppast_parser {
  public:
-  struct options {
-    options();
+  struct cppast_parser_options {
+    cppast_parser_options();
 
     /// Flags for the C++ Parser.
     cppast::libclang_compile_config clang_config;
@@ -32,7 +32,7 @@ class cppast_parser {
     type_safe::optional<boost::filesystem::path> compile_commands;
   };
 
-  explicit cppast_parser(options);
+  explicit cppast_parser(cppast_parser_options);
 
   /// Parse a C++ file and return the root of its AST.
   /// \throws An exception if a parse error happens.
@@ -42,7 +42,7 @@ class cppast_parser {
   const cpp_context& context() const;
 
  private:
-  options options;
+  cppast_parser_options options;
 
   cpp_context context_;
 

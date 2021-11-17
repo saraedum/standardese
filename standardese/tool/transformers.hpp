@@ -29,34 +29,33 @@ namespace standardese::tool {
 /// performs.
 class transformers {
  public:
-  // TODO(0.6.0-alpha): rename to document_builders_options.
-  struct options {
-    struct transformer::group_uncommented_transformer::group_uncommented_options group_uncommented_options;
-    struct transformer::merge_group_transformer::group_options group_options;
-    struct transformer::exclude_pattern_transformer::options exclude_pattern_options;
-    struct transformer::exclude_access_transformer::options exclude_access_options;
-    struct transformer::exclude_uncommented_transformer::options exclude_uncommented_options;
-    struct transformer::create_synopsis_transformer::options synopsis_options;
-    struct transformer::create_entity_heading_transformer::create_entity_heading_transformer_options entity_heading_options;
-    struct transformer::create_entity_document_transformer::create_entity_document_transformer_options entity_document_options;
-    struct transformer::create_index_document_transformer::create_index_document_transformer_options index_document_options;
+  struct transformer_options {
+    transformer::group_uncommented_transformer::group_uncommented_options group_uncommented_options;
+    transformer::merge_group_transformer::group_options group_options;
+    transformer::exclude_pattern_transformer::exclude_pattern_transformer_options exclude_pattern_options;
+    transformer::exclude_access_transformer::exclude_access_transformer_options exclude_access_options;
+    transformer::exclude_uncommented_transformer::exclude_uncommented_transformer_options exclude_uncommented_options;
+    transformer::create_synopsis_transformer::create_synopsis_transformer_options synopsis_options;
+    transformer::create_entity_heading_transformer::create_entity_heading_transformer_options entity_heading_options;
+    transformer::create_entity_document_transformer::create_entity_document_transformer_options entity_document_options;
+    transformer::create_index_document_transformer::create_index_document_transformer_options index_document_options;
 
     struct external_sphinx_options {
       /// The local path of the inventory file.
       boost::filesystem::path inventory;
 
-      struct transformer::set_href_sphinx_transformer::options options;
+      transformer::set_href_sphinx_transformer::set_href_sphinx_transformer_options options;
     };
 
     struct external_doxygen_options {
       /// The local path of the inventory file.
       boost::filesystem::path inventory;
 
-      struct transformer::set_href_sphinx_transformer::options options;
+      transformer::set_href_sphinx_transformer::set_href_sphinx_transformer_options options;
     };
 
     struct external_legacy_options {
-      struct transformer::set_href_external_legacy_transformer::options options;
+      transformer::set_href_external_legacy_transformer::set_href_external_legacy_transformer_options options;
     };
 
     using external_link_option = std::variant<external_sphinx_options, external_doxygen_options, external_legacy_options>;
@@ -65,13 +64,13 @@ class transformers {
     std::vector<external_link_option> external_link_options;
   };
 
-  transformers(options);
+  transformers(transformer_options);
 
   /// Apply the configured transformers.
   void transform(model::unordered_entities& documents, const parser::cpp_context& context);
 
  private:
-  struct options options;
+  transformer_options options;
 };
 
 }

@@ -33,7 +33,7 @@ std::vector<T> flatten(R&& ranges) {
 
 }
 
-parsers::parsers(struct options options) : options(options) {}
+parsers::parsers(parser_options options) : options(options) {}
 
 std::pair<model::unordered_entities, parser::cpp_context> parsers::parse() {
   // Configure Worker Pool

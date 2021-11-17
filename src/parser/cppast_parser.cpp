@@ -49,13 +49,13 @@ static cppast_logger logger;
 
 }
 
-cppast_parser::options::options() {
+cppast_parser::cppast_parser_options::cppast_parser_options() {
   // Disable fast preprocessing as it skips header files completely because of
   // their header guards.
   clang_config.fast_preprocessing(false);
 }
 
-cppast_parser::cppast_parser(struct options options) : options(options), parser(cppast::libclang_parser(type_safe::ref(logger))) {
+cppast_parser::cppast_parser(cppast_parser_options options) : options(options), parser(cppast::libclang_parser(type_safe::ref(logger))) {
   if (options.compile_commands)
     this->compile_commands = cppast::libclang_compilation_database(options.compile_commands.value().generic_string());
 }

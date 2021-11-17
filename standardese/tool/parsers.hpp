@@ -16,10 +16,10 @@ namespace standardese::tool {
 /// This wraps the source code and comment parsers that standardese uses into a single interface.
 class parsers {
  public:
-  struct options {
-    struct parser::cppast_parser::options cppast_options;
+  struct parser_options {
+    struct parser::cppast_parser::cppast_parser_options cppast_options;
 
-    struct parser::comment_collector::options comment_collector_options;
+    struct parser::comment_collector::comment_collector_options comment_collector_options;
 
     struct parser::comment_parser::comment_parser_options comment_parser_options;
 
@@ -30,13 +30,13 @@ class parsers {
     int parallelism = std::thread::hardware_concurrency() + 1;
   };
 
-  parsers(struct options);
+  parsers(parser_options);
 
   /// Parse the source code and the comments and return a set of all the commented entities.
   std::pair<model::unordered_entities, parser::cpp_context> parse();
 
  private:
-  struct options options;
+  struct parser_options options;
 };
 
 }
