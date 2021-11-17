@@ -19,6 +19,13 @@ namespace standardese::logger {
 
 namespace {
 
+// TODO(0.6.0-rc): It would be nice to produce much better error messages:
+// * hook into fmt to put large replacements at the end of the message, i.e.,
+//   "message [1] message message\n[1]: (content of [1])"
+// * provide better rendering for typical standardese objects, i.e., make fmt
+//   understand how to render them and do not render XML that has no meaning to
+//   users typically.
+
 std::mutex counter_mutex;
 
 static bool is_warn_as_error = false;

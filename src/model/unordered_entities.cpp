@@ -12,6 +12,7 @@
 #include "../../standardese/model/module.hpp"
 #include "../../standardese/model/visitor/visit.hpp"
 #include "../../standardese/logger.hpp"
+#include "../../standardese/output_generator/xml/xml_generator.hpp"
 
 namespace standardese::model {
 
@@ -45,9 +46,10 @@ unordered_entities& unordered_entities::operator=(unordered_entities&& rhs) noex
   return *this;
 }
 
-bool unordered_entities::insert(value_type value) {
+void unordered_entities::insert(value_type value) {
   auto [pos, inserted] = self->items.insert(value);
-  return inserted;
+  if (!inserted)
+    logger::warn(fmt::format("Not adding entity {} because an equivalent entity was already found in this set.", output_generator::xml::xml_generator::render(value)));
 }
 
 unordered_entities::const_iterator unordered_entities::find_cpp_entity(const cppast::cpp_entity& entity) const {
