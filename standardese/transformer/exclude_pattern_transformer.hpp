@@ -12,8 +12,6 @@
 
 namespace standardese::transformer {
 
-// TODO(0.6.0-alpha): Implement me.
-
 /// Exclude entities from the output if they match a regular expression.
 class exclude_pattern_transformer : public inner_transformer {
   public:

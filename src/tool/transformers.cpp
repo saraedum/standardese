@@ -69,7 +69,15 @@ void transformers::transform(model::unordered_entities& entities, const parser::
 
   transformer::merge_group_transformer{entities, options.group_options}.transform();
 
+  // TODO(0.6.0-alpha): Change the implementation of exclusion:
+  // * the transformers here should just set the exclude_mode of entities
+  // * then a final transformer should kick entities out, as currently the exclude_uncommented_transformer does.
   transformer::exclude_uncommented_transformer{entities, options.exclude_uncommented_options}.transform();
+  // TODO(0.6.0-alpha): Implement me.
+  // transformer::exclude_access_transformer{...}.transform();
+  // TODO(0.6.0-alpha): Implement me.
+  // transformer::exclude_pattern_transformer{...}.transform();
+
   transformer::create_synopsis_transformer{entities}.transform();
   transformer::create_entity_heading_transformer{entities, context, options.entity_heading_options}.transform();;
   transformer::create_output_section_heading_transformer{entities}.transform();

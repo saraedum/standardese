@@ -12,8 +12,6 @@
 
 namespace standardese::transformer {
 
-// TODO(0.6.0-alpha): Implement me.
-
 /// Exclude entities from the output depending on their visibility (public/protected/private.)
 class exclude_access_transformer : public inner_transformer {
   public:
