@@ -16,7 +16,7 @@ namespace standardese::transformer {
 class create_synopsis_transformer : public inner_transformer {
   public:
     struct create_synopsis_transformer_options {
-      // TODO(0.6.0-alpha): Actually use this.
+      /// Whether to exclude uncommented entities from the generated synopsis.
       bool exclude_uncommented = false;
     };
 

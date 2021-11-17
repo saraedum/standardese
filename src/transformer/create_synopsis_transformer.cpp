@@ -230,6 +230,7 @@ void create_synopsis_transformer::do_transform(model::entity& document) {
       const cppast::cpp_entity& entity = documentation.entity();
 
       // TODO(0.6.0-alpha): Make configurable
+      // TODO(0.6.0-alpha): Honour exclude_uncommented.
       switch (entity.kind()) {
         case cppast::cpp_entity_kind::class_t:
           switch (static_cast<const cppast::cpp_class&>(entity).class_kind()) {
