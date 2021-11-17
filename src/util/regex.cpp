@@ -13,9 +13,9 @@ std::regex standardese::util::regex::options_parser_process_legacy_comment_optio
 std::regex standardese::util::regex::options_parser_process_external_options_syntax{"([^:]*):([^:]*):([^=]*)=(.*)"};
 std::regex standardese::util::regex::options_parser_escape_inja_control{"[{}]"};
 std::regex standardese::util::regex::options_parser_process_parser_options_macro{"([^=]+)(=?)(.*)"};
-std::regex standardese::util::regex::anchor_transformer_strip(R"([^\w\s-])");
-std::regex standardese::util::regex::anchor_transformer_escape(R"([-\s]+)");
-std::regex standardese::util::regex::link_external_legacy_transformer_pattern{R"((?:::)?(([^:]*)::.*))"};
-std::regex standardese::util::regex::link_external_legacy_transformer_replace{R"(\$\$)"};
-std::regex standardese::util::regex::link_target_internal_transformer_entity_pattern{"^standardese://@([0-9]*)$"};
-std::regex standardese::util::regex::link_target_internal_transformer_uri_pattern{R"(^(([^:/?#]+):)(//([^/?#]*))([^?#]*)(\?([^#]*))?(#(.*))?)"};
+std::regex standardese::util::regex::set_id_transformer_strip(R"([^\w\s-])");
+std::regex standardese::util::regex::set_id_transformer_escape(R"([-\s]+)");
+std::regex standardese::util::regex::set_href_external_legacy_transformer_pattern{R"((?:::)?(([^:]*)::.*))"};
+std::regex standardese::util::regex::set_href_external_legacy_transformer_replace{R"(\$\$)"};
+std::regex standardese::util::regex::set_target_internal_transformer_entity_pattern{"^standardese://@([0-9]*)$"};
+std::regex standardese::util::regex::set_target_internal_transformer_uri_pattern{R"(^(([^:/?#]+):)(//([^/?#]*))([^?#]*)(\?([^#]*))?(#(.*))?)"};

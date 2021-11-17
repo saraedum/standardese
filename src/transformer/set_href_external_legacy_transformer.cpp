@@ -23,8 +23,8 @@ void set_href_external_legacy_transformer::do_transform(model::entity& document)
         if constexpr (std::is_same_v<T, model::link_target::standardese_target>) {
 
           std::smatch match;
-          if (std::regex_match(target.target, match, util::regex::link_external_legacy_transformer_pattern) && match.str(2) == options.namspace) {
-            link.target = model::link_target::uri_target(std::regex_replace(options.url, util::regex::link_external_legacy_transformer_replace, match.str(1)));
+          if (std::regex_match(target.target, match, util::regex::set_href_external_legacy_transformer_pattern) && match.str(2) == options.namspace) {
+            link.target = model::link_target::uri_target(std::regex_replace(options.url, util::regex::set_href_external_legacy_transformer_replace, match.str(1)));
           }
         }
       });

@@ -16,9 +16,12 @@
 namespace standardese::transformer
 {
 
-set_target_external_transformer::set_target_external_transformer(model::unordered_entities* documents, inventory::symbols symbols) :
+set_target_external_transformer::set_target_external_transformer_options::set_target_external_transformer_options() {}
+
+set_target_external_transformer::set_target_external_transformer(model::unordered_entities* documents, inventory::symbols symbols, set_target_external_transformer_options options) :
   inner_transformer(documents),
-  symbols(std::move(symbols)) {}
+  symbols(std::move(symbols)),
+  options(std::move(options)) {}
 
 void set_target_external_transformer::do_transform(model::entity& document) {
   model::visitor::visit([&](auto&& link, auto&& recurse) {

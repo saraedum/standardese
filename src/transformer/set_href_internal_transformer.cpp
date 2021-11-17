@@ -4,7 +4,6 @@
 // found in the top-level directory of this distribution.
 
 #include <fmt/format.h>
-#include <regex>
 #include <cstdlib>
 
 #include "../../standardese/transformer/set_href_internal_transformer.hpp"

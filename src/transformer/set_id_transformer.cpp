@@ -45,9 +45,9 @@ void set_id_transformer::do_transform(model::entity& document) {
           recurse();
         }, heading);
 
-        inner = std::regex_replace(inner, util::regex::anchor_transformer_strip, "");
+        inner = std::regex_replace(inner, util::regex::set_id_transformer_strip, "");
         std::transform(inner.begin(), inner.end(), inner.begin(), [](unsigned char c){ return std::tolower(c); });
-        inner = std::regex_replace(inner, util::regex::anchor_transformer_escape, "-");
+        inner = std::regex_replace(inner, util::regex::set_id_transformer_escape, "-");
         // TODO(0.6.0-beta): Additionally, mkdocs sometimes adds _number to make things unique.
 
         entity.id = inner;

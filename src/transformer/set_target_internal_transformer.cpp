@@ -78,7 +78,7 @@ void set_target_internal_transformer::do_transform(model::entity& document) {
           {
             // TODO(0.6.0-alpha): This is a hack, see heading transformer.
             std::smatch match;
-            if (std::regex_match(target.target, match, util::regex::link_target_internal_transformer_entity_pattern)) {
+            if (std::regex_match(target.target, match, util::regex::set_target_internal_transformer_entity_pattern)) {
               link.target = model::link_target(static_cast<const cppast::cpp_entity*>((void*)atol(match[1].str().c_str())));
               return;
             }
@@ -95,7 +95,7 @@ void set_target_internal_transformer::do_transform(model::entity& document) {
 
           // Taken from RFC3986 p.50. Adapted so that scheme & authority are not optional.
           std::smatch match;
-          if (std::regex_match(target.target, match, util::regex::link_target_internal_transformer_uri_pattern)) {
+          if (std::regex_match(target.target, match, util::regex::set_target_internal_transformer_uri_pattern)) {
             // TODO(0.6.0-beta): Handle standardese:// schemes here.
             return;
           }
