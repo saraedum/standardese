@@ -12,6 +12,7 @@
 #include "../../standardese/model/visitor/visit.hpp"
 #include "../../standardese/model/markup/link.hpp"
 #include "../../standardese/output_generator/xml/xml_generator.hpp"
+#include "../../standardese/transformer/warn_target_unresolved_transformer.hpp"
 
 #include "../util/logger.hpp"
 #include "../util/cpp_file.hpp"
@@ -20,6 +21,7 @@
 namespace standardese::test::transformer {
 
 using standardese::test::util::cpp_file;
+using standardese::transformer::set_target_external_transformer;
 
 TEST_CASE("Links to Sphinx Documentation Are Resolved", "[set_target_external_transformer]") {
   auto logger = util::logger::throwing_logger();
@@ -35,24 +37,54 @@ TEST_CASE("Links to Sphinx Documentation Are Resolved", "[set_target_external_tr
     standardese::inventory::sphinx::documentation_set inventory;
     inventory.entries.emplace_back("X", "c++", "type", 0," /X", "class X");
 
-    standardese::transformer::set_target_external_transformer{&parsed.entities, inventory::symbols{&inventory}}.transform();
+    SECTION("All Links can be Resolved") {
+      set_target_external_transformer{&parsed.entities, inventory::symbols{&inventory}}.transform();
 
-    CAPTURE(output_generator::xml::xml_generator::render(parsed));
+      CAPTURE(output_generator::xml::xml_generator::render(parsed));
 
-    // Verify that all links could be resolved.
-    for (auto& document: parsed.entities)
-      model::visitor::visit([](auto&& link, auto&& recurse) {
-        using T = std::decay_t<decltype(link)>;
-        if constexpr (std::is_same_v<T, model::markup::link>) {
-          link.target.accept([](auto&& target) -> void {
-            using T = std::decay_t<decltype(target)>;
-            CAPTURE(boost::typeindex::type_id<T>().pretty_name());
-            REQUIRE(std::is_same_v<T, model::link_target::sphinx_target>);
-          });
-        }
+      REQUIRE_NOTHROW(standardese::transformer::warn_target_unresolved_transformer{&parsed.entities}.transform());
+    }
 
-        recurse();
-      }, document);
+    SECTION("No Links can be Resolved when Schemata are Required") {
+      set_target_external_transformer::set_target_external_transformer_options options;
+      options.require_schema = true;
+
+      set_target_external_transformer{&parsed.entities, inventory::symbols{&inventory}, options}.transform();
+
+      CAPTURE(output_generator::xml::xml_generator::render(parsed));
+
+      REQUIRE_THROWS(standardese::transformer::warn_target_unresolved_transformer{&parsed.entities}.transform());
+    }
+  }
+
+  SECTION("An Explicit Link to a Sphinx Type") {
+    auto parsed = util::parsed_comments(header).add(header, R"(
+      \file
+      [the C++ type X](<> "xxx://X")
+      [the fully qualified C++ type X](<> "xxx://::X")
+      )");
+
+    standardese::inventory::sphinx::documentation_set inventory;
+    inventory.entries.emplace_back("X", "c++", "type", 0," /X", "class X");
+
+    SECTION("No Links can be Resolved without a Configured Schema") {
+      set_target_external_transformer{&parsed.entities, inventory::symbols{&inventory}}.transform();
+
+      CAPTURE(output_generator::xml::xml_generator::render(parsed));
+
+      REQUIRE_THROWS(standardese::transformer::warn_target_unresolved_transformer{&parsed.entities}.transform());
+    }
+
+    SECTION("All Links can be Resolved with the Correct Scheme") {
+      set_target_external_transformer::set_target_external_transformer_options options;
+      options.schema = "xxx";
+
+      set_target_external_transformer{&parsed.entities, inventory::symbols{&inventory}, options}.transform();
+
+      CAPTURE(output_generator::xml::xml_generator::render(parsed));
+
+      REQUIRE_NOTHROW(standardese::transformer::warn_target_unresolved_transformer{&parsed.entities}.transform());
+    }
   }
 }
 

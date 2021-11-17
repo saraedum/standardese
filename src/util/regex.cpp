@@ -4,18 +4,19 @@
 
 #include "regex.hpp"
 
-std::regex standardese::util::regex::inja_formatter_sanitize_basename_forbidden{R"((\W|_)+)"};
-std::regex standardese::util::regex::sphinx_load_v2_zlib{"zlib"};
-// Essentially the same as https://github.com/sphinx-doc/sphinx/blob/4.x/sphinx/util/inventory.py#L123
-std::regex standardese::util::regex::sphinx_load_v2_syntax{R"((.+?)\s+(\S+)\s+(-?\d+)\s+?(\S*)\s+(.*)\s*)"};
 std::regex standardese::util::regex::command_character_escaped_command("\\w");
-std::regex standardese::util::regex::options_parser_process_legacy_comment_options_syntax{R"(([^=]*)=(.*\$\$.*))"};
-std::regex standardese::util::regex::options_parser_process_external_options_syntax{"([^:]*):([^:]*):([^=]*)=(.*)"};
+std::regex standardese::util::regex::inja_formatter_sanitize_basename_forbidden{R"((\W|_)+)"};
 std::regex standardese::util::regex::options_parser_escape_inja_control{"[{}]"};
+std::regex standardese::util::regex::options_parser_process_external_options_syntax{"([^:]*):([^:]*):([^=]*)=(.*)"};
+std::regex standardese::util::regex::options_parser_process_legacy_comment_options_syntax{R"(([^=]*)=(.*\$\$.*))"};
 std::regex standardese::util::regex::options_parser_process_parser_options_macro{"([^=]+)(=?)(.*)"};
-std::regex standardese::util::regex::set_id_transformer_strip(R"([^\w\s-])");
-std::regex standardese::util::regex::set_id_transformer_escape(R"([-\s]+)");
 std::regex standardese::util::regex::set_href_external_legacy_transformer_pattern{R"((?:::)?(([^:]*)::.*))"};
 std::regex standardese::util::regex::set_href_external_legacy_transformer_replace{R"(\$\$)"};
+std::regex standardese::util::regex::set_id_transformer_escape(R"([-\s]+)");
+std::regex standardese::util::regex::set_id_transformer_strip(R"([^\w\s-])");
+std::regex standardese::util::regex::set_target_external_transformer_schema_pattern(R"(^([a-zA-Z0-9-_]+)://)");
 std::regex standardese::util::regex::set_target_internal_transformer_entity_pattern{"^standardese://@([0-9]*)$"};
 std::regex standardese::util::regex::set_target_internal_transformer_uri_pattern{R"(^(([^:/?#]+):)(//([^/?#]*))([^?#]*)(\?([^#]*))?(#(.*))?)"};
+// Essentially the same as https://github.com/sphinx-doc/sphinx/blob/4.x/sphinx/util/inventory.py#L123
+std::regex standardese::util::regex::sphinx_load_v2_syntax{R"((.+?)\s+(\S+)\s+(-?\d+)\s+?(\S*)\s+(.*)\s*)"};
+std::regex standardese::util::regex::sphinx_load_v2_zlib{"zlib"};
