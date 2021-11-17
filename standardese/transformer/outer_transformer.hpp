@@ -16,7 +16,9 @@ namespace standardese::transformer {
 /// [inner_transformer]().)
 class outer_transformer {
   public:
-    explicit outer_transformer(const model::unordered_entities& entities);
+    /// Create a transformer that creates new entities.
+    /// The database of existing [entities]() must be kept alive until [transform]() has been called.
+    explicit outer_transformer(const model::unordered_entities* entities);
 
     /// Transform the entities passed in the constructor.
     model::unordered_entities transform(threading::pool::factory workers=threading::unthreaded_pool::factory);
@@ -28,7 +30,7 @@ class outer_transformer {
     virtual std::vector<model::entity> do_transform(const model::entity& root) = 0;
 
     /// The set of entities we are working on.
-    const model::unordered_entities& entities;
+    const model::unordered_entities* entities;
 };
 
 }

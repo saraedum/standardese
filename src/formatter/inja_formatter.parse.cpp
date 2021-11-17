@@ -28,7 +28,7 @@ model::document inja_formatter::parse(const std::string &markdown) const {
           std::visit([&](auto&& parsed) {
             using T = std::decay_t<decltype(parsed)>;
             if constexpr (std::is_same_v<T, const cppast::cpp_entity*>)
-              entity.target = model::link_target(*parsed);
+              entity.target = model::link_target(parsed);
             else
               logger::error(fmt::format("Could not parse link target `{}` which is not of a supported kind.", href));
           }, impl::from_json(nlohmann::json::parse(href.substr(impl::target_schema().size()))));

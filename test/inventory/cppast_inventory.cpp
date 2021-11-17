@@ -27,7 +27,7 @@ TEST_CASE("Function Lookup in MarkDown Links", "[cppast_inventory]")
         const util::cpp_file header("void f(int arg);");
 
         cppast_inventory inventory({header}, header);
-        symbols symbols{inventory};
+        symbols symbols{&inventory};
 
         CHECK(symbols.find("f(int)"));
         CHECK(symbols.find("f"));
@@ -44,7 +44,7 @@ TEST_CASE("Function Lookup in MarkDown Links", "[cppast_inventory]")
         const util::cpp_file header("template <typename T> void f(T arg);");
 
         cppast_inventory inventory({header}, header);
-        symbols symbols{inventory};
+        symbols symbols{&inventory};
 
         CHECK(symbols.find("f"));
         CHECK(symbols.find("f(T)"));
@@ -67,13 +67,13 @@ TEST_CASE("Function Lookup in MarkDown Links", "[cppast_inventory]")
             )");
 
         cppast_inventory inventory({header}, header);
-        symbols symbols{inventory};
+        symbols symbols{&inventory};
 
         const auto& a = header["a"];
         const auto& b = header["b"];
 
         const auto target =[](const auto& anchor) {
-          return anchor.value().accept([&](auto&& target) -> type_safe::object_ref<const cppast::cpp_entity> {
+          return anchor.value().accept([&](auto&& target) -> const cppast::cpp_entity* {
             using T = std::decay_t<decltype(target)>;
             if constexpr (std::is_same_v<T, model::link_target::cppast_target>) {
               return target.target;
@@ -106,7 +106,7 @@ TEST_CASE("Function Lookup in MarkDown Links", "[cppast_inventory]")
             )");
 
         cppast_inventory inventory({header}, header);
-        symbols symbols{inventory};
+        symbols symbols{&inventory};
 
         SECTION("Using Signature")
         {
@@ -138,7 +138,7 @@ TEST_CASE("Parameter Lookup in MarkDown Links", "[cppast_inventory]")
         const util::cpp_file header("void f(int arg);");
 
         cppast_inventory inventory({header}, header);
-        symbols symbols{inventory};
+        symbols symbols{&inventory};
 
         CHECK(!symbols.find("arg"));
         CHECK(symbols.find("arg", header["f"]));
@@ -153,7 +153,7 @@ TEST_CASE("Parameter Lookup in MarkDown Links", "[cppast_inventory]")
             )");
 
         cppast_inventory inventory({header}, header);
-        symbols symbols{inventory};
+        symbols symbols{&inventory};
 
         CHECK(symbols.find("X::f.arg"));
         CHECK(symbols.find("::X::f.arg"));
@@ -179,7 +179,7 @@ TEST_CASE("Parameter Lookup in MarkDown Links", "[cppast_inventory]")
             )");
 
         cppast_inventory inventory({header}, header);
-        symbols symbols{inventory};
+        symbols symbols{&inventory};
 
         CHECK(symbols.find("f.brg", header["X"]));
     }
@@ -221,7 +221,7 @@ TEST_CASE("Operator Lookup in MarkDown Links", "[inventory]")
             )");
 
         cppast_inventory inventory({header}, header);
-        symbols symbols{inventory};
+        symbols symbols{&inventory};
 
         SECTION("Lookups with the Proper Names Work")
         {
@@ -281,7 +281,7 @@ TEST_CASE("Template Parameter Lookup in MarkDown Links", "[cppast_inventory]")
         )");
 
     cppast_inventory inventory({header}, header);
-    symbols symbols{inventory};
+    symbols symbols{&inventory};
 
     SECTION("Template Parameters can be Mentioned Directly in the Corresponding Scope")
     {
@@ -305,7 +305,7 @@ TEST_CASE("Type Lookup in MarkDown Links", "[cppast_inventory]") {
         )");
 
     cppast_inventory inventory({header}, header);
-    symbols symbols{inventory};
+    symbols symbols{&inventory};
 
     SECTION("Types can be Found with and without their Template Parameters") {
         CHECK(symbols.find("X"));

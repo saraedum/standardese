@@ -48,7 +48,7 @@ TEST_CASE("Entity Documents can be Generated", "[entity_document_builder]")
       options.document_name = "doc_header";
       options.document_path = "doc_header";
 
-      auto documents = create_entity_document_transformer{parsed.entities, header, options}.transform();
+      auto documents = create_entity_document_transformer{&parsed.entities, header, options}.transform();
       REQUIRE(documents.size() == 1);
       auto document = documents.begin()->as<model::document>();
       document.name = "header.hpp";
@@ -89,7 +89,7 @@ TEST_CASE("Entity Documents can be Generated", "[entity_document_builder]")
 
       REQUIRE(options.filter(header["std::swap"]));
 
-      const auto documents = create_entity_document_transformer{parsed.entities, header, options}.transform();
+      const auto documents = create_entity_document_transformer{&parsed.entities, header, options}.transform();
       REQUIRE(documents.size() == 1);
       const auto document = documents.begin()->as<model::document>();
 
@@ -130,7 +130,7 @@ TEST_CASE("Entity Documents can be Generated", "[entity_document_builder]")
       options.document_path = "doc_X";
       options.filter = [&](const cppast::cpp_entity& entity) { return &entity == &header["X"]; };
 
-      const auto documents = create_entity_document_transformer{parsed.entities, header, options}.transform();
+      const auto documents = create_entity_document_transformer{&parsed.entities, header, options}.transform();
       REQUIRE(documents.size() == 1);
       const auto document = documents.begin()->as<model::document>();
 
@@ -164,7 +164,7 @@ TEST_CASE("Entity Documents can be Generated", "[entity_document_builder]")
         options.document_path = "doc_a";
         options.filter = [&](const cppast::cpp_entity& entity) { return &entity == &header["X.a"]; };
 
-        const auto documents = create_entity_document_transformer{parsed.entities, header, options}.transform();
+        const auto documents = create_entity_document_transformer{&parsed.entities, header, options}.transform();
         REQUIRE(documents.size() == 1);
         const auto document = documents.begin()->as<model::document>();
 
@@ -188,7 +188,7 @@ TEST_CASE("Entity Documents can be Generated", "[entity_document_builder]")
         options.document_path = "doc_b";
         options.filter = [&](const cppast::cpp_entity& entity) { return &entity == &header["X.b"]; };
 
-        const auto documents = create_entity_document_transformer{parsed.entities, header, options}.transform();
+        const auto documents = create_entity_document_transformer{&parsed.entities, header, options}.transform();
         REQUIRE(documents.size() == 1);
         const auto document = documents.begin()->as<model::document>();
 
@@ -218,7 +218,7 @@ TEST_CASE("Entity Documents can be Generated", "[entity_document_builder]")
       options.document_path = "doc_X";
       options.filter = [&](const cppast::cpp_entity& entity) { return &entity == &header["X"]; };
 
-      const auto documents = create_entity_document_transformer{parsed.entities, header, options}.transform();
+      const auto documents = create_entity_document_transformer{&parsed.entities, header, options}.transform();
       REQUIRE(documents.size() == 1);
       const auto document = documents.begin()->as<model::document>();
 
@@ -259,7 +259,7 @@ TEST_CASE("Entity Documents can be Generated", "[entity_document_builder]")
       options.document_path = "doc_Z";
       options.filter = [&](const cppast::cpp_entity& entity) { return &entity == &header["Z"]; };
 
-      const auto documents = create_entity_document_transformer{parsed.entities, header, options}.transform();
+      const auto documents = create_entity_document_transformer{&parsed.entities, header, options}.transform();
       REQUIRE(documents.size() == 1);
       const auto document = documents.begin()->as<model::document>();
 
@@ -312,7 +312,7 @@ TEST_CASE("Entity Documents can be Generated", "[entity_document_builder]")
       options.document_path = "doc_Z";
       options.filter = [&](const cppast::cpp_entity& entity) { return &entity == &header["Z"]; };
 
-      const auto documents = create_entity_document_transformer{parsed.entities, header, options}.transform();
+      const auto documents = create_entity_document_transformer{&parsed.entities, header, options}.transform();
       REQUIRE(documents.size() == 1);
       const auto document = documents.begin()->as<model::document>();
 
@@ -360,7 +360,7 @@ TEST_CASE("Entity Documents can be Generated", "[entity_document_builder]")
       options.document_path = "doc_MACRO";
       options.filter = [&](const cppast::cpp_entity& entity) { return &entity == &header["MACRO"]; };
 
-      const auto documents = create_entity_document_transformer{parsed.entities, header, options}.transform();
+      const auto documents = create_entity_document_transformer{&parsed.entities, header, options}.transform();
       REQUIRE(documents.size() == 1);
       const auto document = documents.begin()->as<model::document>();
 
@@ -406,7 +406,7 @@ TEST_CASE("Entity Documents can be Generated", "[entity_document_builder]")
       options.document_path = "doc_ENUM";
       options.filter = [&](const cppast::cpp_entity& entity) { return &entity == &header["ENUM"]; };
 
-      const auto documents = create_entity_document_transformer{parsed.entities, header, options}.transform();
+      const auto documents = create_entity_document_transformer{&parsed.entities, header, options}.transform();
       REQUIRE(documents.size() == 1);
       const auto document = documents.begin()->as<model::document>();
 
@@ -441,7 +441,7 @@ TEST_CASE("Entity Documents can be Generated", "[entity_document_builder]")
       options.document_path = "doc_ENUM";
       options.filter = [&](const cppast::cpp_entity& entity) { return &entity == &header["ENUM"]; };
 
-      const auto documents = create_entity_document_transformer{parsed.entities, header, options}.transform();
+      const auto documents = create_entity_document_transformer{&parsed.entities, header, options}.transform();
       REQUIRE(documents.size() == 1);
       const auto document = documents.begin()->as<model::document>();
 
@@ -476,7 +476,7 @@ TEST_CASE("Entity Documents can be Generated", "[entity_document_builder]")
       options.document_path = "doc_A";
       options.filter = [&](const cppast::cpp_entity& entity) { return &entity == &header["ENUM.A"]; };
 
-      const auto documents = create_entity_document_transformer{parsed.entities, header, options}.transform();
+      const auto documents = create_entity_document_transformer{&parsed.entities, header, options}.transform();
       REQUIRE(documents.size() == 1);
       const auto document = documents.begin()->as<model::document>();
 
@@ -508,7 +508,7 @@ TEST_CASE("Entity Documents can be Generated", "[entity_document_builder]")
       options.document_path = "doc_T";
       options.filter = [&](const cppast::cpp_entity& entity) { return &entity == &header["T"]; };
 
-      const auto documents = create_entity_document_transformer{parsed.entities, header, options}.transform();
+      const auto documents = create_entity_document_transformer{&parsed.entities, header, options}.transform();
       REQUIRE(documents.size() == 1);
       const auto document = documents.begin()->as<model::document>();
 
@@ -539,7 +539,7 @@ TEST_CASE("Entity Documents can be Generated", "[entity_document_builder]")
       options.document_path = "doc_U";
       options.filter = [&](const cppast::cpp_entity& entity) { return &entity == &header["U"]; };
 
-      const auto documents = create_entity_document_transformer{parsed.entities, header, options}.transform();
+      const auto documents = create_entity_document_transformer{&parsed.entities, header, options}.transform();
       REQUIRE(documents.size() == 1);
       const auto document = documents.begin()->as<model::document>();
 

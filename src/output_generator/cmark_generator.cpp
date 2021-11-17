@@ -20,7 +20,7 @@
 namespace standardese::output_generator
 {
 
-cmark_generator::cmark_generator(std::ostream& os) : stream_generator(os), root(cmark_node_new(CMARK_NODE_DOCUMENT)), top(root.get()) {
+cmark_generator::cmark_generator(std::ostream* os) : stream_generator(os), root(cmark_node_new(CMARK_NODE_DOCUMENT)), top(root.get()) {
   auto* node = cmark_node_new(CMARK_NODE_TEXT);
   // TODO(0.6.0-alpha): Implement me.
   cmark_node_set_literal(node, "HELLO");
@@ -28,19 +28,19 @@ cmark_generator::cmark_generator(std::ostream& os) : stream_generator(os), root(
 }
 
 void cmark_generator::visit(block_quote& block_quote) {
-    top = append_child(top, CMARK_NODE_BLOCK_QUOTE);
+    top = append_child(*top, CMARK_NODE_BLOCK_QUOTE);
     stream_generator::visit(block_quote);
     top = cmark_node_parent(top);
 }
 
 void cmark_generator::visit(code& code) {
-    top = append_child(top, CMARK_NODE_CODE);
+    top = append_child(*top, CMARK_NODE_CODE);
     stream_generator::visit(code);
     top = cmark_node_parent(top);
 }
 
 void cmark_generator::visit(code_block& code_block) {
-    top = append_child(top, CMARK_NODE_CODE_BLOCK);
+    top = append_child(*top, CMARK_NODE_CODE_BLOCK);
 
     if (!code_block.language.empty())
         cmark_node_set_fence_info(top, code_block.language.c_str());
@@ -50,17 +50,17 @@ void cmark_generator::visit(code_block& code_block) {
 }
 
 void cmark_generator::visit(emphasis& emphasis) {
-    top = append_child(top, CMARK_NODE_EMPH);
+    top = append_child(*top, CMARK_NODE_EMPH);
     stream_generator::visit(emphasis);
     top = cmark_node_parent(top);
 }
 
 void cmark_generator::visit(hard_break& hard_break) {
-    append_child(top, CMARK_NODE_LINEBREAK);
+    append_child(*top, CMARK_NODE_LINEBREAK);
 }
 
 void cmark_generator::visit(heading& heading) {
-    top = append_child(top, CMARK_NODE_HEADING);
+    top = append_child(*top, CMARK_NODE_HEADING);
 
     cmark_node_set_heading_level(top, heading.level);
 
@@ -69,7 +69,7 @@ void cmark_generator::visit(heading& heading) {
 }
 
 void cmark_generator::visit(link& link) {
-    top = append_child(top, CMARK_NODE_LINK);
+    top = append_child(*top, CMARK_NODE_LINK);
 
     if (!link.title.empty())
       cmark_node_set_title(top, link.title.c_str());
@@ -99,13 +99,13 @@ void cmark_generator::visit(link& link) {
 }
 
 void cmark_generator::visit(list_item& list_item) {
-    top = append_child(top, CMARK_NODE_ITEM);
+    top = append_child(*top, CMARK_NODE_ITEM);
     stream_generator::visit(list_item);
     top = cmark_node_parent(top);
 }
 
 void cmark_generator::visit(list& list) {
-    top = append_child(top, CMARK_NODE_LIST);
+    top = append_child(*top, CMARK_NODE_LIST);
 
     cmark_node_set_list_type(top, list.ordered ? CMARK_ORDERED_LIST : CMARK_BULLET_LIST);
 
@@ -114,17 +114,17 @@ void cmark_generator::visit(list& list) {
 }
 
 void cmark_generator::visit(paragraph& paragraph) {
-    top = append_child(top, CMARK_NODE_PARAGRAPH);
+    top = append_child(*top, CMARK_NODE_PARAGRAPH);
     stream_generator::visit(paragraph);
     top = cmark_node_parent(top);
 }
 
 void cmark_generator::visit(soft_break& soft_break) {
-    append_child(top, CMARK_NODE_SOFTBREAK);
+    append_child(*top, CMARK_NODE_SOFTBREAK);
 }
 
 void cmark_generator::visit(strong_emphasis& strong_emphasis) {
-    top = append_child(top, CMARK_NODE_STRONG);
+    top = append_child(*top, CMARK_NODE_STRONG);
     stream_generator::visit(strong_emphasis);
     top = cmark_node_parent(top);
 }
@@ -143,13 +143,13 @@ void cmark_generator::visit(text& text) {
         cmark_node_set_literal(top, "");
       cmark_node_set_literal(top, (cmark_node_get_literal(top) + text.value).c_str());
     } else {
-      auto node = append_child(top, CMARK_NODE_TEXT);
+      auto node = append_child(*top, CMARK_NODE_TEXT);
       cmark_node_set_literal(node, text.value.c_str());
     }
 }
 
 void cmark_generator::visit(image& image) {
-    top = append_child(top, CMARK_NODE_IMAGE);
+    top = append_child(*top, CMARK_NODE_IMAGE);
     cmark_node_set_title(top, image.title.c_str());
     cmark_node_set_url(top, image.src.c_str());
     stream_generator::visit(image);
@@ -157,24 +157,24 @@ void cmark_generator::visit(image& image) {
 }
 
 void cmark_generator::visit(thematic_break& thematic_break) {
-    append_child(top, CMARK_NODE_THEMATIC_BREAK);
+    append_child(*top, CMARK_NODE_THEMATIC_BREAK);
 }
 
-cmark_node* cmark_generator::append_child(cmark_node* top, cmark_node_type type) {
+cmark_node* cmark_generator::append_child(cmark_node& top, cmark_node_type type) {
   // TODO(0.6.0-rc): Use the safe cmark wrapper from the extensions here.
   auto node = cmark_node_new(type);
-  int success = cmark_node_append_child(top, node);
+  int success = cmark_node_append_child(&top, node);
   if (!success)
-    logger::error(fmt::format("Could not insert a MarkDown node of type `{}` into node of type `{}`. The node and its children will be missing from the output.", cmark_node_get_type_string(node), cmark_node_get_type_string(top)));
+    logger::error(fmt::format("Could not insert a MarkDown node of type `{}` into node of type `{}`. The node and its children will be missing from the output.", cmark_node_get_type_string(node), cmark_node_get_type_string(&top)));
   return node;
 }
 
-cmark_node* cmark_generator::prepend_child(cmark_node* top, cmark_node_type type) {
+cmark_node* cmark_generator::prepend_child(cmark_node& top, cmark_node_type type) {
   // TODO(0.6.0-rc): Use the safe cmark wrapper from the extensions here.
   auto node = cmark_node_new(type);
-  int success = cmark_node_prepend_child(top, node);
+  int success = cmark_node_prepend_child(&top, node);
   if (!success)
-    logger::error(fmt::format("Could not insert a MarkDown node of type `{}` into node of type `{}`. The node and its children will be missing from the output.", cmark_node_get_type_string(node), cmark_node_get_type_string(top)));
+    logger::error(fmt::format("Could not insert a MarkDown node of type `{}` into node of type `{}`. The node and its children will be missing from the output.", cmark_node_get_type_string(node), cmark_node_get_type_string(&top)));
   return node;
 }
 

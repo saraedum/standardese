@@ -54,6 +54,7 @@ set(src
     inventory/sphinx/entry.cpp
     inventory/symbols.cpp
     logger.cpp
+    model/cpp_entity_documentation.cpp
     model/document.cpp
     model/link_target.cpp
     model/unordered_entities.cpp

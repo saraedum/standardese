@@ -25,7 +25,7 @@
 namespace standardese::output_generator::xml
 {
 
-xml_generator::xml_generator(std::ostream& os) : stream_generator(os), xml_document(), top(xml_document) {}
+xml_generator::xml_generator(std::ostream* os) : stream_generator(os), xml_document(), top(xml_document) {}
 
 void xml_generator::visit(block_quote& block_quote) {
     top = top.append_child("block-quote");
@@ -242,7 +242,7 @@ std::string xml_generator::render(const model::entity& root) {
 }
 
 xml_generator::~xml_generator() {
-    xml_document.save(out, "  ");
+    xml_document.save(*out, "  ");
 }
 
 }

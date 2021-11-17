@@ -140,7 +140,7 @@ type_safe::variant<const cppast::cpp_entity*, std::string> comment_parser::resol
 
         if (command.command == commands::special_command::file) {
             if (bound)
-                throw parse_error(node, "File command cannot be used here as this comment is already bound to the entity `{}`.", *entity);
+                throw parse_error(*node, "File command cannot be used here as this comment is already bound to the entity `{}`.", *entity);
 
             assert(entity->kind() == cppast::cpp_entity_kind::file_t && "an unbound comment must be implicitly bound to its file");
             bound = true;
@@ -150,11 +150,11 @@ type_safe::variant<const cppast::cpp_entity*, std::string> comment_parser::resol
             auto [target] = command.arguments<1>();
 
             if (bound)
-                throw parse_error(node, "Entity command cannot be used here as this comment is already bound to the entity `{}`.", *entity);
+                throw parse_error(*node, "Entity command cannot be used here as this comment is already bound to the entity `{}`.", *entity);
 
             const auto resolved = entity_resolver(target);
             if (!resolved.has_value())
-                throw parse_error(node, "Failed to resolve entity `{}` specified in entity command.", target);
+                throw parse_error(*node, "Failed to resolve entity `{}` specified in entity command.", target);
 
             entity = &resolved.value();
 
@@ -183,7 +183,7 @@ type_safe::variant<const cppast::cpp_entity*, std::string> comment_parser::resol
             auto [target] = command.arguments<1>();
 
             if (bound)
-                throw parse_error(node, "Multiple module commands cannot be used in the same comment for `{}`.", *entity);
+                throw parse_error(*node, "Multiple module commands cannot be used in the same comment for `{}`.", *entity);
 
             bound = true;
             module = target;
@@ -201,7 +201,7 @@ type_safe::variant<const cppast::cpp_entity*, std::string> comment_parser::resol
     if (options.free_file_comments)
         return entity;
 
-    throw parse_error(root, "Failed to determine entity for free file comment in `{}`. Enable \"free file comments\" if this comment describes the entire file or use an `entity` or `file` command.", *entity);
+    throw parse_error(*root, "Failed to determine entity for free file comment in `{}`. Enable \"free file comments\" if this comment describes the entire file or use an `entity` or `file` command.", *entity);
 }
 
 std::vector<model::entity> comment_parser::extract_inlines(cmark_node* root, const cppast::cpp_entity& entity) const
@@ -237,7 +237,7 @@ std::vector<model::entity> comment_parser::extract_inlines(cmark_node* root, con
 const cppast::cpp_entity& comment_parser::resolve_base(const cppast::cpp_entity& entity, const std::string& name) const
 {
   inventory::cppast_inventory inventory{{&entity}, context};
-  inventory::symbols symbols{inventory};
+  inventory::symbols symbols{&inventory};
 
   // TODO(0.6.0-beta): Limit lookup to only bases.
   const auto base = symbols.find(name, entity);
@@ -245,7 +245,7 @@ const cppast::cpp_entity& comment_parser::resolve_base(const cppast::cpp_entity&
   if (!base.has_value())
     throw parse_error("Could not resolve base `{}` of `{}`.", name, entity);
 
-  return *base.value().accept([&](auto&& target) -> type_safe::object_ref<const cppast::cpp_entity> {
+  return *base.value().accept([&](auto&& target) -> const cppast::cpp_entity* {
     using T = std::decay_t<decltype(target)>;
     if constexpr (std::is_same_v<T, model::link_target::cppast_target>) {
       if (target.target->kind() != cppast::cpp_base_class::kind())
@@ -260,7 +260,7 @@ const cppast::cpp_entity& comment_parser::resolve_base(const cppast::cpp_entity&
 const cppast::cpp_entity& comment_parser::resolve_param(const cppast::cpp_entity& entity, const std::string& name) const
 {
   inventory::cppast_inventory inventory{{&entity}, context};
-  inventory::symbols symbols{inventory};
+  inventory::symbols symbols{&inventory};
 
   // TODO(0.6.0-beta): Limit lookup to only parameters.
   const auto param = symbols.find(name, entity);
@@ -268,7 +268,7 @@ const cppast::cpp_entity& comment_parser::resolve_param(const cppast::cpp_entity
   if (!param.has_value())
     throw parse_error("Could not resolve parameter `{}` of `{}`.", name, entity);
 
-  return *param.value().accept([&](auto&& target) -> type_safe::object_ref<const cppast::cpp_entity> {
+  return *param.value().accept([&](auto&& target) -> const cppast::cpp_entity* {
     using T = std::decay_t<decltype(target)>;
     if constexpr (std::is_same_v<T, model::link_target::cppast_target>) {
       switch(target.target->kind()) {
@@ -301,7 +301,7 @@ void comment_parser::parse(cmark_node* root, const cppast::cpp_entity& entity, s
 {
     assert((cmark_node_get_type(root) == CMARK_NODE_DOCUMENT || cmark_node_get_type(root) == command_extension::command_extension::node_type<commands::inline_command>()) && "root node of a comment must be <document> or an inline node");
 
-    auto model = model::cpp_entity_documentation(entity, context);
+    auto model = model::cpp_entity_documentation(&entity, context);
     visit_children(root, [&](cmark_node* child) { parse(child, model); });
     entities.emplace_back(std::move(model));
 }
@@ -331,7 +331,7 @@ void comment_parser::apply_command(cmark_node* node, T& model) const
         {
           auto [synopsis] = command.arguments<1>();
           if (model.synopsis)
-              throw parse_error(node, "Found multiple synopsis commands for `{}` but only one is allowed.", model);
+              throw parse_error(*node, "Found multiple synopsis commands for `{}` but only one is allowed.", model);
           model.synopsis = synopsis;
           return;
         }
@@ -346,9 +346,9 @@ void comment_parser::apply_command(cmark_node* node, T& model) const
           else if (target == "target")
               mode = model::exclude_mode::exclude_target;
           else
-              throw parse_error(node, "Found unsupported exclude mode `{}` for `{}`.", target, model);
+              throw parse_error(*node, "Found unsupported exclude mode `{}` for `{}`.", target, model);
           if (model.exclude_mode != model::exclude_mode::include)
-              throw parse_error(node, "Cannot set exclude mode more than once for `{}`.", model);
+              throw parse_error(*node, "Cannot set exclude mode more than once for `{}`.", model);
           model.exclude_mode = mode;
           return;
         }
@@ -356,7 +356,7 @@ void comment_parser::apply_command(cmark_node* node, T& model) const
         {
           auto [name] = command.arguments<1>();
           if (model.id != "")
-              throw parse_error(node, "Cannot set unique name for `{}` to `{}` since it already has a unique name `{}`.", model, name, model.id);
+              throw parse_error(*node, "Cannot set unique name for `{}` to `{}` since it already has a unique name `{}`.", model, name, model.id);
           model.id = name;
           return;
         }
@@ -365,10 +365,10 @@ void comment_parser::apply_command(cmark_node* node, T& model) const
           auto [name] = command.arguments<1>();
           if constexpr (std::is_same_v<T, model::cpp_entity_documentation>) {
               if (model.output_name != "")
-                  throw parse_error(node, "Cannot reset output name for `{}` to `{}` since it already has an output name `{}`.", model, name, model.output_name);
+                  throw parse_error(*node, "Cannot reset output name for `{}` to `{}` since it already has an output name `{}`.", model, name, model.output_name);
               model.output_name = name;
           } else {
-            throw parse_error(node, "Output name command can only be used for C++ entity documentation not for `{}`.", model);
+            throw parse_error(*node, "Output name command can only be used for C++ entity documentation not for `{}`.", model);
           }
           return;
         }
@@ -376,11 +376,11 @@ void comment_parser::apply_command(cmark_node* node, T& model) const
         {
           auto [name, heading] = command.arguments<2>();
           if (model.group)
-              throw parse_error(node, "Group cannot be set to `{}` for `{}` since it is already in the group `{}`.", name, model, model.group.value());
+              throw parse_error(*node, "Group cannot be set to `{}` for `{}` since it is already in the group `{}`.", name, model, model.group.value());
           if (model.output_section)
-              throw parse_error(node, "Group cannot be set to `{}` for `{}` since it has already an explicit output section `{}`.", name, model, model.output_section.value());
+              throw parse_error(*node, "Group cannot be set to `{}` for `{}` since it has already an explicit output section `{}`.", name, model, model.output_section.value());
           if (name.empty())
-              throw parse_error(node, "Group name cannot be empty for `{}`.", model);
+              throw parse_error(*node, "Group name cannot be empty for `{}`.", model);
 
           if (name.front() == '-') {
               // name starts with -, erase it, and don't consider it a section
@@ -399,9 +399,9 @@ void comment_parser::apply_command(cmark_node* node, T& model) const
         {
           auto [heading] = command.arguments<1>();
           if (model.group)
-              throw parse_error(node, "Output section cannot be set to `{}` for `{}` since it is already in the group `{}`.", heading, model, model.group.value());
+              throw parse_error(*node, "Output section cannot be set to `{}` for `{}` since it is already in the group `{}`.", heading, model, model.group.value());
           if (model.output_section)
-              throw parse_error(node, "Output section cannot be set to `{}` for `{}` since it has already an explicit output section `{}`.", heading, model, model.output_section.value());
+              throw parse_error(*node, "Output section cannot be set to `{}` for `{}` since it has already an explicit output section `{}`.", heading, model, model.output_section.value());
 
           model.output_section = heading;
           return;
@@ -413,7 +413,7 @@ void comment_parser::apply_command(cmark_node* node, T& model) const
             throw std::logic_error(fmt::format("Module command can not appear in the module description for `{}`.", model.name));
           } else {
             if (model.module)
-                throw parse_error(node, "Module cannot be set to `{}` for `{}` since currently each entity can only be in a single module and `{}` is already in the module `{}`.", module, model, model, model.module.value());
+                throw parse_error(*node, "Module cannot be set to `{}` for `{}` since currently each entity can only be in a single module and `{}` is already in the module `{}`.", module, model, model, model.module.value());
 
             model.module = module;
           }
@@ -450,7 +450,7 @@ void comment_parser::add_uncommented_entities(model::unordered_entities& entitie
 
     const auto ensure_entity = [&](const cppast::cpp_entity& entity) {
         if (entities.find_cpp_entity(entity) == entities.end()) {
-          auto documentation = model::cpp_entity_documentation(entity, context);
+          auto documentation = model::cpp_entity_documentation(&entity, context);
           documentation.exclude_mode = model::exclude_mode::uncommented;
           entities.insert(std::move(documentation));
         }

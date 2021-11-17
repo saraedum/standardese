@@ -15,7 +15,10 @@ namespace standardese::output_generator::doxygen
 
 class tagfile_generator : public stream_generator {
   public:
-    tagfile_generator(std::ostream& os);
+    /// Create a generator that writes a [Doxygen
+    /// Tagfile](https://www.doxygen.nl/manual/external.html).
+    /// Upon destruction of this object, the tagfile is written to [os]().
+    tagfile_generator(std::ostream* os);
 
     void visit(document&) override;
 

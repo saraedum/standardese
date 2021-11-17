@@ -7,10 +7,10 @@
 
 namespace standardese::output_generator::doxygen {
 
-tagfile_generator::tagfile_generator(std::ostream& os) : stream_generator(os) {}
+tagfile_generator::tagfile_generator(std::ostream* os) : stream_generator(os) {}
 
 tagfile_generator::~tagfile_generator() {
-  out << tagfile << std::flush;
+  *out << tagfile << std::flush;
 }
 
 void tagfile_generator::visit(document& document) {

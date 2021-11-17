@@ -34,7 +34,10 @@ class create_index_document_transformer {
       struct formatter::inja_formatter::inja_formatter_options target_text_options;
     };
 
-    create_index_document_transformer(model::unordered_entities&, parser::cpp_context, create_index_document_transformer_options);
+    /// Create a transformer that creates a single index document listing all
+    /// the [entities]() that match
+    /// [create_index_document_transformer_options::predicate]().
+    create_index_document_transformer(const model::unordered_entities* entities, const parser::cpp_context&, create_index_document_transformer_options);
 
     /// Create an index of all entities satisfying `predicate`.
     model::document transform(threading::pool::factory workers=threading::unthreaded_pool::factory) const;
@@ -53,7 +56,7 @@ class create_index_document_transformer {
 
     create_index_document_transformer_options options;
 
-    const model::unordered_entities& entities;
+    const model::unordered_entities* entities;
 };
 
 }

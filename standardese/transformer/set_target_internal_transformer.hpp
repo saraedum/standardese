@@ -16,7 +16,10 @@ namespace standardese::transformer
 /// Resolves links in MarkDown that use standardese syntax to link to targets within the same project.
 class set_target_internal_transformer : public inner_transformer {
   public:
-    set_target_internal_transformer(model::unordered_entities& documents, const parser::cpp_context& context);
+    /// Create a transformer that will rewrite each
+    /// [model::markup::link::target]() attribute in all the [documents]() for
+    /// links that refer to targets within the same project.
+    set_target_internal_transformer(model::unordered_entities* documents, const parser::cpp_context& context);
 
   protected:
     void do_transform(model::entity&) override;

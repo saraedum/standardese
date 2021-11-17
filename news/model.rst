@@ -58,14 +58,14 @@
   or using the usual Standardese syntax for internal links, i.e.,
   `[std::vector]()` or `[vector](<> "std::vector")`.
 
+* Added coding guidelines to our README, in particular calling conventions to
+  make lifetime easier to understand.
+
 **Changed:**
 
 * Simplified (hopefully) the namespace structure (breaks the API):
   * `standardese::parser`: interface to the C++ parser (via cppast), the
     MarkDown parser (cmark) and the standardese specific extensions
-  * `standardese::document_builder`: builds the rough outlines of the output
-    documents from the parsed comments, e.g., collects all the header files and
-    creates a document outline for each.
   * `standardese::model`: the internal representation of both parsed comments,
     output document outlines and markup; this combines some of the things that
     used to be in `standardese::comment` and `standardese::markup`.

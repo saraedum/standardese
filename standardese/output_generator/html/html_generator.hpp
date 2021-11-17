@@ -12,7 +12,9 @@ namespace standardese::output_generator::html
 
 class html_generator : public stream_generator {
   public:
-    html_generator(std::ostream& os);
+    /// Create a generator that writes HTML output.
+    /// Upon destruction of this object, HTML is written to the [os]() stream.
+    html_generator(std::ostream* os);
 
     static std::string render(const model::entity& root);
 };

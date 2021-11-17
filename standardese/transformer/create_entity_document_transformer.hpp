@@ -36,7 +36,10 @@ class create_entity_document_transformer : public outer_transformer {
       std::string document_path = "doc_{{ sanitize_basename(relative(paths)) }}";
     };
 
-    create_entity_document_transformer(model::unordered_entities&, const parser::cpp_context&, create_entity_document_transformer_options={});
+    /// Create a transformer that will create a document for each entity in
+    /// [entities]() that passes the predicate
+    /// [create_entity_document_transformer_options::filter]().
+    create_entity_document_transformer(const model::unordered_entities* entities, const parser::cpp_context&, create_entity_document_transformer_options={});
 
   protected:
     virtual std::vector<model::entity> do_transform(const model::entity& entity) override;

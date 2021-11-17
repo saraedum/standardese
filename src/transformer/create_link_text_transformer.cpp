@@ -17,7 +17,7 @@ template<class> inline constexpr bool always_false_v = false;
 
 namespace standardese::transformer {
 
-create_link_text_transformer::create_link_text_transformer(model::unordered_entities& documents, parser::cpp_context context, link_text_transformer_options options) : inner_transformer(documents), options(std::move(options)), context(std::move(context)) {
+create_link_text_transformer::create_link_text_transformer(model::unordered_entities* documents, const parser::cpp_context& context, link_text_transformer_options options) : inner_transformer(documents), options(std::move(options)), context(context) {
 }
 
 void create_link_text_transformer::do_transform(model::entity& root) {

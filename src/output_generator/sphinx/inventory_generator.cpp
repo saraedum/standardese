@@ -14,10 +14,10 @@
 namespace standardese::output_generator::sphinx
 {
 
-inventory_generator::inventory_generator(std::ostream& os) : stream_generator(os) {}
+inventory_generator::inventory_generator(std::ostream* os) : stream_generator(os) {}
 
 inventory_generator::~inventory_generator() {
-  out << inventory << std::flush;
+  *out << inventory << std::flush;
 }
 
 void inventory_generator::visit(document& document) {

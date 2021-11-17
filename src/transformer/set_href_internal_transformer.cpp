@@ -22,14 +22,14 @@
 namespace standardese::transformer
 {
 
-set_href_internal_transformer::set_href_internal_transformer(model::unordered_entities& documents, parser::cpp_context context) :
+set_href_internal_transformer::set_href_internal_transformer(model::unordered_entities* documents, const parser::cpp_context& context) :
   inner_transformer(documents),
   context(context),
   targets([&]() {
     std::string path;
     std::unordered_map<const cppast::cpp_entity*, std::string> a;
 
-    for (const auto& document : documents)
+    for (const auto& document : *documents)
       model::visitor::visit([&](auto&& entity, auto&& recurse) {
         using T = std::decay_t<decltype(entity)>;
 

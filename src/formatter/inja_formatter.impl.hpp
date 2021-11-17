@@ -31,7 +31,7 @@ struct inja_formatter::impl {
     nlohmann::json backup;
   };
 
-  impl(inja_formatter_options options, parser::cpp_context cpp_context);
+  impl(inja_formatter_options options, const parser::cpp_context& cpp_context);
 
   using json = nlohmann::json;
   using variant = std::variant<std::nullptr_t, const cppast::cpp_entity*, const cppast::cpp_type*, const model::entity*, const json::array_t*, json::boolean_t, json::number_float_t, const json::object_t*, const json::string_t*, json::number_integer_t>;

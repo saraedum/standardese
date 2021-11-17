@@ -21,9 +21,13 @@ namespace standardese::parser
 
         explicit comment_collector(comment_collector_options options);
 
+        // TODO(0.6.0-alpha): Drop type_safe::object_ref where possible.
         using comment = std::tuple<std::string, type_safe::object_ref<const cppast::cpp_entity>>;
 
-        std::vector<comment> collect(const cppast::cpp_file& header);
+        /// Return a collection of all the source code comments and the
+        /// corresponding C++ entities (children of [header]()) they are
+        /// commenting.
+        std::vector<comment> collect(const cppast::cpp_file* header);
 
       private:
         comment_collector_options options;

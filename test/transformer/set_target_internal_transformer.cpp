@@ -34,7 +34,7 @@ TEST_CASE("Links to Header Files are Resolved", "[link_target_internal_transform
       [partial absolute path](<> "$path/header.hpp")
       )"), "$path", header.path().parent_path().filename().native()));
 
-    standardese::transformer::set_target_internal_transformer{parsed.entities, header}.transform();
+    standardese::transformer::set_target_internal_transformer{&parsed.entities, header}.transform();
 
     CAPTURE(output_generator::xml::xml_generator::render(parsed));
 

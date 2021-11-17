@@ -25,6 +25,7 @@ namespace {
 // * provide better rendering for typical standardese objects, i.e., make fmt
 //   understand how to render them and do not render XML that has no meaning to
 //   users typically.
+// * Have a look at parse_error and see how this relates to what we wrote here.
 
 std::mutex counter_mutex;
 

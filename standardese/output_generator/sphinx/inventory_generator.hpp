@@ -15,7 +15,11 @@ namespace standardese::output_generator::sphinx
 
 class inventory_generator : public stream_generator {
   public:
-    inventory_generator(std::ostream& os);
+    /// Create a generator that writes a [Sphinx
+    /// Inventory](https://www.sphinx-doc.org/en/master/usage/extensions/intersphinx.html).
+    /// The inventory is written to the [os]() stream upon destruction of this
+    /// object.
+    inventory_generator(std::ostream* os);
 
     void visit(cpp_entity_documentation&) override;
     void visit(group_documentation&) override;

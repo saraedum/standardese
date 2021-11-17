@@ -27,7 +27,8 @@ const cppast::cpp_file& cppast_inventory::root(const cppast::cpp_entity& entity_
 }
 
 type_safe::optional_ref<const cppast::cpp_entity> cppast_inventory::find(const std::string& name, const cppast::cpp_entity& entity, const parser::cpp_context& context) {
-  const auto anchor = symbols(cppast_inventory({&entity}, context)).find(name, entity);
+  const cppast_inventory inventory{{&entity}, context};
+  const auto anchor = symbols(&inventory).find(name, entity);
 
   if (!anchor.has_value())
     return type_safe::nullopt;
@@ -35,7 +36,7 @@ type_safe::optional_ref<const cppast::cpp_entity> cppast_inventory::find(const s
   return anchor.value().accept([&](auto&& target) -> type_safe::object_ref<const cppast::cpp_entity> {
     using T = std::decay_t<decltype(target)>;
     if constexpr (std::is_same_v<T, model::link_target::cppast_target>) {
-      return target.target;
+      return type_safe::ref(*target.target);
     } else {
       throw std::logic_error("lookup in cppast_inventory returned something that is not a cppast entity");
     }

@@ -18,7 +18,9 @@ class text_generator : public cmark_generator {
       text_generator_options();
     };
 
-    text_generator(std::ostream& os, text_generator_options = {});
+    /// Create a generator that writes output as plain text.
+    /// The output is written to the [os]() stream upon destruction of this object.
+    text_generator(std::ostream* os, text_generator_options = {});
 
     ~text_generator() override;
 

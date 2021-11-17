@@ -21,7 +21,7 @@ class code_formatter {
     code_formatter_options();
   };
 
-  code_formatter(code_formatter_options, parser::cpp_context);
+  code_formatter(code_formatter_options, const parser::cpp_context&);
 
   // TODO(0.6.0-beta): Make the context more flexible. It could be any kind of documentation.
 

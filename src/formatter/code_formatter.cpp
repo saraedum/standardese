@@ -30,7 +30,7 @@ namespace standardese::formatter {
 
 code_formatter::code_formatter_options::code_formatter_options() {}
 
-code_formatter::code_formatter(code_formatter_options options, parser::cpp_context context) : options(std::move(options)), cpp_context(std::move(context)) {}
+code_formatter::code_formatter(code_formatter_options options, const parser::cpp_context& context) : options(std::move(options)), cpp_context(std::move(context)) {}
 
 model::markup::paragraph code_formatter::build(const cppast::cpp_entity& entity) const {
   inja_formatter inja{options, cpp_context};
@@ -39,7 +39,7 @@ model::markup::paragraph code_formatter::build(const cppast::cpp_entity& entity)
 }
 
 model::markup::paragraph code_formatter::build(const cppast::cpp_entity& entity, const cppast::cpp_entity& context) const {
-  inja_formatter inja{options, cpp_context, context};
+  inja_formatter inja{options, cpp_context, &context};
   inja.data() = inja.to_json(&entity);
   return inja.code(inja.format(options.cpp_format));
 }
@@ -59,7 +59,7 @@ model::markup::paragraph code_formatter::build(const std::string& format, const 
 }
 
 model::markup::paragraph code_formatter::build(const std::string& format, const cppast::cpp_entity& entity, const cppast::cpp_entity& context) const {
-  inja_formatter inja{options, cpp_context, context};
+  inja_formatter inja{options, cpp_context, &context};
   inja.data() = inja.to_json(&entity);
   return inja.code(inja.format(format));
 }
@@ -71,7 +71,7 @@ model::markup::paragraph code_formatter::build(const std::string& format, const 
 }
 
 model::markup::paragraph code_formatter::build(const std::string& format, const cppast::cpp_type& type, const cppast::cpp_entity& context) const {
-  inja_formatter inja{options, cpp_context, context};
+  inja_formatter inja{options, cpp_context, &context};
   inja.data() = inja.to_json(&type);
   return inja.code(inja.format(format));
 }

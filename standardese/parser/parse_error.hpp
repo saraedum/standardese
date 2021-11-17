@@ -62,7 +62,7 @@ namespace standardese::parser
 
         // TODO(0.6.0-beta): Properly report where this node is in the source file. (Needs changes in cppast probably.)
         template <typename ...Args>
-        explicit parse_error(cmark_node* location, const std::string& format_str, Args&&... args) : parse_error(format_str, std::forward<Args>(args)...) {}
+        explicit parse_error(const cmark_node& location, const std::string& format_str, Args&&... args) : parse_error(format_str, std::forward<Args>(args)...) {}
     };
 }
 

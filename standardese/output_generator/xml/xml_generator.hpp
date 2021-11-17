@@ -15,7 +15,9 @@ namespace standardese::output_generator::xml
 /// Renders a tree of entities as XML.
 class xml_generator : public stream_generator {
   public:
-    xml_generator(std::ostream&);
+    /// Create a generator that writes output in an XML format.
+    /// The output is written to the [os]() stream upon destruction of this object.
+    xml_generator(std::ostream* os);
 
     virtual ~xml_generator();
 

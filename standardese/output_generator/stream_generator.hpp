@@ -18,8 +18,12 @@ namespace standardese::output_generator
 class stream_generator : public model::visitor::recursive_visitor<true>
 {
 public:
-    stream_generator(std::ostream& os) : out(os) {
-      // TODO(0.6.0-rc): Handle bad stream here and when actually writing output.
+    /// Create a generator that writes output to [os]() stream upon destruction.
+    stream_generator(std::ostream* os) : out(os) {
+      if (os == nullptr)
+        throw std::invalid_argument("output stream must not be NULL");
+      if (os->bad())
+        throw std::invalid_argument("output stream must be healthy");
     }
 
     virtual ~stream_generator() {}
@@ -29,14 +33,14 @@ public:
     {
         std::stringstream s;
         {
-          auto generator = G(s);
+          auto generator = G(&s);
           root.accept(generator);
         }
         return s.str();
     }
 
 protected:
-    std::ostream& out;
+    std::ostream* out;
 };
 
 }

@@ -27,7 +27,7 @@ TEST_CASE("Loading an Intersphinx Inventory", "[documentation_set]") {
 
       std::ifstream(location) >> inventory;
 
-      symbols symbols{inventory};
+      symbols symbols{&inventory};
       auto abc = symbols.find("abc.ABC");
 
       REQUIRE(abc);
@@ -56,7 +56,7 @@ TEST_CASE("Type Lookup up in Intersphinx Documentation Sets", "[documentation_se
     documentation_set inventory;
     inventory.entries.emplace_back("X", "c++", "type", 0," /X", "class X");
 
-    symbols symbols{inventory};
+    symbols symbols{&inventory};
 
     SECTION("Types can be Found by their Fully Qualified Name") {
       REQUIRE(symbols.find("X"));

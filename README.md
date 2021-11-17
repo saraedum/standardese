@@ -526,6 +526,48 @@ For example:
 void func(int foo, int bar);
 ```
 
+## Contributing to Standardese
+
+Standardese is free software. We are always welcoming contributions. If you
+found a problem or you would like to see standardese extended, please create an
+[issue](https://github.com/standardese/standardese/issues) so the community can
+discuss what should be done about it.
+
+### Coding Standards
+
+We are trying to be pragmatic about coding standards. We are enforcing correct
+formatting automatically in our CI so you do not need to worry about.
+
+TODO(0.6.0-beta): Enforce these standardes.
+
+We try to be consistent in our calling conventions to confer what are the
+expected lifetimes of parameters. Namely, if a parameter is not required to
+live beyond an invocation, it should be passed by const reference (or of coures
+by value or as an rvalue where appropriate.)
+
+```
+Y compute(const X&);
+```
+
+If the paremeter is going to be modified, it should be passed by reference.
+
+```
+void modify(X&);
+```
+
+If the parameter is expected to outlive the invocation, e.g., because a
+reference to it is stored in an object that is created, it shuold be passed as
+a pointer; that pointer can be const or shared where appropriate.
+
+```
+Y construct(const X*);
+```
+
+In such a case, there should be a comment explaining what is the lifetime
+requirement.
+
+Unless explicitly mentioned, such a pointer parameter must not be the null pointer.
+
 ## Acknowledgements
 
 This project was started by Jonathan @foonathan Müller who wrote most of the

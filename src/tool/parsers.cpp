@@ -58,7 +58,7 @@ std::pair<model::unordered_entities, parser::cpp_context> parsers::parse() {
   // Collect source code comments.
   auto comment_collector = parser::comment_collector(options.comment_collector_options);
   auto comments = flatten(threading::transform(workers, successfully_parsed.begin(), successfully_parsed.end(), [&](const auto& cpp_file) {
-      return comment_collector.collect(*cpp_file.value());
+      return comment_collector.collect(&*cpp_file.value());
   }));
 
   // Parse comments as MarkDown...

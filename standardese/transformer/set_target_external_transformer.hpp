@@ -8,9 +8,6 @@
 #include "inner_transformer.hpp"
 #include "../inventory/symbols.hpp"
 
-// TODO(0.6.0-alpha): Make sure that we have consistent calling conventions in constructors/factories everywhere but also make sure it's always documented when the caller is expected to keep something alive:
-// * const&: the caller has to keep the value alive (with exception of std::string)
-
 namespace standardese::transformer
 {
 
@@ -32,7 +29,10 @@ class set_target_external_transformer : public inner_transformer {
       bool require_schema = false;
     };
 
-    set_target_external_transformer(model::unordered_entities& documents, inventory::symbols symbols);
+    /// Create a transformer that will rewrite each
+    /// [model::markup::link::target]() for all links in the [documents]() if
+    /// they refer to any of the external [symbols]().
+    set_target_external_transformer(model::unordered_entities* documents, inventory::symbols symbols);
 
   protected:
     void do_transform(model::entity&) override;

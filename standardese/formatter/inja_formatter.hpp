@@ -112,9 +112,9 @@ class inja_formatter {
     std::string noexcept_specification_format;
   };
 
-  inja_formatter(inja_formatter_options, parser::cpp_context);
-  inja_formatter(inja_formatter_options, parser::cpp_context, const cppast::cpp_entity& context);
-  inja_formatter(inja_formatter_options, const model::cpp_entity_documentation& context);
+  inja_formatter(inja_formatter_options, const parser::cpp_context&);
+  inja_formatter(inja_formatter_options, const parser::cpp_context&, const cppast::cpp_entity* context);
+  inja_formatter(inja_formatter_options, const model::cpp_entity_documentation* context);
 
   ~inja_formatter();
 

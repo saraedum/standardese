@@ -31,8 +31,10 @@ namespace standardese::inventory
 /// handled by this class at all.
 class symbols {
  public:
-  // TODO(0.6.0-beta): Do we need to keep the inventory alive?
-  explicit symbols(const inventory&);
+  /// Create a symbol table for the [inventory]().
+  /// The symbol table holds a reference to the inventory so that pointer must
+  /// be valid for the lifetime of the symbol table.
+  explicit symbols(const inventory* inventory);
 
   symbols(symbols&&);
 

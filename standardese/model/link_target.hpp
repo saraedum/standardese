@@ -36,9 +36,9 @@ class link_target {
     };
 
     struct cppast_target {
-      cppast_target(const cppast::cpp_entity&);
+      cppast_target(const cppast::cpp_entity*);
 
-      type_safe::object_ref<const cppast::cpp_entity> target;
+      const cppast::cpp_entity* target;
     };
 
     struct sphinx_target {
@@ -65,7 +65,7 @@ class link_target {
     link_target(module_target module);
 
     /// Create a link to the C++ entity `entity`.
-    explicit link_target(const cppast::cpp_entity& entity);
+    explicit link_target(const cppast::cpp_entity* entity);
 
     /// Create a link to external documentation generated with sphinx.
     link_target(sphinx_target target);

@@ -35,7 +35,7 @@ TEST_CASE("External Legacy Legacy Links are Resolved", "[link_external_legacy_tr
     options.namspace = "std";
     options.url = R"(http://en.cppreference.com/mwiki/index.php?title=Special%3ASearch&search=$$)";
 
-    standardese::transformer::set_href_external_legacy_transformer{parsed.entities, options}.transform();
+    standardese::transformer::set_href_external_legacy_transformer{&parsed.entities, options}.transform();
 
     // Verify that all links could be resolved.
     for (auto& document: parsed.entities)

@@ -52,7 +52,7 @@ class exclude_uncommented_transformer : public inner_transformer {
       mode exclude_macro = mode::include;
     };
 
-    explicit exclude_uncommented_transformer(model::unordered_entities& documents, exclude_uncommented_transformer_options);
+    explicit exclude_uncommented_transformer(model::unordered_entities* documents, exclude_uncommented_transformer_options);
 
   protected:
     void do_transform(model::entity& root) override;

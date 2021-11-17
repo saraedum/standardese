@@ -35,7 +35,7 @@ TEST_CASE("Links to Sphinx Documentation Are Resolved", "[set_target_external_tr
     standardese::inventory::sphinx::documentation_set inventory;
     inventory.entries.emplace_back("X", "c++", "type", 0," /X", "class X");
 
-    standardese::transformer::set_target_external_transformer{parsed.entities, inventory::symbols{inventory}}.transform();
+    standardese::transformer::set_target_external_transformer{&parsed.entities, inventory::symbols{&inventory}}.transform();
 
     CAPTURE(output_generator::xml::xml_generator::render(parsed));
 

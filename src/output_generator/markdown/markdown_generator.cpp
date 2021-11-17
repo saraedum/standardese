@@ -15,12 +15,12 @@ using unique_cmark = std::unique_ptr<T, std::integral_constant<decltype(free), f
 
 markdown_generator::markdown_generator_options::markdown_generator_options() {}
 
-markdown_generator::markdown_generator(std::ostream& os, markdown_generator_options options) : cmark_generator(os), options(std::move(options)) {}
+markdown_generator::markdown_generator(std::ostream* os, markdown_generator_options options) : cmark_generator(os), options(std::move(options)) {}
 
 markdown_generator::~markdown_generator() {
   using unique_string = unique_cmark<char, free>;
   unique_string str{cmark_render_commonmark(root.get(), CMARK_OPT_NOBREAKS, 0)};
-  out << str.get();
+  *out << str.get();
 }
 
 }

@@ -75,12 +75,12 @@ struct visitor : public model::visitor::generic_visitor<visitor> {
 
 create_entity_document_transformer::create_entity_document_transformer_options::create_entity_document_transformer_options(): filter([](const cppast::cpp_entity& entity) { return entity.kind() == cppast::cpp_entity_kind::file_t; }) {}
 
-create_entity_document_transformer::create_entity_document_transformer(model::unordered_entities& entities, const parser::cpp_context& context, create_entity_document_transformer_options options): outer_transformer(entities), options(options), context(context) {
+create_entity_document_transformer::create_entity_document_transformer(const model::unordered_entities* entities, const parser::cpp_context& context, create_entity_document_transformer_options options): outer_transformer(entities), options(options), context(context) {
   std::unordered_set<std::string> headers_;
 
   formatter::inja_formatter inja{{}, context};
 
-  for (auto& entity : entities) {
+  for (auto& entity : *entities) {
     if (entity.is<model::cpp_entity_documentation>()) {
       const auto& documentation = entity.as<model::cpp_entity_documentation>();
       const auto& header = inja.absolute(documentation.entity());
@@ -94,7 +94,7 @@ create_entity_document_transformer::create_entity_document_transformer(model::un
 model::document create_entity_document_transformer::build(const std::string& name, const std::string& path, const model::entity& entity) const {
   auto document = model::document(name, path);
 
-  visitor v(document, entities);
+  visitor v(document, *entities);
   entity.accept(v);
 
   return document;

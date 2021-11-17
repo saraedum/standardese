@@ -31,7 +31,7 @@ std::string inja_formatter::md_callback(const nlohmann::json& data) const {
 
 std::string inja_formatter::md(const model::entity& entity) const {
   struct serialization_generator : output_generator::markdown::markdown_generator {
-    serialization_generator(std::ostream& os, const inja_formatter& self) : markdown_generator(os), self(self) {}
+    serialization_generator(std::ostream* os, const inja_formatter& self) : markdown_generator(os), self(self) {}
 
     void visit(link& link) override {
       auto serializable = link;
@@ -53,7 +53,7 @@ std::string inja_formatter::md(const model::entity& entity) const {
 
   std::stringstream stream;
   {
-    auto generator = serialization_generator(stream, *this);
+    auto generator = serialization_generator(&stream, *this);
 
     if (entity.is<model::document>() ||
 

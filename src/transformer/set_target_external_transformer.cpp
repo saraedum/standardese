@@ -16,7 +16,7 @@
 namespace standardese::transformer
 {
 
-set_target_external_transformer::set_target_external_transformer(model::unordered_entities& documents, inventory::symbols symbols) :
+set_target_external_transformer::set_target_external_transformer(model::unordered_entities* documents, inventory::symbols symbols) :
   inner_transformer(documents),
   symbols(std::move(symbols)) {}
 

@@ -20,13 +20,13 @@
 
 namespace standardese::transformer {
 
-set_target_internal_transformer::set_target_internal_transformer(model::unordered_entities& documents, const parser::cpp_context& context) :
+set_target_internal_transformer::set_target_internal_transformer(model::unordered_entities* documents, const parser::cpp_context& context) :
   inner_transformer(documents),
   inventory([&]() {
     // Create an inventory of all the C++ entities that are documented in all the documents.
     std::vector<const cppast::cpp_entity*> entities;
 
-    for (const auto& document : documents) {
+    for (const auto& document : *documents) {
       model::visitor::visit([&](auto&& entity, auto&& recurse) {
         using T = std::decay_t<decltype(entity)>;
         if constexpr (std::is_base_of_v<model::cpp_entity_documentation, T>)
@@ -41,7 +41,7 @@ set_target_internal_transformer::set_target_internal_transformer(model::unordere
     // Create an inventory of all the C++ headers files that are explicitly documented.
     std::vector<const cppast::cpp_file*> headers;
 
-    for (const auto& document : documents) {
+    for (const auto& document : *documents) {
       model::visitor::visit([&](auto&& entity, auto&& recurse) {
         using T = std::decay_t<decltype(entity)>;
         if constexpr (std::is_base_of_v<model::cpp_entity_documentation, T>) {
@@ -57,7 +57,7 @@ set_target_internal_transformer::set_target_internal_transformer(model::unordere
 }
 
 void set_target_internal_transformer::do_transform(model::entity& document) {
-  inventory::symbols symbols{inventory};
+  inventory::symbols symbols{&inventory};
   std::stack<type_safe::object_ref<const cppast::cpp_entity>> relative;
 
   model::visitor::visit([&](auto& link, auto&& recurse) {
@@ -79,7 +79,7 @@ void set_target_internal_transformer::do_transform(model::entity& document) {
             // TODO(0.6.0-alpha): This is a hack, see heading transformer.
             std::smatch match;
             if (std::regex_match(target.target, match, util::regex::link_target_internal_transformer_entity_pattern)) {
-              link.target = model::link_target(*static_cast<const cppast::cpp_entity*>((void*)atol(match[1].str().c_str())));
+              link.target = model::link_target(static_cast<const cppast::cpp_entity*>((void*)atol(match[1].str().c_str())));
               return;
             }
           }
@@ -88,7 +88,7 @@ void set_target_internal_transformer::do_transform(model::entity& document) {
           {
             const auto entity = files.find_header(target.target);
             if (entity) {
-              link.target = model::link_target(std::move(entity.value()));
+              link.target = model::link_target(&entity.value());
               return;
             }
           }

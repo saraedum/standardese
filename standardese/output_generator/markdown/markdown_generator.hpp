@@ -31,7 +31,11 @@ class markdown_generator : public cmark_generator {
       target_rendering targets = target_rendering::plain;
     };
 
-    markdown_generator(std::ostream& os, markdown_generator_options = {});
+    /// Create a generator that produces [CommonMark](https://commonmark.org/)
+    /// output.
+    /// The output is written to the [os]() stream upon destruction of this
+    /// object.
+    markdown_generator(std::ostream* os, markdown_generator_options = {});
 
     ~markdown_generator() override;
 

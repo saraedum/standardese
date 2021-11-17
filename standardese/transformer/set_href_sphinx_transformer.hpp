@@ -20,7 +20,10 @@ class set_href_sphinx_transformer : public inner_transformer {
       std::string url;
     };
 
-    set_href_sphinx_transformer(model::unordered_entities& documents, set_href_sphinx_transformer_options options, inventory::sphinx::documentation_set inventory);
+    /// Create a transformer that will rewrite each
+    /// [model::markup::link::target]() attribute in all the [documents]() for
+    /// links that refer to targets in the Sphinx [inventory]().
+    set_href_sphinx_transformer(model::unordered_entities* documents, set_href_sphinx_transformer_options options, inventory::sphinx::documentation_set inventory);
 
     void transform(threading::pool::factory workers=threading::unthreaded_pool::factory);
 

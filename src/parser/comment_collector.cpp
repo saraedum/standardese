@@ -12,10 +12,10 @@ namespace standardese::parser {
 
 comment_collector::comment_collector(comment_collector_options options) : options(options) {}
 
-std::vector<comment_collector::comment> comment_collector::collect(const cppast::cpp_file& cpp_file) {
+std::vector<comment_collector::comment> comment_collector::collect(const cppast::cpp_file* cpp_file) {
   std::vector<comment> comments;
 
-  cppast::visit(cpp_file, [&](const cppast::cpp_entity& entity, const cppast::visitor_info& info) {
+  cppast::visit(*cpp_file, [&](const cppast::cpp_entity& entity, const cppast::visitor_info& info) {
       if (info.is_old_entity())
           // Continue visit but do not register this container twice.
           return true;
@@ -41,9 +41,8 @@ std::vector<comment_collector::comment> comment_collector::collect(const cppast:
       return true;
   });
 
-  for (const auto& free : static_cast<const cppast::cpp_file&>(cpp_file).unmatched_comments()) {
-    comments.emplace_back(free.content, cpp_file);
-  }
+  for (const auto& free : static_cast<const cppast::cpp_file*>(cpp_file)->unmatched_comments())
+    comments.emplace_back(free.content, *static_cast<const cppast::cpp_entity*>(cpp_file));
 
   return comments;
 }

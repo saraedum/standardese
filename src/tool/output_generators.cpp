@@ -37,13 +37,13 @@ void output_generators::emit(model::unordered_entities& documents) {
   if (options.primary_format == output_generators_options::output_format::markdown) {
     for (auto& document : documents) {
       auto out = open(options.output_directory / (document.as<model::document>().name + ".md"));
-      auto generator = output_generator::markdown::markdown_generator{out, options.markdown_options};
+      auto generator = output_generator::markdown::markdown_generator{&out, options.markdown_options};
       document.accept(generator);
     }
   } else if (options.primary_format == output_generators_options::output_format::xml) {
     for (auto& document : documents) {
       auto out = open(options.output_directory / (document.as<model::document>().name + ".xml"));
-      auto generator = output_generator::xml::xml_generator{out};
+      auto generator = output_generator::xml::xml_generator{&out};
       document.accept(generator);
     }
   }
@@ -54,7 +54,7 @@ void output_generators::emit(model::unordered_entities& documents) {
 
   if (!options.intersphinx_inventory.empty()) {
     auto out = open(options.output_directory / options.intersphinx_inventory);
-    auto generator = output_generator::sphinx::inventory_generator{out};
+    auto generator = output_generator::sphinx::inventory_generator{&out};
     for (auto& document : documents) {
       document.accept(generator);
     }
@@ -62,7 +62,7 @@ void output_generators::emit(model::unordered_entities& documents) {
 
   if (!options.doxygen_tagfile.empty()) {
     auto out = open(options.output_directory / options.doxygen_tagfile);
-    auto generator = output_generator::doxygen::tagfile_generator{out};
+    auto generator = output_generator::doxygen::tagfile_generator{&out};
     for (auto& document : documents) {
       document.accept(generator);
     }

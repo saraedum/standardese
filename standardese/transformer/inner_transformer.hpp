@@ -13,7 +13,10 @@ namespace standardese::transformer {
 /// of entities.
 class inner_transformer {
   public:
-    explicit inner_transformer(model::unordered_entities& entities);
+    /// Create a transformer that modifies [entities]().
+    /// Entities will actually be modified in [transform]() so the set of
+    /// entities must be kept alive until [transform]() was called.
+    explicit inner_transformer(model::unordered_entities* entities);
 
     /// Transform the entities passed in the constructor.
     void transform(threading::pool::factory workers=threading::unthreaded_pool::factory);
@@ -26,7 +29,7 @@ class inner_transformer {
 
   private:
     /// The set of entities we are working on.
-    model::unordered_entities& entities;
+    model::unordered_entities* entities;
 };
 
 }

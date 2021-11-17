@@ -29,7 +29,9 @@ class create_entity_heading_transformer : public inner_transformer {
       formatter::inja_formatter::inja_formatter_options inja_formatter_options;
     };
 
-    create_entity_heading_transformer(model::unordered_entities& entities, parser::cpp_context, create_entity_heading_transformer_options = {});
+    /// Crete a transformer that adds headings for each C++ entity mentioned in
+    /// the [documents]().
+    create_entity_heading_transformer(model::unordered_entities* documents, const parser::cpp_context&, create_entity_heading_transformer_options = {});
 
   protected:
     void do_transform(model::entity& root) override;

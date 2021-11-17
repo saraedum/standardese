@@ -15,16 +15,16 @@ using unique_cmark = std::unique_ptr<T, std::integral_constant<decltype(free), f
 
 text_generator::text_generator_options::text_generator_options() {}
 
-text_generator::text_generator(std::ostream& os, text_generator_options options) : cmark_generator(os) {}
+text_generator::text_generator(std::ostream* os, text_generator_options options) : cmark_generator(os) {}
 
 text_generator::~text_generator() {
   using unique_string = unique_cmark<char, free>;
   unique_string str{cmark_render_plaintext(root.get(), CMARK_OPT_NOBREAKS, 0)};
-  out << str.get();
+  *out << str.get();
 }
 
 void text_generator::visit(link& link) {
-  top = append_child(top, CMARK_NODE_LINK);
+  top = append_child(*top, CMARK_NODE_LINK);
 
   if (!link.title.empty())
     cmark_node_set_title(top, link.title.c_str());

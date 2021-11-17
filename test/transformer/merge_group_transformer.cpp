@@ -25,15 +25,15 @@ TEST_CASE("Sections of Groups are Merged", "[group_transformer]") {
       void f(char);
     )");
 
-    auto principal = model::cpp_entity_documentation(header["f()"], header, {model::section(parser::commands::section_command::brief, {model::markup::text{"A brief for f"}})});
-    auto secondary = model::cpp_entity_documentation(header["f(int)"], header);
-    auto tertiary = model::cpp_entity_documentation(header["f(char)"], header);
+    auto principal = model::cpp_entity_documentation(&header["f()"], header, {model::section(parser::commands::section_command::brief, {model::markup::text{"A brief for f"}})});
+    auto secondary = model::cpp_entity_documentation(&header["f(int)"], header);
+    auto tertiary = model::cpp_entity_documentation(&header["f(char)"], header);
 
     principal.group = secondary.group = tertiary.group = "group";
 
     auto documents = model::unordered_entities{model::document::anonymous({principal, secondary, tertiary})};
 
-    standardese::transformer::merge_group_transformer{documents, {}}.transform();
+    standardese::transformer::merge_group_transformer{&documents, {}}.transform();
 
     REQUIRE(output_generator::xml::xml_generator::render(*documents.begin()) == util::unindent(R"(
     <?xml version="1.0"?>
@@ -52,15 +52,15 @@ TEST_CASE("Sections of Groups are Merged", "[group_transformer]") {
       void f(char);
     )");
 
-    auto principal = model::cpp_entity_documentation(header["f()"], header, {model::section(parser::commands::section_command::brief, {model::markup::text{"A brief for f"}})});
-    auto secondary = model::cpp_entity_documentation(header["f(int)"], header);
-    auto tertiary = model::cpp_entity_documentation(header["f(char)"], header);
+    auto principal = model::cpp_entity_documentation(&header["f()"], header, {model::section(parser::commands::section_command::brief, {model::markup::text{"A brief for f"}})});
+    auto secondary = model::cpp_entity_documentation(&header["f(int)"], header);
+    auto tertiary = model::cpp_entity_documentation(&header["f(char)"], header);
 
     principal.group = tertiary.group = "group";
 
     auto documents = model::unordered_entities{model::document::anonymous({principal, secondary, tertiary})};
 
-    standardese::transformer::merge_group_transformer{documents, {}}.transform();
+    standardese::transformer::merge_group_transformer{&documents, {}}.transform();
 
     REQUIRE(output_generator::xml::xml_generator::render(*documents.begin()) == util::unindent(R"(
     <?xml version="1.0"?>

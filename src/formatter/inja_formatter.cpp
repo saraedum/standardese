@@ -82,7 +82,7 @@ inja_formatter::inja_formatter_options::inja_formatter_options() :
   noexcept_specification_format("")
   {}
 
-inja_formatter::inja_formatter(struct inja_formatter_options options, parser::cpp_context cpp_context) : self(std::make_unique<impl>(std::move(options), std::move(cpp_context))) {
+inja_formatter::inja_formatter(struct inja_formatter_options options, const parser::cpp_context& cpp_context) : self(std::make_unique<impl>(std::move(options), cpp_context)) {
   add_callback("name", [&]() {
     return name_callback(self->data);
   });
@@ -347,11 +347,11 @@ inja_formatter::inja_formatter(struct inja_formatter_options options, parser::cp
   });
 }
 
-inja_formatter::inja_formatter(struct inja_formatter_options options, parser::cpp_context cpp_context, const cppast::cpp_entity& context) : inja_formatter(std::move(options), std::move(cpp_context)) {
-  self->context = type_safe::ref(context);
+inja_formatter::inja_formatter(struct inja_formatter_options options, const parser::cpp_context& cpp_context, const cppast::cpp_entity* context) : inja_formatter(std::move(options), cpp_context) {
+  self->context = type_safe::ref(*context);
 }
 
-inja_formatter::impl::impl(inja_formatter_options options, parser::cpp_context cpp_context) : options(std::move(options)), cpp_context(std::move(cpp_context)) {}
+inja_formatter::impl::impl(inja_formatter_options options, const parser::cpp_context& cpp_context) : options(std::move(options)), cpp_context(cpp_context) {}
 
 inja_formatter::~inja_formatter() {}
 

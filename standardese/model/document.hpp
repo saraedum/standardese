@@ -16,6 +16,7 @@ namespace standardese::model
       public:
         document(std::string name, std::string path, std::initializer_list<model::entity> children={}) : name(std::move(name)), path(std::move(path)), mixin::container<>(std::move(children)) {}
 
+        // TODO(0.6.0-alpha): rename to container().
         /// Return a container for block entities.
         /// Internally, it is often necessary to store some paragraphs or other
         /// blocks in a container. We use such an unnamed document for this

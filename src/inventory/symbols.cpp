@@ -18,6 +18,7 @@
 #include <cppast/cpp_preprocessor.hpp>
 #include <cppast/cpp_namespace.hpp>
 #include <cppast/visitor.hpp>
+#include <stdexcept>
 #include <type_safe/optional.hpp>
 
 #include "../../standardese/inventory/symbols.hpp"
@@ -62,7 +63,7 @@ class symbols::impl::generic_symbols : public symbols::impl {
 
 class symbols::impl::cppast_symbols : public symbols::impl::generic_symbols<cppast::cpp_entity> {
  public:
-  cppast_symbols(const cppast_inventory&);
+  cppast_symbols(const cppast_inventory*);
 
   type_safe::optional<model::link_target> find(const std::string& name) const override;
   type_safe::optional<model::link_target> find(const std::string& name, const cppast::cpp_entity& entity) const override;
@@ -79,24 +80,27 @@ class symbols::impl::cppast_symbols : public symbols::impl::generic_symbols<cppa
   std::string parameter_names(const cppast::cpp_entity& entity) const;
   std::string signature(const cppast::cpp_entity& entity) const;
 
-  const cppast_inventory& inventory;
+  const cppast_inventory* inventory;
 };
 
 class symbols::impl::sphinx_symbols : public symbols::impl {
  public:
-  sphinx_symbols(const sphinx::documentation_set&);
+  sphinx_symbols(const sphinx::documentation_set*);
 
   type_safe::optional<model::link_target> find(const std::string& name) const override;
 
  private:
-  const sphinx::documentation_set& inventory;
+  const sphinx::documentation_set* inventory;
 };
 
-symbols::symbols(const inventory& inventory) {
-  if (dynamic_cast<const cppast_inventory*>(&inventory) != nullptr) {
-    self = std::make_unique<impl::cppast_symbols>(static_cast<const cppast_inventory&>(inventory));
-  } else if (dynamic_cast<const sphinx::documentation_set*>(&inventory) != nullptr) {
-    self = std::make_unique<impl::sphinx_symbols>(static_cast<const sphinx::documentation_set&>(inventory));
+symbols::symbols(const inventory* inventory) {
+  if (inventory == nullptr)
+    throw std::invalid_argument("inventory must not be null when creating a symbol table");
+
+  if (dynamic_cast<const cppast_inventory*>(inventory) != nullptr) {
+    self = std::make_unique<impl::cppast_symbols>(static_cast<const cppast_inventory*>(inventory));
+  } else if (dynamic_cast<const sphinx::documentation_set*>(inventory) != nullptr) {
+    self = std::make_unique<impl::sphinx_symbols>(static_cast<const sphinx::documentation_set*>(inventory));
   } else {
     throw std::logic_error("not implemented: symbols for this type of inventory");
   }
@@ -137,11 +141,11 @@ type_safe::optional<model::link_target> symbols::impl::find(const std::string& n
   return find(name);
 }
 
-symbols::impl::cppast_symbols::cppast_symbols(const cppast_inventory& inventory) : inventory(inventory) {}
+symbols::impl::cppast_symbols::cppast_symbols(const cppast_inventory* inventory) : inventory(inventory) {}
 
 type_safe::optional<model::link_target> symbols::impl::cppast_symbols::find(const std::string& name) const {
   type_safe::optional_ref<const cppast::cpp_entity> found;
-  for (auto* root : inventory.roots) {
+  for (auto* root : inventory->roots) {
     auto search = descendant(*root, name);
     if (search) {
       // TODO(0.6.0-final): The definition here and elsewhere feels hacky. Should we really do it like this?
@@ -151,18 +155,18 @@ type_safe::optional<model::link_target> symbols::impl::cppast_symbols::find(cons
   }
 
   if (found)
-    return found.value();
+    return &found.value();
 
   return type_safe::nullopt;
 }
 
 type_safe::optional<model::link_target> symbols::impl::cppast_symbols::find(const std::string& name, const cppast::cpp_entity& entity) const {
-  if (inventory.roots.find(&cppast_inventory::root(entity)) == inventory.roots.end())
+  if (inventory->roots.find(&cppast_inventory::root(entity)) == inventory->roots.end())
     throw std::invalid_argument("Cannot look up symbol relative to something not defined in any of the loaded files.");
 
   auto search = descendant(entity, name);
   if (search.has_value())
-      return search.value();
+      return &search.value();
 
   if (!entity.parent().has_value())
     return this->find(name);
@@ -281,7 +285,7 @@ type_safe::optional_ref<const cppast::cpp_entity> symbols::impl::cppast_symbols:
     const auto& alias = static_cast<const cppast::cpp_type_alias&>(child.value());
     const auto& type = alias.underlying_type();
     if (type.kind() == cppast::cpp_type_kind::user_defined_t) {
-      child = inventory.context.index().lookup(*static_cast<const cppast::cpp_user_defined_type&>(type).entity().id().begin());
+      child = inventory->context.index().lookup(*static_cast<const cppast::cpp_user_defined_type&>(type).entity().id().begin());
     }
   }
 
@@ -460,14 +464,14 @@ std::string symbols::impl::cppast_symbols::signature(const cppast::cpp_entity& e
   return static_cast<const cppast::cpp_function_base&>(entity).signature();
 }
 
-symbols::impl::sphinx_symbols::sphinx_symbols(const sphinx::documentation_set& inventory) : inventory(inventory) {}
+symbols::impl::sphinx_symbols::sphinx_symbols(const sphinx::documentation_set* inventory) : inventory(inventory) {}
 
 type_safe::optional<model::link_target> symbols::impl::sphinx_symbols::find(const std::string& name) const {
   type_safe::optional<sphinx::entry> match;
 
   // TODO(0.6.0-beta): We should be much more fuzzy here.
   // TODO(0.6.0-rc): We could be better than O(n) here.
-  for (const auto& entry : inventory.entries) {
+  for (const auto& entry : inventory->entries) {
     if (entry.name == name) {
       if (!match.has_value() || match.value().priority > entry.priority)
         match = entry;
@@ -477,7 +481,7 @@ type_safe::optional<model::link_target> symbols::impl::sphinx_symbols::find(cons
   if (!match.has_value())
     return type_safe::nullopt;
 
-  return model::link_target::sphinx_target(inventory, match.value());
+  return model::link_target::sphinx_target(*inventory, match.value());
 }
 
 }

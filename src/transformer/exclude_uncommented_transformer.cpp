@@ -48,7 +48,7 @@ struct visitor : model::visitor::generic_visitor<visitor, model::visitor::recurs
 
 }
 
-exclude_uncommented_transformer::exclude_uncommented_transformer(model::unordered_entities& documents, exclude_uncommented_transformer_options options) : inner_transformer(documents), options(std::move(options)) {}
+exclude_uncommented_transformer::exclude_uncommented_transformer(model::unordered_entities* documents, exclude_uncommented_transformer_options options) : inner_transformer(documents), options(std::move(options)) {}
 
 void exclude_uncommented_transformer::do_transform(model::entity& document) {
   visitor v{options};

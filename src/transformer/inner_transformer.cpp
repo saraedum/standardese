@@ -8,10 +8,10 @@
 
 namespace standardese::transformer {
 
-inner_transformer::inner_transformer(model::unordered_entities& entities) : entities(entities) {}
+inner_transformer::inner_transformer(model::unordered_entities* entities) : entities(entities) {}
 
 void inner_transformer::transform(threading::pool::factory workers) {
-  threading::for_each(workers, entities.begin(), entities.end(), [this](auto& e) {
+  threading::for_each(workers, entities->begin(), entities->end(), [this](auto& e) {
     do_transform(e);
   });
 }

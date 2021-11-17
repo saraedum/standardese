@@ -25,12 +25,12 @@ namespace standardese::transformer
 
 create_index_document_transformer::create_index_document_transformer_options::create_index_document_transformer_options() : predicate([](const model::entity&) { return true; }) {}
 
-create_index_document_transformer::create_index_document_transformer(model::unordered_entities& entities, parser::cpp_context context, create_index_document_transformer_options options) : entities(entities), options(options), target_text_formatter(options.target_text_options, std::move(context)) {}
+create_index_document_transformer::create_index_document_transformer(const model::unordered_entities* entities, const parser::cpp_context& context, create_index_document_transformer_options options) : entities(entities), options(options), target_text_formatter(options.target_text_options, context) {}
 
 model::document create_index_document_transformer::transform(threading::pool::factory workers) const {
   auto list = model::markup::list(false);
 
-  for (auto& entity : entities)
+  for (auto& entity : *entities)
     if (options.predicate(entity))
       model::visitor::visit([&](auto&& documentation) {
         using T = std::decay_t<decltype(documentation)>;
@@ -38,7 +38,7 @@ model::document create_index_document_transformer::transform(threading::pool::fa
         if constexpr (std::is_same_v<T, model::cpp_entity_documentation> || std::is_same_v<T, model::module>) {
           model::link_target target("");
           if constexpr (std::is_same_v<T, model::cpp_entity_documentation>) {
-            target = model::link_target(documentation.entity());
+            target = model::link_target(&documentation.entity());
           } else {
             target = model::link_target::module_target(documentation.name);
           }

@@ -14,7 +14,12 @@ namespace standardese::output_generator
 
 class cmark_generator : public stream_generator {
   public:
-    cmark_generator(std::ostream& os);
+    /// Create a generator that constructs a tree of
+    /// [CommonMark](https://github.com/commonmark/cmark) entities.
+    /// This (abstract) generator does not produce any actual output. Derive
+    /// from it and override the destructor to actually write to [os]() upon
+    /// destruction.
+    cmark_generator(std::ostream* os);
 
     void visit(block_quote&) override;
     void visit(code&) override;
@@ -35,8 +40,8 @@ class cmark_generator : public stream_generator {
     void visit(image&) override;
 
   protected:
-    static cmark_node* append_child(cmark_node*, cmark_node_type);
-    static cmark_node* prepend_child(cmark_node*, cmark_node_type);
+    static cmark_node* append_child(cmark_node&, cmark_node_type);
+    static cmark_node* prepend_child(cmark_node&, cmark_node_type);
 
     std::unique_ptr<cmark_node, std::integral_constant<std::decay_t<decltype(cmark_node_free)>, cmark_node_free>> root;
     cmark_node* top;

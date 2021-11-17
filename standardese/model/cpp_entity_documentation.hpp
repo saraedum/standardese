@@ -23,19 +23,20 @@ namespace standardese::model
                                        public mixin::visitable<cpp_entity_documentation>
     {
     public:
-        explicit cpp_entity_documentation(const cppast::cpp_entity& entity, parser::cpp_context context, std::initializer_list<model::entity> children={})
-        : entity_(entity), context_(std::move(context)), mixin::documentation(std::move(children)) {}
+        /// Create a documentation entity that provides the documentation of
+        /// the C++ [entity]().
+        explicit cpp_entity_documentation(const cppast::cpp_entity* entity, const parser::cpp_context& context, std::initializer_list<model::entity> children={});
 
-        const cppast::cpp_entity& entity() const { return *entity_; }
+        const cppast::cpp_entity& entity() const;
 
-        const parser::cpp_context& context() const { return context_; }
+        const parser::cpp_context& context() const;
 
         /// The base name of the generated documentation file in the output,
         /// e.g., `header` for `header.hpp`.
         std::string output_name;
 
     private:
-        type_safe::object_ref<const cppast::cpp_entity> entity_;
+        const cppast::cpp_entity* entity_;
         parser::cpp_context context_;
     };
 }
