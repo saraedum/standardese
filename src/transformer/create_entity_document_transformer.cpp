@@ -5,6 +5,7 @@
 #include <cppast/cppast_fwd.hpp>
 #include <regex>
 #include <boost/filesystem/path.hpp>
+#include <unordered_set>
 
 #include <fmt/format.h>
 #include <cppast/visitor.hpp>
@@ -14,16 +15,18 @@
 #include <cppast/cpp_class_template.hpp>
 #include <cppast/cpp_preprocessor.hpp>
 #include <cppast/cpp_friend.hpp>
+#include <nlohmann/json.hpp>
 
-#include "../../standardese/document_builder/entity_document_builder.hpp"
+#include "../../standardese/transformer/create_entity_document_transformer.hpp"
 #include "../../standardese/model/document.hpp"
 #include "../../standardese/model/visitor/generic_visitor.hpp"
 #include "../../standardese/model/visitor/visit.hpp"
 #include "../../standardese/model/unordered_entities.hpp"
 #include "../../standardese/model/mixin/container.hpp"
 #include "../../standardese/logger.hpp"
+#include "../../standardese/formatter/inja_formatter.hpp"
 
-namespace standardese::document_builder {
+namespace standardese::transformer {
 
 namespace {
 
@@ -70,13 +73,52 @@ struct visitor : public model::visitor::generic_visitor<visitor> {
 
 }
 
-model::document entity_document_builder::build(const std::string& name, const std::string& path, const model::entity& entity, const model::unordered_entities& entities) const {
+create_entity_document_transformer::create_entity_document_transformer_options::create_entity_document_transformer_options(): filter([](const cppast::cpp_entity& entity) { return entity.kind() == cppast::cpp_entity_kind::file_t; }) {}
+
+create_entity_document_transformer::create_entity_document_transformer(model::unordered_entities& entities, const parser::cpp_context& context, create_entity_document_transformer_options options): outer_transformer(entities), options(options), context(context) {
+  std::unordered_set<std::string> headers_;
+
+  formatter::inja_formatter inja{{}, context};
+
+  for (auto& entity : entities) {
+    if (entity.is<model::cpp_entity_documentation>()) {
+      const auto& documentation = entity.as<model::cpp_entity_documentation>();
+      const auto& header = inja.absolute(documentation.entity());
+      headers_.insert(header);
+    }
+  }
+
+  std::copy(headers_.begin(), headers_.end(), std::back_inserter(headers));
+}
+
+model::document create_entity_document_transformer::build(const std::string& name, const std::string& path, const model::entity& entity) const {
   auto document = model::document(name, path);
 
   visitor v(document, entities);
   entity.accept(v);
 
   return document;
+}
+
+std::vector<model::entity> create_entity_document_transformer::do_transform(const model::entity& entity) {
+  if (entity.is<model::cpp_entity_documentation>()) {
+    auto documentation = entity.as<model::cpp_entity_documentation>();
+
+    if (options.filter(documentation.entity())) {
+      formatter::inja_formatter inja{{}, context};
+      inja.data().merge_patch(inja.to_json(&documentation.entity()));
+      inja.data()["paths"] = headers;
+
+      logger::debug(fmt::format("Creating document for entity {}.", documentation.entity().name()));
+
+      const std::string name = inja.format(options.document_name);
+      const std::string path = inja.format(options.document_path);
+
+      return {build(name, path, entity)};
+    }
+  }
+
+  return {};
 }
 
 namespace {

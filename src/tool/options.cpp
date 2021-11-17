@@ -697,12 +697,12 @@ void options_parser::process_legacy_output_options(po::variables_map& parsed) {
   if (parsed.count("output.link_prefix")) {
     logger::warn("--output.link_prefix is deprecated, use --vpath instead.");
 
-    options.document_builder_options.document_path = escape_inja(parsed.at("output.link_prefix").as<std::string>()) + options.document_builder_options.document_path;
+    options.transformer_options.entity_document_options.document_path = escape_inja(parsed.at("output.link_prefix").as<std::string>()) + options.transformer_options.entity_document_options.document_path;
   }
   if (parsed.count("output.link_extension")) {
     logger::warn("--output.link_extension is deprecated, use --vpath instead.");
 
-    options.document_builder_options.document_path = options.document_builder_options.document_path + "." + escape_inja(parsed.at("output.link_extension").as<std::string>());
+    options.transformer_options.entity_document_options.document_path = options.transformer_options.entity_document_options.document_path + "." + escape_inja(parsed.at("output.link_extension").as<std::string>());
   }
 }
 
@@ -860,7 +860,7 @@ po::options_description options_parser::output_options() const {
     ("private", po::value<bool>()->default_value(false)->implicit_value(true)->zero_tokens(), "Include private members and base classes.")
     ("outdir,O", po::value<boost::filesystem::path>()->value_name("dir")->default_value((struct output_generators::output_generators_options){}.output_directory), "Output directory for generated files.")
     // TODO(0.6.0-alpha): Document & Test
-    ("vpath", po::value<std::string>()->default_value(options.document_builder_options.document_path, "")->value_name("template"));
+    ("vpath", po::value<std::string>()->default_value(options.transformer_options.entity_document_options.document_path, "")->value_name("template"));
 
   return format;
 }
@@ -920,7 +920,7 @@ void options_parser::process_output_options(po::variables_map& parsed) {
   }
 
   if (parsed.count("vpath") && !parsed.at("vpath").defaulted()) {
-    options.document_builder_options.document_path = parsed.at("vpath").as<std::string>();
+    options.transformer_options.entity_document_options.document_path = parsed.at("vpath").as<std::string>();
   }
 }
 

@@ -6,7 +6,7 @@
 #include "../external/catch/single_include/catch2/catch.hpp"
 
 #include "../../standardese/output_generator/xml/xml_generator.hpp"
-#include "../../standardese/document_builder/entity_document_builder.hpp"
+#include "../../standardese/transformer/create_entity_document_transformer.hpp"
 #include "../../standardese/model/document.hpp"
 #include "../../standardese/parser/comment_parser.hpp"
 
@@ -19,7 +19,7 @@ namespace standardese::test::document_builder
 
 using util::unindent;
 using standardese::output_generator::xml::xml_generator;
-using standardese::document_builder::entity_document_builder;
+using standardese::transformer::create_entity_document_transformer;
 
 TEST_CASE("Entity Documents can be Generated", "[entity_document_builder]")
 {
@@ -44,7 +44,13 @@ TEST_CASE("Entity Documents can be Generated", "[entity_document_builder]")
 
     SECTION("Entity Document for a Header Lists all Members")
     {
-      auto document = entity_document_builder{}.build("doc_header", "doc_header", parsed[header], parsed.entities);
+      auto options = create_entity_document_transformer::create_entity_document_transformer_options{};
+      options.document_name = "doc_header";
+      options.document_path = "doc_header";
+
+      auto documents = create_entity_document_transformer{parsed.entities, header, options}.transform();
+      REQUIRE(documents.size() == 1);
+      auto document = documents.begin()->as<model::document>();
       document.name = "header.hpp";
 
       CHECK(xml_generator::render(document) == unindent(R"*(
@@ -76,7 +82,16 @@ TEST_CASE("Entity Documents can be Generated", "[entity_document_builder]")
 
     SECTION("Entity Document for a Non-Header")
     {
-      auto document = entity_document_builder{}.build("doc_swap", "doc_swap", parsed["std::swap"], parsed.entities);
+      auto options = create_entity_document_transformer::create_entity_document_transformer_options{};
+      options.document_name = "doc_swap";
+      options.document_path = "doc_swap";
+      options.filter = [&](const cppast::cpp_entity& entity) { return &entity == &header["std::swap"]; };
+
+      REQUIRE(options.filter(header["std::swap"]));
+
+      const auto documents = create_entity_document_transformer{parsed.entities, header, options}.transform();
+      REQUIRE(documents.size() == 1);
+      const auto document = documents.begin()->as<model::document>();
 
       CHECK(xml_generator::render(document) == unindent(R"*(
         <?xml version="1.0"?>
@@ -110,7 +125,14 @@ TEST_CASE("Entity Documents can be Generated", "[entity_document_builder]")
 
       auto parsed = util::parsed_comments(header).add(header["X"], "A class.");
 
-      auto document = entity_document_builder{}.build("doc_X", "doc_X", parsed["X"], parsed.entities);
+      auto options = create_entity_document_transformer::create_entity_document_transformer_options{};
+      options.document_name = "doc_X";
+      options.document_path = "doc_X";
+      options.filter = [&](const cppast::cpp_entity& entity) { return &entity == &header["X"]; };
+
+      const auto documents = create_entity_document_transformer{parsed.entities, header, options}.transform();
+      REQUIRE(documents.size() == 1);
+      const auto document = documents.begin()->as<model::document>();
 
       CHECK(xml_generator::render(document) == unindent(R"*(
         <?xml version="1.0"?>
@@ -137,7 +159,14 @@ TEST_CASE("Entity Documents can be Generated", "[entity_document_builder]")
       SECTION("Private Class Members") {
         auto parsed = util::parsed_comments(header).add(header["X.a"], "The a of X.");
 
-        auto document = entity_document_builder{}.build("doc_a", "doc_a", parsed["X.a"], parsed.entities);
+        auto options = create_entity_document_transformer::create_entity_document_transformer_options{};
+        options.document_name = "doc_a";
+        options.document_path = "doc_a";
+        options.filter = [&](const cppast::cpp_entity& entity) { return &entity == &header["X.a"]; };
+
+        const auto documents = create_entity_document_transformer{parsed.entities, header, options}.transform();
+        REQUIRE(documents.size() == 1);
+        const auto document = documents.begin()->as<model::document>();
 
         CHECK(xml_generator::render(document) == unindent(R"*(
           <?xml version="1.0"?>
@@ -154,7 +183,14 @@ TEST_CASE("Entity Documents can be Generated", "[entity_document_builder]")
       SECTION("Public Class Members") {
         auto parsed = util::parsed_comments(header).add(header["X.b"], "The b of X.");
 
-        auto document = entity_document_builder{}.build("doc_b", "doc_b", parsed["X.b"], parsed.entities);
+        auto options = create_entity_document_transformer::create_entity_document_transformer_options{};
+        options.document_name = "doc_b";
+        options.document_path = "doc_b";
+        options.filter = [&](const cppast::cpp_entity& entity) { return &entity == &header["X.b"]; };
+
+        const auto documents = create_entity_document_transformer{parsed.entities, header, options}.transform();
+        REQUIRE(documents.size() == 1);
+        const auto document = documents.begin()->as<model::document>();
 
         CHECK(xml_generator::render(document) == unindent(R"*(
           <?xml version="1.0"?>
@@ -177,7 +213,14 @@ TEST_CASE("Entity Documents can be Generated", "[entity_document_builder]")
 
       auto parsed = util::parsed_comments(header).add(header["X"], "A class template.");
 
-      auto document = entity_document_builder{}.build("doc_X", "doc_X", parsed["X"], parsed.entities);
+      auto options = create_entity_document_transformer::create_entity_document_transformer_options{};
+      options.document_name = "doc_X";
+      options.document_path = "doc_X";
+      options.filter = [&](const cppast::cpp_entity& entity) { return &entity == &header["X"]; };
+
+      const auto documents = create_entity_document_transformer{parsed.entities, header, options}.transform();
+      REQUIRE(documents.size() == 1);
+      const auto document = documents.begin()->as<model::document>();
 
       CHECK(xml_generator::render(document) == unindent(R"*(
         <?xml version="1.0"?>
@@ -211,7 +254,14 @@ TEST_CASE("Entity Documents can be Generated", "[entity_document_builder]")
         \base Y<T> Inherits from Y.
         )");
 
-      auto document = entity_document_builder{}.build("doc_Z", "doc_Z", parsed["Z"], parsed.entities);
+      auto options = create_entity_document_transformer::create_entity_document_transformer_options{};
+      options.document_name = "doc_Z";
+      options.document_path = "doc_Z";
+      options.filter = [&](const cppast::cpp_entity& entity) { return &entity == &header["Z"]; };
+
+      const auto documents = create_entity_document_transformer{parsed.entities, header, options}.transform();
+      REQUIRE(documents.size() == 1);
+      const auto document = documents.begin()->as<model::document>();
 
       CHECK(xml_generator::render(document) == unindent(R"*(
         <?xml version="1.0"?>
@@ -257,7 +307,14 @@ TEST_CASE("Entity Documents can be Generated", "[entity_document_builder]")
           \base Y<T> Inherits from Y.
           )");
 
-      auto document = entity_document_builder{}.build("doc_Z", "doc_Z", parsed["Z"], parsed.entities);
+      auto options = create_entity_document_transformer::create_entity_document_transformer_options{};
+      options.document_name = "doc_Z";
+      options.document_path = "doc_Z";
+      options.filter = [&](const cppast::cpp_entity& entity) { return &entity == &header["Z"]; };
+
+      const auto documents = create_entity_document_transformer{parsed.entities, header, options}.transform();
+      REQUIRE(documents.size() == 1);
+      const auto document = documents.begin()->as<model::document>();
 
       CHECK(xml_generator::render(document) == unindent(R"*(
           <?xml version="1.0"?>
@@ -298,7 +355,14 @@ TEST_CASE("Entity Documents can be Generated", "[entity_document_builder]")
         \param b The parameter b.
         )");
 
-      auto document = entity_document_builder{}.build("doc_MACRO", "doc_MACRO", parsed["MACRO"], parsed.entities);
+      auto options = create_entity_document_transformer::create_entity_document_transformer_options{};
+      options.document_name = "doc_MACRO";
+      options.document_path = "doc_MACRO";
+      options.filter = [&](const cppast::cpp_entity& entity) { return &entity == &header["MACRO"]; };
+
+      const auto documents = create_entity_document_transformer{parsed.entities, header, options}.transform();
+      REQUIRE(documents.size() == 1);
+      const auto document = documents.begin()->as<model::document>();
 
       CHECK(xml_generator::render(document) == unindent(R"*(
           <?xml version="1.0"?>
@@ -337,7 +401,14 @@ TEST_CASE("Entity Documents can be Generated", "[entity_document_builder]")
         An enum.
         )");
 
-      auto document = entity_document_builder{}.build("doc_ENUM", "doc_ENUM", parsed["ENUM"], parsed.entities);
+      auto options = create_entity_document_transformer::create_entity_document_transformer_options{};
+      options.document_name = "doc_ENUM";
+      options.document_path = "doc_ENUM";
+      options.filter = [&](const cppast::cpp_entity& entity) { return &entity == &header["ENUM"]; };
+
+      const auto documents = create_entity_document_transformer{parsed.entities, header, options}.transform();
+      REQUIRE(documents.size() == 1);
+      const auto document = documents.begin()->as<model::document>();
 
       CHECK(xml_generator::render(document) == unindent(R"*(
         <?xml version="1.0"?>
@@ -365,7 +436,14 @@ TEST_CASE("Entity Documents can be Generated", "[entity_document_builder]")
         An enum.
         )");
 
-      auto document = entity_document_builder{}.build("doc_ENUM", "doc_ENUM", parsed["ENUM"], parsed.entities);
+      auto options = create_entity_document_transformer::create_entity_document_transformer_options{};
+      options.document_name = "doc_ENUM";
+      options.document_path = "doc_ENUM";
+      options.filter = [&](const cppast::cpp_entity& entity) { return &entity == &header["ENUM"]; };
+
+      const auto documents = create_entity_document_transformer{parsed.entities, header, options}.transform();
+      REQUIRE(documents.size() == 1);
+      const auto document = documents.begin()->as<model::document>();
 
       CHECK(xml_generator::render(document) == unindent(R"*(
         <?xml version="1.0"?>
@@ -393,7 +471,14 @@ TEST_CASE("Entity Documents can be Generated", "[entity_document_builder]")
         The A value of ENUM.
         )");
 
-      auto document = entity_document_builder{}.build("doc_A", "doc_A", parsed["ENUM.A"], parsed.entities);
+      auto options = create_entity_document_transformer::create_entity_document_transformer_options{};
+      options.document_name = "doc_A";
+      options.document_path = "doc_A";
+      options.filter = [&](const cppast::cpp_entity& entity) { return &entity == &header["ENUM.A"]; };
+
+      const auto documents = create_entity_document_transformer{parsed.entities, header, options}.transform();
+      REQUIRE(documents.size() == 1);
+      const auto document = documents.begin()->as<model::document>();
 
       CHECK(xml_generator::render(document) == unindent(R"*(
         <?xml version="1.0"?>
@@ -418,7 +503,14 @@ TEST_CASE("Entity Documents can be Generated", "[entity_document_builder]")
         An alias for int.
         )");
 
-      auto document = entity_document_builder{}.build("doc_T", "doc_T", parsed["T"], parsed.entities);
+      auto options = create_entity_document_transformer::create_entity_document_transformer_options{};
+      options.document_name = "doc_T";
+      options.document_path = "doc_T";
+      options.filter = [&](const cppast::cpp_entity& entity) { return &entity == &header["T"]; };
+
+      const auto documents = create_entity_document_transformer{parsed.entities, header, options}.transform();
+      REQUIRE(documents.size() == 1);
+      const auto document = documents.begin()->as<model::document>();
 
       CHECK(xml_generator::render(document) == unindent(R"*(
         <?xml version="1.0"?>
@@ -442,7 +534,14 @@ TEST_CASE("Entity Documents can be Generated", "[entity_document_builder]")
         A template using.
         )");
 
-      auto document = entity_document_builder{}.build("doc_U", "doc_U", parsed["U"], parsed.entities);
+      auto options = create_entity_document_transformer::create_entity_document_transformer_options{};
+      options.document_name = "doc_U";
+      options.document_path = "doc_U";
+      options.filter = [&](const cppast::cpp_entity& entity) { return &entity == &header["U"]; };
+
+      const auto documents = create_entity_document_transformer{parsed.entities, header, options}.transform();
+      REQUIRE(documents.size() == 1);
+      const auto document = documents.begin()->as<model::document>();
 
       CHECK(xml_generator::render(document) == unindent(R"*(
         <?xml version="1.0"?>

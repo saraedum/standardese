@@ -10,7 +10,6 @@
 
 #include "transformers.hpp"
 #include "parsers.hpp"
-#include "document_builders.hpp"
 #include "output_generators.hpp"
 
 namespace standardese::tool {
@@ -49,9 +48,6 @@ class options {
 
   /// Options that control how source code and comments are parsed.
   struct tool::parsers::options parser_options;
-
-  /// Options that control which output documents are created.
-  struct tool::document_builders::options document_builder_options;
 
   /// Options that control transformers, i.e., how parsed markdown gets
   /// turned into the exact content of the output documents.

@@ -5,7 +5,7 @@
 #include <fmt/format.h>
 #include <cppast/cpp_file.hpp>
 
-#include "../../standardese/document_builder/index_document_builder.hpp"
+#include "../../standardese/transformer/create_index_document_transformer.hpp"
 #include "../../standardese/model/document.hpp"
 #include "../../standardese/model/markup/link.hpp"
 #include "../../standardese/model/markup/list.hpp"
@@ -18,18 +18,20 @@
 #include "../../standardese/logger.hpp"
 #include "../../standardese/output_generator/xml/xml_generator.hpp"
 
-namespace standardese::document_builder
+// TODO(0.6.0-alpha): This is not producing the same output as standardese <0.6.0 used to produce yet.
+
+namespace standardese::transformer
 {
 
-index_document_builder::options::options() {}
+create_index_document_transformer::create_index_document_transformer_options::create_index_document_transformer_options() : predicate([](const model::entity&) { return true; }) {}
 
-index_document_builder::index_document_builder(options options, parser::cpp_context context) : anchor_text_formatter(options.anchor_text_options, std::move(context)) {}
+create_index_document_transformer::create_index_document_transformer(model::unordered_entities& entities, parser::cpp_context context, create_index_document_transformer_options options) : entities(entities), options(options), anchor_text_formatter(options.anchor_text_options, std::move(context)) {}
 
-model::document index_document_builder::build(const std::string& name, const std::string& path, const std::function<bool(const model::entity&)> predicate, const model::unordered_entities& entities) const {
+model::document create_index_document_transformer::transform(threading::pool::factory workers) const {
   auto list = model::markup::list(false);
 
   for (auto& entity : entities)
-    if (predicate(entity))
+    if (options.predicate(entity))
       model::visitor::visit([&](auto&& documentation) {
         using T = std::decay_t<decltype(documentation)>;
 
@@ -51,10 +53,10 @@ model::document index_document_builder::build(const std::string& name, const std
         }
       }, entity);
 
-  return model::document(name, path, {std::move(list)});
+  return model::document(options.name, options.path, {std::move(list)});
 }
 
-bool index_document_builder::is_header_file(const model::entity& entity) {
+bool create_index_document_transformer::is_header_file(const model::entity& entity) {
   return model::visitor::visit([](auto&& entity) {
     using T = std::decay_t<decltype(entity)>;
     if constexpr (std::is_same_v<T, model::cpp_entity_documentation>) {
@@ -64,7 +66,7 @@ bool index_document_builder::is_header_file(const model::entity& entity) {
   }, entity);
 }
 
-bool index_document_builder::is_module(const model::entity& entity) {
+bool create_index_document_transformer::is_module(const model::entity& entity) {
   return model::visitor::visit([](auto&& entity) {
     using T = std::decay_t<decltype(entity)>;
     return std::is_same_v<T, model::module>;

@@ -4,8 +4,6 @@
 # found in the top-level directory of this distribution.
 
 set(src
-    document_builder/entity_document_builder.cpp
-    document_builder/index_document_builder.cpp
     formatter/code_formatter.cpp
     formatter/inja_formatter.absolute.cpp
     formatter/inja_formatter.add_callback.cpp
@@ -86,12 +84,13 @@ set(src
     threading/pool.cpp
     threading/threaded_pool.cpp
     threading/unthreaded_pool.cpp
-    tool/document_builders.cpp
     tool/options.cpp
     tool/output_generators.cpp
     tool/parsers.cpp
     tool/transformers.cpp
+    transformer/create_entity_document_transformer.cpp
     transformer/create_entity_heading_transformer.cpp
+    transformer/create_index_document_transformer.cpp
     transformer/create_link_text_transformer.cpp
     transformer/create_output_section_heading_transformer.cpp
     transformer/create_synopsis_transformer.cpp

@@ -282,8 +282,8 @@ TEST_CASE("Parsing of Legacy --output.* Options", "[tool]") {
     auto options = options::parse(sizeof(argv)/sizeof(*argv), argv, {});
 
     CHECK(logstream.str() != "");
-    CAPTURE(options.document_builder_options.document_path);
-    CHECK(boost::algorithm::ends_with(options.document_builder_options.document_path, ".html"));
+    CAPTURE(options.transformer_options.entity_document_options.document_path);
+    CHECK(boost::algorithm::ends_with(options.transformer_options.entity_document_options.document_path, ".html"));
   }
 
   SECTION("--output.link_prefix") {
@@ -291,8 +291,8 @@ TEST_CASE("Parsing of Legacy --output.* Options", "[tool]") {
     auto options = options::parse(sizeof(argv)/sizeof(*argv), argv, {});
 
     CHECK(logstream.str() != "");
-    CAPTURE(options.document_builder_options.document_path);
-    CHECK(boost::algorithm::starts_with(options.document_builder_options.document_path, "/docs/"));
+    CAPTURE(options.transformer_options.entity_document_options.document_path);
+    CHECK(boost::algorithm::starts_with(options.transformer_options.entity_document_options.document_path, "/docs/"));
   }
 }
 

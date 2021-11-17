@@ -5,7 +5,6 @@
 
 #include "../standardese/tool/options.hpp"
 #include "../standardese/tool/parsers.hpp"
-#include "../standardese/tool/document_builders.hpp"
 #include "../standardese/tool/transformers.hpp"
 #include "../standardese/tool/output_generators.hpp"
 #include "../standardese/model/unordered_entities.hpp"
@@ -21,16 +20,13 @@ int main(int argc, const char* argv[])
     }
 
     // Parse source code.
-    auto [parsed, context] = standardese::tool::parsers(options.parser_options).parse();
+    auto [entities, context] = standardese::tool::parsers(options.parser_options).parse();
 
-    // Create output document outlines.
-    auto documents = standardese::tool::document_builders(options.document_builder_options).create(parsed, context);
-
-    // Apply transformers to output documents.
-    standardese::tool::transformers(options.transformer_options).transform(documents, context);
+    // Apply transformers to produce the output documents.
+    standardese::tool::transformers(options.transformer_options).transform(entities, context);
 
     // Emit output documents.
-    standardese::tool::output_generators(options.output_generator_options).emit(documents);
+    standardese::tool::output_generators(options.output_generator_options).emit(entities);
 
     if (standardese::logger::errors())
       return 1;
@@ -38,7 +34,7 @@ int main(int argc, const char* argv[])
     return 0;
 }
 
-/*
+/* TODO(0.6.0-alpha): salvage what we need from this.
 #include <fstream>
 #include <iostream>
 

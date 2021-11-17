@@ -64,6 +64,8 @@ class unordered_entities {
     const model::module& module(const std::string&) const;
     model::module& module(const std::string&);
 
+    size_t size() const;
+
     const_iterator begin() const;
     const_iterator end() const;
 

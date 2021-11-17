@@ -9,9 +9,9 @@
 
 namespace standardese::transformer {
 
-outer_transformer::outer_transformer(model::unordered_entities& entities) : entities(entities) {}
+outer_transformer::outer_transformer(const model::unordered_entities& entities) : entities(entities) {}
 
-void outer_transformer::transform(threading::pool::factory workers) {
+model::unordered_entities outer_transformer::transform(threading::pool::factory workers) {
   model::unordered_entities transformed;
 
   std::mutex transformed_lock;
@@ -25,7 +25,7 @@ void outer_transformer::transform(threading::pool::factory workers) {
       transformed.insert(std::move(replacement));
   });
 
-  entities = std::move(transformed);
+  return transformed;
 }
 
 }

@@ -18,6 +18,8 @@
 #include "../transformer/group_uncommented_transformer.hpp"
 #include "../transformer/merge_group_transformer.hpp"
 #include "../transformer/create_entity_heading_transformer.hpp"
+#include "../transformer/create_entity_document_transformer.hpp"
+#include "../transformer/create_index_document_transformer.hpp"
 
 namespace standardese::tool {
 
@@ -36,6 +38,8 @@ class transformers {
     struct transformer::exclude_uncommented_transformer::options exclude_uncommented_options;
     struct transformer::create_synopsis_transformer::options synopsis_options;
     struct transformer::create_entity_heading_transformer::create_entity_heading_transformer_options entity_heading_options;
+    struct transformer::create_entity_document_transformer::create_entity_document_transformer_options entity_document_options;
+    struct transformer::create_index_document_transformer::create_index_document_transformer_options index_document_options;
 
     struct external_sphinx_options {
       /// The local path of the inventory file.

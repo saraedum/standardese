@@ -149,6 +149,10 @@ unordered_entities::iterator unordered_entities::end() {
   return ret;
 }
 
+size_t unordered_entities::size() const {
+  return self->items.size();
+}
+
 template <bool is_const>
 unordered_entities::unordered_iterator<is_const>::unordered_iterator() noexcept : self(new unordered_iterator_implementation{}) {};
 

@@ -5,7 +5,7 @@
 #include "../../standardese/transformer/create_entity_heading_transformer.hpp"
 
 #include "../external/catch/single_include/catch2/catch.hpp"
-#include "../../standardese/document_builder/entity_document_builder.hpp"
+#include "../../standardese/transformer/create_entity_document_transformer.hpp"
 #include "../../standardese/output_generator/xml/xml_generator.hpp"
 #include "../../standardese/model/document.hpp"
 #include "../../standardese/model/visitor/visit.hpp"
@@ -15,8 +15,6 @@
 #include "../util/unindent.hpp"
 
 namespace standardese::test::transformer {
-
-using standardese::transformer::create_entity_heading_transformer;
 
 TEST_CASE("Headings are Generated for C++ Entities", "[create_entity_heading_transformer]") {
   auto logger = util::logger::throwing_logger();

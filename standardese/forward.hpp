@@ -118,18 +118,12 @@ enum class inline_command;
 enum class section_command;
 }
 
-namespace standardese::document_builder
-{
-
-class index_document_builder;
-class entity_document_builder;
-
-}
-
 namespace standardese::transformer
 {
 
+class create_entity_document_transformer;
 class create_entity_heading_transformer;
+class create_index_document_transformer;
 class create_link_text_transformer;
 class create_output_section_heading_transformer;
 class create_synopsis_transformer;
