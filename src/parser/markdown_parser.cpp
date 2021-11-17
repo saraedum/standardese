@@ -49,7 +49,7 @@ model::document markdown_parser::parse(const std::string& comment) const {
     using unique_node = unique_cmark<cmark_node, cmark_node_free>;
     auto root = unique_node(cmark_parser_finish(parser.get()));
 
-    model::document doc = model::document::anonymous();
+    model::document doc = model::document::container();
     visit_children(root.get(), [&](cmark_node* child) { doc.children.push_back(parse(child)); });
 
     return doc;
