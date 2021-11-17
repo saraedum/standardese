@@ -24,7 +24,7 @@ class set_href_internal_transformer : public inner_transformer {
     void do_transform(model::entity&) override;
 
   private:
-    std::unordered_map<const cppast::cpp_entity*, std::string> anchors;
+    std::unordered_map<const cppast::cpp_entity*, std::string> targets;
     parser::cpp_context context;
 };
 

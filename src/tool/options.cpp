@@ -940,9 +940,9 @@ void options_parser::process_markdown_options(po::variables_map& parsed) {
   if (parsed.count("md-anchors")) {
     const auto value = parsed.at("md-anchors").as<std::string>();
     if (value == "plain") {
-      options.output_generator_options.markdown_options.anchors = output_generator::markdown::markdown_generator::markdown_generator_options::anchors::plain;
+      options.output_generator_options.markdown_options.targets = output_generator::markdown::markdown_generator::markdown_generator_options::target_rendering::plain;
     } else if (value == "html") {
-      options.output_generator_options.markdown_options.anchors = output_generator::markdown::markdown_generator::markdown_generator_options::anchors::html;
+      options.output_generator_options.markdown_options.targets = output_generator::markdown::markdown_generator::markdown_generator_options::target_rendering::html;
     } else {
       logger::error(fmt::format("Ignoring malformed --md-anchors. Expected one of `plain`, `html` but found `{}`.", value));
     }

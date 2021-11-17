@@ -25,7 +25,7 @@ namespace standardese::transformer
 set_href_internal_transformer::set_href_internal_transformer(model::unordered_entities& documents, parser::cpp_context context) :
   inner_transformer(documents),
   context(context),
-  anchors([&]() {
+  targets([&]() {
     std::string path;
     std::unordered_map<const cppast::cpp_entity*, std::string> a;
 
@@ -60,8 +60,8 @@ void set_href_internal_transformer::do_transform(model::entity& document) {
           throw std::logic_error("not implemented: resolve_module_target");
         } else if constexpr (std::is_same_v<T, model::link_target::cppast_target>) {
           // TODO(0.6.0-beta): Use cppast ids instead?
-          auto resolved = anchors.find(&*target.target);
-          if (resolved == anchors.end()) {
+          auto resolved = targets.find(&*target.target);
+          if (resolved == targets.end()) {
               logger::error(fmt::format("Could not create URL for link to the {} `{}` from `{}`. Found the reference `{}`. Target was not found in inventory of C++ entities which are linkable.", formatter::inja_formatter{{}, context}.kind(*target.target), target.target->name(), formatter::inja_formatter{{}, context}.absolute(*target.target), output_generator::xml::xml_generator::render(document)));
               return;
           }

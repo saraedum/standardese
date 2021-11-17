@@ -10,9 +10,7 @@
 
 namespace standardese::transformer {
 
-// TODO(0.6.0-alpha): Clean up the mess we made with the "anchor" term. We should not use it. Use link instead.
-
-/// Establishes the [model::mixin::anchored::id]() for each entity that can be
+/// Establishes the [model::mixin::target::id]() for each entity that can be
 /// linked to in the output documents.
 class set_id_transformer : public inner_transformer {
   public:

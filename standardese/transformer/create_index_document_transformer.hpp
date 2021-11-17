@@ -31,7 +31,7 @@ class create_index_document_transformer {
       /// predicate. The default is to create an index of all entities.
       std::function<bool(const model::entity&)> predicate;
 
-      struct formatter::inja_formatter::inja_formatter_options anchor_text_options;
+      struct formatter::inja_formatter::inja_formatter_options target_text_options;
     };
 
     create_index_document_transformer(model::unordered_entities&, parser::cpp_context, create_index_document_transformer_options);
@@ -49,7 +49,7 @@ class create_index_document_transformer {
     static bool is_header_file(const model::entity&);
 
   private:
-    formatter::inja_formatter anchor_text_formatter;
+    formatter::inja_formatter target_text_formatter;
 
     create_index_document_transformer_options options;
 

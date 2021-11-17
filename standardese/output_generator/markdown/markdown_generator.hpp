@@ -17,7 +17,7 @@ class markdown_generator : public cmark_generator {
     struct markdown_generator_options {
       markdown_generator_options();
 
-      enum class anchors {
+      enum class target_rendering {
         /// Do not emit anything not covered by the CommonMark standard. We
         /// rely on the MarkDown postprocessors such as jekyll to turn headings
         /// into something that can be linked to. (And produce `name`/`id`
@@ -28,7 +28,7 @@ class markdown_generator : public cmark_generator {
       };
 
       /// How to emit entities that can be linked to.
-      anchors anchors = anchors::plain;
+      target_rendering targets = target_rendering::plain;
     };
 
     markdown_generator(std::ostream& os, markdown_generator_options = {});

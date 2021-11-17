@@ -11,7 +11,7 @@
 
 #include <cppast/cppast_fwd.hpp>
 
-#include "anchored.hpp"
+#include "target.hpp"
 #include "container.hpp"
 #include "../markup/code_block.hpp"
 #include "../section.hpp"
@@ -22,7 +22,7 @@ namespace standardese::model::mixin
 
 /// Documentation for something in the C++ source code such as a file, a class,
 /// a parameter, or a module.
-class documentation : public anchored, public container<>
+class documentation : public target, public container<>
 {
 public:
     using container<>::container;

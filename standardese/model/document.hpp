@@ -6,13 +6,13 @@
 #define STANDARDESE_MODEL_DOCUMENT_HPP_INCLUDED
 
 #include "mixin/visitable.hpp"
-#include "mixin/anchored.hpp"
+#include "mixin/target.hpp"
 #include "mixin/container.hpp"
 
 namespace standardese::model
 {
     /// An output file, e.g., the description of a header file.
-    class document final : public mixin::visitable<document>, public mixin::anchored, public mixin::container<> {
+    class document final : public mixin::visitable<document>, public mixin::target, public mixin::container<> {
       public:
         document(std::string name, std::string path, std::initializer_list<model::entity> children={}) : name(std::move(name)), path(std::move(path)), mixin::container<>(std::move(children)) {}
 

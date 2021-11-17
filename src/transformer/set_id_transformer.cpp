@@ -5,7 +5,7 @@
 #include <sstream>
 
 #include "../../standardese/transformer/set_id_transformer.hpp"
-#include "../../standardese/model/mixin/anchored.hpp"
+#include "../../standardese/model/mixin/target.hpp"
 #include "../../standardese/model/unordered_entities.hpp"
 #include "../../standardese/model/visitor/visit.hpp"
 #include "../util/regex.hpp"
@@ -20,7 +20,7 @@ void set_id_transformer::do_transform(model::entity& document) {
     if constexpr (std::is_base_of_v<model::document, T>) {
       // TODO(0.6.0-alpha): Implement me.
       // path = entity.path;
-    } else if constexpr (std::is_base_of_v<model::mixin::anchored, T>) {
+    } else if constexpr (std::is_base_of_v<model::mixin::target, T>) {
       // TODO(0.6.0-beta): We are using knowledge about mkdocs here. Instead we should
       // offer several implementations here:
       // * render a preceding <a>

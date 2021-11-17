@@ -256,7 +256,7 @@ TEST_CASE("Parsing of Legacy --output.* Options", "[tool]") {
 
       CHECK(logstream.str() != "");
       CHECK(options.output_generator_options.primary_format == standardese::tool::output_generators::output_generators_options::output_format::markdown);
-      CHECK(options.output_generator_options.markdown_options.anchors == output_generator::markdown::markdown_generator::markdown_generator_options::anchors::plain);
+      CHECK(options.output_generator_options.markdown_options.targets == output_generator::markdown::markdown_generator::markdown_generator_options::target_rendering::plain);
     }
 
     SECTION("MarkDown+HTML Output") {
@@ -265,7 +265,7 @@ TEST_CASE("Parsing of Legacy --output.* Options", "[tool]") {
 
       CHECK(logstream.str() != "");
       CHECK(options.output_generator_options.primary_format == standardese::tool::output_generators::output_generators_options::output_format::markdown);
-      CHECK(options.output_generator_options.markdown_options.anchors == output_generator::markdown::markdown_generator::markdown_generator_options::anchors::html);
+      CHECK(options.output_generator_options.markdown_options.targets == output_generator::markdown::markdown_generator::markdown_generator_options::target_rendering::html);
     }
 
     SECTION("Text Output") {
