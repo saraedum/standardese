@@ -948,7 +948,7 @@ TEST_CASE("Standardese Commands", "[comment_parser]")
     {
         SECTION("The Default is not to set the Synopsis Override")
         {
-            CHECK(parsed_comments(header).add(header["f"], "a comment").as_documentation().synopsis == type_safe::nullopt);
+            CHECK(parsed_comments(header).add(header["f"], "a comment").as_documentation().synopsis == std::nullopt);
         }
         SECTION("Synopsis can be set to any String")
         {
@@ -968,8 +968,8 @@ TEST_CASE("Standardese Commands", "[comment_parser]")
     {
         SECTION("The Default is not to set Group and Output Section")
         {
-            CHECK(parsed_comments(header).add(header["f"], "a comment").as_documentation().group == type_safe::nullopt);
-            CHECK(parsed_comments(header).add(header["f"], "a comment").as_documentation().output_section == type_safe::nullopt);
+            CHECK(parsed_comments(header).add(header["f"], "a comment").as_documentation().group == std::nullopt);
+            CHECK(parsed_comments(header).add(header["f"], "a comment").as_documentation().output_section == std::nullopt);
         }
         SECTION("Group can be set Explicitly")
         {
@@ -1057,7 +1057,7 @@ TEST_CASE("Standardese Commands", "[comment_parser]")
     {
         SECTION("The Default is not to Assign any Module")
         {
-            CHECK(parsed_comments(header).add(header["f"], "a comment").as_documentation().module == type_safe::nullopt);
+            CHECK(parsed_comments(header).add(header["f"], "a comment").as_documentation().module == std::nullopt);
         }
         SECTION("The Module can be set Explicitly")
         {

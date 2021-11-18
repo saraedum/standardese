@@ -5,7 +5,6 @@
 
 #include <cppast/diagnostic.hpp>
 #include <cppast/cppast_fwd.hpp>
-#include  <type_safe/optional.hpp>
 
 #include "../../standardese/parser/cppast_parser.hpp"
 #include "../../standardese/threading/transform.hpp"
@@ -61,9 +60,14 @@ cppast_parser::cppast_parser(cppast_parser_options options) : options(options), 
 }
 
 const cppast::cpp_file& cppast_parser::parse(const boost::filesystem::path& source) {
-  const auto config = compile_commands.map([&](const cppast::libclang_compilation_database& db) {
-      return cppast::find_config_for(db, source.generic_string());
-  }).value_or(options.clang_config);
+  const auto config = [&]() {
+    if (compile_commands.has_value()) {
+      const auto config = cppast::find_config_for(*compile_commands, source.generic_string());
+      if (config.has_value())
+        return config.value();
+    }
+    return options.clang_config;
+  }();
 
   return context_.add(parser.parse(context_.index(), boost::filesystem::canonical(source).generic_string(), config));
 }

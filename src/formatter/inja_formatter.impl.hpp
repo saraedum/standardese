@@ -11,7 +11,7 @@
 #include <inja/exceptions.hpp>
 #include <inja/inja.hpp>
 
-#include <type_safe/optional.hpp>
+#include <type_safe/optional_ref.hpp>
 
 #include "../../standardese/formatter/inja_formatter.hpp"
 #include "../../standardese/forward.hpp"

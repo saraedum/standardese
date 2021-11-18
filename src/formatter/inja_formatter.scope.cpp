@@ -80,7 +80,7 @@ std::vector<const cppast::cpp_entity*> scopes(const cppast::cpp_entity& entity) 
 
 /// Return the scopes this type is defined in. From the outermost top-level
 /// scope to the innermost scope such as a function scope.
-type_safe::optional<std::vector<const cppast::cpp_entity*>> scopes(const cppast::cpp_type& type, const cppast::cpp_entity_index& index) {
+std::optional<std::vector<const cppast::cpp_entity*>> scopes(const cppast::cpp_type& type, const cppast::cpp_entity_index& index) {
   switch (type.kind()) {
     case cppast::cpp_type_kind::array_t:
       return scopes(static_cast<const cppast::cpp_array_type&>(type).value_type(), index);
@@ -124,7 +124,7 @@ type_safe::optional<std::vector<const cppast::cpp_entity*>> scopes(const cppast:
       logger::warn(fmt::format("Not implemented: cannot determine scope() of type {}.", cppast::to_string(type)));
       break;
   }
-  return type_safe::nullopt;
+  return std::nullopt;
 }
 
 std::string render_scope(std::vector<const cppast::cpp_entity*> self, std::optional<std::vector<const cppast::cpp_entity*>> context, std::function<std::string(const cppast::cpp_entity&)> name, enum inja_formatter::inja_formatter_options::scope_display_options options) {

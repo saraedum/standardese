@@ -5,14 +5,14 @@
 #ifndef STANDARDESE_INVENTORY_SYMBOLS_HPP_INCLUDED
 #define STANDARDESE_INVENTORY_SYMBOLS_HPP_INCLUDED
 
+#include <memory>
+#include <optional>
+#include <cppast/cppast_fwd.hpp>
+#include <unordered_set>
+
 #include "../parser/cpp_context.hpp"
 #include "inventory.hpp"
 #include "../model/link_target.hpp"
-
-#include <memory>
-#include <cppast/cppast_fwd.hpp>
-#include <type_safe/optional_ref.hpp>
-#include <unordered_set>
 
 namespace standardese::inventory
 {
@@ -44,10 +44,10 @@ class symbols {
 
   /// Lookup the symbol `name` relative to the `entity`, e.g., because
   /// `name` is mentioned in the comment for `entity`.
-  type_safe::optional<model::link_target> find(const std::string& name, const cppast::cpp_entity& entity) const;
+  std::optional<model::link_target> find(const std::string& name, const cppast::cpp_entity& entity) const;
 
   /// Lookup the global symbol `name`.
-  type_safe::optional<model::link_target> find(const std::string& name) const;
+  std::optional<model::link_target> find(const std::string& name) const;
 
  private:
   struct impl;

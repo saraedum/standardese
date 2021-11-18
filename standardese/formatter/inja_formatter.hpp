@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 #include <functional>
+#include <optional>
 
 #include <cppast/cppast_fwd.hpp>
 #include <nlohmann/json_fwd.hpp>
@@ -319,7 +320,7 @@ class inja_formatter {
   const std::vector<model::cpp_entity_documentation>& entity(const model::group_documentation&) const;
 
   // TODO(0.6.0-rc): Should this also be available on a cpp_entity?
-  type_safe::optional<std::string> output_section(const model::entity&) const;
+  std::optional<std::string> output_section(const model::entity&) const;
 
   /// Return the documentation entity rendered as plain text.
   /// Typically, this is used to turn a document such as the one returned by
@@ -349,7 +350,7 @@ class inja_formatter {
   std::vector<std::string> namespaces(const cppast::cpp_entity&) const;
 
   // TODO(0.6.0-rc): Document and hook up callbacks.
-  type_safe::optional<std::vector<std::string>> namespaces(const cppast::cpp_type&) const;
+  std::optional<std::vector<std::string>> namespaces(const cppast::cpp_type&) const;
 
   /// Return the name of the defining type scope of this entity.
   /// See [scope_display_options]() for ways to influence the returned scope.

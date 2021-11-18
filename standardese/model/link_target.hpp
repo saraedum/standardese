@@ -7,8 +7,7 @@
 
 #include <variant>
 #include <cppast/cppast_fwd.hpp>
-#include <type_safe/reference.hpp>
-#include <type_safe/optional_ref.hpp>
+#include <optional>
 
 #include "../inventory/sphinx/documentation_set.hpp"
 
@@ -77,7 +76,7 @@ class link_target {
     link_target(uri_target uri);
 
     /// The final target of this link, i.e., an absolute or relative URL.
-    type_safe::optional<std::string> href() const;
+    std::optional<std::string> href() const;
 
     template <typename Visitor>
     auto accept(Visitor&& visitor) {

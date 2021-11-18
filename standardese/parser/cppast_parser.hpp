@@ -10,6 +10,7 @@
 #include <cppast/cppast_fwd.hpp>
 #include <cppast/libclang_parser.hpp>
 #include <boost/filesystem.hpp>
+#include <optional>
 
 #include "../threading/unthreaded_pool.hpp"
 #include "cpp_context.hpp"
@@ -29,7 +30,7 @@ class cppast_parser {
     cppast::libclang_compile_config clang_config;
 
     /// Directory containing a `compile_commands.json` compilation database.
-    type_safe::optional<boost::filesystem::path> compile_commands;
+    std::optional<boost::filesystem::path> compile_commands;
   };
 
   explicit cppast_parser(cppast_parser_options);
@@ -46,7 +47,7 @@ class cppast_parser {
 
   cpp_context context_;
 
-  type_safe::optional<cppast::libclang_compilation_database> compile_commands;
+  std::optional<cppast::libclang_compilation_database> compile_commands;
   cppast::libclang_parser parser;
 };
 

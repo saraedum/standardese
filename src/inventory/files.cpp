@@ -6,7 +6,7 @@
 #include <boost/filesystem/operations.hpp>
 
 #include <cppast/cpp_file.hpp>
-#include <type_safe/optional.hpp>
+#include <type_safe/optional_ref.hpp>
 
 #include "../../standardese/inventory/files.hpp"
 

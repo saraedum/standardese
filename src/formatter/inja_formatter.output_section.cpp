@@ -27,13 +27,13 @@ nlohmann::json inja_formatter::output_section_callback(const nlohmann::json& dat
   }, self->from_json(data));
 }
 
-type_safe::optional<std::string> inja_formatter::output_section(const model::entity& entity) const {
-  return model::visitor::visit([&](auto&& documentation) {
+std::optional<std::string> inja_formatter::output_section(const model::entity& entity) const {
+  return model::visitor::visit([&](auto&& documentation) -> std::optional<std::string>{
     using T = std::decay_t<decltype(documentation)>;
     if constexpr (std::is_base_of_v<model::mixin::documentation, T>) {
       return documentation.output_section;
     }
-    return type_safe::optional<std::string>{type_safe::nullopt};
+    return std::nullopt;
   }, entity);
 }
 

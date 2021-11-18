@@ -7,7 +7,7 @@
 #include <cppast/cpp_class.hpp>
 #include <cppast/cpp_template.hpp>
 #include <cppast/cpp_type_alias.hpp>
-#include <type_safe/optional.hpp>
+#include <type_safe/optional_ref.hpp>
 #include <fmt/format.h>
 #include <nlohmann/json.hpp>
 #include <type_traits>

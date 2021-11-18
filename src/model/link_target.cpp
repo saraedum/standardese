@@ -28,13 +28,13 @@ link_target::module_target::module_target(std::string module) : module(std::move
 
 link_target::uri_target::uri_target(std::string uri) : uri(std::move(uri)) {}
 
-type_safe::optional<std::string> link_target::href() const {
-  return accept([&](auto&& target) -> type_safe::optional<std::string> {
+std::optional<std::string> link_target::href() const {
+  return accept([&](auto&& target) -> std::optional<std::string> {
     using T = std::decay_t<decltype(target)>;
     if constexpr (std::is_same_v<T, uri_target>) {
       return target.uri;
     } else {
-      return type_safe::nullopt;
+      return std::nullopt;
     }
   });
 }

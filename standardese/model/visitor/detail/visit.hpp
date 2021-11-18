@@ -5,7 +5,6 @@
 #ifndef STANDARDESE_MODEL_VISITOR_DETAIL_VISIT_HPP_INCLUDED
 #define STANDARDESE_MODEL_VISITOR_DETAIL_VISIT_HPP_INCLUDED
 
-#include <type_safe/optional.hpp>
 #include <type_traits>
 #include <functional>
 

@@ -100,7 +100,7 @@ std::string inja_formatter::namespaze(const std::string& fullname) const {
   return namespaze;
 }
 
-type_safe::optional<std::vector<std::string>> inja_formatter::namespaces(const cppast::cpp_type& type) const {
+std::optional<std::vector<std::string>> inja_formatter::namespaces(const cppast::cpp_type& type) const {
   switch (type.kind()) {
     case cppast::cpp_type_kind::array_t:
       return namespaces(static_cast<const cppast::cpp_array_type&>(type).value_type());
@@ -145,7 +145,7 @@ type_safe::optional<std::vector<std::string>> inja_formatter::namespaces(const c
       break;
   }
 
-  return type_safe::nullopt;
+  return std::nullopt;
 }
 
 std::vector<std::string> inja_formatter::namespaces(const cppast::cpp_entity& entity) const {

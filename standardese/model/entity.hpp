@@ -25,7 +25,7 @@ class entity {
     entity(const entity& rhs) : value(rhs.value->clone()) {}
     entity(entity&& rhs) : value(std::move(rhs.value)) {}
 
-    entity& operator=(entity& rhs) {
+    entity& operator=(const entity& rhs) {
       value.reset(rhs.value->clone());
       return *this;
     }

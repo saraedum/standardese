@@ -5,6 +5,8 @@
 #ifndef STANDARDESE_TOOL_GENERATOR_HPP_INCLUDED
 #define STANDARDESE_TOOL_GENERATOR_HPP_INCLUDED
 
+// TODO(0.6.0-alpha): implement me
+
 /*
 #include <vector>
 

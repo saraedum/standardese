@@ -5,10 +5,10 @@
 #ifndef STANDARDESE_MODEL_MIXIN_DOCUMENTATION_HPP
 #define STANDARDESE_MODEL_MIXIN_DOCUMENTATION_HPP
 
-#include <type_safe/optional.hpp>
 #include <type_safe/optional_ref.hpp>
 #include <type_safe/reference.hpp>
 
+#include <optional>
 #include <cppast/cppast_fwd.hpp>
 
 #include "target.hpp"
@@ -35,19 +35,19 @@ public:
     }
 
     /// The explicit synopsis override if specified by the user.
-    type_safe::optional<std::string> synopsis;
+    std::optional<std::string> synopsis;
 
     /// Whether to exclude this entity or parts of it from the output.
     enum exclude_mode exclude_mode = exclude_mode::include;
 
     /// If set, this entity will appear grouped with all sibling that have the same group.
-    type_safe::optional<std::string> group;
+    std::optional<std::string> group;
 
     /// If set, this entity will appear under this heading.
-    type_safe::optional<std::string> output_section;
+    std::optional<std::string> output_section;
 
     /// If set, this entity will also show up in the module index for this module.
-    type_safe::optional<std::string> module;
+    std::optional<std::string> module;
 };
 
 }

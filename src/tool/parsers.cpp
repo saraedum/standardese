@@ -7,6 +7,7 @@
 #include <cppast/visitor.hpp>
 #include <type_safe/optional_ref.hpp>
 #include <numeric>
+#include <optional>
 #include <stdexcept>
 #include <utility>
 
@@ -96,9 +97,9 @@ std::pair<model::unordered_entities, parser::cpp_context> parsers::parse() {
   // Parse MarkDown files.
   parser::markdown_parser markdown_parser;
 
-  auto mds = threading::transform(workers, options.sources.begin(), options.sources.end(), [&](const auto& md) {
+  auto mds = threading::transform(workers, options.sources.begin(), options.sources.end(), [&](const auto& md) -> std::optional<model::entity> {
       if (boost::filesystem::extension(md) != ".md")
-        return type_safe::optional<model::entity>();
+        return std::nullopt;
       std::ifstream in(md.native());
       std::string raw(std::istreambuf_iterator<char>(in), {});
       auto doc = markdown_parser.parse(raw);
@@ -110,7 +111,7 @@ std::pair<model::unordered_entities, parser::cpp_context> parsers::parse() {
       if (doc.name.find_first_of('.') != std::string::npos)
         doc.name = doc.name.substr(0, doc.name.find_first_of('.'));
 
-      return type_safe::optional<model::entity>(doc);
+      return doc;
   });
 
   for (auto& md : mds)

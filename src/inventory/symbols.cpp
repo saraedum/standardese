@@ -19,7 +19,7 @@
 #include <cppast/cpp_namespace.hpp>
 #include <cppast/visitor.hpp>
 #include <stdexcept>
-#include <type_safe/optional.hpp>
+#include <optional>
 
 #include "../../standardese/inventory/symbols.hpp"
 #include "../../standardese/inventory/cppast_inventory.hpp"
@@ -39,8 +39,8 @@ class symbols::impl {
  public:
   virtual ~impl() {}
 
-  virtual type_safe::optional<model::link_target> find(const std::string& name) const = 0;
-  virtual type_safe::optional<model::link_target> find(const std::string& name, const cppast::cpp_entity& entity) const;
+  virtual std::optional<model::link_target> find(const std::string& name) const = 0;
+  virtual std::optional<model::link_target> find(const std::string& name, const cppast::cpp_entity& entity) const;
 
   template <typename T>
   class generic_symbols;
@@ -65,8 +65,8 @@ class symbols::impl::cppast_symbols : public symbols::impl::generic_symbols<cppa
  public:
   cppast_symbols(const cppast_inventory*);
 
-  type_safe::optional<model::link_target> find(const std::string& name) const override;
-  type_safe::optional<model::link_target> find(const std::string& name, const cppast::cpp_entity& entity) const override;
+  std::optional<model::link_target> find(const std::string& name) const override;
+  std::optional<model::link_target> find(const std::string& name, const cppast::cpp_entity& entity) const override;
 
   type_safe::optional_ref<const cppast::cpp_entity> child(const cppast::cpp_entity&, const std::string& name) const override;
   type_safe::optional_ref<const cppast::cpp_entity> parameter(const cppast::cpp_entity&, const std::string& name) const override;
@@ -87,7 +87,7 @@ class symbols::impl::sphinx_symbols : public symbols::impl {
  public:
   sphinx_symbols(const sphinx::documentation_set*);
 
-  type_safe::optional<model::link_target> find(const std::string& name) const override;
+  std::optional<model::link_target> find(const std::string& name) const override;
 
  private:
   const sphinx::documentation_set* inventory;
@@ -110,7 +110,7 @@ symbols::symbols(symbols&& value) : self(std::move(value.self)) {}
 
 symbols::~symbols() {}
 
-type_safe::optional<model::link_target> symbols::find(const std::string& name_) const {
+std::optional<model::link_target> symbols::find(const std::string& name_) const {
   std::string name = name_;
 
   if (boost::starts_with(name, "::"))
@@ -118,12 +118,12 @@ type_safe::optional<model::link_target> symbols::find(const std::string& name_) 
     name = name.substr(2);
 
   if (name.empty())
-    return type_safe::nullopt;
+    return std::nullopt;
 
   return self->find(name);
 }
 
-type_safe::optional<model::link_target> symbols::find(const std::string& name, const cppast::cpp_entity& entity) const {
+std::optional<model::link_target> symbols::find(const std::string& name, const cppast::cpp_entity& entity) const {
   if (entity.kind() == cppast::cpp_file::kind())
     return this->find(name);
 
@@ -132,18 +132,18 @@ type_safe::optional<model::link_target> symbols::find(const std::string& name, c
     return this->find(name);
 
   if (name.empty())
-    return type_safe::nullopt;
+    return std::nullopt;
 
   return self->find(name, entity);
 }
 
-type_safe::optional<model::link_target> symbols::impl::find(const std::string& name, const cppast::cpp_entity&) const {
+std::optional<model::link_target> symbols::impl::find(const std::string& name, const cppast::cpp_entity&) const {
   return find(name);
 }
 
 symbols::impl::cppast_symbols::cppast_symbols(const cppast_inventory* inventory) : inventory(inventory) {}
 
-type_safe::optional<model::link_target> symbols::impl::cppast_symbols::find(const std::string& name) const {
+std::optional<model::link_target> symbols::impl::cppast_symbols::find(const std::string& name) const {
   type_safe::optional_ref<const cppast::cpp_entity> found;
   for (auto* root : inventory->roots) {
     auto search = descendant(*root, name);
@@ -155,18 +155,18 @@ type_safe::optional<model::link_target> symbols::impl::cppast_symbols::find(cons
   }
 
   if (found)
-    return &found.value();
+    return model::link_target{&found.value()};
 
-  return type_safe::nullopt;
+  return std::nullopt;
 }
 
-type_safe::optional<model::link_target> symbols::impl::cppast_symbols::find(const std::string& name, const cppast::cpp_entity& entity) const {
+std::optional<model::link_target> symbols::impl::cppast_symbols::find(const std::string& name, const cppast::cpp_entity& entity) const {
   if (inventory->roots.find(&cppast_inventory::root(entity)) == inventory->roots.end())
     throw std::invalid_argument("Cannot look up symbol relative to something not defined in any of the loaded files.");
 
   auto search = descendant(entity, name);
   if (search.has_value())
-      return &search.value();
+      return model::link_target{&search.value()};
 
   if (!entity.parent().has_value())
     return this->find(name);
@@ -466,8 +466,8 @@ std::string symbols::impl::cppast_symbols::signature(const cppast::cpp_entity& e
 
 symbols::impl::sphinx_symbols::sphinx_symbols(const sphinx::documentation_set* inventory) : inventory(inventory) {}
 
-type_safe::optional<model::link_target> symbols::impl::sphinx_symbols::find(const std::string& name) const {
-  type_safe::optional<sphinx::entry> match;
+std::optional<model::link_target> symbols::impl::sphinx_symbols::find(const std::string& name) const {
+  std::optional<sphinx::entry> match;
 
   // TODO(0.6.0-beta): We should be much more fuzzy here.
   // TODO(0.6.0-rc): We could be better than O(n) here.
@@ -479,7 +479,7 @@ type_safe::optional<model::link_target> symbols::impl::sphinx_symbols::find(cons
   }
 
   if (!match.has_value())
-    return type_safe::nullopt;
+    return std::nullopt;
 
   return model::link_target::sphinx_target(*inventory, match.value());
 }

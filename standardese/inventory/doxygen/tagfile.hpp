@@ -8,7 +8,6 @@
 #include <iosfwd>
 #include <string>
 #include <vector>
-#include <type_safe/optional.hpp>
 
 #include "../inventory.hpp"
 #include "anchor.hpp"
