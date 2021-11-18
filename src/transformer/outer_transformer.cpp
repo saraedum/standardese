@@ -12,15 +12,21 @@ namespace standardese::transformer {
 outer_transformer::outer_transformer(const model::unordered_entities* entities) : entities(entities) {}
 
 model::unordered_entities outer_transformer::transform(threading::pool::factory workers) {
-  model::unordered_entities transformed;
-
-  for (auto& replacements : threading::transform(workers, entities->begin(), entities->end(), [this](auto& e) {
+  auto transformed = threading::transform(workers, entities->begin(), entities->end(), [this](auto& e) {
     return do_transform(e);
-  }))
-    for (auto& replacement : replacements)
-      transformed.insert(std::move(replacement));
+  });
 
-  return transformed;
+  return merge(std::move(transformed));
+}
+
+model::unordered_entities outer_transformer::merge(std::vector<std::vector<model::entity>>&& transformed) const {
+  model::unordered_entities merged;
+
+  for (auto& result : transformed)
+    for (auto& entity : result)
+      merged.insert(entity);
+
+  return merged;
 }
 
 }

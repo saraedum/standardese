@@ -95,6 +95,7 @@ set(src
     transformer/create_link_text_transformer.cpp
     transformer/create_output_section_heading_transformer.cpp
     transformer/create_synopsis_transformer.cpp
+    transformer/create_uncommented_module_transformer.cpp
     transformer/exclude_uncommented_transformer.cpp
     transformer/group_uncommented_transformer.cpp
     transformer/inner_transformer.cpp

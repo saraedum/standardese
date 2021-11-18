@@ -14,14 +14,12 @@
 #include "../util/unindent.hpp"
 #include "../util/logger.hpp"
 
-namespace standardese::test::document_builder
-{
+namespace standardese::test::transformer {
 
-using util::unindent;
 using standardese::output_generator::xml::xml_generator;
 using standardese::transformer::create_entity_document_transformer;
 
-TEST_CASE("Entity Documents can be Generated", "[entity_document_builder]")
+TEST_CASE("Entity Documents can be Generated", "[create_entity_document_transformer]")
 {
   auto logger = util::logger::throwing_logger();
 
@@ -53,7 +51,7 @@ TEST_CASE("Entity Documents can be Generated", "[entity_document_builder]")
       auto document = documents.begin()->as<model::document>();
       document.name = "header.hpp";
 
-      CHECK(xml_generator::render(document) == unindent(R"*(
+      CHECK(xml_generator::render(document) == util::unindent(R"*(
         <?xml version="1.0"?>
         <document name="header.hpp">
           <entity-documentation name="header.hpp">
@@ -93,7 +91,7 @@ TEST_CASE("Entity Documents can be Generated", "[entity_document_builder]")
       REQUIRE(documents.size() == 1);
       const auto document = documents.begin()->as<model::document>();
 
-      CHECK(xml_generator::render(document) == unindent(R"*(
+      CHECK(xml_generator::render(document) == util::unindent(R"*(
         <?xml version="1.0"?>
         <document name="doc_swap">
           <entity-documentation name="swap">
@@ -134,7 +132,7 @@ TEST_CASE("Entity Documents can be Generated", "[entity_document_builder]")
       REQUIRE(documents.size() == 1);
       const auto document = documents.begin()->as<model::document>();
 
-      CHECK(xml_generator::render(document) == unindent(R"*(
+      CHECK(xml_generator::render(document) == util::unindent(R"*(
         <?xml version="1.0"?>
         <document name="doc_X">
           <entity-documentation name="X">
@@ -168,7 +166,7 @@ TEST_CASE("Entity Documents can be Generated", "[entity_document_builder]")
         REQUIRE(documents.size() == 1);
         const auto document = documents.begin()->as<model::document>();
 
-        CHECK(xml_generator::render(document) == unindent(R"*(
+        CHECK(xml_generator::render(document) == util::unindent(R"*(
           <?xml version="1.0"?>
           <document name="doc_a">
             <entity-documentation name="a">
@@ -192,7 +190,7 @@ TEST_CASE("Entity Documents can be Generated", "[entity_document_builder]")
         REQUIRE(documents.size() == 1);
         const auto document = documents.begin()->as<model::document>();
 
-        CHECK(xml_generator::render(document) == unindent(R"*(
+        CHECK(xml_generator::render(document) == util::unindent(R"*(
           <?xml version="1.0"?>
           <document name="doc_b">
             <entity-documentation name="b">
@@ -222,7 +220,7 @@ TEST_CASE("Entity Documents can be Generated", "[entity_document_builder]")
       REQUIRE(documents.size() == 1);
       const auto document = documents.begin()->as<model::document>();
 
-      CHECK(xml_generator::render(document) == unindent(R"*(
+      CHECK(xml_generator::render(document) == util::unindent(R"*(
         <?xml version="1.0"?>
         <document name="doc_X">
           <entity-documentation name="X">
@@ -263,7 +261,7 @@ TEST_CASE("Entity Documents can be Generated", "[entity_document_builder]")
       REQUIRE(documents.size() == 1);
       const auto document = documents.begin()->as<model::document>();
 
-      CHECK(xml_generator::render(document) == unindent(R"*(
+      CHECK(xml_generator::render(document) == util::unindent(R"*(
         <?xml version="1.0"?>
         <document name="doc_Z">
           <entity-documentation name="Z">
@@ -316,7 +314,7 @@ TEST_CASE("Entity Documents can be Generated", "[entity_document_builder]")
       REQUIRE(documents.size() == 1);
       const auto document = documents.begin()->as<model::document>();
 
-      CHECK(xml_generator::render(document) == unindent(R"*(
+      CHECK(xml_generator::render(document) == util::unindent(R"*(
           <?xml version="1.0"?>
           <document name="doc_Z">
             <entity-documentation name="Z">
@@ -364,7 +362,7 @@ TEST_CASE("Entity Documents can be Generated", "[entity_document_builder]")
       REQUIRE(documents.size() == 1);
       const auto document = documents.begin()->as<model::document>();
 
-      CHECK(xml_generator::render(document) == unindent(R"*(
+      CHECK(xml_generator::render(document) == util::unindent(R"*(
           <?xml version="1.0"?>
           <document name="doc_MACRO">
             <entity-documentation name="MACRO">
@@ -410,7 +408,7 @@ TEST_CASE("Entity Documents can be Generated", "[entity_document_builder]")
       REQUIRE(documents.size() == 1);
       const auto document = documents.begin()->as<model::document>();
 
-      CHECK(xml_generator::render(document) == unindent(R"*(
+      CHECK(xml_generator::render(document) == util::unindent(R"*(
         <?xml version="1.0"?>
         <document name="doc_ENUM">
           <entity-documentation name="ENUM">
@@ -445,7 +443,7 @@ TEST_CASE("Entity Documents can be Generated", "[entity_document_builder]")
       REQUIRE(documents.size() == 1);
       const auto document = documents.begin()->as<model::document>();
 
-      CHECK(xml_generator::render(document) == unindent(R"*(
+      CHECK(xml_generator::render(document) == util::unindent(R"*(
         <?xml version="1.0"?>
         <document name="doc_ENUM">
           <entity-documentation name="ENUM">
@@ -480,7 +478,7 @@ TEST_CASE("Entity Documents can be Generated", "[entity_document_builder]")
       REQUIRE(documents.size() == 1);
       const auto document = documents.begin()->as<model::document>();
 
-      CHECK(xml_generator::render(document) == unindent(R"*(
+      CHECK(xml_generator::render(document) == util::unindent(R"*(
         <?xml version="1.0"?>
         <document name="doc_A">
           <entity-documentation name="A">
@@ -512,7 +510,7 @@ TEST_CASE("Entity Documents can be Generated", "[entity_document_builder]")
       REQUIRE(documents.size() == 1);
       const auto document = documents.begin()->as<model::document>();
 
-      CHECK(xml_generator::render(document) == unindent(R"*(
+      CHECK(xml_generator::render(document) == util::unindent(R"*(
         <?xml version="1.0"?>
         <document name="doc_T">
           <entity-documentation name="T">
@@ -543,7 +541,7 @@ TEST_CASE("Entity Documents can be Generated", "[entity_document_builder]")
       REQUIRE(documents.size() == 1);
       const auto document = documents.begin()->as<model::document>();
 
-      CHECK(xml_generator::render(document) == unindent(R"*(
+      CHECK(xml_generator::render(document) == util::unindent(R"*(
         <?xml version="1.0"?>
         <document name="doc_U">
           <entity-documentation name="U">

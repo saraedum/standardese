@@ -27,7 +27,9 @@ class outer_transformer {
     /// Return the entities to replace `root` with.
     /// This function might be called in parallel so implementations must not
     /// use any global state that is not thread-safe.
-    virtual std::vector<model::entity> do_transform(const model::entity& root) = 0;
+    virtual std::vector<model::entity> do_transform(const model::entity& root) const = 0;
+
+    virtual model::unordered_entities merge(std::vector<std::vector<model::entity>>&&) const;
 
     /// The set of entities we are working on.
     const model::unordered_entities* entities;

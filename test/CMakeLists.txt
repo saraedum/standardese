@@ -30,6 +30,7 @@ set(tests
     transformer/create_entity_document_transformer.cpp
     transformer/create_entity_heading_transformer.cpp
     transformer/create_link_text_transformer.cpp
+    transformer/create_uncommented_module_transformer.cpp
     transformer/merge_group_transformer.cpp
     transformer/set_href_external_legacy_transformer.cpp
     transformer/set_target_external_transformer.cpp

@@ -100,11 +100,6 @@ namespace standardese::parser
         /// TODO(0.6.0-alpha): Should be a transformer? Anyway, it should not live here.
         void add_uncommented_entities(model::unordered_entities&, const cppast::cpp_file&) const;
 
-        /// Add modules to the parse result that are mentioned in other
-        /// comments but lack explicit documentation.
-        /// TODO(0.6.0-alpha): Should be a transformer? Anyway, it should not live here.
-        void add_uncommented_modules(model::unordered_entities&) const;
-
     private:
         /// Return the effective C++ entity (or the module name) the comment in
         /// `root` is referencing given that comment was found next to

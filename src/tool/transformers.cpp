@@ -6,6 +6,7 @@
 #include <stdexcept>
 #include <variant>
 
+#include "../../standardese/model/entity.hpp"
 #include "../../standardese/tool/transformers.hpp"
 #include "../../standardese/model/unordered_entities.hpp"
 #include "../../standardese/transformer/create_entity_heading_transformer.hpp"
@@ -22,6 +23,7 @@
 #include "../../standardese/transformer/merge_group_transformer.hpp"
 #include "../../standardese/transformer/create_entity_document_transformer.hpp"
 #include "../../standardese/transformer/create_index_document_transformer.hpp"
+#include "../../standardese/transformer/create_uncommented_module_transformer.hpp"
 
 namespace standardese::tool {
 
@@ -33,6 +35,11 @@ void transformers::transform(model::unordered_entities& entities, const parser::
   // TODO(0.6.0-alpha): Make this configurable
 
   // TODO(0.6.0-alpha): Use parallel worker pool.
+
+  // Create (empty) documentation for modules that are referenced in the
+  // documentation but have no documentation on their own.
+  for (auto& module: transformer::create_uncommented_module_transformer{&entities}.transform())
+    entities.insert(std::move(module));
 
   // Create documents for the entities that we want to document explicitly,
   // such as tho header files.

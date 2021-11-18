@@ -32,7 +32,6 @@ parsed_comments&& parsed_comments::add(const cppast::cpp_entity& target, const s
   assert(file->kind() == cppast::cpp_file::kind());
 
   parser.add_uncommented_entities(entities, static_cast<const cppast::cpp_file&>(*file));
-  parser.add_uncommented_modules(entities);
 
   return std::move(*this);
 }

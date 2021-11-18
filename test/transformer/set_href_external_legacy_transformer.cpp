@@ -20,7 +20,7 @@ namespace standardese::test::transformer {
 using standardese::test::util::cpp_file;
 using standardese::transformer::set_href_external_legacy_transformer;
 
-TEST_CASE("External Legacy Legacy Links are Resolved", "[link_external_legacy_transformer]") {
+TEST_CASE("External Legacy Legacy Links are Resolved", "[set_href_external_legacy_transformer]") {
   auto logger = util::logger::throwing_logger();
   cpp_file header;
 

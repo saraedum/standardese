@@ -100,7 +100,7 @@ model::document create_entity_document_transformer::build(const std::string& nam
   return document;
 }
 
-std::vector<model::entity> create_entity_document_transformer::do_transform(const model::entity& entity) {
+std::vector<model::entity> create_entity_document_transformer::do_transform(const model::entity& entity) const {
   if (entity.is<model::cpp_entity_documentation>()) {
     auto documentation = entity.as<model::cpp_entity_documentation>();
 

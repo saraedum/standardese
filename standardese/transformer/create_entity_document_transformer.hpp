@@ -42,7 +42,7 @@ class create_entity_document_transformer : public outer_transformer {
     create_entity_document_transformer(const model::unordered_entities* entities, const parser::cpp_context&, create_entity_document_transformer_options={});
 
   protected:
-    virtual std::vector<model::entity> do_transform(const model::entity& entity) override;
+    virtual std::vector<model::entity> do_transform(const model::entity& entity) const override;
 
     /// Create a document describing `entity`.
     /// \param name The name of the generated document, e.g., `vector`.

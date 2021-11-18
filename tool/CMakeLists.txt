@@ -3,7 +3,7 @@
 # This file is subject to the license terms in the LICENSE file
 # found in the top-level directory of this distribution.
 
-set(header filesystem.hpp generator.hpp)
+set(header filesystem.hpp)
 set(src main.cpp)
 
 add_executable(standardese_tool ${header} ${src})

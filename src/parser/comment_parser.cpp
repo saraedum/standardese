@@ -484,26 +484,6 @@ void comment_parser::add_uncommented_entities(model::unordered_entities& entitie
     cppast::visit(header, visitor);
 }
 
-void comment_parser::add_uncommented_modules(model::unordered_entities& entities) const {
-    const auto ensure_module = [&](const std::string& name) {
-      if (entities.find_module(name) == entities.end()) {
-        auto module = model::module(name);
-        module.exclude_mode = model::exclude_mode::uncommented;
-        entities.insert(std::move(module));
- #include <cmark-gfm-extension_api.h>
-     }
-    };
-
-    for (const auto& entity : entities) {
-      model::visitor::visit([&](auto&& documentation) {
-        using T = std::decay_t<decltype(documentation)>;
-        if constexpr (std::is_same_v<T, model::cpp_entity_documentation>) {
-          if (documentation.module) ensure_module(documentation.module.value());
-        }
-      }, entity);
-    }
-}
-
 model::entity comment_parser::parse(cmark_node* node) const {
   if (cmark_node_get_type(node) == verbatim_extension::verbatim_extension::node_type())
     return model::markup::text(cmark_node_get_string_content(node));

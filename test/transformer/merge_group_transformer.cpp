@@ -17,7 +17,7 @@
 
 namespace standardese::test::transformer {
 
-TEST_CASE("Sections of Groups are Merged", "[group_transformer]") {
+TEST_CASE("Sections of Groups are Merged", "[merge_group_transformer]") {
   SECTION("Trailing Group Members are Merged into the Principal Entity") {
     util::cpp_file header(R"(
       void f();

@@ -7,19 +7,19 @@
 
 namespace standardese::test::transformer {
 
-TEST_CASE("Links to cppast Entities") {
+TEST_CASE("Links to cppast Entities", "[create_link_text_transformer]") {
   // TODO(0.6.0-beta): Implement me.
 }
 
-TEST_CASE("Links to Modules") {
+TEST_CASE("Links to Modules", "[create_link_text_transformer]") {
   // TODO(0.6.0-beta): Implement me.
 }
 
-TEST_CASE("Links to External Sphinx Documentation") {
+TEST_CASE("Links to External Sphinx Documentation", "[create_link_text_transformer]") {
   // TODO(0.6.0-beta): Implement me.
 }
 
-TEST_CASE("Links to External Doxygen Documentation") {
+TEST_CASE("Links to External Doxygen Documentation", "[create_link_text_transformer]") {
   // TODO(0.6.0-beta): Implement me.
 }
 

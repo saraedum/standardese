@@ -127,6 +127,7 @@ class create_index_document_transformer;
 class create_link_text_transformer;
 class create_output_section_heading_transformer;
 class create_synopsis_transformer;
+class create_uncommented_module_transformer;
 class exclude_access_transformer;
 class exclude_pattern_transformer;
 class exclude_uncommented_transformer;

@@ -21,7 +21,7 @@ namespace standardese::test::transformer {
 
 using standardese::test::util::cpp_file;
 
-TEST_CASE("Links to Header Files are Resolved", "[link_target_internal_transformer]") {
+TEST_CASE("Links to Header Files are Resolved", "[set_target_internal_transformer]") {
   auto logger = util::logger::throwing_logger();
   cpp_file header;
 
