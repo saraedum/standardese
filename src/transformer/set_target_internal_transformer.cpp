@@ -58,12 +58,12 @@ set_target_internal_transformer::set_target_internal_transformer(model::unordere
 
 void set_target_internal_transformer::do_transform(model::entity& document) {
   inventory::symbols symbols{&inventory};
-  std::stack<type_safe::object_ref<const cppast::cpp_entity>> relative;
+  std::stack<const cppast::cpp_entity*> relative;
 
   model::visitor::visit([&](auto& link, auto&& recurse) {
     using T = std::decay_t<decltype(link)>;
     if constexpr (std::is_same_v<T, model::cpp_entity_documentation>) {
-      relative.push(type_safe::ref(link.entity()));
+      relative.push(&link.entity());
       recurse();
       relative.pop();
       return;

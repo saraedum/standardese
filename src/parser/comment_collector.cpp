@@ -5,10 +5,16 @@
 
 #include <cppast/visitor.hpp>
 #include <cppast/cpp_file.hpp>
+#include <stdexcept>
 
 #include "../../standardese/parser/comment_collector.hpp"
 
 namespace standardese::parser {
+
+comment_collector::comment::comment(std::string text, const cppast::cpp_entity* location) : text(std::move(text)), location(location) {
+  if (location == nullptr)
+    throw std::invalid_argument("comment location mut not be NULL");
+}
 
 comment_collector::comment_collector(comment_collector_options options) : options(options) {}
 
@@ -30,7 +36,7 @@ std::vector<comment_collector::comment> comment_collector::collect(const cppast:
 
       const auto comment = entity.comment();
       if (comment) {
-          comments.emplace_back(comment.value(), entity);
+          comments.emplace_back(comment.value(), &entity);
       }
 
       // TODO(0.6.0-alpha): Why would we want to do this?
@@ -42,7 +48,7 @@ std::vector<comment_collector::comment> comment_collector::collect(const cppast:
   });
 
   for (const auto& free : static_cast<const cppast::cpp_file*>(cpp_file)->unmatched_comments())
-    comments.emplace_back(free.content, *static_cast<const cppast::cpp_entity*>(cpp_file));
+    comments.emplace_back(free.content, static_cast<const cppast::cpp_entity*>(cpp_file));
 
   return comments;
 }

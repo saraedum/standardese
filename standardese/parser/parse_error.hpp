@@ -26,11 +26,6 @@ namespace standardese::parser
     class parse_error : public std::runtime_error
     {
         template <typename T>
-        static auto formattable(type_safe::object_ref<T> value) {
-            return formattable(*value);
-        }
-
-        template <typename T>
         static auto&& formattable(T&& value) {
             return std::forward<T>(value);
         }

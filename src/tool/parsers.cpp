@@ -43,22 +43,22 @@ std::pair<model::unordered_entities, parser::cpp_context> parsers::parse() {
 
   // Parse C/C++ source code.
   auto cpp_parser = parser::cppast_parser(options.cppast_options);
-  auto parsed = threading::transform(workers, options.sources.begin(), options.sources.end(), [&](const auto& header) -> type_safe::optional<type_safe::object_ref<const cppast::cpp_file>> {
+  auto parsed = threading::transform(workers, options.sources.begin(), options.sources.end(), [&](const auto& header) -> const cppast::cpp_file* {
     if (boost::filesystem::extension(header) == ".md")
-      return {};
-    return type_safe::ref(cpp_parser.parse(header));
+      return nullptr;
+    return &cpp_parser.parse(header);
   });
 
   // Drop files that failed to parse.
   decltype(parsed) successfully_parsed;
   for (auto& cpp_file : parsed)
-    if (cpp_file.has_value())
-      successfully_parsed.emplace_back(std::move(cpp_file));
+    if (cpp_file != nullptr)
+      successfully_parsed.emplace_back(cpp_file);
 
   // Collect source code comments.
   auto comment_collector = parser::comment_collector(options.comment_collector_options);
   auto comments = flatten(threading::transform(workers, successfully_parsed.begin(), successfully_parsed.end(), [&](const auto& cpp_file) {
-      return comment_collector.collect(&*cpp_file.value());
+      return comment_collector.collect(cpp_file);
   }));
 
   // Parse comments as MarkDown...
@@ -67,28 +67,28 @@ std::pair<model::unordered_entities, parser::cpp_context> parsers::parse() {
   // ...first process comments that are next to entities and cannot contain an
   // `\entity` command.
   auto entities = flatten(threading::transform(workers, comments.begin(), comments.end(), [&](const auto& comment_with_entity) -> std::vector<model::entity> {
-    if (std::get<1>(comment_with_entity)->kind() == cppast::cpp_file::kind())
+    if (comment_with_entity.location->kind() == cppast::cpp_file::kind())
       return {};
 
     const auto resolve_entity = [](const std::string&) -> type_safe::optional_ref<const cppast::cpp_entity> {
       throw std::logic_error(R"(not implemented: entity comment should not invoke an entity lookup since \entity commands are illegal in such comments.)");
     };
 
-    return comment_parser.parse(std::get<0>(comment_with_entity), *std::get<1>(comment_with_entity), resolve_entity);
+    return comment_parser.parse(comment_with_entity.text, *comment_with_entity.location, resolve_entity);
   }));
 
   // ...now we have seen all the relevant `\unique_name` commands and can
   // safely resolve `\entity` commands and merge with what we have so far.
   entities = flatten(std::vector{
     flatten(threading::transform(workers, comments.begin(), comments.end(), [&](const auto& comment_with_file) -> std::vector<model::entity> {
-        if (std::get<1>(comment_with_file)->kind() != cppast::cpp_file::kind())
+        if (comment_with_file.location->kind() != cppast::cpp_file::kind())
           return {};
 
         const auto resolve_entity = [](const std::string&) -> type_safe::optional_ref<const cppast::cpp_entity> {
           throw std::logic_error(R"(not implemented: resolve_entity in tool::parsers.)");
         };
 
-        return comment_parser.parse(std::get<0>(comment_with_file), *std::get<1>(comment_with_file), resolve_entity);
+        return comment_parser.parse(comment_with_file.text, *comment_with_file.location, resolve_entity);
     })),
     std::move(entities),
   });
@@ -122,7 +122,7 @@ std::pair<model::unordered_entities, parser::cpp_context> parsers::parse() {
 
   // TODO(0.6.0-alpha): Is this really what we should do? And should we do this here?
   for (auto& cpp_file : successfully_parsed)
-    comment_parser.add_uncommented_entities(ret, *cpp_file.value());
+    comment_parser.add_uncommented_entities(ret, *cpp_file);
 
   return {std::move(ret), cpp_parser.context()};
 }

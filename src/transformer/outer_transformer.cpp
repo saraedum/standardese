@@ -5,7 +5,7 @@
 #include "../../standardese/transformer/outer_transformer.hpp"
 #include "../../standardese/model/unordered_entities.hpp"
 #include "../../standardese/model/entity.hpp"
-#include "../../standardese/threading/for_each.hpp"
+#include "../../standardese/threading/transform.hpp"
 
 namespace standardese::transformer {
 
@@ -14,16 +14,11 @@ outer_transformer::outer_transformer(const model::unordered_entities* entities) 
 model::unordered_entities outer_transformer::transform(threading::pool::factory workers) {
   model::unordered_entities transformed;
 
-  std::mutex transformed_lock;
-
-  threading::for_each(workers, entities->begin(), entities->end(), [this, &transformed, &transformed_lock](auto& e) {
-    auto replacements = do_transform(e);
-
-    const std::unique_lock lock{transformed_lock};
-
+  for (auto& replacements : threading::transform(workers, entities->begin(), entities->end(), [this](auto& e) {
+    return do_transform(e);
+  }))
     for (auto& replacement : replacements)
       transformed.insert(std::move(replacement));
-  });
 
   return transformed;
 }
