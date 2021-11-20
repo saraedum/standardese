@@ -12,7 +12,7 @@
 #include "../../standardese/model/visitor/visit.hpp"
 #include "../../standardese/model/markup/link.hpp"
 #include "../../standardese/model/cpp_entity_documentation.hpp"
-#include "../../standardese/model/unordered_entities.hpp"
+#include "../../standardese/model/entity_set.hpp"
 #include "../../standardese/inventory/symbols.hpp"
 #include "../../standardese/logger.hpp"
 
@@ -20,7 +20,7 @@
 
 namespace standardese::transformer {
 
-set_target_internal_transformer::set_target_internal_transformer(model::unordered_entities* documents, const parser::cpp_context& context) :
+set_target_internal_transformer::set_target_internal_transformer(model::entity_set* documents, const parser::cpp_context& context) :
   inner_transformer(documents),
   inventory([&]() {
     // Create an inventory of all the C++ entities that are documented in all the documents.

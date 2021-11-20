@@ -18,8 +18,6 @@ class create_uncommented_module_transformer : public outer_transformer {
 
  protected:
   virtual std::vector<model::entity> do_transform(const model::entity& root) const override;
-
-  virtual model::unordered_entities merge(std::vector<std::vector<model::entity>>&&) const override;
 };
 
 }

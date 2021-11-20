@@ -34,7 +34,7 @@ class set_target_external_transformer : public inner_transformer {
     /// Create a transformer that will rewrite each
     /// [model::markup::link::target]() for all links in the [documents]() if
     /// they refer to any of the external [symbols]().
-    set_target_external_transformer(model::unordered_entities* documents, inventory::symbols symbols, set_target_external_transformer_options options={});
+    set_target_external_transformer(model::entity_set* documents, inventory::symbols symbols, set_target_external_transformer_options options={});
 
   protected:
     void do_transform(model::entity&) override;

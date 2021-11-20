@@ -7,7 +7,7 @@
 #include "../../standardese/model/cpp_entity_documentation.hpp"
 #include "../../standardese/model/module.hpp"
 #include "../../standardese/transformer/create_uncommented_module_transformer.hpp"
-#include "../../standardese/model/unordered_entities.hpp"
+#include "../../standardese/model/entity_set.hpp"
 
 #include "../util/cpp_file.hpp"
 #include "../util/logger.hpp"
@@ -35,14 +35,14 @@ TEST_CASE("Modules are Created if Necessary", "[create_uncommented_module_transf
   h.module = "h";
 
   SECTION("Modules are Created if they are Missing") {
-    auto entities = model::unordered_entities{f, g, h};
+    auto entities = model::entity_set{f, g, h};
 
     const auto modules = create_uncommented_module_transformer{&entities}.transform();
     REQUIRE(modules.size() == 2);
   }
 
   SECTION("No Modules are Created if None are Missing") {
-    auto entities = model::unordered_entities{f, g, h, model::module{"fg"}, model::module{"h"}};
+    auto entities = model::entity_set{f, g, h, model::module{"fg"}, model::module{"h"}};
 
     const auto modules = create_uncommented_module_transformer{&entities}.transform();
 

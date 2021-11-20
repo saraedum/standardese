@@ -27,7 +27,7 @@ class set_href_external_legacy_transformer : public inner_transformer {
     /// Create a transformer that sets the [model::markup::link::target]()
     /// attribute for each link in each of the [documents]() if it refers to an
     /// external entity.
-    set_href_external_legacy_transformer(model::unordered_entities* documents, set_href_external_legacy_transformer_options);
+    set_href_external_legacy_transformer(model::entity_set* documents, set_href_external_legacy_transformer_options);
 
   protected:
     void do_transform(model::entity&) override;

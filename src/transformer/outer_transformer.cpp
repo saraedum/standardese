@@ -3,15 +3,15 @@
 // found in the top-level directory of this distribution.
 
 #include "../../standardese/transformer/outer_transformer.hpp"
-#include "../../standardese/model/unordered_entities.hpp"
+#include "../../standardese/model/entity_set.hpp"
 #include "../../standardese/model/entity.hpp"
 #include "../../standardese/threading/transform.hpp"
 
 namespace standardese::transformer {
 
-outer_transformer::outer_transformer(const model::unordered_entities* entities) : entities(entities) {}
+outer_transformer::outer_transformer(const model::entity_set* entities) : entities(entities) {}
 
-model::unordered_entities outer_transformer::transform(threading::pool::factory workers) {
+model::entity_set outer_transformer::transform(threading::pool::factory workers) {
   auto transformed = threading::transform(workers, entities->begin(), entities->end(), [this](auto& e) {
     return do_transform(e);
   });
@@ -19,12 +19,10 @@ model::unordered_entities outer_transformer::transform(threading::pool::factory 
   return merge(std::move(transformed));
 }
 
-model::unordered_entities outer_transformer::merge(std::vector<std::vector<model::entity>>&& transformed) const {
-  model::unordered_entities merged;
+model::entity_set outer_transformer::merge(std::vector<std::vector<model::entity>>&& transformed) const {
+  model::entity_set merged;
 
-  for (auto& result : transformed)
-    for (auto& entity : result)
-      merged.insert(entity);
+  entity_set_extend(merged, std::move(transformed));
 
   return merged;
 }

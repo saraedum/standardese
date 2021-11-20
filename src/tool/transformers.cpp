@@ -8,7 +8,7 @@
 
 #include "../../standardese/model/entity.hpp"
 #include "../../standardese/tool/transformers.hpp"
-#include "../../standardese/model/unordered_entities.hpp"
+#include "../../standardese/model/entity_set.hpp"
 #include "../../standardese/transformer/create_entity_heading_transformer.hpp"
 #include "../../standardese/transformer/create_synopsis_transformer.hpp"
 #include "../../standardese/transformer/exclude_uncommented_transformer.hpp"
@@ -32,18 +32,16 @@ template<class> inline constexpr bool always_false_v = false;
 
 transformers::transformers(transformer_options options) : options(options) {}
 
-void transformers::transform(model::unordered_entities& entities, const parser::cpp_context& context) {
+void transformers::transform(model::entity_set& entities, const parser::cpp_context& context) {
   // TODO(0.6.0-alpha): Make this configurable
 
   // TODO(0.6.0-alpha): Use parallel worker pool.
 
-  for (auto& child: transformer::create_uncommented_child_transformer{&entities, context}.transform())
-    entities.insert(std::move(child));
+  entity_set_extend(entities, transformer::create_uncommented_child_transformer{&entities, context}.transform());
 
   // Create (empty) documentation for modules that are referenced in the
   // documentation but have no documentation on their own.
-  for (auto& module: transformer::create_uncommented_module_transformer{&entities}.transform())
-    entities.insert(std::move(module));
+  entity_set_extend(entities, transformer::create_uncommented_module_transformer{&entities}.transform());
 
   // Create documents for the entities that we want to document explicitly,
   // such as tho header files.

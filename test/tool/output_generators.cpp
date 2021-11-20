@@ -9,7 +9,7 @@
 #include "../external/catch/single_include/catch2/catch.hpp"
 #include "../../standardese/tool/output_generators.hpp"
 #include "../../standardese/model/document.hpp"
-#include "../../standardese/model/unordered_entities.hpp"
+#include "../../standardese/model/entity_set.hpp"
 #include "../../standardese/tool/output_generators.hpp"
 #include "../util/tmp_dir.hpp"
 
@@ -19,7 +19,7 @@ using standardese::tool::output_generators;
 
 TEST_CASE("Generation of MarkDown Output", "[tool]") {
   SECTION("MarkDown Output is Emitted for each Document") {
-    model::unordered_entities documents{
+    model::entity_set documents{
       model::document{"example", "webroot/example"},
     };
 
@@ -49,7 +49,7 @@ TEST_CASE("Generation of Text Output", "[tool]") {
 
 TEST_CASE("Generation of XML Output", "[tool]") {
   SECTION("XML Output is Emitted for each Document") {
-    model::unordered_entities documents{
+    model::entity_set documents{
       model::document{"example", "webroot/example"},
     };
 
@@ -71,7 +71,7 @@ TEST_CASE("Generation of XML Output", "[tool]") {
 
 TEST_CASE("Generation of an Intersphinx Inventory", "[tool]") {
   SECTION("An Intersphinx Inventory is Emitted") {
-    model::unordered_entities documents{};
+    model::entity_set documents{};
 
     util::tmp_dir output;
 
@@ -90,7 +90,7 @@ TEST_CASE("Generation of an Intersphinx Inventory", "[tool]") {
 
 TEST_CASE("Generation of a Doxygen Tagfile", "[tool]") {
   SECTION("A Doxygen Tagfile is Emitted") {
-    model::unordered_entities documents{};
+    model::entity_set documents{};
 
     util::tmp_dir output;
 

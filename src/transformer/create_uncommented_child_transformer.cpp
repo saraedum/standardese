@@ -14,11 +14,11 @@
 #include "../../standardese/transformer/create_uncommented_child_transformer.hpp"
 #include "../../standardese/model/entity.hpp"
 #include "../../standardese/model/cpp_entity_documentation.hpp"
-#include "../../standardese/model/unordered_entities.hpp"
+#include "../../standardese/model/entity_set.hpp"
 
 namespace standardese::transformer {
 
-create_uncommented_child_transformer::create_uncommented_child_transformer(const model::unordered_entities* entities, const parser::cpp_context& context) : outer_transformer(entities), context(context) {}
+create_uncommented_child_transformer::create_uncommented_child_transformer(const model::entity_set* entities, const parser::cpp_context& context) : outer_transformer(entities), context(context) {}
 
 std::vector<model::entity> create_uncommented_child_transformer::do_transform(const model::entity& root) const {
   std::vector<model::entity> created;
@@ -27,7 +27,7 @@ std::vector<model::entity> create_uncommented_child_transformer::do_transform(co
     const auto& documentation = root.as<model::cpp_entity_documentation>();
 
     const auto ensure_child = [&](const auto& cpp_entity) {
-      if (entities->find_cpp_entity(cpp_entity) == entities->end()) {
+      if (entity_set_find(*entities, cpp_entity) == entities->end()) {
         auto documentation = model::cpp_entity_documentation(&cpp_entity, context);
         documentation.exclude_mode = model::exclude_mode::uncommented;
         created.push_back(std::move(documentation));

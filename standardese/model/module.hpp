@@ -17,7 +17,10 @@ namespace standardese::model
       public:
         explicit module(std::string name, std::initializer_list<model::entity> children={}) : name(std::move(name)), mixin::documentation(std::move(children)) {}
 
-        std::string name;
+        // This field is const so there is no way to break
+        // [cppast_entity_hash]() and [cppast_entity_equality]() for
+        // elements stored in an [entity_set]().
+        const std::string name;
     };
 }
 

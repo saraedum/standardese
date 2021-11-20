@@ -8,7 +8,7 @@
 #include "../../standardese/transformer/create_uncommented_module_transformer.hpp"
 #include "../../standardese/model/entity.hpp"
 #include "../../standardese/model/visitor/visit.hpp"
-#include "../../standardese/model/unordered_entities.hpp"
+#include "../../standardese/model/entity_set.hpp"
 
 namespace standardese::transformer {
 
@@ -16,11 +16,11 @@ std::vector<model::entity> create_uncommented_module_transformer::do_transform(c
   std::vector<model::entity> modules;
 
   const auto ensure_module = [&](const std::string& name) {
-    if (entities->find_module(name) == entities->end()) {
+    if (entity_set_find_module(*entities, name) == entities->end()) {
       auto module = model::module(name);
       module.exclude_mode = model::exclude_mode::uncommented;
       modules.push_back(std::move(module));
-   }
+    }
   };
 
   model::visitor::visit([&](auto&& documentation) {
@@ -32,17 +32,6 @@ std::vector<model::entity> create_uncommented_module_transformer::do_transform(c
   }, document);
 
   return modules;
-}
-
-model::unordered_entities create_uncommented_module_transformer::merge(std::vector<std::vector<model::entity>>&& transformed) const {
-  model::unordered_entities merged;
-
-  for (auto& modules : transformed)
-    for (auto& module : modules)
-      if (merged.find_module(module.as<model::module>().name) == merged.end())
-        merged.insert(module);
-
-  return merged;
 }
 
 }

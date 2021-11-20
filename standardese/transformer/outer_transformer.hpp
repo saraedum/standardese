@@ -18,10 +18,10 @@ class outer_transformer {
   public:
     /// Create a transformer that creates new entities.
     /// The database of existing [entities]() must be kept alive until [transform]() has been called.
-    explicit outer_transformer(const model::unordered_entities* entities);
+    explicit outer_transformer(const model::entity_set* entities);
 
     /// Transform the entities passed in the constructor.
-    model::unordered_entities transform(threading::pool::factory workers=threading::unthreaded_pool::factory);
+    model::entity_set transform(threading::pool::factory workers=threading::unthreaded_pool::factory);
 
   protected:
     /// Return the entities to replace `root` with.
@@ -29,10 +29,10 @@ class outer_transformer {
     /// use any global state that is not thread-safe.
     virtual std::vector<model::entity> do_transform(const model::entity& root) const = 0;
 
-    virtual model::unordered_entities merge(std::vector<std::vector<model::entity>>&&) const;
+    virtual model::entity_set merge(std::vector<std::vector<model::entity>>&&) const;
 
     /// The set of entities we are working on.
-    const model::unordered_entities* entities;
+    const model::entity_set* entities;
 };
 
 }

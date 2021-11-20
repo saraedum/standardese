@@ -21,7 +21,7 @@
 #include "../../standardese/model/document.hpp"
 #include "../../standardese/model/visitor/generic_visitor.hpp"
 #include "../../standardese/model/visitor/visit.hpp"
-#include "../../standardese/model/unordered_entities.hpp"
+#include "../../standardese/model/entity_set.hpp"
 #include "../../standardese/model/mixin/container.hpp"
 #include "../../standardese/logger.hpp"
 #include "../../standardese/formatter/inja_formatter.hpp"
@@ -32,7 +32,7 @@ namespace {
 
 /// Constructs a tree of documentation nodes under a fixed `root` node.
 struct visitor : public model::visitor::generic_visitor<visitor> {
-  visitor(model::mixin::container<>& root, const model::unordered_entities& entities);
+  visitor(model::mixin::container<>& root, const model::entity_set& entities);
 
   /// Add documentation for `entity` to `root`.
   template <typename T>
@@ -68,14 +68,14 @@ struct visitor : public model::visitor::generic_visitor<visitor> {
   void add_friend(const cppast::cpp_friend& entity);
 
   model::mixin::container<>* root;
-  const model::unordered_entities& entities;
+  const model::entity_set& entities;
 };
 
 }
 
 create_entity_document_transformer::create_entity_document_transformer_options::create_entity_document_transformer_options(): filter([](const cppast::cpp_entity& entity) { return entity.kind() == cppast::cpp_entity_kind::file_t; }) {}
 
-create_entity_document_transformer::create_entity_document_transformer(const model::unordered_entities* entities, const parser::cpp_context& context, create_entity_document_transformer_options options): outer_transformer(entities), options(options), context(context) {
+create_entity_document_transformer::create_entity_document_transformer(const model::entity_set* entities, const parser::cpp_context& context, create_entity_document_transformer_options options): outer_transformer(entities), options(options), context(context) {
   std::unordered_set<std::string> headers_;
 
   formatter::inja_formatter inja{{}, context};
@@ -122,7 +122,7 @@ std::vector<model::entity> create_entity_document_transformer::do_transform(cons
 }
 
 namespace {
-visitor::visitor(model::mixin::container<>& root, const model::unordered_entities& entities) : root(&root), entities(entities) {}
+visitor::visitor(model::mixin::container<>& root, const model::entity_set& entities) : root(&root), entities(entities) {}
 
 template <typename T>
 void visitor::operator()(T&& documentation) {
@@ -233,7 +233,7 @@ void visitor::add_template_parameters(const cppast::cpp_template& entity) {
 
     visitor v(section, entities);
 
-    const auto& search = entities.find_cpp_entity(tparam);
+    const auto& search = entity_set_find(entities, tparam);
     if (search == entities.end()) {
       logger::warn(fmt::format("Ignoring template parameter `{}` of `{}` when creating entity documentation since no documentation entity could be found for it, not even an empty one.", tparam.name(), entity.name()));
       continue;
@@ -249,7 +249,7 @@ void visitor::add_function_parameters(const cppast::cpp_function_base& entity) {
 
     visitor v(section, entities);
 
-    const auto& search = entities.find_cpp_entity(param);
+    const auto& search = entity_set_find(entities, param);
     if (search == entities.end()) {
       logger::warn(fmt::format("Ignoring parameter `{}` of `{}` when creating entity documentation since no documentation entity could be found for it, not even an empty one.", param.name(), entity.name()));
       continue;
@@ -265,7 +265,7 @@ void visitor::add_macro_parameters(const cppast::cpp_macro_definition& entity) {
 
     visitor v(section, entities);
 
-    const auto& search = entities.find_cpp_entity(param);
+    const auto& search = entity_set_find(entities, param);
     if (search == entities.end()) {
       logger::warn(fmt::format("Ignoring macro parameter `{}` of `{}` when creating entity documentation since no documentation entity could be found for it, not even an empty one.", param.name(), entity.name()));
       continue;
@@ -281,7 +281,7 @@ void visitor::add_bases(const cppast::cpp_entity& entity) {
 
     visitor v(section, entities);
 
-    const auto& search = entities.find_cpp_entity(base);
+    const auto& search = entity_set_find(entities, base);
     if (search == entities.end()) {
       logger::warn(fmt::format("Ignoring base `{}` of `{}` when creating entity documentation since no documentation entity could be found for it, not even an empty one.", base.name(), entity.name()));
       continue;
@@ -291,7 +291,7 @@ void visitor::add_bases(const cppast::cpp_entity& entity) {
 }
 
 void visitor::add_entity(const cppast::cpp_entity& entity) {
-    const auto& search = entities.find_cpp_entity(entity);
+    const auto& search = entity_set_find(entities, entity);
     if (search == entities.end()) {
       logger::warn(fmt::format("Not adding `{}` to documentation since no documentation entity could be found for it, not even an empty one.", entity.name()));
       return;
@@ -307,7 +307,7 @@ void visitor::add_friend(const cppast::cpp_friend& friend_entity) {
   const auto& friended_entity = friend_entity.entity().value();
 
   // Take the node documenting the `friend` entity as a new root node.
-  const auto& search = entities.find_cpp_entity(friend_entity);
+  const auto& search = entity_set_find(entities, friend_entity);
   if (search == entities.end()) {
     logger::warn(fmt::format("Not adding friend `{}` to documentation since no documentation entity could be found for it, not even an empty one.", friended_entity.name()));
     return;
@@ -316,7 +316,7 @@ void visitor::add_friend(const cppast::cpp_friend& friend_entity) {
 
   // Add the node describing the friended entity under this new root.
   {
-    const auto& search = entities.find_cpp_entity(friended_entity);
+    const auto& search = entity_set_find(entities, friended_entity);
     if (search == entities.end()) {
       logger::warn(fmt::format("Not adding friended `{}` to documentation since no documentation entity could be found for it, not even an empty one.", friended_entity.name()));
       return;
@@ -362,11 +362,11 @@ void visitor::add_contents(const cppast::cpp_entity& container, model::mixin::co
         case cppast::visitor_info::event_type::leaf_entity:
         {
           // Process this entity and continue the visitor.
-          const auto& search = entities.find_cpp_entity(child);
+          const auto& search = entity_set_find(entities, child);
           if (search == entities.end()) {
             logger::warn(fmt::format("Ignoring child `{}` of `{}` since no documentation entity could be found for it, not even an empty one.", child.name(), container.name()));
           } else {
-            entities.cpp_entity(child).accept(v);
+            entity_set_at(entities, child).accept(v);
           }
           return true;
         }

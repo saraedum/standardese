@@ -33,7 +33,7 @@ class parsers {
   parsers(parser_options);
 
   /// Parse the source code and the comments and return a set of all the commented entities.
-  std::pair<model::unordered_entities, parser::cpp_context> parse();
+  std::pair<model::entity_set, parser::cpp_context> parse();
 
  private:
   struct parser_options options;

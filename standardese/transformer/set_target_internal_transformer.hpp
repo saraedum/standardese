@@ -19,7 +19,7 @@ class set_target_internal_transformer : public inner_transformer {
     /// Create a transformer that will rewrite each
     /// [model::markup::link::target]() attribute in all the [documents]() for
     /// links that refer to targets within the same project.
-    set_target_internal_transformer(model::unordered_entities* documents, const parser::cpp_context& context);
+    set_target_internal_transformer(model::entity_set* documents, const parser::cpp_context& context);
 
   protected:
     void do_transform(model::entity&) override;

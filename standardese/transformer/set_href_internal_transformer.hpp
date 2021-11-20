@@ -20,7 +20,7 @@ class set_href_internal_transformer : public inner_transformer {
     /// Create a transformer that sets all the [model::markup::link::target]()
     /// in each of the [documents]() if they refer to targets in the same
     /// project.
-    set_href_internal_transformer(model::unordered_entities* documents, const parser::cpp_context&);
+    set_href_internal_transformer(model::entity_set* documents, const parser::cpp_context&);
 
   protected:
     void do_transform(model::entity&) override;

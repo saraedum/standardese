@@ -67,7 +67,7 @@ class transformers {
   transformers(transformer_options);
 
   /// Apply the configured transformers.
-  void transform(model::unordered_entities& documents, const parser::cpp_context& context);
+  void transform(model::entity_set& documents, const parser::cpp_context& context);
 
  private:
   transformer_options options;

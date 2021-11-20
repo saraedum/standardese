@@ -51,7 +51,7 @@ class output_generators {
   output_generators(output_generators_options);
 
   /// Write the output files.
-  void emit(model::unordered_entities& documents);
+  void emit(model::entity_set& documents);
 
  private:
   struct output_generators_options options;

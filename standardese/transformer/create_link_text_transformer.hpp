@@ -50,7 +50,7 @@ class create_link_text_transformer : public inner_transformer {
 
     /// Create a transformer that sets the visible text of all links in all the
     /// [documents]() if they are referring to C++ entities.
-    create_link_text_transformer(model::unordered_entities* documents, const parser::cpp_context&, link_text_transformer_options options = {});
+    create_link_text_transformer(model::entity_set* documents, const parser::cpp_context&, link_text_transformer_options options = {});
 
   protected:
     void do_transform(model::entity& root) override;

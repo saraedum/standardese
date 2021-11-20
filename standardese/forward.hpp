@@ -5,6 +5,8 @@
 #ifndef STANDARDESE_FORWARD_HPP_INCLUDED
 #define STANDARDESE_FORWARD_HPP_INCLUDED
 
+#include <boost/unordered/unordered_set_fwd.hpp>
+
 namespace standardese
 {
 
@@ -54,9 +56,11 @@ class cpp_entity_documentation;
 enum class exclude_mode;
 // TODO(0.6.0-rc): Should we call this module_documentation?
 class module;
-class unordered_entities;
 class section;
 class link_target;
+struct cppast_entity_hash;
+struct cppast_entity_equality;
+using entity_set = boost::unordered_set<entity, cppast_entity_hash, cppast_entity_equality>;
 
 }
 

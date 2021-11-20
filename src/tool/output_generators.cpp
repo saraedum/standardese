@@ -9,7 +9,7 @@
 #include <fstream>
 
 #include "../../standardese/tool/output_generators.hpp"
-#include "../../standardese/model/unordered_entities.hpp"
+#include "../../standardese/model/entity_set.hpp"
 #include "../../standardese/model/document.hpp"
 #include "../../standardese/output_generator/markdown/markdown_generator.hpp"
 #include "../../standardese/output_generator/xml/xml_generator.hpp"
@@ -21,7 +21,7 @@ namespace standardese::tool {
 
 output_generators::output_generators(output_generators_options options) : options(options) {}
 
-void output_generators::emit(model::unordered_entities& documents) {
+void output_generators::emit(model::entity_set& documents) {
   logger::info("Rendering output documents.");
 
   const auto open = [&](const boost::filesystem::path& path) {

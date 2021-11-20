@@ -9,7 +9,7 @@
 #include "cpp_file.hpp"
 
 #include "../../standardese/parser/comment_parser.hpp"
-#include "../../standardese/model/unordered_entities.hpp"
+#include "../../standardese/model/entity_set.hpp"
 
 namespace standardese::test::util {
 
@@ -37,7 +37,7 @@ class parsed_comments {
     model::entity operator[](const std::string& name) const;
 
     /// The entities parsed so far; includes placeholder entries for uncommented entities.
-    model::unordered_entities entities;
+    model::entity_set entities;
 
   private:
     const cpp_file& header;

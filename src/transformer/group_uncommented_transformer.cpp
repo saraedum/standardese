@@ -82,7 +82,7 @@ bool groups(cppast::cpp_entity_kind kind) {
 
 }
 
-group_uncommented_transformer::group_uncommented_transformer(model::unordered_entities* documents, group_uncommented_options options) : inner_transformer(documents), options(std::move(options)) {}
+group_uncommented_transformer::group_uncommented_transformer(model::entity_set* documents, group_uncommented_options options) : inner_transformer(documents), options(std::move(options)) {}
 
 void group_uncommented_transformer::do_transform(model::entity& document) {
   // We will assign groups to cpp_entity_documentation entities if the entity

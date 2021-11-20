@@ -27,13 +27,12 @@ parsed_comments::parsed_comments(const cpp_file& header): header(header) {
 
     auto documentation = model::cpp_entity_documentation{&entity, header};
     documentation.exclude_mode = model::exclude_mode::uncommented;
-    entities.insert(documentation);
+    entity_set_insert(entities, documentation);
 
     return true;
   });
 
-  for (auto& created: transformer::create_uncommented_child_transformer{&entities, header}.transform())
-    entities.insert(created);
+  entity_set_extend(entities, transformer::create_uncommented_child_transformer{&entities, header}.transform());
 }
 
 parsed_comments&& parsed_comments::add(const cppast::cpp_entity& target, const std::string& comment, parser::comment_parser::comment_parser_options options) && {
@@ -47,12 +46,12 @@ parsed_comments&& parsed_comments::add(const cppast::cpp_entity& target, const s
   for (auto& entity : parsed) {
     if (entity.is<model::cpp_entity_documentation>()) {
       const auto& documentation = entity.as<model::cpp_entity_documentation>();
-      auto existing = entities.find_cpp_entity(documentation.entity());
+      auto existing = entity_set_find(entities, documentation.entity());
       if (existing != entities.end() && existing->as<model::cpp_entity_documentation>().exclude_mode == model::exclude_mode::uncommented)
         entities.erase(existing);
     }
 
-    entities.insert(entity);
+    entity_set_insert(entities, entity);
   }
 
   const auto* file = &target;
@@ -85,6 +84,14 @@ model::cpp_entity_documentation parsed_comments::as_documentation() const {
   }
 
   throw std::logic_error("No cpp_entity_documentation has been parsed.");
+}
+
+model::cpp_entity_documentation parsed_comments::as_documentation(const std::string& name) const {
+  return this->operator[](name).as<model::cpp_entity_documentation>();
+}
+
+model::cpp_entity_documentation parsed_comments::as_documentation(const cppast::cpp_entity& entity) const {
+  return this->operator[](entity).as<model::cpp_entity_documentation>();
 }
 
 model::module parsed_comments::as_module() const {
@@ -137,7 +144,7 @@ parsed_comments::operator model::entity() const {
 }
 
 model::entity parsed_comments::operator[](type_safe::object_ref<const cppast::cpp_entity> target) const {
-  return entities.cpp_entity(*target);
+  return entity_set_at(entities, *target);
 }
 
 model::entity parsed_comments::operator[](const std::string& target) const {

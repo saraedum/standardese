@@ -36,7 +36,11 @@ namespace standardese::model
         std::string output_name;
 
     private:
-        const cppast::cpp_entity* entity_;
+        // This field is const so there is no way to break
+        // [cppast_entity_hash]() and [cppast_entity_equality]() for
+        // elements stored in an [entity_set]().
+        const cppast::cpp_entity* const entity_;
+
         parser::cpp_context context_;
     };
 }

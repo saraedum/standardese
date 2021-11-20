@@ -13,10 +13,11 @@
 #include "../../standardese/model/visitor/visit.hpp"
 #include "../../standardese/logger.hpp"
 #include "../../standardese/output_generator/xml/xml_generator.hpp"
+#include "../../standardese/model/entity_set.hpp"
 
 namespace standardese::transformer {
 
-merge_group_transformer::merge_group_transformer(model::unordered_entities* documents, group_options options) : inner_transformer(documents), options(std::move(options)) {}
+merge_group_transformer::merge_group_transformer(model::entity_set* documents, group_options options) : inner_transformer(documents), options(std::move(options)) {}
 
 void merge_group_transformer::do_transform(model::entity& document) {
   std::stack<std::vector<model::entity>> containers;

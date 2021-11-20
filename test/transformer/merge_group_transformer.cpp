@@ -9,7 +9,7 @@
 #include "../../standardese/model/cpp_entity_documentation.hpp"
 #include "../../standardese/parser/commands/section_command.hpp"
 #include "../../standardese/transformer/merge_group_transformer.hpp"
-#include "../../standardese/model/unordered_entities.hpp"
+#include "../../standardese/model/entity_set.hpp"
 #include "../../standardese/output_generator/xml/xml_generator.hpp"
 
 #include "../util/cpp_file.hpp"
@@ -31,7 +31,7 @@ TEST_CASE("Sections of Groups are Merged", "[merge_group_transformer]") {
 
     principal.group = secondary.group = tertiary.group = "group";
 
-    auto documents = model::unordered_entities{model::document::container({principal, secondary, tertiary})};
+    auto documents = model::entity_set{model::document::container({principal, secondary, tertiary})};
 
     standardese::transformer::merge_group_transformer{&documents, {}}.transform();
 
@@ -58,7 +58,7 @@ TEST_CASE("Sections of Groups are Merged", "[merge_group_transformer]") {
 
     principal.group = tertiary.group = "group";
 
-    auto documents = model::unordered_entities{model::document::container({principal, secondary, tertiary})};
+    auto documents = model::entity_set{model::document::container({principal, secondary, tertiary})};
 
     standardese::transformer::merge_group_transformer{&documents, {}}.transform();
 

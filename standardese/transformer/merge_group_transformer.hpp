@@ -27,7 +27,7 @@ class merge_group_transformer : public inner_transformer {
 
     /// Create a transformer that in each of the [documents]() merges the
     /// entities that are in the group.
-    explicit merge_group_transformer(model::unordered_entities* documents, struct group_options options);
+    explicit merge_group_transformer(model::entity_set* documents, struct group_options options);
 
   protected:
     void do_transform(model::entity& root) override;

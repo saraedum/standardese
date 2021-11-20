@@ -7,7 +7,7 @@
 #include "../standardese/tool/parsers.hpp"
 #include "../standardese/tool/transformers.hpp"
 #include "../standardese/tool/output_generators.hpp"
-#include "../standardese/model/unordered_entities.hpp"
+#include "../standardese/model/entity_set.hpp"
 #include "../standardese/logger.hpp"
 
 int main(int argc, const char* argv[])

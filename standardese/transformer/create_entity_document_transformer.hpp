@@ -39,7 +39,7 @@ class create_entity_document_transformer : public outer_transformer {
     /// Create a transformer that will create a document for each entity in
     /// [entities]() that passes the predicate
     /// [create_entity_document_transformer_options::filter]().
-    create_entity_document_transformer(const model::unordered_entities* entities, const parser::cpp_context&, create_entity_document_transformer_options={});
+    create_entity_document_transformer(const model::entity_set* entities, const parser::cpp_context&, create_entity_document_transformer_options={});
 
   protected:
     virtual std::vector<model::entity> do_transform(const model::entity& entity) const override;

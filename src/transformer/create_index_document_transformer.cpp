@@ -13,7 +13,7 @@
 #include "../../standardese/model/visitor/visit.hpp"
 #include "../../standardese/model/cpp_entity_documentation.hpp"
 #include "../../standardese/model/markup/list_item.hpp"
-#include "../../standardese/model/unordered_entities.hpp"
+#include "../../standardese/model/entity_set.hpp"
 #include "../../standardese/model/module.hpp"
 #include "../../standardese/logger.hpp"
 #include "../../standardese/output_generator/xml/xml_generator.hpp"
@@ -25,7 +25,7 @@ namespace standardese::transformer
 
 create_index_document_transformer::create_index_document_transformer_options::create_index_document_transformer_options() : predicate([](const model::entity&) { return true; }) {}
 
-create_index_document_transformer::create_index_document_transformer(const model::unordered_entities* entities, const parser::cpp_context& context, create_index_document_transformer_options options) : entities(entities), options(options), target_text_formatter(options.target_text_options, context) {}
+create_index_document_transformer::create_index_document_transformer(const model::entity_set* entities, const parser::cpp_context& context, create_index_document_transformer_options options) : entities(entities), options(options), target_text_formatter(options.target_text_options, context) {}
 
 model::document create_index_document_transformer::transform(threading::pool::factory workers) const {
   auto list = model::markup::list(false);

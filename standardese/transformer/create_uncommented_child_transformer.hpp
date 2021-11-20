@@ -18,7 +18,7 @@ class create_uncommented_child_transformer : public outer_transformer {
   /// Create a transformer that will produce
   /// [model::cpp_entity_documentation]() entities for all the parameters and
   /// such of all the [entities]().
-  create_uncommented_child_transformer(const model::unordered_entities* entities, const parser::cpp_context&);
+  create_uncommented_child_transformer(const model::entity_set* entities, const parser::cpp_context&);
 
  protected:
   virtual std::vector<model::entity> do_transform(const model::entity& root) const override;

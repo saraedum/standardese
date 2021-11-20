@@ -4,7 +4,7 @@
 
 #include "../external/catch/single_include/catch2/catch.hpp"
 #include "../../standardese/tool/parsers.hpp"
-#include "../../standardese/model/unordered_entities.hpp"
+#include "../../standardese/model/entity_set.hpp"
 
 namespace standardese::test::tool {
 

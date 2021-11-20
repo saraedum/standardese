@@ -58,7 +58,7 @@ set(src
     model/document.cpp
     model/entity.cpp
     model/link_target.cpp
-    model/unordered_entities.cpp
+    model/entity_set.cpp
     model/visitor/recursive_visitor.cpp
     output_generator/cmark_generator.cpp
     output_generator/doxygen/tagfile_generator.cpp

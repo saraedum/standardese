@@ -6,7 +6,7 @@
 
 #include "../../standardese/transformer/set_id_transformer.hpp"
 #include "../../standardese/model/mixin/target.hpp"
-#include "../../standardese/model/unordered_entities.hpp"
+#include "../../standardese/model/entity_set.hpp"
 #include "../../standardese/model/visitor/visit.hpp"
 #include "../util/regex.hpp"
 

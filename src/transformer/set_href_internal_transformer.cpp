@@ -15,14 +15,14 @@
 #include "../../standardese/output_generator/xml/xml_generator.hpp"
 #include "../../standardese/formatter/inja_formatter.hpp"
 #include "../../standardese/logger.hpp"
-#include "../../standardese/model/unordered_entities.hpp"
+#include "../../standardese/model/entity_set.hpp"
 
 // TODO(0.6.0-beta): We need an additional transformer that optionally turns [target]() into [`target`]().
 
 namespace standardese::transformer
 {
 
-set_href_internal_transformer::set_href_internal_transformer(model::unordered_entities* documents, const parser::cpp_context& context) :
+set_href_internal_transformer::set_href_internal_transformer(model::entity_set* documents, const parser::cpp_context& context) :
   inner_transformer(documents),
   context(context),
   targets([&]() {

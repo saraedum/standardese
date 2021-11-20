@@ -18,7 +18,7 @@ class group_uncommented_transformer : public inner_transformer {
 
     /// Create a transformer that will try to group entities in the
     /// [documents]() that are lacking documentation.
-    explicit group_uncommented_transformer(model::unordered_entities* documents, struct group_uncommented_options options);
+    explicit group_uncommented_transformer(model::entity_set* documents, struct group_uncommented_options options);
 
   protected:
     void do_transform(model::entity& root) override;
