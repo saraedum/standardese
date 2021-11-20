@@ -13,6 +13,8 @@
 namespace standardese::model
 {
 
+// TODO(0.6.0-alpha): Do we really need all this code or could we just define a comparer for model::entity that defines some of these features and expose a special unordered_set directly?
+
 /// An unordered set of [entity]() instances.
 /// Note that [entity]() does not implement `operator==`, however, here
 /// we treat some entities as equal, namely:
@@ -65,6 +67,9 @@ class unordered_entities {
     model::module& module(const std::string&);
 
     size_t size() const;
+
+    void erase(iterator);
+    void erase(const_iterator);
 
     const_iterator begin() const;
     const_iterator end() const;

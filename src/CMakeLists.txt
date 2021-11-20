@@ -56,6 +56,7 @@ set(src
     logger.cpp
     model/cpp_entity_documentation.cpp
     model/document.cpp
+    model/entity.cpp
     model/link_target.cpp
     model/unordered_entities.cpp
     model/visitor/recursive_visitor.cpp
@@ -96,6 +97,7 @@ set(src
     transformer/create_output_section_heading_transformer.cpp
     transformer/create_synopsis_transformer.cpp
     transformer/create_uncommented_module_transformer.cpp
+    transformer/create_uncommented_child_transformer.cpp
     transformer/exclude_uncommented_transformer.cpp
     transformer/group_uncommented_transformer.cpp
     transformer/inner_transformer.cpp

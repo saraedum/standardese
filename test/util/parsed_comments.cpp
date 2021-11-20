@@ -3,16 +3,38 @@
 // This file is subject to the license terms in the LICENSE file
 // found in the top-level directory of this distribution.
 
+#include <cppast/visitor.hpp>
+
 #include "parsed_comments.hpp"
 #include "unindent.hpp"
 
 #include "../../standardese/inventory/cppast_inventory.hpp"
 #include "../../standardese/parser/comment_parser.hpp"
 #include "../../standardese/model/cpp_entity_documentation.hpp"
+#include "../../standardese/transformer/create_uncommented_child_transformer.hpp"
 
 namespace standardese::test::util {
 
-parsed_comments::parsed_comments(const cpp_file& header) : header(header) {}
+parsed_comments::parsed_comments(const cpp_file& header): header(header) {
+  cppast::visit(header, [&](const auto& entity, const auto& info) {
+    if (info.is_old_entity())
+        // Continue visit but do not register this container twice.
+        return true;
+
+    if (cppast::is_templated(entity))
+        // Ignore templates themselves since we will only handle what's inside the template.
+        return true;
+
+    auto documentation = model::cpp_entity_documentation{&entity, header};
+    documentation.exclude_mode = model::exclude_mode::uncommented;
+    entities.insert(documentation);
+
+    return true;
+  });
+
+  for (auto& created: transformer::create_uncommented_child_transformer{&entities, header}.transform())
+    entities.insert(created);
+}
 
 parsed_comments&& parsed_comments::add(const cppast::cpp_entity& target, const std::string& comment, parser::comment_parser::comment_parser_options options) && {
   const auto resolve = [&](const std::string& name) -> type_safe::optional_ref<const cppast::cpp_entity> {
@@ -21,17 +43,21 @@ parsed_comments&& parsed_comments::add(const cppast::cpp_entity& target, const s
 
   auto parser = parser::comment_parser(options, header);
 
-  if (entities.begin() != entities.end())
-    throw std::logic_error("not implemented: merge entities");
-
   auto parsed = parser.parse(util::unindent(comment), target, resolve);
-  entities = model::unordered_entities(parsed);
+  for (auto& entity : parsed) {
+    if (entity.is<model::cpp_entity_documentation>()) {
+      const auto& documentation = entity.as<model::cpp_entity_documentation>();
+      auto existing = entities.find_cpp_entity(documentation.entity());
+      if (existing != entities.end() && existing->as<model::cpp_entity_documentation>().exclude_mode == model::exclude_mode::uncommented)
+        entities.erase(existing);
+    }
+
+    entities.insert(entity);
+  }
 
   const auto* file = &target;
   while (file->parent()) file = &file->parent().value();
   assert(file->kind() == cppast::cpp_file::kind());
-
-  parser.add_uncommented_entities(entities, static_cast<const cppast::cpp_file&>(*file));
 
   return std::move(*this);
 }

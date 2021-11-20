@@ -10,6 +10,7 @@
 
 #include "../../../standardese/inventory/doxygen/tagfile.hpp"
 #include "../../../standardese/logger.hpp"
+#include "../../../standardese/output_generator/xml/xml_generator.hpp"
 
 namespace standardese::inventory::doxygen {
 
@@ -17,28 +18,8 @@ namespace {
 
 void write(pugi::xml_node&, const tagfile&);
 
-pugi::xml_node append_child(pugi::xml_node& parent, const std::string& name) {
-  auto node = parent.append_child(name.c_str());
-
-  if (node.empty())
-    logger::error(fmt::format("Could not create {} node in doxygen tagfile output.", name));
-
-  return node;
-}
-
-void set_attribute(pugi::xml_node& node, const std::string& name, const std::string& value) {
-  auto attribute = node.append_attribute(name.c_str());
-
-  if (attribute.empty())
-    logger::error(fmt::format("Could not create attribute {} with value {} in doxygen tagfile output.", name, value));
-
-  if (value.size())
-    if (!attribute.set_value(value.c_str()))
-      logger::error(fmt::format("Could not set attribute {} to value {} in doxygen tagfile output.", name, value));
-}
-
 void write(pugi::xml_node& document, const tagfile& tagfile) {
-  auto parent = append_child(document, "tagfile");
+  auto parent = output_generator::xml::xml_generator::append_child(document, "tagfile");
 
   // TODO(0.6.0-beta): implement me.
 }

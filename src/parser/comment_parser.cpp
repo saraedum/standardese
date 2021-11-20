@@ -444,46 +444,6 @@ model::entity comment_parser::parse_section(cmark_node* node) const
     return parse_into(node, model::section(command.command));
 }
 
-void comment_parser::add_uncommented_entities(model::unordered_entities& entities, const cppast::cpp_file& header) const {
-    if (header.kind() != cppast::cpp_file::kind())
-      throw std::invalid_argument("header entity must be a file");
-
-    const auto ensure_entity = [&](const cppast::cpp_entity& entity) {
-        if (entities.find_cpp_entity(entity) == entities.end()) {
-          auto documentation = model::cpp_entity_documentation(&entity, context);
-          documentation.exclude_mode = model::exclude_mode::uncommented;
-          entities.insert(std::move(documentation));
-        }
-    };
-    const std::function<void(const cppast::cpp_entity&, cppast::visitor_info)> visitor = [&](const auto& e, auto info) {
-        ensure_entity(e);
-
-        if (cppast::is_template(e.kind())) {
-            for (const auto& param : static_cast<const cppast::cpp_template&>(e).parameters())
-                ensure_entity(param);
-        }
-        if (cppast::is_function(e.kind())) {
-            for (const auto& param : static_cast<const cppast::cpp_function_base&>(e).parameters())
-                ensure_entity(param);
-        }
-        if (e.kind() == cppast::cpp_macro_definition::kind()) {
-            for (const auto& param : static_cast<const cppast::cpp_macro_definition&>(e).parameters())
-                ensure_entity(param);
-        }
-        if (e.kind() == cppast::cpp_class::kind()) {
-            for (const auto& base : static_cast<const cppast::cpp_class&>(e).bases())
-                ensure_entity(base);
-        }
-        if (e.kind() == cppast::cpp_friend::kind()) {
-            auto frend = static_cast<const cppast::cpp_friend&>(e).entity();
-            if (frend.has_value())
-              cppast::visit(frend.value(), visitor);
-        }
-    };
-
-    cppast::visit(header, visitor);
-}
-
 model::entity comment_parser::parse(cmark_node* node) const {
   if (cmark_node_get_type(node) == verbatim_extension::verbatim_extension::node_type())
     return model::markup::text(cmark_node_get_string_content(node));

@@ -4,6 +4,7 @@
 
 #include <cppast/cpp_file.hpp>
 #include <boost/filesystem/path.hpp>
+#include <fmt/format.h>
 
 #include "../../../standardese/output_generator/xml/xml_generator.hpp"
 
@@ -17,41 +18,78 @@
 #include "../../../standardese/model/document.hpp"
 #include "../../../standardese/model/cpp_entity_documentation.hpp"
 #include "../../../standardese/model/group_documentation.hpp"
+#include "../../../standardese/logger.hpp"
 
 // TODO(0.6.0-beta): Can we somehow disable the XML document type for error messages and testing?
-
-// TODO(0.6.0-rc): Check the output of append_child and append_attribute for errors, see tagfile output.
 
 namespace standardese::output_generator::xml
 {
 
-xml_generator::xml_generator(std::ostream* os) : stream_generator(os), xml_document(), top(xml_document) {}
+pugi::xml_node xml_generator::append_child(pugi::xml_node& parent, const std::string& name) {
+  auto node = parent.append_child(name.c_str());
+
+  if (node.empty())
+    logger::error(fmt::format("Could not create {} node in doxygen tagfile output.", name));
+
+  return node;
+}
+
+pugi::xml_node xml_generator::append_child(pugi::xml_node& parent, pugi::xml_node_type type) {
+  auto node = parent.append_child(type);
+
+  if (node.empty())
+    logger::error("Could not create node in doxygen tagfile output.");
+
+  return node;
+}
+
+void xml_generator::set_attribute(pugi::xml_node& node, const std::string& name, const std::string& value) {
+  auto attribute = node.append_attribute(name.c_str());
+
+  if (attribute.empty())
+    logger::error(fmt::format("Could not create attribute {} with value {} in doxygen tagfile output.", name, value));
+
+  if (attribute.set_value(value.c_str()) != static_cast<bool>(value.size()))
+    logger::error(fmt::format("Could not set attribute {} to value {} in doxygen tagfile output.", name, value));
+}
+
+void xml_generator::set_attribute(pugi::xml_node& node, const std::string& name, int value) {
+  auto attribute = node.append_attribute(name.c_str());
+
+  if (attribute.empty())
+    logger::error(fmt::format("Could not create attribute {} with value {} in doxygen tagfile output.", name, value));
+
+  if (!attribute.set_value(value))
+    logger::error(fmt::format("Could not set attribute {} to value {} in doxygen tagfile output.", name, value));
+}
+
+xml_generator::xml_generator(std::ostream* os, unsigned int format) : stream_generator(os), format(format), xml_document(), top(xml_document) {}
 
 void xml_generator::visit(block_quote& block_quote) {
-    top = top.append_child("block-quote");
+    top = append_child(top, "block-quote");
     stream_generator::visit(block_quote);
     top = top.parent();
 }
 
 void xml_generator::visit(code& code) {
-    top = top.append_child("code");
+    top = append_child(top, "code");
     stream_generator::visit(code);
     top = top.parent();
 }
 
 void xml_generator::visit(code_block& code_block) {
-    top = top.append_child("code-block");
+    top = append_child(top, "code-block");
 
     if (!code_block.language.empty())
-        top.append_attribute("language").set_value(code_block.language.c_str());
+        set_attribute(top, "language", code_block.language.c_str());
 
     stream_generator::visit(code_block);
     top = top.parent();
 }
 
 void xml_generator::visit(section& section) {
-    top = top.append_child("section");
-    top.append_attribute("name").set_value([&]() {
+    top = append_child(top, "section");
+    set_attribute(top, "name", [&]() {
       switch (section.type) {
         case parser::commands::section_command::brief:
           return "Brief";
@@ -98,141 +136,141 @@ void xml_generator::visit(section& section) {
 }
 
 void xml_generator::visit(emphasis& emphasis) {
-    top = top.append_child("emphasis");
+    top = append_child(top, "emphasis");
     stream_generator::visit(emphasis);
     top = top.parent();
 }
 
 void xml_generator::visit(cpp_entity_documentation& entity_documentation) {
-    top = top.append_child("entity-documentation");
+    top = append_child(top, "entity-documentation");
 
     std::string name = entity_documentation.entity().name();
     if (entity_documentation.entity().kind() == cppast::cpp_file::kind())
       name = boost::filesystem::path(name).filename().native();
 
-    top.append_attribute("name").set_value(name.c_str());
+    set_attribute(top, "name", name.c_str());
 
     if (entity_documentation.synopsis)
-        top.append_attribute("synopsis").set_value(entity_documentation.synopsis.value().c_str());
+        set_attribute(top, "synopsis", entity_documentation.synopsis.value().c_str());
 
     stream_generator::visit(entity_documentation);
     top = top.parent();
 }
 
 void xml_generator::visit(group_documentation& group_documentation) {
-    top = top.append_child("group-documentation");
+    top = append_child(top, "group-documentation");
 
     if (group_documentation.synopsis)
-        top.append_attribute("synopsis").set_value(group_documentation.synopsis.value().c_str());
+        set_attribute(top, "synopsis", group_documentation.synopsis.value().c_str());
 
     stream_generator::visit(group_documentation);
     top = top.parent();
 }
 
 void xml_generator::visit(hard_break& hard_break) {
-    top = top.append_child("hard-break");
+    top = append_child(top, "hard-break");
     stream_generator::visit(hard_break);
     top = top.parent();
 }
 
 void xml_generator::visit(heading& heading) {
-    top = top.append_child("heading");
-    top.append_attribute("level").set_value(heading.level);
+    top = append_child(top, "heading");
+    set_attribute(top, "level", heading.level);
     stream_generator::visit(heading);
     top = top.parent();
 }
 
 void xml_generator::visit(link& link) {
-    top = top.append_child("link");
+    top = append_child(top, "link");
 
     link.target.accept([&](auto&& target) -> void {
       using T = std::decay_t<decltype(target)>;
       if constexpr (std::is_same_v<T, model::link_target::standardese_target>) {
-        top.append_attribute("target").set_value(target.target.c_str());
+        set_attribute(top, "target", target.target.c_str());
       } else if constexpr (std::is_same_v<T, model::link_target::module_target>) {
-        top.append_attribute("target-module").set_value(target.module.c_str());
+        set_attribute(top, "target-module", target.module.c_str());
       } else if constexpr (std::is_same_v<T, model::link_target::cppast_target>) {
-        top.append_attribute("target-entity").set_value(target.target->name().c_str());
+        set_attribute(top, "target-entity", target.target->name().c_str());
       } else if constexpr (std::is_same_v<T, model::link_target::uri_target>) {
         ;
       } else if constexpr (std::is_same_v<T, model::link_target::sphinx_target>) {
-        top.append_attribute("sphinx-target").set_value(target.entry.name.c_str());
+        set_attribute(top, "sphinx-target", target.entry.name.c_str());
       } else {
         throw std::logic_error("not implemented: cannot render this link target type yet");
       }
     });
     if (!link.title.empty())
-      top.append_attribute("title").set_value(link.title.c_str());
+      set_attribute(top, "title", link.title.c_str());
     if (link.target.href())
-      top.append_attribute("href").set_value(link.target.href().value().c_str());
+      set_attribute(top, "href", link.target.href().value().c_str());
 
     stream_generator::visit(link);
     top = top.parent();
 }
 
 void xml_generator::visit(list_item& list_item) {
-    top = top.append_child("list-item");
+    top = append_child(top, "list-item");
     stream_generator::visit(list_item);
     top = top.parent();
 }
 
 void xml_generator::visit(module& module) {
-    top = top.append_child("module");
+    top = append_child(top, "module");
     stream_generator::visit(module);
     top = top.parent();
 }
 
 void xml_generator::visit(list& list) {
-    top = top.append_child(list.ordered ? "ordered-list" : "unordered-list");
+    top = append_child(top, list.ordered ? "ordered-list" : "unordered-list");
     stream_generator::visit(list);
     top = top.parent();
 }
 
 void xml_generator::visit(paragraph& paragraph) {
-    top = top.append_child("paragraph");
+    top = append_child(top, "paragraph");
     stream_generator::visit(paragraph);
     top = top.parent();
 }
 
 void xml_generator::visit(soft_break& soft_break) {
-    top = top.append_child("soft-break");
+    top = append_child(top, "soft-break");
     stream_generator::visit(soft_break);
     top = top.parent();
 }
 
 void xml_generator::visit(strong_emphasis& strong_emphasis) {
-    top = top.append_child("strong");
+    top = append_child(top, "strong");
     stream_generator::visit(strong_emphasis);
     top = top.parent();
 }
 
 void xml_generator::visit(text& text) {
-    top = top.append_child(pugi::node_pcdata);
+    top = append_child(top, pugi::node_pcdata);
     top.text() = text.value.c_str();
     stream_generator::visit(text);
     top = top.parent();
 }
 
 void xml_generator::visit(thematic_break& thematic_break) {
-    top = top.append_child("thematic-break");
+    top = append_child(top, "thematic-break");
     stream_generator::visit(thematic_break);
     top = top.parent();
 }
 
 void xml_generator::visit(document& document) {
-    top = top.append_child("document");
+    top = append_child(top, "document");
     if (!document.name.empty())
-      top.append_attribute("name").set_value(document.name.c_str());
+      set_attribute(top, "name", document.name.c_str());
     stream_generator::visit(document);
     top = top.parent();
 }
 
 void xml_generator::visit(image& image) {
-    top = top.append_child("img");
+    top = append_child(top, "img");
     if (!image.src.empty())
-      top.append_attribute("src").set_value(image.src.c_str());
+      set_attribute(top, "src", image.src.c_str());
     if (!image.title.empty())
-      top.append_attribute("title").set_value(image.title.c_str());
+      set_attribute(top, "title", image.title.c_str());
     stream_generator::visit(image);
     top = top.parent();
 }
@@ -242,7 +280,7 @@ std::string xml_generator::render(const model::entity& root) {
 }
 
 xml_generator::~xml_generator() {
-    xml_document.save(*out, "  ");
+    xml_document.save(*out, "  ", format);
 }
 
 }

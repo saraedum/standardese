@@ -17,7 +17,7 @@ class xml_generator : public stream_generator {
   public:
     /// Create a generator that writes output in an XML format.
     /// The output is written to the [os]() stream upon destruction of this object.
-    xml_generator(std::ostream* os);
+    xml_generator(std::ostream* os, unsigned int format=pugi::format_default);
 
     virtual ~xml_generator();
 
@@ -44,7 +44,15 @@ class xml_generator : public stream_generator {
 
     static std::string render(const model::entity& root);
 
+    static pugi::xml_node append_child(pugi::xml_node& parent, const std::string& name);
+		static pugi::xml_node append_child(pugi::xml_node& parent, pugi::xml_node_type type);
+    static void set_attribute(pugi::xml_node& node, const std::string& name, const std::string& value);
+    static void set_attribute(pugi::xml_node& node, const std::string& name, int value);
+
   private:
+    /// Formatting flags for pugixml.
+    unsigned int format;
+
     /// The root of the output XML document.
     pugi::xml_document xml_document;
 

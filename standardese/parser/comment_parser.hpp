@@ -95,11 +95,6 @@ namespace standardese::parser
         /// which have no correspondance in C++ source code.
         std::vector<model::entity> parse(const std::string& comment, const cppast::cpp_entity& entity, entity_resolver entity_resolver);
 
-        /// Add all entities from this file to the parse result that are
-        /// lacking explicit comments.
-        /// TODO(0.6.0-alpha): Should be a transformer? Anyway, it should not live here.
-        void add_uncommented_entities(model::unordered_entities&, const cppast::cpp_file&) const;
-
     private:
         /// Return the effective C++ entity (or the module name) the comment in
         /// `root` is referencing given that comment was found next to

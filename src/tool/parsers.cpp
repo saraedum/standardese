@@ -69,27 +69,56 @@ std::pair<model::unordered_entities, parser::cpp_context> parsers::parse() {
   // `\entity` command.
   auto entities = flatten(threading::transform(workers, comments.begin(), comments.end(), [&](const auto& comment_with_entity) -> std::vector<model::entity> {
     if (comment_with_entity.location->kind() == cppast::cpp_file::kind())
+      // Ignore comments that are not next to an entity.
+      return {};
+    if (!comment_with_entity.text.has_value())
+      // Ignore empty comments initially.
       return {};
 
     const auto resolve_entity = [](const std::string&) -> type_safe::optional_ref<const cppast::cpp_entity> {
-      throw std::logic_error(R"(not implemented: entity comment should not invoke an entity lookup since \entity commands are illegal in such comments.)");
+      throw std::logic_error(R"(not supported: entity comment should not invoke an entity lookup since \entity commands are illegal in such comments.)");
     };
 
-    return comment_parser.parse(comment_with_entity.text, *comment_with_entity.location, resolve_entity);
+    return comment_parser.parse(*comment_with_entity.text, *comment_with_entity.location, resolve_entity);
   }));
 
   // ...now we have seen all the relevant `\unique_name` commands and can
   // safely resolve `\entity` commands and merge with what we have so far.
   entities = flatten(std::vector{
     flatten(threading::transform(workers, comments.begin(), comments.end(), [&](const auto& comment_with_file) -> std::vector<model::entity> {
-        if (comment_with_file.location->kind() != cppast::cpp_file::kind())
-          return {};
+      if (comment_with_file.location->kind() != cppast::cpp_file::kind())
+        // Ignore this comment because it is next to an entity and was already handled before.
+        return {};
+      if (!comment_with_file.text.has_value())
+        // Ignore empty comments initially.
+        return {};
 
-        const auto resolve_entity = [](const std::string&) -> type_safe::optional_ref<const cppast::cpp_entity> {
-          throw std::logic_error(R"(not implemented: resolve_entity in tool::parsers.)");
-        };
+      const auto resolve_entity = [](const std::string&) -> type_safe::optional_ref<const cppast::cpp_entity> {
+        throw std::logic_error(R"(not implemented: resolve_entity in tool::parsers.)");
+      };
 
-        return comment_parser.parse(comment_with_file.text, *comment_with_file.location, resolve_entity);
+      return comment_parser.parse(*comment_with_file.text, *comment_with_file.location, resolve_entity);
+    })),
+    std::move(entities),
+  });
+
+  // ... finally, add placeholders for all the entities that are not explicitly commented on.
+  entities = flatten(std::vector{
+    flatten(threading::transform(workers, comments.begin(), comments.end(), [&](const auto& comment_with_entity) -> std::vector<model::entity> {
+      if (comment_with_entity.text.has_value())
+        // Ignore non-empty comments, they have been handled before.
+        return {};
+
+      const auto resolve_entity = [](const std::string&) -> type_safe::optional_ref<const cppast::cpp_entity> {
+        throw std::logic_error(R"(not supported: empty comment should not invoke an entity lookup since it cannot contain \entity commands.)");
+      };
+
+      auto parsed = comment_parser.parse(std::string{}, *comment_with_entity.location, resolve_entity);
+
+      for (auto& entity : parsed)
+        entity.template as<model::mixin::documentation>().exclude_mode = model::exclude_mode::uncommented;
+
+      return parsed;
     })),
     std::move(entities),
   });
@@ -118,14 +147,8 @@ std::pair<model::unordered_entities, parser::cpp_context> parsers::parse() {
     if (md)
       entities.emplace_back(std::move(md.value()));
 
-  // Merge entities.
-  auto ret = model::unordered_entities(entities);
-
-  // TODO(0.6.0-alpha): Is this really what we should do? And should we do this here?
-  for (auto& cpp_file : successfully_parsed)
-    comment_parser.add_uncommented_entities(ret, *cpp_file);
-
-  return {std::move(ret), cpp_parser.context()};
+  // Merge and return entities.
+  return {model::unordered_entities{entities}, cpp_parser.context()};
 }
 
 }

@@ -9,6 +9,7 @@
 #include <cppast/cppast_fwd.hpp>
 #include <type_safe/reference.hpp>
 #include <vector>
+#include <optional>
 
 namespace standardese::parser
 {
@@ -19,12 +20,18 @@ namespace standardese::parser
         struct comment_collector_options {
         };
 
-        explicit comment_collector(comment_collector_options options);
+        explicit comment_collector(comment_collector_options options={});
 
         struct comment {
-          comment(std::string text, const cppast::cpp_entity* location);
+          comment(const cppast::cpp_entity* location, std::optional<std::string> text);
 
-          std::string text;
+          /// The actual comment string withuot the comment markers such as
+          /// `///` removed.
+          std::optional<std::string> text;
+
+          /// The entity this comment is attached to.
+          /// The containing [cppast::cpp_file]() if this comment is not next
+          /// to any entity in particular.
           const cppast::cpp_entity* location;
         };
 

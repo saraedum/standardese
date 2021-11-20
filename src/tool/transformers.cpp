@@ -24,6 +24,7 @@
 #include "../../standardese/transformer/create_entity_document_transformer.hpp"
 #include "../../standardese/transformer/create_index_document_transformer.hpp"
 #include "../../standardese/transformer/create_uncommented_module_transformer.hpp"
+#include "../../standardese/transformer/create_uncommented_child_transformer.hpp"
 
 namespace standardese::tool {
 
@@ -35,6 +36,9 @@ void transformers::transform(model::unordered_entities& entities, const parser::
   // TODO(0.6.0-alpha): Make this configurable
 
   // TODO(0.6.0-alpha): Use parallel worker pool.
+
+  for (auto& child: transformer::create_uncommented_child_transformer{&entities, context}.transform())
+    entities.insert(std::move(child));
 
   // Create (empty) documentation for modules that are referenced in the
   // documentation but have no documentation on their own.

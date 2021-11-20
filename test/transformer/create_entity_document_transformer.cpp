@@ -40,6 +40,8 @@ TEST_CASE("Entity Documents can be Generated", "[create_entity_document_transfor
       \tparam T Type `T` shall be `MoveConstructible` and `MoveAssignable`.
       )");
 
+    CAPTURE(parsed.entities);
+
     SECTION("Entity Document for a Header Lists all Members")
     {
       auto options = create_entity_document_transformer::create_entity_document_transformer_options{};

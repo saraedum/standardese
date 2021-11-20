@@ -22,30 +22,18 @@ class entity {
     template <typename E, std::enable_if_t<std::is_base_of_v<mixin::ivisitable, std::decay_t<E>>, bool> Enabled = true>
     entity(E&& e) : value(new std::decay_t<E>(std::forward<E>(e))) {}
 
-    entity(const entity& rhs) : value(rhs.value->clone()) {}
-    entity(entity&& rhs) : value(std::move(rhs.value)) {}
+    entity(const entity& rhs);
+    entity(entity&& rhs);
 
-    entity& operator=(const entity& rhs) {
-      value.reset(rhs.value->clone());
-      return *this;
-    }
+    entity& operator=(const entity& rhs);
 
-    entity& operator=(entity&& rhs) {
-      value = std::move(rhs.value);
-      return *this;
-    }
+    entity& operator=(entity&& rhs);
 
-    void accept(visitor::visitor<false>& visitor) {
-        value->accept(visitor);
-    }
+    void accept(visitor::visitor<false>& visitor);
 
-    void accept(visitor::visitor<true>& visitor) const {
-        value->accept(visitor);
-    }
+    void accept(visitor::visitor<true>& visitor) const;
 
-    const mixin::ivisitable* get() const {
-        return value.get();
-    }
+    const mixin::ivisitable* get() const;
 
     template <typename T>
     const T& as() const {
@@ -65,6 +53,8 @@ class entity {
     bool is() const {
       return dynamic_cast<const T*>(value.get()) != nullptr;
     }
+
+    friend std::ostream& operator<<(std::ostream&, const entity&);
 
   private:
     std::unique_ptr<mixin::ivisitable> value;

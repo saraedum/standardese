@@ -11,7 +11,7 @@
 
 namespace standardese::parser {
 
-comment_collector::comment::comment(std::string text, const cppast::cpp_entity* location) : text(std::move(text)), location(location) {
+comment_collector::comment::comment(const cppast::cpp_entity* location, std::optional<std::string> text) : text(std::move(text)), location(location) {
   if (location == nullptr)
     throw std::invalid_argument("comment location mut not be NULL");
 }
@@ -34,21 +34,13 @@ std::vector<comment_collector::comment> comment_collector::collect(const cppast:
           // Ignore templates themselves since we will only handle what's inside the template.
           return true;
 
-      const auto comment = entity.comment();
-      if (comment) {
-          comments.emplace_back(comment.value(), &entity);
-      }
-
-      // TODO(0.6.0-alpha): Why would we want to do this?
-      /*else {
-          comments.emplace_back("", entity);
-      }*/
+      comments.emplace_back(&entity, entity.comment().has_value() ? std::optional{entity.comment().value()} : std::nullopt);
 
       return true;
   });
 
   for (const auto& free : static_cast<const cppast::cpp_file*>(cpp_file)->unmatched_comments())
-    comments.emplace_back(free.content, static_cast<const cppast::cpp_entity*>(cpp_file));
+    comments.emplace_back(static_cast<const cppast::cpp_entity*>(cpp_file), free.content);
 
   return comments;
 }

@@ -235,7 +235,7 @@ void visitor::add_template_parameters(const cppast::cpp_template& entity) {
 
     const auto& search = entities.find_cpp_entity(tparam);
     if (search == entities.end()) {
-      logger::warn(fmt::format("Ignoring template parameter `{}` of `{}` since no documentation entity could be found for it, not even an empty one.", tparam.name(), entity.name()));
+      logger::warn(fmt::format("Ignoring template parameter `{}` of `{}` when creating entity documentation since no documentation entity could be found for it, not even an empty one.", tparam.name(), entity.name()));
       continue;
     }
     search->accept(v);
@@ -251,7 +251,7 @@ void visitor::add_function_parameters(const cppast::cpp_function_base& entity) {
 
     const auto& search = entities.find_cpp_entity(param);
     if (search == entities.end()) {
-      logger::warn(fmt::format("Ignoring parameter `{}` of `{}` since no documentation entity could be found for it, not even an empty one.", param.name(), entity.name()));
+      logger::warn(fmt::format("Ignoring parameter `{}` of `{}` when creating entity documentation since no documentation entity could be found for it, not even an empty one.", param.name(), entity.name()));
       continue;
     }
     search->accept(v);
@@ -267,7 +267,7 @@ void visitor::add_macro_parameters(const cppast::cpp_macro_definition& entity) {
 
     const auto& search = entities.find_cpp_entity(param);
     if (search == entities.end()) {
-      logger::warn(fmt::format("Ignoring macro parameter `{}` of `{}` since no documentation entity could be found for it, not even an empty one.", param.name(), entity.name()));
+      logger::warn(fmt::format("Ignoring macro parameter `{}` of `{}` when creating entity documentation since no documentation entity could be found for it, not even an empty one.", param.name(), entity.name()));
       continue;
     }
     search->accept(v);
@@ -283,7 +283,7 @@ void visitor::add_bases(const cppast::cpp_entity& entity) {
 
     const auto& search = entities.find_cpp_entity(base);
     if (search == entities.end()) {
-      logger::warn(fmt::format("Ignoring base `{}` of `{}` since no documentation entity could be found for it, not even an empty one.", base.name(), entity.name()));
+      logger::warn(fmt::format("Ignoring base `{}` of `{}` when creating entity documentation since no documentation entity could be found for it, not even an empty one.", base.name(), entity.name()));
       continue;
     }
     search->accept(v);

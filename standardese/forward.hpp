@@ -95,6 +95,7 @@ namespace standardese::parser
 {
 class markdown_parser;
 class comment_parser;
+class comment_collector;
 class parse_error;
 class cpp_context;
 }
@@ -128,6 +129,7 @@ class create_link_text_transformer;
 class create_output_section_heading_transformer;
 class create_synopsis_transformer;
 class create_uncommented_module_transformer;
+class create_uncommented_child_transformer;
 class exclude_access_transformer;
 class exclude_pattern_transformer;
 class exclude_uncommented_transformer;

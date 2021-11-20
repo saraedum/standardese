@@ -28,6 +28,7 @@ public:
 
     virtual ~stream_generator() {}
 
+    // TODO(0.6.0-alpha): Defining this in the base class is a really odd pattern. There's no way to really force subclasses to implement this it seems.
     template <typename G>
     static std::string render(const model::entity& root)
     {

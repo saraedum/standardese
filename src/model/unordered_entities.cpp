@@ -4,6 +4,7 @@
 
 #include <boost/unordered_set.hpp>
 #include <fmt/format.h>
+#include <fmt/ostream.h>
 #include <initializer_list>
 
 #include "../../standardese/model/unordered_entities.hpp"
@@ -49,7 +50,7 @@ unordered_entities& unordered_entities::operator=(unordered_entities&& rhs) noex
 void unordered_entities::insert(value_type value) {
   auto [pos, inserted] = self->items.insert(value);
   if (!inserted)
-    logger::warn(fmt::format("Not adding entity {} because an equivalent entity was already found in this set.", output_generator::xml::xml_generator::render(value)));
+    logger::warn(fmt::format("Not adding entity {} because an equivalent entity was already found in this set.", value));
 }
 
 unordered_entities::const_iterator unordered_entities::find_cpp_entity(const cppast::cpp_entity& entity) const {
@@ -108,6 +109,14 @@ const model::entity& unordered_entities::cpp_entity(const cppast::cpp_entity& en
     throw std::invalid_argument(fmt::format("entity `{}` not found in entities", entity.name()));
 
   return *it;
+}
+
+void unordered_entities::erase(const_iterator pos) {
+  self->items.erase(pos.self->self);
+}
+
+void unordered_entities::erase(iterator pos) {
+  self->items.erase(pos.self->self);
 }
 
 model::entity& unordered_entities::cpp_entity(const cppast::cpp_entity& entity) {
