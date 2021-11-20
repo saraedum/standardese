@@ -15,6 +15,7 @@
 #include "../../standardese/output_generator/xml/xml_generator.hpp"
 #include "../../standardese/formatter/inja_formatter.hpp"
 #include "../../standardese/logger.hpp"
+#include "../../standardese/model/unordered_entities.hpp"
 
 // TODO(0.6.0-beta): We need an additional transformer that optionally turns [target]() into [`target`]().
 

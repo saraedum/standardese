@@ -9,7 +9,6 @@
 #include <unordered_map>
 
 #include "inner_transformer.hpp"
-#include "../model/unordered_entities.hpp"
 #include "../parser/cpp_context.hpp"
 
 namespace standardese::transformer

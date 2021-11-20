@@ -9,7 +9,6 @@
 #include <string>
 #include <boost/filesystem/path.hpp>
 
-#include "../model/unordered_entities.hpp"
 #include "../output_generator/markdown/markdown_generator.hpp"
 
 namespace standardese::tool {

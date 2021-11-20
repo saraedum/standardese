@@ -13,7 +13,6 @@
 #include <type_safe/variant.hpp>
 
 #include "../model/module.hpp"
-#include "../model/unordered_entities.hpp"
 #include "cpp_context.hpp"
 #include "markdown_parser.hpp"
 
