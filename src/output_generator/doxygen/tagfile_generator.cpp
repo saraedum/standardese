@@ -2,6 +2,8 @@
 // This file is subject to the license terms in the LICENSE file
 // found in the top-level directory of this distribution.
 
+#include <ostream>
+
 #include "../../../standardese/output_generator/doxygen/tagfile_generator.hpp"
 #include "../../../standardese/model/document.hpp"
 

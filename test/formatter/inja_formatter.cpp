@@ -4,6 +4,7 @@
 
 #include <nlohmann/json.hpp>
 #include <cppast/cpp_function.hpp>
+#include <sstream>
 
 #include "../../standardese/formatter/inja_formatter.hpp"
 #include "../../standardese/model/cpp_entity_documentation.hpp"

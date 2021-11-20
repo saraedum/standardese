@@ -5,6 +5,8 @@
 #include <cppast/cpp_file.hpp>
 #include <boost/filesystem/path.hpp>
 #include <fmt/format.h>
+#include <ostream>
+#include <sstream>
 
 #include "../../../standardese/output_generator/xml/xml_generator.hpp"
 
@@ -276,7 +278,12 @@ void xml_generator::visit(image& image) {
 }
 
 std::string xml_generator::render(const model::entity& root) {
-  return stream_generator::render<xml_generator>(root);
+    std::stringstream s;
+    {
+      auto generator = xml_generator(&s);
+      root.accept(generator);
+    }
+    return s.str();
 }
 
 xml_generator::~xml_generator() {

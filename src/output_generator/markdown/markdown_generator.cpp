@@ -4,8 +4,11 @@
 // found in the top-level directory of this distribution.
 
 #include <cmark-gfm.h>
+#include <ostream>
+#include <sstream>
 
 #include "../../../standardese/output_generator/markdown/markdown_generator.hpp"
+#include "../../../standardese/model/entity.hpp"
 
 namespace standardese::output_generator::markdown
 {
@@ -21,6 +24,15 @@ markdown_generator::~markdown_generator() {
   using unique_string = unique_cmark<char, free>;
   unique_string str{cmark_render_commonmark(root.get(), CMARK_OPT_NOBREAKS, 0)};
   *out << str.get();
+}
+
+std::string markdown_generator::render(const model::entity& root) {
+    std::stringstream s;
+    {
+      auto generator = markdown_generator(&s);
+      root.accept(generator);
+    }
+    return s.str();
 }
 
 }

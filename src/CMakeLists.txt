@@ -65,6 +65,7 @@ set(src
     output_generator/html/html_generator.cpp
     output_generator/markdown/markdown_generator.cpp
     output_generator/sphinx/inventory_generator.cpp
+    output_generator/stream_generator.cpp
     output_generator/text/text_generator.cpp
     output_generator/xml/xml_generator.cpp
     parser/cmark-extension/cmark_extension.cpp

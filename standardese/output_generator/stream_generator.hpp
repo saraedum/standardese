@@ -5,12 +5,9 @@
 #ifndef STANDARDESE_OUTPUT_STREAM_GENERATOR_HPP_INCLUDED
 #define STANDARDESE_OUTPUT_STREAM_GENERATOR_HPP_INCLUDED
 
-#include <stdexcept>
-#include <sstream>
-#include <string>
+#include <iosfwd>
 
 #include "../model/visitor/recursive_visitor.hpp"
-#include "../model/entity.hpp"
 
 namespace standardese::output_generator
 {
@@ -18,27 +15,12 @@ namespace standardese::output_generator
 class stream_generator : public model::visitor::recursive_visitor<true>
 {
 public:
-    /// Create a generator that writes output to [os]() stream upon destruction.
-    stream_generator(std::ostream* os) : out(os) {
-      if (os == nullptr)
-        throw std::invalid_argument("output stream must not be NULL");
-      if (os->bad())
-        throw std::invalid_argument("output stream must be healthy");
-    }
+    /// Create a generator that writes output to [out]() stream upon destruction.
+    stream_generator(std::ostream* out);
 
-    virtual ~stream_generator() {}
-
-    // TODO(0.6.0-alpha): Defining this in the base class is a really odd pattern. There's no way to really force subclasses to implement this it seems.
-    template <typename G>
-    static std::string render(const model::entity& root)
-    {
-        std::stringstream s;
-        {
-          auto generator = G(&s);
-          root.accept(generator);
-        }
-        return s.str();
-    }
+    /// Implementing class should override the destructor to actually write
+    /// something to [out]().
+    virtual ~stream_generator();
 
 protected:
     std::ostream* out;

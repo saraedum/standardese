@@ -3,6 +3,8 @@
 // found in the top-level directory of this distribution.
 
 #include <cmark-gfm.h>
+#include <ostream>
+#include <sstream>
 
 #include "../../../standardese/output_generator/text/text_generator.hpp"
 #include "../../../standardese/model/markup/link.hpp"
@@ -34,7 +36,12 @@ void text_generator::visit(link& link) {
 }
 
 std::string text_generator::render(const model::entity& root) {
-  return stream_generator::render<text_generator>(root);
+    std::stringstream s;
+    {
+      auto generator = text_generator(&s);
+      root.accept(generator);
+    }
+    return s.str();
 }
 
 }
