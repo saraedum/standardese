@@ -46,21 +46,6 @@ TEST_CASE("comment")
     SECTION("remote")
     {
         auto file = parse_file({}, "comment_remote.cpp", R"(
-            /// \entity a
-            /// \module a
-
-            /// \entity foo<T>::a
-            /// \module a
-
-            /// \entity foo<T>.T
-            /// \module T
-
-            /// \entity foo<T>::b(int, float).i
-            /// \module i
-
-            /// \entity foo<T>::b(int, float)
-            /// \module b
-
             /// \entity custom
             /// \module c
 

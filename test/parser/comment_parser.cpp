@@ -1176,16 +1176,68 @@ TEST_CASE("Standardese Commands", "[comment_parser]")
     {
         util::cpp_file header(R"(
             void f();
+
+            struct S {};
+
+            template <typename T>
+            class C : S {
+              void f(int i);
+              void f(double d);
+            };
             )");
 
         SECTION("The Entity can be set Explicitly")
         {
-            const auto parsed = parsed_comments(header).add(header, R"(
-                \entity f()
-                This documentation is for the function f()
-                )");
+            SECTION("To Refer to a Function") {
+              const auto parsed = parsed_comments(header).add(header, R"(
+                  \entity f()
+                  \module entity
+                  This documentation is for the function f()
+                  )");
 
-            CHECK_NOTHROW(parsed["f"]);
+              CHECK(parsed.as_documentation("f").module == "entity");
+            }
+
+            SECTION("To Refer to a Base Class") {
+              const auto parsed = parsed_comments(header).add(header, R"(
+                  \entity C<T>::S
+                  \module entity
+                  This documentation is for the base class relation S.
+                  )");
+
+              CHECK(parsed.as_documentation("C::S").module == "entity");
+            }
+
+            SECTION("To Refer to a Template Parameter") {
+              const auto parsed = parsed_comments(header).add(header, R"(
+                  \entity C::T
+                  \module entity
+                  This documentation is for the template parameter T.
+                  )");
+
+              CHECK(parsed.as_documentation("C::T").module == "entity");
+            }
+
+            SECTION("To Refer to a Member Function") {
+              const auto parsed = parsed_comments(header).add(header, R"(
+                  \entity C::f(int)
+                  \module entity
+                  This documentation is for the function f(int).
+                  )");
+
+              CHECK(parsed.as_documentation("C::f(int)").module == "entity");
+              CHECK(!parsed.as_documentation("C::f(double)").module.has_value());
+            }
+
+            SECTION("To Refer to a Member Function Parameter") {
+              const auto parsed = parsed_comments(header).add(header, R"(
+                  \entity C::f(int).i
+                  \module entity
+                  This documentation is for the int parameter i.
+                  )");
+
+              CHECK(parsed.as_documentation("C::f(int).i").module == "entity");
+            }
         }
         SECTION("The Implicit Entity Cannot be Replaced")
         {
