@@ -4,6 +4,7 @@
 // found in the top-level directory of this distribution.
 
 #include <iostream>
+#include <cstdlib>
 
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/base_sink.h>
@@ -22,6 +23,18 @@ logger::logger(std::shared_ptr<spdlog::sinks::sink> sink, const std::string& nam
   logger->set_error_handler([](const auto& e) {
     throw message_logged_error(e);
   });
+
+  const char* level = std::getenv("STANDARDESE_TEST_LOG_LEVEL");
+  if (level != nullptr) {
+    if (std::string(level) == "DEBUG")
+      logger->set_level(spdlog::level::debug);
+    else if (std::string(level) == "TRACE")
+      logger->set_level(spdlog::level::trace);
+    else
+      logger->error(fmt::format("STANDARDESE_TEST_LOG_LEVEL environment variable must be unset or one of DEBUG or TRACE but found {}", std::string{level}));
+  } else {
+    logger->set_level(spdlog::level::warn);
+  }
 }
 
 logger::~logger() {
@@ -35,6 +48,7 @@ logger logger::capturing_logger(std::ostream& stream, const std::string& name) {
     void sink_it_(const spdlog::details::log_msg& msg) override {
       stream << std::string(msg.payload.data(), msg.payload.size()) << std::endl;
     }
+
     void flush_() override {}
 
     std::ostream& stream;
@@ -51,10 +65,19 @@ logger logger::throwing_logger(const std::string& name) {
         case spdlog::level::level_enum::err:
         case spdlog::level::level_enum::warn:
           throw message_logged_error(msg);
+        case spdlog::level::level_enum::info:
+          std::cerr << "info: " << std::string(msg.payload.data(), msg.payload.size()) << std::endl;
+          break;
+        case spdlog::level::level_enum::debug:
+          std::cerr << "debug: " << std::string(msg.payload.data(), msg.payload.size()) << std::endl;
+          break;
         default:
-          return;
+        case spdlog::level::level_enum::trace:
+          std::cerr << "trace: " << std::string(msg.payload.data(), msg.payload.size()) << std::endl;
+          break;
       }
     }
+
     void flush_() override {}
   };
 

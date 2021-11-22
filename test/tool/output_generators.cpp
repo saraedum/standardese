@@ -12,12 +12,15 @@
 #include "../../standardese/model/entity_set.hpp"
 #include "../../standardese/tool/output_generators.hpp"
 #include "../util/tmp_dir.hpp"
+#include "../util/logger.hpp"
 
 namespace standardese::test::tool {
 
 using standardese::tool::output_generators;
 
 TEST_CASE("Generation of MarkDown Output", "[tool]") {
+  auto logger = util::logger::throwing_logger();
+
   SECTION("MarkDown Output is Emitted for each Document") {
     model::entity_set documents{
       model::document{"example", "webroot/example"},
@@ -40,14 +43,20 @@ TEST_CASE("Generation of MarkDown Output", "[tool]") {
 }
 
 TEST_CASE("Generation of HTML Output", "[tool]") {
+  auto logger = util::logger::throwing_logger();
+
   //TODO(0.6.0-alpha)
 }
 
 TEST_CASE("Generation of Text Output", "[tool]") {
+  auto logger = util::logger::throwing_logger();
+
   //TODO(0.6.0-alpha)
 }
 
 TEST_CASE("Generation of XML Output", "[tool]") {
+  auto logger = util::logger::throwing_logger();
+
   SECTION("XML Output is Emitted for each Document") {
     model::entity_set documents{
       model::document{"example", "webroot/example"},
@@ -70,6 +79,8 @@ TEST_CASE("Generation of XML Output", "[tool]") {
 }
 
 TEST_CASE("Generation of an Intersphinx Inventory", "[tool]") {
+  auto logger = util::logger::throwing_logger();
+
   SECTION("An Intersphinx Inventory is Emitted") {
     model::entity_set documents{};
 
@@ -89,6 +100,8 @@ TEST_CASE("Generation of an Intersphinx Inventory", "[tool]") {
 }
 
 TEST_CASE("Generation of a Doxygen Tagfile", "[tool]") {
+  auto logger = util::logger::throwing_logger();
+
   SECTION("A Doxygen Tagfile is Emitted") {
     model::entity_set documents{};
 

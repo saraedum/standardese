@@ -5,6 +5,7 @@
 #include <nlohmann/json.hpp>
 #include <cppast/cpp_function.hpp>
 #include <sstream>
+#include <spdlog/spdlog.h>
 
 #include "../../standardese/formatter/inja_formatter.hpp"
 #include "../../standardese/model/cpp_entity_documentation.hpp"
@@ -13,6 +14,7 @@
 #include "../../standardese/model/document.hpp"
 #include "../../standardese/model/markup/paragraph.hpp"
 #include "../../standardese/output_generator/xml/xml_generator.hpp"
+#include "../../standardese/logger.hpp"
 #include "../util/logger.hpp"
 #include "../util/cpp_file.hpp"
 #include "../util/unindent.hpp"
@@ -316,7 +318,9 @@ TEST_CASE("Strings from Inja Templates", "[inja_formatter]") {
     util::cpp_file header;
     auto inja = inja_formatter({}, header);
     std::stringstream s;
-    util::logger::capturing_logger(s);
+    auto logger = util::logger::capturing_logger(s);
+
+    standardese::logger::get().set_level(spdlog::level::info);
 
     SECTION("Invoked Directly") {
       inja.info("informational message");

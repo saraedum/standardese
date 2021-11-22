@@ -19,6 +19,8 @@ using standardese::inventory::symbols;
 namespace standardese::test::inventory::sphinx {
 
 TEST_CASE("Loading an Intersphinx Inventory", "[documentation_set]") {
+    auto logger = util::logger::throwing_logger();
+
     documentation_set inventory;
 
     SECTION("The Python 3 Inventory can be Loaded") {

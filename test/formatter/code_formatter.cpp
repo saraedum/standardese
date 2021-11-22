@@ -13,6 +13,7 @@
 #include "../util/cpp_file.hpp"
 #include "../util/parsed_comments.hpp"
 #include "../util/unindent.hpp"
+#include "../util/logger.hpp"
 
 namespace standardese::test::formatter {
 
@@ -20,6 +21,8 @@ using standardese::formatter::code_formatter;
 using output_generator::xml::xml_generator;
 
 TEST_CASE("Functions can be Formatted", "[code_formatter]") {
+  auto logger = util::logger::throwing_logger();
+
   SECTION("Top-Level Functions") {
     util::cpp_file header(R"(void f();)");
     auto formatted = code_formatter{{}, header}.build(header["f"], header);

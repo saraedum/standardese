@@ -540,6 +540,8 @@ TEST_CASE("Markdown Markup", "[comment_parser]")
 
 TEST_CASE("Standardese Specific Markup Rules", "[comment_parser]")
 {
+    auto logger = util::logger::throwing_logger();
+
     cpp_file header("void f();");
 
     SECTION("Explicit Sections Spanning Multiple Lines")
@@ -780,6 +782,8 @@ TEST_CASE("Standardese Specific Markup Rules", "[comment_parser]")
 
 TEST_CASE("Standardese Commands", "[comment_parser]")
 {
+    auto logger = util::logger::throwing_logger();
+
     cpp_file header("void f();");
 
     // TODO(0.6.0-alpha): Bring back verbatim in some way.

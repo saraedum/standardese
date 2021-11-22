@@ -14,10 +14,13 @@
 
 #include "../util/cpp_file.hpp"
 #include "../util/unindent.hpp"
+#include "../util/logger.hpp"
 
 namespace standardese::test::transformer {
 
 TEST_CASE("Sections of Groups are Merged", "[merge_group_transformer]") {
+  auto logger = util::logger::throwing_logger();
+
   SECTION("Trailing Group Members are Merged into the Principal Entity") {
     util::cpp_file header(R"(
       void f();

@@ -9,12 +9,15 @@
 #include "../../../standardese/model/markup/paragraph.hpp"
 #include "../../../standardese/model/markup/emphasis.hpp"
 #include "../../../standardese/model/visitor/visit.hpp"
+#include "../../util/logger.hpp"
 
-namespace stdandardese::test::model::visitor {
+namespace standardese::test::model::visitor {
 
 using standardese::model::visitor::visit;
 
 TEST_CASE("Visitors Created from Lambdas", "[visitor]") {
+  auto logger = util::logger::throwing_logger();
+
   // A simple model corresponding to the MarkDown
   // ```
   // some text*some emphasized text*

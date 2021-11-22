@@ -133,6 +133,8 @@ TEST_CASE("Function Lookup in MarkDown Links", "[cppast_inventory]")
 
 TEST_CASE("Parameter Lookup in MarkDown Links", "[cppast_inventory]")
 {
+    auto logger = util::logger::throwing_logger();
+
     SECTION("Parameters can be Mentioned Directly in Function Scope")
     {
         const util::cpp_file header("void f(int arg);");
@@ -187,6 +189,8 @@ TEST_CASE("Parameter Lookup in MarkDown Links", "[cppast_inventory]")
 
 TEST_CASE("Operator Lookup in MarkDown Links", "[inventory]")
 {
+    auto logger = util::logger::throwing_logger();
+
     SECTION("Operators can be Looked Up Like any Other Function")
     {
         const util::cpp_file header(R"(
@@ -272,6 +276,8 @@ TEST_CASE("Operator Lookup in MarkDown Links", "[inventory]")
 
 TEST_CASE("Template Parameter Lookup in MarkDown Links", "[cppast_inventory]")
 {
+    auto logger = util::logger::throwing_logger();
+
     const util::cpp_file header(R"(
         template <typename T>
         struct X {};
@@ -297,6 +303,8 @@ TEST_CASE("Template Parameter Lookup in MarkDown Links", "[cppast_inventory]")
 }
 
 TEST_CASE("Type Lookup in MarkDown Links", "[cppast_inventory]") {
+    auto logger = util::logger::throwing_logger();
+
     const util::cpp_file header(R"(
         template <typename T>
         struct X {};
