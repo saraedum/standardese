@@ -16,6 +16,7 @@
 #include "../../../standardese/parser/commands/special_command.hpp"
 #include "../../../standardese/parser/commands/section_command.hpp"
 #include "../../../standardese/parser/commands/inline_command.hpp"
+#include "../../../standardese/logger.hpp"
 
 namespace standardese::parser::command_extension
 {
@@ -129,6 +130,8 @@ cmark_node* command_extension::postprocess(cmark_node* root) const
         // Everything that standardese sees lives under a single <document> node created by cmark.
         assert(cmark_node_next(root) == nullptr && "expected all nodes to be children of a single <document> node.");
 
+        logger::debug([&]() { return fmt::format("Postprocessing document {} with command extension.", to_xml(root)); });
+
         const auto* next = postprocess(cmark_node_first_child(root));
 
         assert(next == nullptr && "postprocess() must process all children of a document and we did not expect more than a <document> at the root level.");
@@ -158,7 +161,7 @@ cmark_node* command_extension::postprocess(cmark_node* root) const
                 // The first line of the comment could have defined an implicit
                 // brief. But a brief cannot be formed (implicitly) after any
                 // section or inline has been given. So there is no implicit
-                // brief anymore.
+                // brief.
                 brief = nullptr;
             }
 
@@ -246,24 +249,24 @@ cmark_node* command_extension::postprocess_paragraph(cmark_node* paragraph, std:
     }
 }
 
+bool command_extension::is_whitespace(cmark_node* node) {
+    if (cmark_node_get_type(node) == CMARK_NODE_LINEBREAK) return true;
+    if (cmark_node_get_type(node) == CMARK_NODE_SOFTBREAK) return true;
+
+    return false;
+};
+
 cmark_node* command_extension::cleanup(cmark_node* node) const {
-    const auto is_trivial = [](cmark_node* node) {
-        if (cmark_node_get_type(node) == CMARK_NODE_LINEBREAK) return true;
-        if (cmark_node_get_type(node) == CMARK_NODE_SOFTBREAK) return true;
-
-        return false;
-    };
-
     if (node == nullptr) {
         return nullptr;
     } else if (cmark_node_get_type(node) == CMARK_NODE_PARAGRAPH) {
         // Drop leading/trailing newlines from paragraphs.
         while (cmark_node* child = cmark_node_first_child(node)) {
-            if (is_trivial(child)) cmark_node_free(child);
+            if (is_whitespace(child)) cmark_node_free(child);
             else break;
         }
         while (cmark_node* child = cmark_node_last_child(node)) {
-            if (is_trivial(child)) cmark_node_free(child);
+            if (is_whitespace(child)) cmark_node_free(child);
             else break;
         }
 
@@ -293,6 +296,17 @@ cmark_node* command_extension::postprocess_block(cmark_node* block, cmark_node*&
     return next;
 }
 
+bool command_extension::is_section_end(cmark_node* node) const {
+    if (is_explicit_section_end(node))
+        return true;
+
+    // The start of a new paragraph ends a section.
+    if (cmark_node_get_type(node) == CMARK_NODE_PARAGRAPH)
+        return true;
+
+    return false;
+}
+
 bool command_extension::is_explicit_section_end(cmark_node* node) const {
     if (node == nullptr)
         // When there are no more siblings, a section ends.
@@ -303,7 +317,7 @@ bool command_extension::is_explicit_section_end(cmark_node* node) const {
     // Any description of another entity ends the preceding section.
     if (cmark_node_get_type(node) == node_type<commands::inline_command>())
         return true;
-    // Many special commands ends the preceding section.
+    // Most special commands end the preceding section.
     if (cmark_node_get_type(node) == node_type<commands::special_command>()) {
         const auto& parsed = user_data<commands::special_command>::get(node);
         switch(parsed.command) {
@@ -314,36 +328,22 @@ bool command_extension::is_explicit_section_end(cmark_node* node) const {
                 return true;
         }
     }
-
-    return false;
-}
-
-bool command_extension::is_section_end(cmark_node* node) const {
-    if (is_explicit_section_end(node))
-        return true;
-
     // A hard linebreak ends a section, i.e., a backslash at the end of the line in Markdown.
     if (cmark_node_get_type(node) == CMARK_NODE_LINEBREAK)
-        return true;
-
-    // The end of a paragraph ends a section.
-    cmark_node* previous = cmark_node_previous(node);
-    if (previous != nullptr && cmark_node_get_type(previous) == CMARK_NODE_PARAGRAPH)
         return true;
 
     return false;
 }
 
 cmark_node* command_extension::create_section_node(commands::section_command kind) const {
-  cmark_node* node = cmark_node_new(node_type<commands::section_command>());
-  cmark_node_set_syntax_extension(node, extension);
+  cmark_node* node = cmark_node_new_with_ext(node_type<commands::section_command>(), extension);
   user_data<commands::section_command>::set(node, kind, {});
 
   return node;
 }
 
 cmark_node* command_extension::create_inline_node(commands::inline_command kind) const {
-  cmark_node* node = cmark_node_new(node_type<commands::inline_command>());
+  cmark_node* node = cmark_node_new_with_ext(node_type<commands::inline_command>(), extension);
   cmark_node_set_syntax_extension(node, extension);
   user_data<commands::inline_command>::set(node, kind, {});
 
@@ -353,7 +353,8 @@ cmark_node* command_extension::create_inline_node(commands::inline_command kind)
 cmark_node* command_extension::split_paragraph(cmark_node* paragraph, std::function<bool(cmark_node*)> is_end) const {
     // Find the first end node satisfying is_end
     cmark_node* end = cmark_node_first_child(paragraph);
-    if (end != nullptr) end = cmark_node_next(end);
+    if (end != nullptr)
+      end = cmark_node_next(end);
     while (end != nullptr && !is_end(end))
       end = cmark_node_next(end);
 
@@ -427,12 +428,13 @@ cmark_node* command_extension::postprocess_section_command(cmark_node* command, 
     }
 
     // Move the contents of this section into the target node.
-    cmark_node* more = splice(target, cmark_node_next(command));
+    cmark_node* more = splice_section(target, cmark_node_next(command));
     return more;
 }
 
-cmark_node* command_extension::splice(cmark_node* target, cmark_node* begin) const
-{
+cmark_node* command_extension::splice_section(cmark_node* const target, cmark_node* const begin) const {
+    logger::trace([&]() { return fmt::format("Extracting a section of {}.", to_xml(cmark_node_parent(begin))); });
+
     // We search for the end of this section.
     cmark_node* end = begin;
     while (!is_explicit_section_end(end))
@@ -446,29 +448,37 @@ cmark_node* command_extension::splice(cmark_node* target, cmark_node* begin) con
         cmark_node* drop = end;
         end = cmark_node_next(end);
         cmark_node_free(drop);
+    } else if (is_explicit_section_end(begin)) {
+        // This section is empty.
+        end = begin;
     } else {
         // When there is no explicit \end, this section might end implicitly
         // before the next section starts and everything in between is part of
         // the details again.
 
-        end = begin;
-        while (!is_section_end(end)) {
+        cmark_node* last = begin;
+        while (!is_section_end(cmark_node_next(last)))
+          last = cmark_node_next(last);
+
+        assert(last != nullptr);
+
+        if (cmark_node_get_type(last) == CMARK_NODE_PARAGRAPH)
             // When this section would end with a paragraph, not all of it
             // might go into this section as there might be a reason to end
             // that section inside that paragraph.
-            if (end != nullptr && cmark_node_get_type(end) == CMARK_NODE_PARAGRAPH) {
-                end = split_paragraph(end, [&](cmark_node* node) { return is_section_end(node); });
-                break;
-            }
-            end = cmark_node_next(end);
-        }
+            end = split_paragraph(last, [&](cmark_node* node) { return is_section_end(node); });
+        else
+            end = cmark_node_next(last);
     }
 
     splice(target, begin, end);
+
+    logger::trace([&]() { return fmt::format("Extracted section {}.", to_xml(target)); });
+
     return end;
 }
 
-cmark_node* command_extension::postprocess_inline_command(cmark_node* command) const
+cmark_node* command_extension::postprocess_inline_command(cmark_node* const command) const
 {
     // Collect the contents of this inline and move them temoporarily into a
     // separate document for further postprocessing. (Since the rules of
@@ -476,7 +486,7 @@ cmark_node* command_extension::postprocess_inline_command(cmark_node* command) c
     // an entire comment.)
     // TODO(0.6.0-rc): Use unique_ptr for memory cleanup.
     cmark_node* document = cmark_node_new(CMARK_NODE_DOCUMENT);
-    cmark_node* more = splice(document, cmark_node_next(command));
+    cmark_node* more = splice_section(document, cmark_node_next(command));
 
     // Split the contents into brief & details sections and move them back the newly created inline node.
     postprocess(document);

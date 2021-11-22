@@ -109,7 +109,7 @@ namespace standardese::parser::command_extension
         /// `target`, i.e., up to an explicit `\end` command or some implicit
         /// section end. Drop any explicit `\end` nodes and return the first
         /// node that has not been moved.
-        cmark_node* splice(cmark_node* target, cmark_node* begin) const;
+        cmark_node* splice_section(cmark_node* target, cmark_node* begin) const;
 
         /// Perform some generic cleanup on a node, e.g., by removing trailing
         /// line breaks and return the cleaned up node or a nullptr if the node
@@ -126,8 +126,11 @@ namespace standardese::parser::command_extension
 
         /// Return whether this node ends a section explicitly, e.g., because
         /// it is a command starting a new section, or implicitly, e.g., because
-        /// it is the end of a paragraph.
+        /// it is the start of a new paragraph.
         bool is_section_end(cmark_node*) const;
+
+        /// Return whether this node is trivial, i.e., a newline of some kind.
+        static bool is_whitespace(cmark_node*);
 
         /// Return whether this `parent` node can contain any of our standardese specific commands.
         static bool can_contain_command(cmark_node* parent);
