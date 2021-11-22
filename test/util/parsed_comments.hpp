@@ -24,6 +24,12 @@ class parsed_comments {
     /// Return the result of parsing for a C++ entity (assuming that there is a unique one.)
     model::cpp_entity_documentation as_documentation() const;
 
+    /// Return the documentation for `name`.
+    model::cpp_entity_documentation as_documentation(const std::string& name) const;
+
+    /// Return the documentation for `target`.
+    model::cpp_entity_documentation as_documentation(const cppast::cpp_entity& target) const;
+
     /// Return the result of parsing a module documentation (assuming that there is a unique one.)
     model::module as_module() const;
 
@@ -31,7 +37,7 @@ class parsed_comments {
     operator model::entity() const;
 
     /// Return the documentation for `target`.
-    model::entity operator[](type_safe::object_ref<const cppast::cpp_entity> target) const;
+    model::entity operator[](const cppast::cpp_entity& target) const;
 
     /// Return the documentation for the entity `name`.
     model::entity operator[](const std::string& name) const;

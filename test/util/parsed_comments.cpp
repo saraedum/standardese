@@ -42,17 +42,7 @@ parsed_comments&& parsed_comments::add(const cppast::cpp_entity& target, const s
 
   auto parser = parser::comment_parser(options, header);
 
-  auto parsed = parser.parse(util::unindent(comment), target, resolve);
-  for (auto& entity : parsed) {
-    if (entity.is<model::cpp_entity_documentation>()) {
-      const auto& documentation = entity.as<model::cpp_entity_documentation>();
-      auto existing = entity_set_find(entities, documentation.entity());
-      if (existing != entities.end() && existing->as<model::cpp_entity_documentation>().exclude_mode == model::exclude_mode::uncommented)
-        entities.erase(existing);
-    }
-
-    entity_set_insert(entities, entity);
-  }
+  entity_set_extend(entities, parser.parse(util::unindent(comment), target, resolve));
 
   const auto* file = &target;
   while (file->parent()) file = &file->parent().value();
@@ -143,12 +133,12 @@ parsed_comments::operator model::entity() const {
   throw std::logic_error("Nothing has been parsed yet.");
 }
 
-model::entity parsed_comments::operator[](type_safe::object_ref<const cppast::cpp_entity> target) const {
-  return entity_set_at(entities, *target);
+model::entity parsed_comments::operator[](const cppast::cpp_entity& target) const {
+  return entity_set_at(entities, target);
 }
 
 model::entity parsed_comments::operator[](const std::string& target) const {
-  return (*this)[type_safe::ref(header[target])];
+  return (*this)[header[target]];
 }
 
 }
