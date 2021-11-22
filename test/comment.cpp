@@ -46,9 +46,6 @@ TEST_CASE("comment")
     SECTION("remote")
     {
         auto file = parse_file({}, "comment_remote.cpp", R"(
-            /// \file
-            /// \module comment_remote.cpp
-
             /// \entity a
             /// \module a
 

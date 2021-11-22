@@ -1156,13 +1156,19 @@ TEST_CASE("Standardese Commands", "[comment_parser]")
     {
         SECTION(R"(A \file Command can Appear at the Top-Level, i.e., not Associated to an Entity)")
         {
-            const cpp_file header;
-
             CHECK_NOTHROW(parsed_comments(header).add(header, R"(\file description")"));
         }
         SECTION(R"(A \file Command cannot Appear next to an Entity such as a Method)")
         {
             CHECK_THROWS_AS(parsed_comments(header).add(header["f"], R"(\file description)"), parse_error);
+        }
+        SECTION(R"(A \file Command can Contain a \module Command)") {
+            const auto parsed = parsed_comments(header).add(header, R"(
+              \file
+              \module header
+              )");
+
+            CHECK(parsed.as_documentation().module == "header");
         }
     }
 
