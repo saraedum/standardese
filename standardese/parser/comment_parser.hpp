@@ -38,6 +38,8 @@ namespace standardese::parser
           bool free_file_comments = false;
 
           struct command_extension_options {
+            command_extension_options(char command_character = '\\', const std::vector<std::string>& command_patterns = {});
+
             std::regex end_command_pattern;
             std::regex exclude_command_pattern;
             std::regex unique_name_command_pattern;

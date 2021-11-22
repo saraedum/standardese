@@ -203,7 +203,9 @@ std::string default_command_pattern(char command_character, commands::inline_com
 
 }
 
-comment_parser::comment_parser_options::comment_parser_options(char command_character, const std::vector<std::string>& command_patterns) {
+comment_parser::comment_parser_options::comment_parser_options(char command_character, const std::vector<std::string>& command_patterns) : command_extension_options(command_character, command_patterns) {}
+
+comment_parser::comment_parser_options::command_extension_options::command_extension_options(char command_character, const std::vector<std::string>& command_patterns) {
     const auto pattern = [&](const auto command) {
         const std::string name = command_name(command);
         const auto fallback = default_command_pattern(command_character, command);
@@ -217,39 +219,39 @@ comment_parser::comment_parser_options::comment_parser_options(char command_char
         return command_pattern(parameters);
     };
 
-    this->command_extension_options.end_command_pattern = pattern(commands::special_command::end);
-    this->command_extension_options.exclude_command_pattern = pattern(commands::special_command::exclude);
-    this->command_extension_options.unique_name_command_pattern = pattern(commands::special_command::unique_name);
-    this->command_extension_options.output_name_command_pattern = pattern(commands::special_command::output_name);
-    this->command_extension_options.synopsis_command_pattern = pattern(commands::special_command::synopsis);
-    this->command_extension_options.group_command_pattern = pattern(commands::special_command::group);
-    this->command_extension_options.module_command_pattern = pattern(commands::special_command::module);
-    this->command_extension_options.output_section_command_pattern = pattern(commands::special_command::output_section);
-    this->command_extension_options.entity_command_pattern = pattern(commands::special_command::entity);
-    this->command_extension_options.file_command_pattern = pattern(commands::special_command::file);
+    end_command_pattern = pattern(commands::special_command::end);
+    exclude_command_pattern = pattern(commands::special_command::exclude);
+    unique_name_command_pattern = pattern(commands::special_command::unique_name);
+    output_name_command_pattern = pattern(commands::special_command::output_name);
+    synopsis_command_pattern = pattern(commands::special_command::synopsis);
+    group_command_pattern = pattern(commands::special_command::group);
+    module_command_pattern = pattern(commands::special_command::module);
+    output_section_command_pattern = pattern(commands::special_command::output_section);
+    entity_command_pattern = pattern(commands::special_command::entity);
+    file_command_pattern = pattern(commands::special_command::file);
 
-    this->command_extension_options.brief_command_pattern = pattern(commands::section_command::brief);
-    this->command_extension_options.details_command_pattern = pattern(commands::section_command::details);
-    this->command_extension_options.requires_command_pattern = pattern(commands::section_command::requires);
-    this->command_extension_options.effects_command_pattern = pattern(commands::section_command::effects);
-    this->command_extension_options.synchronization_command_pattern = pattern(commands::section_command::synchronization);
-    this->command_extension_options.postconditions_command_pattern = pattern(commands::section_command::postconditions);
-    this->command_extension_options.returns_command_pattern = pattern(commands::section_command::returns);
-    this->command_extension_options.throws_command_pattern = pattern(commands::section_command::throws);
-    this->command_extension_options.complexity_command_pattern = pattern(commands::section_command::complexity);
-    this->command_extension_options.remarks_command_pattern = pattern(commands::section_command::remarks);
-    this->command_extension_options.error_conditions_command_pattern = pattern(commands::section_command::error_conditions);
-    this->command_extension_options.notes_command_pattern = pattern(commands::section_command::notes);
-    this->command_extension_options.preconditions_command_pattern = pattern(commands::section_command::preconditions);
-    this->command_extension_options.constraints_command_pattern = pattern(commands::section_command::constraints);
-    this->command_extension_options.diagnostics_command_pattern = pattern(commands::section_command::diagnostics);
-    this->command_extension_options.see_command_pattern = pattern(commands::section_command::see);
-    this->command_extension_options.parameters_command_pattern = pattern(commands::section_command::parameters);
-    this->command_extension_options.bases_command_pattern = pattern(commands::section_command::bases);
+    brief_command_pattern = pattern(commands::section_command::brief);
+    details_command_pattern = pattern(commands::section_command::details);
+    requires_command_pattern = pattern(commands::section_command::requires);
+    effects_command_pattern = pattern(commands::section_command::effects);
+    synchronization_command_pattern = pattern(commands::section_command::synchronization);
+    postconditions_command_pattern = pattern(commands::section_command::postconditions);
+    returns_command_pattern = pattern(commands::section_command::returns);
+    throws_command_pattern = pattern(commands::section_command::throws);
+    complexity_command_pattern = pattern(commands::section_command::complexity);
+    remarks_command_pattern = pattern(commands::section_command::remarks);
+    error_conditions_command_pattern = pattern(commands::section_command::error_conditions);
+    notes_command_pattern = pattern(commands::section_command::notes);
+    preconditions_command_pattern = pattern(commands::section_command::preconditions);
+    constraints_command_pattern = pattern(commands::section_command::constraints);
+    diagnostics_command_pattern = pattern(commands::section_command::diagnostics);
+    see_command_pattern = pattern(commands::section_command::see);
+    parameters_command_pattern = pattern(commands::section_command::parameters);
+    bases_command_pattern = pattern(commands::section_command::bases);
 
-    this->command_extension_options.base_command_pattern = pattern(commands::inline_command::base);
-    this->command_extension_options.param_command_pattern = pattern(commands::inline_command::param);
-    this->command_extension_options.tparam_command_pattern = pattern(commands::inline_command::tparam);
+    base_command_pattern = pattern(commands::inline_command::base);
+    param_command_pattern = pattern(commands::inline_command::param);
+    tparam_command_pattern = pattern(commands::inline_command::tparam);
 }
 
 }
