@@ -129,7 +129,7 @@ target_compile_definitions(standardese PUBLIC
 target_link_libraries(standardese PUBLIC cppast)
 
 # link cmark
-target_link_libraries(standardese PUBLIC libcmark-gfm_static)
+target_link_libraries(standardese PUBLIC cmark-gfm)
 
 target_link_libraries(standardese PUBLIC pugixml)
 
