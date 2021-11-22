@@ -568,6 +568,19 @@ requirement.
 
 Unless explicitly mentioned, such a pointer parameter must not be the null pointer.
 
+### Commit Messages
+
+We have no strict policy about our commit messages. But the suggestions at
+https://chris.beams.io/posts/git-commit/ are certainly a very good start if you
+are unsure.
+
+### Release Notes
+
+Please add release notes in [news/](news/) with every Pull Request. We use
+[rever](https://github.com/regro/rever) to compile the actual release notes for
+every release. See https://regro.github.io/rever-docs/news.html if you are
+unsure about how to write your news.
+
 ## Acknowledgements
 
 This project was started by Jonathan @foonathan Müller who wrote most of the
