@@ -43,47 +43,6 @@ void test_comments(const comment_registry& registry, const Container& container)
 
 TEST_CASE("comment")
 {
-    SECTION("matched comments")
-    {
-        auto file = parse_file({}, "comment_matched_comments.cpp", R"(
-            /// \module a
-            using a = int;
-
-            /// \module b
-            struct b {};
-
-            /// \module c
-            enum class c
-            {
-                d, //< \module d
-                e, //< \module e
-            };
-            )");
-
-        file_comment_parser parser(test_logger());
-        parser.parse(type_safe::ref(*file));
-        test_comments(parser.finish(), *file);
-    }
-    SECTION("param")
-    {
-        auto file = parse_file({}, "comment_param.cpp", R"(
-            /// \module a
-            ///
-            /// \param b
-            /// \module b
-            ///
-            /// \param c
-            /// \module c
-            ///
-            /// \param 2
-            void a(int b, int c, int);
-            )");
-
-        file_comment_parser parser(test_logger());
-        parser.parse(type_safe::ref(*file));
-        test_comments(parser.finish(),
-                      static_cast<const cppast::cpp_function_base&>(*file->begin()).parameters());
-    }
     SECTION("tparam")
     {
         auto file = parse_file({}, "comment_tparam.cpp", R"(

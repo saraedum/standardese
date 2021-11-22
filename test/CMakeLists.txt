@@ -22,6 +22,7 @@ set(tests
     model/markup/phrasing.cpp
     model/markup/thematic_break.cpp
     model/visitor/visit.cpp
+    parser/command-extension/command_extension.cpp
     parser/comment_parser.cpp
     synopsis.cpp
     tool/options.cpp

@@ -1065,7 +1065,51 @@ TEST_CASE("Standardese Commands", "[comment_parser]")
         }
         SECTION("The Module can be set Explicitly")
         {
-            CHECK(parsed_comments(header).add(header["f"], R"(\module name)").as_documentation().module == "name");
+            SECTION("On Functions") {
+              CHECK(parsed_comments(header).add(header["f"], R"(\module name)").as_documentation().module == "name");
+            }
+            SECTION("On Structs") {
+              cpp_file header(R"(
+                struct S {};
+              )");
+              CHECK(parsed_comments(header).add(header["S"], R"(\module name)").as_documentation().module == "name");
+            }
+            SECTION("On Classes") {
+              cpp_file header(R"(
+                class C {};
+              )");
+              CHECK(parsed_comments(header).add(header["C"], R"(\module name)").as_documentation().module == "name");
+            }
+            SECTION("On Enum Classes") {
+              cpp_file header(R"(
+                enum class C {
+                  VALUE = 1,
+                };
+              )");
+              CHECK(parsed_comments(header).add(header["C"], R"(\module name)").as_documentation("C").module == "name");
+              CHECK(parsed_comments(header).add(header["C::VALUE"], R"(\module name)").as_documentation("C::VALUE").module == "name");
+            }
+            SECTION("On Enums") {
+              cpp_file header(R"(
+                enum E {
+                  VALUE = 1,
+                };
+              )");
+              CHECK(parsed_comments(header).add(header["E"], R"(\module name)").as_documentation("E").module == "name");
+              CHECK(parsed_comments(header).add(header["E::VALUE"], R"(\module name)").as_documentation("E::VALUE").module == "name");
+            }
+            SECTION("On Usings") {
+              cpp_file header(R"(
+                using I = int;
+              )");
+              CHECK(parsed_comments(header).add(header["I"], R"(\module name)").as_documentation().module == "name");
+            }
+            SECTION("On Function Parameters") {
+              cpp_file header(R"(
+                void f(int x);
+              )");
+              CHECK(parsed_comments(header).add(header["f::x"], R"(\module name)").as_documentation().module == "name");
+            }
         }
         SECTION("A Malformed Command is Treated as Text")
         {
@@ -1283,6 +1327,7 @@ TEST_CASE("Standardese Commands", "[comment_parser]")
         {
             const auto parsed = parsed_comments(header).add(header["f"], R"(
                 \param arg This is the brief of the parameter arg.
+                These are the details of the parameter.
                 \end
                 These are the details of the method.
                 )");
@@ -1300,6 +1345,9 @@ TEST_CASE("Standardese Commands", "[comment_parser]")
                 <entity-documentation name="arg">
                   <section name="Brief">
                     <paragraph>This is the brief of the parameter arg.</paragraph>
+                  </section>
+                  <section name="Details">
+                    <paragraph>These are the details of the parameter.</paragraph>
                   </section>
                 </entity-documentation>
                 )"));
@@ -1326,6 +1374,33 @@ TEST_CASE("Standardese Commands", "[comment_parser]")
                 <entity-documentation name="brg">
                   <section name="Brief">
                     <paragraph>This is the brief of the parameter brg.</paragraph>
+                  </section>
+                </entity-documentation>
+                )"));
+        }
+        SECTION(R"(The \param Command can Contain a \module Command)") {
+            const auto parsed = parsed_comments(header).add(header["f"], R"(
+                \module name
+                \param arg This is the brief of the parameter arg.
+                \module a
+                \param brg This is the brief of the parameter brg.
+                \module b
+                Since this is a new paragraph, the parameter ends here and these are details of the method.
+                )");
+
+            CHECK(xml_generator::render(parsed["f"]) == unindent(R"(
+                <?xml version="1.0"?>
+                <entity-documentation name="f">
+                  <section name="Details">
+                    <paragraph>Since this is a new paragraph, the parameter ends here and these are details of the method.</paragraph>
+                  </section>
+                </entity-documentation>
+                )"));
+            CHECK(xml_generator::render(parsed["f.arg"]) == unindent(R"(
+                <?xml version="1.0"?>
+                <entity-documentation name="arg">
+                  <section name="Brief">
+                    <paragraph>This is the brief of the parameter arg.</paragraph>
                   </section>
                 </entity-documentation>
                 )"));
