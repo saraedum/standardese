@@ -43,48 +43,6 @@ void test_comments(const comment_registry& registry, const Container& container)
 
 TEST_CASE("comment")
 {
-    SECTION("tparam")
-    {
-        auto file = parse_file({}, "comment_tparam.cpp", R"(
-            /// \module a
-            ///
-            /// \tparam b
-            /// \module b
-            ///
-            /// \tparam c
-            /// \module c
-            ///
-            /// \tparam 2
-            template <int b, int c, int>
-            void a();
-            )");
-
-        file_comment_parser parser(test_logger());
-        parser.parse(type_safe::ref(*file));
-        test_comments(parser.finish(),
-                      static_cast<const cppast::cpp_template&>(*file->begin()).parameters());
-    }
-    SECTION("base")
-    {
-        auto file = parse_file({}, "comment_base.cpp", R"(
-            struct b {};
-            struct c {};
-
-            /// \module a
-            ///
-            /// \base b
-            /// \module b
-            ///
-            /// \base c
-            /// \module c
-            struct a : b, c {};
-            )");
-
-        file_comment_parser parser(test_logger());
-        parser.parse(type_safe::ref(*file));
-        test_comments(parser.finish(),
-                      static_cast<const cppast::cpp_class&>(*file->begin()).bases());
-    }
     SECTION("remote")
     {
         auto file = parse_file({}, "comment_remote.cpp", R"(

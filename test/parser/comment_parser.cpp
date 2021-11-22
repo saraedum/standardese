@@ -1551,6 +1551,31 @@ TEST_CASE("Standardese Commands", "[comment_parser]")
                 </entity-documentation>
                 )"));
         }
+        SECTION(R"(The \tparam Command can Contain a \module Command)") {
+            const auto parsed = parsed_comments(header).add(header["swap"], R"(
+                \module name
+                \tparam T This is the brief of the parameter T.
+                \module a
+                Since this is a new paragraph, the template parameter ends here and these are details of the method.
+                )");
+
+            CHECK(xml_generator::render(parsed["swap"]) == unindent(R"(
+                <?xml version="1.0"?>
+                <entity-documentation name="swap">
+                  <section name="Details">
+                    <paragraph>Since this is a new paragraph, the template parameter ends here and these are details of the method.</paragraph>
+                  </section>
+                </entity-documentation>
+                )"));
+            CHECK(xml_generator::render(parsed["swap.T"]) == unindent(R"(
+                <?xml version="1.0"?>
+                <entity-documentation name="T">
+                  <section name="Brief">
+                    <paragraph>This is the brief of the parameter T.</paragraph>
+                  </section>
+                </entity-documentation>
+                )"));
+        }
     }
 
     SECTION(R"(The \base Command Describes a Base Class)")
