@@ -12,6 +12,11 @@
 namespace standardese::parser::cmark_extension
 {
     /// Shared Base Class for Standardese's CommonMark Extensions.
+    /// Essentially, this wraps cmark functions for C++, e.g., by turning error
+    /// return values into exceptions.
+    /// Note that errors about incompatible nodes might be caused by differing
+    /// memory allocators. Even if they are using the default allocator, this
+    /// can happen when cmark is linked statically.
     class cmark_extension
     {
       public:

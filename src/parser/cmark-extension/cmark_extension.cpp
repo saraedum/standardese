@@ -13,13 +13,17 @@
 namespace standardese::parser::cmark_extension {
 
 void cmark_extension::cmark_node_insert_before(cmark_node* node, cmark_node* sibling) {
+  if (::cmark_node_parent(node) == nullptr)
+      throw std::logic_error("Sibling node " + to_xml(sibling) + " not allowed before root node " + to_xml(node));
   if (::cmark_node_insert_before(node, sibling) == 0)
-      throw std::logic_error("Sibling node " + to_xml(sibling) + " not allowed before node " + to_xml(node));
+      throw std::logic_error("Sibling node " + to_xml(sibling) + " not allowed before node " + to_xml(node) + " within parent " + to_xml(cmark_node_parent(node)));
 }
 
 void cmark_extension::cmark_node_insert_after(cmark_node* node, cmark_node* sibling) {
+  if (::cmark_node_parent(node) == nullptr)
+      throw std::logic_error("Sibling node " + to_xml(sibling) + " not allowed after root node " + to_xml(node));
   if (::cmark_node_insert_after(node, sibling) == 0)
-      throw std::logic_error("Sibling node " + to_xml(sibling) + " not allowed after node " + to_xml(node));
+      throw std::logic_error("Sibling node " + to_xml(sibling) + " not allowed after node " + to_xml(node) + " within parent " + to_xml(cmark_node_parent(node)));
 }
 
 void cmark_extension::cmark_node_replace(cmark_node* oldnode, cmark_node* newnode) {
