@@ -27,7 +27,8 @@ class parsers {
     std::vector<boost::filesystem::path> sources;
 
     /// The number of worker threads to run in parallel.
-    int parallelism = std::thread::hardware_concurrency() + 1;
+    /// When non-positive, the value is determined automatically.
+    int parallelism = 0;
   };
 
   parsers(parser_options);

@@ -395,6 +395,7 @@ po::options_description options_parser::generic_options() const {
 
   generic.add_options()
         ("config,c", po::value<fs::path>()->value_name("FILE"), "Read additional options from config file.")
+        ("jobs,j", po::value<int>()->default_value(0), "The number of threads to run simultaneously; chosen automotically, when non-positive.")
         ("warn-as-error,W", po::bool_switch(), "Treat warnings as errors.")
         ("verbose,v", po::value<counter>()->zero_tokens(), "Print verbose messages.");
 
@@ -421,6 +422,12 @@ void options_parser::process_generic_options(po::variables_map& parsed) {
       version();
       exit(0);
     }
+  }
+
+  if (parsed.count("jobs")) {
+    options.parser_options.parallelism = parsed.at("jobs").as<int>();
+    options.transformer_options.parallelism = parsed.at("jobs").as<int>();
+    options.output_generator_options.parallelism = parsed.at("jobs").as<int>();
   }
 
   if (parsed.count("verbose")) {

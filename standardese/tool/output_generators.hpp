@@ -46,6 +46,10 @@ class output_generators {
     /// The directory is created (but not cleared) if it does not already
     /// exist.
     boost::filesystem::path output_directory = "standardese";
+
+    /// The number of worker threads to run in parallel.
+    /// When non-positive, the value is determined automatically.
+    int parallelism = 0;
   };
 
   output_generators(output_generators_options);

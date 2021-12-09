@@ -57,6 +57,15 @@ TEST_CASE("Parsing of Generic Command Line Options", "[tool]")
       CHECK(logstream.str().find("trace") != std::string::npos);
     }
   }
+
+  SECTION("--jobs") {
+      const char* argv[] = {"standardese", "-j", "1337"};
+      auto options = options::parse(sizeof(argv)/sizeof(*argv), argv, {});
+
+      CHECK(options.parser_options.parallelism == 1337);
+      CHECK(options.transformer_options.parallelism == 1337);
+      CHECK(options.output_generator_options.parallelism == 1337);
+  }
 }
 
 TEST_CASE("Parsing of Legacy --input.* Options", "[tool]") {

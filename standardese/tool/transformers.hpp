@@ -62,6 +62,10 @@ class transformers {
 
     /// How to establish links to external documentation.
     std::vector<external_link_option> external_link_options;
+
+    /// The number of worker threads to run in parallel.
+    /// When non-positive, the value is determined automatically.
+    int parallelism = 0;
   };
 
   transformers(transformer_options);

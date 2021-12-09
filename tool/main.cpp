@@ -299,13 +299,6 @@ standardese::entity_blacklist get_blacklist(const po::variables_map& options)
     return blacklist;
 }
 
-//TODO(0.6.0-alpha): bring these parameters back  // clang-format off
-//TODO(0.6.0-alpha): bring these parameters back  po::options_description generic("Generic options", terminal_width), configuration("Configuration", terminal_width);
-//TODO(0.6.0-alpha): bring these parameters back  generic.add_options()
-//TODO(0.6.0-alpha): bring these parameters back      ("jobs,j", po::value<unsigned>()->default_value(standardese_tool::default_no_threads()),
-//TODO(0.6.0-alpha): bring these parameters back       "sets the number of threads to use");
-//TODO(0.6.0-alpha): bring these parameters back
-//TODO(0.6.0-alpha): bring these parameters back  configuration.add_options()
 //TODO(0.6.0-alpha): bring these parameters back      ("compilation.commands_dir", po::value<std::string>(),
 //TODO(0.6.0-alpha): bring these parameters back       "the directory where a compile_commands.json is located, its options have lower priority than the other ones")
 //TODO(0.6.0-alpha): bring these parameters back      ("compilation.standard", po::value<std::string>()->default_value("c++14"),
