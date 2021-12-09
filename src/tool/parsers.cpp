@@ -5,6 +5,7 @@
 
 #include <cppast/cpp_entity.hpp>
 #include <cppast/visitor.hpp>
+#include <cppast/cpp_entity_kind.hpp>
 #include <type_safe/optional_ref.hpp>
 #include <numeric>
 #include <optional>
@@ -18,6 +19,10 @@
 #include "../../standardese/threading/flat_transform.hpp"
 #include "../../standardese/threading/transform.hpp"
 #include "../../standardese/parser/comment_collector.hpp"
+#include "../../standardese/model/cpp_entity_documentation.hpp"
+#include "../../standardese/inventory/cppast_inventory.hpp"
+#include "../../standardese/inventory/unique_name_inventory.hpp"
+#include "../../standardese/inventory/symbols.hpp"
 
 namespace standardese::tool {
 
@@ -52,7 +57,7 @@ std::pair<model::entity_set, parser::cpp_context> parsers::parse() {
   // Parse comments as MarkDown...
   auto comment_parser = parser::comment_parser(options.comment_parser_options, cpp_parser.context());
 
-  // ...first process comments that are next to entities and cannot contain an
+  // ... first process comments that are next to entities and cannot contain an
   // `\entity` command.
   model::entity_set entities;
   entity_set_extend(entities, threading::flat_transform(workers, comments.begin(), comments.end(), [&](const auto& comment_with_entity) -> std::vector<model::entity> {
@@ -63,15 +68,22 @@ std::pair<model::entity_set, parser::cpp_context> parsers::parse() {
       // Ignore empty comments initially.
       return {};
 
-    const auto resolve_entity = [](const std::string&) -> type_safe::optional_ref<const cppast::cpp_entity> {
+    const auto resolve_entity = [](const std::string&) -> const cppast::cpp_entity* {
       throw std::logic_error(R"(not supported: entity comment should not invoke an entity lookup since \entity commands are illegal in such comments.)");
     };
 
     return comment_parser.parse(*comment_with_entity.text, *comment_with_entity.location, resolve_entity);
   }));
 
-  // ...now we have seen all the relevant `\unique_name` commands and can
+  // ... now we have seen all the relevant `\unique_name` commands and can
   // safely resolve `\entity` commands and merge with what we have so far.
+
+  const inventory::cppast_inventory cppast_inventory{std::vector<const cppast::cpp_entity*>(begin(successfully_parsed), end(successfully_parsed)), cpp_parser.context()};
+  const inventory::unique_name_inventory unique_name_inventory{&entities, &cppast_inventory};
+  const inventory::symbols unique_name_symbols{&unique_name_inventory};
+  const inventory::symbols cppast_symbols{&cppast_inventory};
+
+
   entity_set_extend(entities, threading::flat_transform(workers, comments.begin(), comments.end(), [&](const auto& comment_with_file) -> std::vector<model::entity> {
     if (comment_with_file.location->kind() != cppast::cpp_file::kind())
       // Ignore this comment because it is next to an entity and was already handled before.
@@ -80,8 +92,11 @@ std::pair<model::entity_set, parser::cpp_context> parsers::parse() {
       // Ignore empty comments initially.
       return {};
 
-    const auto resolve_entity = [](const std::string&) -> type_safe::optional_ref<const cppast::cpp_entity> {
-      throw std::logic_error(R"(not implemented: resolve_entity in tool::parsers.)");
+    const auto resolve_entity = [&](const std::string& name) -> const cppast::cpp_entity* {
+      const auto* resolved = inventory::cppast_inventory::find(name, inventory::symbols{&unique_name_inventory}, *comment_with_file.location);
+      if (resolved != nullptr)
+        return resolved;
+      return inventory::cppast_inventory::find(name, unique_name_symbols, *comment_with_file.location);
     };
 
     return comment_parser.parse(*comment_with_file.text, *comment_with_file.location, resolve_entity);
@@ -93,11 +108,22 @@ std::pair<model::entity_set, parser::cpp_context> parsers::parse() {
       // Ignore non-empty comments, they have been handled before.
       return {};
 
-    const auto resolve_entity = [](const std::string&) -> type_safe::optional_ref<const cppast::cpp_entity> {
+    const auto resolve_entity = [](const std::string&) -> const cppast::cpp_entity* {
       throw std::logic_error(R"(not supported: empty comment should not invoke an entity lookup since it cannot contain \entity commands.)");
     };
 
-    auto parsed = comment_parser.parse(std::string{}, *comment_with_entity.location, resolve_entity);
+    // Create documentation for every entity as if it had an empty comment attached to it.
+    std::vector<model::entity> parsed;
+    
+    // We might not be allowed to parse empty comments at the file level if
+    // free_file_comments is not enabled, so we need to shortcut that case. It
+    // is easy because a header file has no template arguments, arguments,
+    // bases and such dependent entities for which need to create documentation
+    // entities.
+    if (comment_with_entity.location->kind() == cppast::cpp_entity_kind::file_t)
+      parsed = {model::cpp_entity_documentation{comment_with_entity.location, cpp_parser.context()}};
+    else
+      parsed = comment_parser.parse(std::string{}, *comment_with_entity.location, resolve_entity);
 
     for (auto& entity : parsed)
       entity.template as<model::mixin::documentation>().exclude_mode = model::exclude_mode::uncommented;

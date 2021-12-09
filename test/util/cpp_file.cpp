@@ -6,6 +6,7 @@
 #include <cppast/cpp_file.hpp>
 
 #include "../../standardese/inventory/cppast_inventory.hpp"
+#include "../../standardese/inventory/symbols.hpp"
 #include "../../standardese/parser/cppast_parser.hpp"
 
 #include "cpp_file.hpp"
@@ -65,12 +66,13 @@ cpp_file::cache_key cpp_file::key() const {
 
 const cppast::cpp_entity& cpp_file::operator[](const std::string& name) const {
     auto [file, context] = files.at(key());
-    auto result = inventory::cppast_inventory::find(name, *file, context);
+    inventory::cppast_inventory inventory{{&*file}, context};
+    auto result = inventory::cppast_inventory::find(name, inventory::symbols{&inventory});
 
-    if (!result)
+    if (result == nullptr)
         throw std::logic_error("No symbol `" + name + "` found in \n```\n" + code + "\n```");
 
-    return result.value();
+    return *result;
 }
 
 std::map<cpp_file::cache_key, std::pair<type_safe::object_ref<const cppast::cpp_file>, parser::cpp_context>> cpp_file::files;

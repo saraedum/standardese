@@ -44,7 +44,10 @@ class symbols {
 
   /// Lookup the symbol `name` relative to the `entity`, e.g., because
   /// `name` is mentioned in the comment for `entity`.
-  std::optional<model::link_target> find(const std::string& name, const cppast::cpp_entity& entity) const;
+  std::optional<model::link_target> findRelative(const std::string& name, const cppast::cpp_entity& entity) const;
+
+  /// Lookup the symbol `name` as a child of `entity`.
+  std::optional<model::link_target> findDescendant(const std::string& name, const cppast::cpp_entity& entity) const;
 
   /// Lookup the global symbol `name`.
   std::optional<model::link_target> find(const std::string& name) const;

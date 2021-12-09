@@ -86,12 +86,12 @@ TEST_CASE("Function Lookup in MarkDown Links", "[cppast_inventory]")
         SECTION("When there are Multiple Matches the Relative Starting Point Matters")
         {
             CHECK(target(symbols.find("b::f")) == target(symbols.find("::b::f")));
-            CHECK(target(symbols.find("b::f", a)) == target(symbols.find("::a::b::f")));
+            CHECK(target(symbols.findRelative("b::f", a)) == target(symbols.find("::a::b::f")));
         }
 
         SECTION("A Relative Lookup is not Greedy, it can back up to an Outer Scope")
         {
-            CHECK(target(symbols.find("b::f(int)", a)) == target(symbols.find("::b::f")));
+            CHECK(target(symbols.findRelative("b::f(int)", a)) == target(symbols.find("::b::f")));
         }
     }
 
@@ -143,7 +143,7 @@ TEST_CASE("Parameter Lookup in MarkDown Links", "[cppast_inventory]")
         symbols symbols{&inventory};
 
         CHECK(!symbols.find("arg"));
-        CHECK(symbols.find("arg", header["f"]));
+        CHECK(symbols.findRelative("arg", header["f"]));
     }
 
     SECTION("Parameters can be Referenced with a `.` Outside Function Scope")
@@ -160,7 +160,7 @@ TEST_CASE("Parameter Lookup in MarkDown Links", "[cppast_inventory]")
         CHECK(symbols.find("X::f.arg"));
         CHECK(symbols.find("::X::f.arg"));
         CHECK(!symbols.find("arg"));
-        CHECK(symbols.find("f.arg", header["X"]));
+        CHECK(symbols.findRelative("f.arg", header["X"]));
         CHECK(!symbols.find("f.arg"));
 
         // This does not make too much sense but we do not want to enforce any
@@ -183,7 +183,7 @@ TEST_CASE("Parameter Lookup in MarkDown Links", "[cppast_inventory]")
         cppast_inventory inventory({header}, header);
         symbols symbols{&inventory};
 
-        CHECK(symbols.find("f.brg", header["X"]));
+        CHECK(symbols.findRelative("f.brg", header["X"]));
     }
 }
 
@@ -291,8 +291,8 @@ TEST_CASE("Template Parameter Lookup in MarkDown Links", "[cppast_inventory]")
 
     SECTION("Template Parameters can be Mentioned Directly in the Corresponding Scope")
     {
-        CHECK(symbols.find("T", header["X"]));
-        CHECK(symbols.find("S", header["f"]));
+        CHECK(symbols.findRelative("T", header["X"]));
+        CHECK(symbols.findRelative("S", header["f"]));
     }
 
     SECTION("Template Parameters can be Looked up from other Scopes")

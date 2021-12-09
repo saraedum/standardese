@@ -108,6 +108,7 @@ namespace standardese::inventory
 {
 class files;
 class cppast_inventory;
+class unique_name_inventory;
 class symbols;
 }
 

@@ -152,11 +152,11 @@ type_safe::variant<const cppast::cpp_entity*, std::string> comment_parser::resol
             if (bound)
                 throw parse_error(*node, "Entity command cannot be used here as this comment is already bound to the entity `{}`.", *entity);
 
-            const auto resolved = entity_resolver(target);
-            if (!resolved.has_value())
+            const auto* resolved = entity_resolver(target);
+            if (resolved == nullptr)
                 throw parse_error(*node, "Failed to resolve entity `{}` specified in entity command.", target);
 
-            entity = &resolved.value();
+            entity = resolved;
 
             bound = true;
             // Delete this command from the parsed comment.
@@ -240,7 +240,7 @@ const cppast::cpp_entity& comment_parser::resolve_base(const cppast::cpp_entity&
   inventory::symbols symbols{&inventory};
 
   // TODO(0.6.0-beta): Limit lookup to only bases.
-  const auto base = symbols.find(name, entity);
+  const auto base = symbols.findRelative(name, entity);
 
   if (!base.has_value())
     throw parse_error("Could not resolve base `{}` of `{}`.", name, entity);
@@ -263,7 +263,7 @@ const cppast::cpp_entity& comment_parser::resolve_param(const cppast::cpp_entity
   inventory::symbols symbols{&inventory};
 
   // TODO(0.6.0-beta): Limit lookup to only parameters.
-  const auto param = symbols.find(name, entity);
+  const auto param = symbols.findRelative(name, entity);
 
   if (!param.has_value())
     throw parse_error("Could not resolve parameter `{}` of `{}`.", name, entity);

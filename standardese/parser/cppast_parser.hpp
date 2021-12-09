@@ -33,7 +33,7 @@ class cppast_parser {
     std::optional<boost::filesystem::path> compile_commands;
   };
 
-  explicit cppast_parser(cppast_parser_options);
+  explicit cppast_parser(cppast_parser_options={});
 
   /// Parse a C++ file and return the root of its AST.
   /// \throws An exception if a parse error happens.

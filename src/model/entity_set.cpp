@@ -77,7 +77,7 @@ void entity_set_insert(entity_set& entities, const entity& entity) {
     if (is_trivial(*pos))
       const_cast<class entity&>(*pos) = entity;
     else if (!is_trivial(entity))
-      logger::warn(fmt::format("Not adding entity {} because an equivalent entity {} was already found in this set.", entity, *pos));
+      logger::warn(fmt::format("Not adding entity {} to set because an equivalent non-trivial entity {} was already found in this set.", entity, *pos));
   }
 }
 
@@ -87,7 +87,7 @@ void entity_set_insert(entity_set& entities, entity&& entity) {
     if (is_trivial(*pos))
       const_cast<class entity&>(*pos) = std::move(entity);
     else if (!is_trivial(entity))
-      logger::warn(fmt::format("Not adding entity {} because an equivalent entity {} was already found in this set.", entity, *pos));
+      logger::warn(fmt::format("Not adding entity {} to set because an equivalent non-trivial entity {} was already found in this set.", entity, *pos));
   }
 }
 

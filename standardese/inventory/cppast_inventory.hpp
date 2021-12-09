@@ -6,7 +6,6 @@
 #define STANDARDESE_INVENTORY_CPPAST_INVENTORY_HPP_INCLUDED
 
 #include <cppast/cppast_fwd.hpp>
-#include <type_safe/optional_ref.hpp>
 #include <unordered_set>
 
 #include "../parser/cpp_context.hpp"
@@ -19,16 +18,24 @@ namespace standardese::inventory
 class cppast_inventory : public inventory {
   public:
     /// Create an inventory for the files which contain these entities.
-    explicit cppast_inventory(std::vector<const cppast::cpp_entity*>, const parser::cpp_context&);
+    cppast_inventory(std::vector<const cppast::cpp_entity*>, const parser::cpp_context&);
+
+    /// Create an inventory for the files which are represented by the `entities`.
+    cppast_inventory(const model::entity_set* entities, const parser::cpp_context&);
 
     /// Lookup the symbol `name` relative to the `entity`, e.g., because
     /// `name` is mentioned in the comment for `entity`.
-    static type_safe::optional_ref<const cppast::cpp_entity> find(const std::string& name, const cppast::cpp_entity&, const parser::cpp_context&);
+    /// Returns a null pointer when no such entity could be found.
+    static const cppast::cpp_entity* find(const std::string& name, const symbols&, const cppast::cpp_entity&);
 
-    static const cppast::cpp_file& root(const cppast::cpp_entity& entity_);
+    /// Lookup the symbol `name`.
+    /// Returns a null pointer when no such entity could be found.
+    static const cppast::cpp_entity* find(const std::string& name, const symbols&);
 
   private:
     friend class symbols;
+
+    static const cppast::cpp_file& root(const cppast::cpp_entity& entity_);
 
     std::unordered_set<const cppast::cpp_file*> roots;
     const parser::cpp_context context;

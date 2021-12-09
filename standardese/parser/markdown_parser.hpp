@@ -38,6 +38,9 @@ class markdown_parser
     using unique_cmark = std::unique_ptr<T, std::integral_constant<decltype(free), free>>;
 
     /// Invoke `callback` for each node under `root`.
+    /// If the callback returns a null pointer, delete the node and do not visit any of its children.
+    /// If it returns a pointer to a node (such as the argument itself)
+    /// continue the visit as if we had just visited that node.
     void visit(cmark_node* root, std::function<cmark_node*(cmark_node*)> callback) const;
 
     /// Invoke `callback` for each child of `parent`.

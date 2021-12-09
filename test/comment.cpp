@@ -43,56 +43,6 @@ void test_comments(const comment_registry& registry, const Container& container)
 
 TEST_CASE("comment")
 {
-    SECTION("remote")
-    {
-        auto file = parse_file({}, "comment_remote.cpp", R"(
-            /// \entity custom
-            /// \module c
-
-            /// \entity custom::foo<int>
-            /// \module foo<int>
-
-            struct a {};
-
-            /// \module foo
-            template <typename T>
-            struct foo : a
-            {
-                /// \param j
-                /// \module j
-                void b(int i, float j);
-            };
-
-            /// \unique_name custom
-            struct c : foo<int> {};
-            )");
-
-        file_comment_parser parser(test_logger());
-        parser.parse(type_safe::ref(*file));
-        auto registry = parser.finish();
-
-        auto check_comment = [&](const cppast::cpp_entity& e) {
-            auto comment = registry.get_comment(e);
-            INFO(e.name());
-            REQUIRE(comment);
-            REQUIRE(e.name() == comment.value().metadata().module());
-        };
-
-        cppast::visit(*file, [&](const cppast::cpp_entity& e, const cppast::visitor_info&) {
-            check_comment(e);
-            if (e.kind() == cppast::cpp_class::kind())
-                for (auto& base : static_cast<const cppast::cpp_class&>(e).bases())
-                    check_comment(base);
-            else if (cppast::is_template(e.kind()))
-                for (auto& param : static_cast<const cppast::cpp_template&>(e).parameters())
-                    check_comment(param);
-            else if (cppast::is_function(e.kind()))
-                for (auto& param : static_cast<const cppast::cpp_function_base&>(e).parameters())
-                    check_comment(param);
-
-            return true;
-        });
-    }
     SECTION("member groups")
     {
         auto file = parse_file({}, "comment_member_groups.cpp", R"(

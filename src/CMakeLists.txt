@@ -53,6 +53,7 @@ set(src
     inventory/sphinx/documentation_set.cpp
     inventory/sphinx/entry.cpp
     inventory/symbols.cpp
+    inventory/unique_name_inventory.cpp
     logger.cpp
     model/cpp_entity_documentation.cpp
     model/document.cpp

@@ -6,16 +6,51 @@
 #include <cassert>
 #include <cppast/cpp_entity.hpp>
 #include <cppast/cpp_file.hpp>
+#include <fmt/format.h>
 
 #include "../../standardese/inventory/cppast_inventory.hpp"
 #include "../../standardese/inventory/symbols.hpp"
+#include "../../standardese/logger.hpp"
+#include "../../standardese/model/entity_set.hpp"
+#include "../../standardese/model/visitor/visit.hpp"
 
 namespace standardese::inventory
 {
 
+namespace {
+const cppast::cpp_entity* find(const std::string& name, const symbols& symbols, const cppast::cpp_entity* entity) {
+  const auto target = entity != nullptr ? symbols.findRelative(name, *entity) : symbols.find(name);
+
+  if (!target.has_value())
+    return nullptr;
+
+  return target.value().accept([&](auto&& target) -> const cppast::cpp_entity* {
+    using T = std::decay_t<decltype(target)>;
+    if constexpr (std::is_same_v<T, model::link_target::cppast_target>) {
+      return target.target;
+    } else {
+      logger::warn(fmt::format("Lookup of {} in dictionary of symbols did not produce a cppast entity.", name));
+      return nullptr;
+    }
+  });
+}
+
+}
+
 cppast_inventory::cppast_inventory(std::vector<const cppast::cpp_entity*> entities, const parser::cpp_context& context) : context(context) {
   for (const auto& e : entities)
-      roots.insert(&root(*e));
+    roots.insert(&root(*e));
+}
+
+cppast_inventory::cppast_inventory(const model::entity_set* entities, const parser::cpp_context& context): context(context) {
+  for (const auto& entity : *entities) {
+    model::visitor::visit([&](auto&& entity, auto&& recurse) {
+      using T = std::decay_t<decltype(entity)>;
+      if constexpr (std::is_base_of_v<model::cpp_entity_documentation, T>)
+        roots.insert(&root(entity.entity()));
+      recurse();
+    }, entity);
+  }
 }
 
 const cppast::cpp_file& cppast_inventory::root(const cppast::cpp_entity& entity_) {
@@ -26,21 +61,12 @@ const cppast::cpp_file& cppast_inventory::root(const cppast::cpp_entity& entity_
   return static_cast<const cppast::cpp_file&>(*entity);
 }
 
-type_safe::optional_ref<const cppast::cpp_entity> cppast_inventory::find(const std::string& name, const cppast::cpp_entity& entity, const parser::cpp_context& context) {
-  const cppast_inventory inventory{{&entity}, context};
-  const auto anchor = symbols(&inventory).find(name, entity);
+const cppast::cpp_entity* cppast_inventory::find(const std::string& name, const symbols& symbols, const cppast::cpp_entity& entity) {
+  return ::standardese::inventory::find(name, symbols, &entity);
+}
 
-  if (!anchor.has_value())
-    return type_safe::nullopt;
-
-  return anchor.value().accept([&](auto&& target) -> type_safe::object_ref<const cppast::cpp_entity> {
-    using T = std::decay_t<decltype(target)>;
-    if constexpr (std::is_same_v<T, model::link_target::cppast_target>) {
-      return type_safe::ref(*target.target);
-    } else {
-      throw std::logic_error("lookup in cppast_inventory returned something that is not a cppast entity");
-    }
-  });
+const cppast::cpp_entity* cppast_inventory::find(const std::string& name, const symbols& symbols) {
+  return ::standardese::inventory::find(name, symbols, nullptr);
 }
 
 }

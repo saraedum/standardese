@@ -9,6 +9,8 @@
 #include "unindent.hpp"
 
 #include "../../standardese/inventory/cppast_inventory.hpp"
+#include "../../standardese/inventory/unique_name_inventory.hpp"
+#include "../../standardese/inventory/symbols.hpp"
 #include "../../standardese/parser/comment_parser.hpp"
 #include "../../standardese/model/cpp_entity_documentation.hpp"
 #include "../../standardese/transformer/create_uncommented_child_transformer.hpp"
@@ -36,8 +38,14 @@ parsed_comments::parsed_comments(const cpp_file& header): header(header) {
 }
 
 parsed_comments&& parsed_comments::add(const cppast::cpp_entity& target, const std::string& comment, parser::comment_parser::comment_parser_options options) && {
-  const auto resolve = [&](const std::string& name) -> type_safe::optional_ref<const cppast::cpp_entity> {
-      return inventory::cppast_inventory::find(name, target, header);
+  // Resolve entities like tool::parser does.
+  const auto resolve = [&](const std::string& name) -> const cppast::cpp_entity* {
+    const inventory::cppast_inventory cppast_inventory{{header}, header};
+    const inventory::unique_name_inventory unique_name_inventory{&entities, &cppast_inventory};
+    const auto* resolved = inventory::cppast_inventory::find(name, inventory::symbols{&unique_name_inventory}, target);
+    if (resolved != nullptr)
+      return resolved;
+    return inventory::cppast_inventory::find(name, inventory::symbols{&cppast_inventory}, target);
   };
 
   auto parser = parser::comment_parser(options, header);

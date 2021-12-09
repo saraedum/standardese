@@ -1238,6 +1238,19 @@ TEST_CASE("Standardese Commands", "[comment_parser]")
 
               CHECK(parsed.as_documentation("C::f(int).i").module == "entity");
             }
+
+            SECTION("To Refer to a Unique Name") {
+                const auto parsed = parsed_comments(header).add(header["C"], R"(
+                  \unique_name CLASS
+                  )").add(header, R"(
+                  \entity CLASS::f(int).i
+                  \module entity
+                  This is documentation for the int parameter i.
+                  )");
+
+              CHECK(parsed.as_documentation("C").module.has_value() == false);
+              CHECK(parsed.as_documentation("C::f(int).i").module == "entity");
+            }
         }
         SECTION("The Implicit Entity Cannot be Replaced")
         {

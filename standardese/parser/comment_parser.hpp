@@ -78,7 +78,7 @@ namespace standardese::parser
 
         comment_parser(comment_parser_options options, const cpp_context& context);
 
-        using entity_resolver = std::function<type_safe::optional_ref<const cppast::cpp_entity>(const std::string&)>;
+        using entity_resolver = std::function<const cppast::cpp_entity*(const std::string&)>;
 
         /// Parse a `comment` attached to the C++ `entity`.
         /// If the comment is not right next to an entity in the source code,
@@ -86,6 +86,7 @@ namespace standardese::parser
         ///
         /// \param entity_resolver A callback which resolves an `\entity`
         /// command to the corresponding C++ entity.
+        /// Returns a null pointer when no entity could be found.
         ///
         /// \throws [*parse_error]() if an error occurred.
         ///

@@ -12,6 +12,7 @@
 #include <fmt/core.h>
 #include <cppast/cpp_entity.hpp>
 
+#include "../../src/parser/cmark-extension/cmark_extension.hpp"
 #include "../model/module.hpp"
 #include "../model/cpp_entity_documentation.hpp"
 
@@ -57,7 +58,7 @@ namespace standardese::parser
 
         // TODO(0.6.0-beta): Properly report where this node is in the source file. (Needs changes in cppast probably.)
         template <typename ...Args>
-        explicit parse_error(const cmark_node& location, const std::string& format_str, Args&&... args) : parse_error(format_str, std::forward<Args>(args)...) {}
+        explicit parse_error(const cmark_node& location, const std::string& format_str, Args&&... args) : parse_error(format_str + "\nWhil eparsing: {}", std::forward<Args>(args)..., cmark_extension::cmark_extension::to_xml(const_cast<cmark_node*>(&location))) {}
     };
 }
 

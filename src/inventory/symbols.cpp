@@ -23,9 +23,12 @@
 
 #include "../../standardese/inventory/symbols.hpp"
 #include "../../standardese/inventory/cppast_inventory.hpp"
+#include "../../standardese/inventory/unique_name_inventory.hpp"
 #include "../../standardese/inventory/sphinx/documentation_set.hpp"
 #include "../../standardese/formatter/inja_formatter.hpp"
 #include "../../standardese/logger.hpp"
+#include "../../standardese/model/entity_set.hpp"
+#include "../../standardese/model/visitor/visit.hpp"
 
 // TODO(0.6.0-beta): We do not handle friend declarations correctly here. A class can
 // declare a friend function that then lives in the surrounding namespace of
@@ -42,12 +45,17 @@ class symbols::impl {
   virtual std::optional<model::link_target> find(const std::string& name) const = 0;
   virtual std::optional<model::link_target> find(const std::string& name, const cppast::cpp_entity& entity) const;
 
+  /// Split [name]() into a prefix and suffix and return both.
+  /// For example, this splits `a::b::c` as `a` and `b::c`.
+  static std::optional<std::pair<std::string, std::string>> split(const std::string& name);
+
   template <typename T>
   class generic_symbols;
 
   class cppast_symbols;
   class doxygen_symbols;
   class sphinx_symbols;
+  class unique_name_symbols;
 };
 
 template <typename T>
@@ -93,6 +101,16 @@ class symbols::impl::sphinx_symbols : public symbols::impl {
   const sphinx::documentation_set* inventory;
 };
 
+class symbols::impl::unique_name_symbols : public symbols::impl {
+ public:
+  unique_name_symbols(const unique_name_inventory*);
+
+  std::optional<model::link_target> find(const std::string& name) const override;
+ private:
+  std::unordered_map<std::string, const cppast::cpp_entity*> uniquely_named;
+  cppast_symbols cppast_symbols;
+};
+
 symbols::symbols(const inventory* inventory) {
   if (inventory == nullptr)
     throw std::invalid_argument("inventory must not be null when creating a symbol table");
@@ -101,6 +119,8 @@ symbols::symbols(const inventory* inventory) {
     self = std::make_unique<impl::cppast_symbols>(static_cast<const cppast_inventory*>(inventory));
   } else if (dynamic_cast<const sphinx::documentation_set*>(inventory) != nullptr) {
     self = std::make_unique<impl::sphinx_symbols>(static_cast<const sphinx::documentation_set*>(inventory));
+  } else if (dynamic_cast<const unique_name_inventory*>(inventory) != nullptr) {
+    self = std::make_unique<impl::unique_name_symbols>(static_cast<const unique_name_inventory*>(inventory));
   } else {
     throw std::logic_error("not implemented: symbols for this type of inventory");
   }
@@ -113,6 +133,7 @@ symbols::~symbols() {}
 std::optional<model::link_target> symbols::find(const std::string& name_) const {
   std::string name = name_;
 
+  // TODO(0.6.0-final): Technically, this is wrong for e.g. a unique name lookup.
   if (boost::starts_with(name, "::"))
     // A name in the global scope. But it does not matter since we are already in the global scope.
     name = name.substr(2);
@@ -123,10 +144,11 @@ std::optional<model::link_target> symbols::find(const std::string& name_) const 
   return self->find(name);
 }
 
-std::optional<model::link_target> symbols::find(const std::string& name, const cppast::cpp_entity& entity) const {
+std::optional<model::link_target> symbols::findRelative(const std::string& name, const cppast::cpp_entity& entity) const {
   if (entity.kind() == cppast::cpp_file::kind())
     return this->find(name);
 
+  // TODO(0.6.0-final): Technically, this is wrong for e.g. a unique name lookup.
   if (boost::starts_with(name, "::"))
     // A name in the global scope. Do not try to look it up relative to entity.
     return this->find(name);
@@ -174,25 +196,34 @@ std::optional<model::link_target> symbols::impl::cppast_symbols::find(const std:
   return this->find(name, entity.parent().value());
 }
 
+std::optional<std::pair<std::string, std::string>> symbols::impl::split(const std::string& name) {
+  // We do not distinguish these two operators at all `.` and `::`. Originally,
+  // we used `.` for function arguments and `::` in the usual C++ sense but
+  // there seems to be not much of a point in enforcing such rules.
+  const static auto separator = std::regex(R"(\.|::)");
+
+  std::smatch match;
+  if (std::regex_search(name, match, separator))
+    return std::pair{match.prefix(), match.suffix()};
+
+  return std::nullopt;
+}
+
 template <typename T>
 type_safe::optional_ref<const T> symbols::impl::generic_symbols<T>::descendant(const T& root, const std::string& name) const {
   if (name.empty())
       return type_safe::nullopt;
 
-  // We do not distinguish these two operators at all `.` and `::`. Originally,
-  // we used `.` for function arguments and `::` in the usual C++ sense but
-  // there seems to be not much of a point in enforcing such rules.
-  static auto separator = std::regex(R"(\.|::)");
-
   // The recursive case: if the name contains `::` or `.`, split the name at
   // this separator and search recursively.
-  std::smatch match;
-  if (std::regex_search(name, match, separator)) {
-      auto child = descendant(root, match.prefix());
-      if (child)
-          return descendant(child.value(), match.suffix());
+  if (auto split = impl::split(name)) {
+    const auto [prefix, suffix] = *split;
 
-      return type_safe::nullopt;
+    auto child = descendant(root, prefix);
+    if (child)
+        return descendant(child.value(), suffix);
+
+    return type_safe::nullopt;
   }
 
   // The base case, lookup name itself in the root entity.
@@ -482,6 +513,42 @@ std::optional<model::link_target> symbols::impl::sphinx_symbols::find(const std:
     return std::nullopt;
 
   return model::link_target::sphinx_target(*inventory, match.value());
+}
+
+symbols::impl::unique_name_symbols::unique_name_symbols(const unique_name_inventory* inventory): cppast_symbols(inventory->inventory) {
+  for (const auto& entity : *inventory->entities) {
+    model::visitor::visit([&](auto&& entity, auto&& recurse) {
+      using T = std::decay_t<decltype(entity)>;
+      if constexpr (std::is_base_of_v<model::cpp_entity_documentation, T>) {
+        if (!entity.id.empty()) {
+          if (uniquely_named.find(entity.id) != uniquely_named.end())
+            logger::warn(fmt::format("Found more than one entity with id/unique_name {}. Ignoring {} in symbol lookup table.", entity.id, entity.entity().name()));
+          else
+            uniquely_named[entity.id] = &entity.entity();
+        }
+      }
+      recurse();
+    }, entity);
+  }
+}
+
+std::optional<model::link_target> symbols::impl::unique_name_symbols::find(const std::string& name) const {
+  const auto find = uniquely_named.find(name);
+  if (find != uniquely_named.end())
+    return model::link_target{&*find->second};
+
+  const auto split = impl::split(name);
+  if (split) {
+    const auto [prefix, suffix] = *split;
+    const auto find = uniquely_named.find(prefix);
+    if (find != uniquely_named.end()) {
+      auto descendant = cppast_symbols.descendant(*find->second, suffix);
+      if (descendant)
+        return model::link_target{&descendant.value()};
+    }
+  }
+
+  return std::nullopt;
 }
 
 }

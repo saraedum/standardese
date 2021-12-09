@@ -22,21 +22,7 @@ namespace standardese::transformer {
 
 set_target_internal_transformer::set_target_internal_transformer(model::entity_set* documents, const parser::cpp_context& context) :
   inner_transformer(documents),
-  inventory([&]() {
-    // Create an inventory of all the C++ entities that are documented in all the documents.
-    std::vector<const cppast::cpp_entity*> entities;
-
-    for (const auto& document : *documents) {
-      model::visitor::visit([&](auto&& entity, auto&& recurse) {
-        using T = std::decay_t<decltype(entity)>;
-        if constexpr (std::is_base_of_v<model::cpp_entity_documentation, T>)
-          entities.push_back(&entity.entity());
-        recurse();
-      }, document);
-    }
-
-    return entities;
-  }(), context),
+  inventory(documents, context),
   files([&]() {
     // Create an inventory of all the C++ headers files that are explicitly documented.
     std::vector<const cppast::cpp_file*> headers;
@@ -103,7 +89,7 @@ void set_target_internal_transformer::do_transform(model::entity& document) {
           // TODO(0.6.0-beta): Handle \unique_name
           {
             auto entity = relative.size() ?
-              symbols.find(target.target, *relative.top()) :
+              symbols.findRelative(target.target, *relative.top()) :
               symbols.find(target.target);
 
             if (entity.has_value())
