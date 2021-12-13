@@ -595,7 +595,8 @@ po::options_description options_parser::legacy_compilation_options() const {
 
   legacy.add_options()
       ("compilation.macro_definition", po::value<std::vector<std::string>>(), "deprecated, use -D instead.")
-      ("compilation.macro_undefinition", po::value<std::vector<std::string>>(), "deprecated, use -U instead.");
+      ("compilation.macro_undefinition", po::value<std::vector<std::string>>(), "deprecated, use -U instead.")
+      ("compilation.commands_dir", po::value<std::string>(), "deprecated, use --compile-commands instead.");
 
   return legacy;
 }
@@ -619,6 +620,16 @@ void options_parser::process_legacy_compilation_options(po::variables_map& parse
     auto& undefinitions = parsed.at("-U").as<std::vector<std::string>>();
     for (const auto& name: parsed.at("compilation.macro_undefinition").as<std::vector<std::string>>())
       undefinitions.push_back(name);
+  }
+
+  if (parsed.count("compilation.commands_dir")) {
+    logger::warn("--compilation.commands is deprecated, use --compile-commands instead.");
+
+    if (parsed.count("compile-commands"))
+      logger::error("Command line flags for --compilation.commands_dir and --compile-commands are incompatible. Ignoring --compilation.commands_dir.");
+    else
+      parsed.insert({"--compile-commands", {parsed.at("compilation.commands_dir"), false}});
+
   }
 }
 
@@ -721,6 +732,7 @@ po::options_description options_parser::cpp_parser_options() const {
     ("std", po::value<cppast::cpp_standard>()->default_value(cppast::cpp_standard::cpp_14), "The C++ standard to use for parsing.")
     (",D", po::value<std::vector<std::string>>()->value_name("definition"), "Predefine a macro when parsing code.")
     (",U", po::value<std::vector<std::string>>()->value_name("macro"), "Cancel definitions of this macro when parsing code.")
+    ("compile-commands", po::value<std::string>()->value_name("json"), "Path of compile_commands.json to use when parsing.")
     // Note that this is handled in process_markdown_parser_options() because
     // it actually does not affect the C++ parser.
     ("free-file-comments", po::value<bool>()->default_value(false)->implicit_value(true)->zero_tokens(), "Associate free comments to their header file.");
@@ -756,6 +768,10 @@ void options_parser::process_cpp_parser_options(po::variables_map& parsed) {
   if (parsed.count("-U")) {
     for (const auto& name: parsed.at("-U").as<std::vector<std::string>>())
       options.parser_options.cppast_options.clang_config.undefine_macro(name);
+  }
+
+  if (parsed.count("compile-commands")) {
+    options.parser_options.cppast_options.compile_commands = parsed.at("compile-commands").as<std::string>();
   }
 }
 

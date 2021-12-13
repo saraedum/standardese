@@ -29,8 +29,14 @@ class cppast_parser {
     /// Flags for the C++ Parser.
     cppast::libclang_compile_config clang_config;
 
-    /// Directory containing a `compile_commands.json` compilation database.
+    /// Path of a `compile_commands.json` compilation database, see
+    /// https://clang.llvm.org/docs/JSONCompilationDatabase.html#json-compilation-database-format-specification.
     std::optional<boost::filesystem::path> compile_commands;
+
+    /// Path of a `compile_flags.txt` compilation database, see
+    /// https://clang.llvm.org/docs/JSONCompilationDatabase.html#alternatives
+    /// This argument is ignored since the format is not supported by cppast yet.
+    std::optional<boost::filesystem::path> compile_flags;
   };
 
   explicit cppast_parser(cppast_parser_options={});

@@ -55,8 +55,22 @@ cppast_parser::cppast_parser_options::cppast_parser_options() {
 }
 
 cppast_parser::cppast_parser(cppast_parser_options options) : options(options), parser(cppast::libclang_parser(type_safe::ref(logger))) {
-  if (options.compile_commands)
-    this->compile_commands = cppast::libclang_compilation_database(options.compile_commands.value().generic_string());
+  if (options.compile_commands) {
+    if (options.compile_commands.value().filename() != "compile_commands.json") {
+      logger::error(fmt::format("Path {} does not point to a compilation database. Expected the filename to be compile_commands.json but found {}.", options.compile_commands.value().native(), options.compile_commands.value().filename().native()));
+    } else {
+      this->compile_commands = cppast::libclang_compilation_database(options.compile_commands.value().parent_path().native());
+    }
+  }
+  if (options.compile_flags) {
+    if (options.compile_commands) {
+      logger::error("Cannot compile with compile_commands.json and compile_flags.txt. Ignoring the latter.");
+    } else if (options.compile_flags.value().filename() != "compile_flags.txt") {
+      logger::error(fmt::format("Path {} does not point to a compilation database. Expected the filename to be compile_flags.txt but found {}.", options.compile_flags.value().native(), options.compile_flags.value().filename().native()));
+    } else {
+      logger::warn(fmt::format("Ignoring compile_flags.txt at {} since they are not supported by cppast yet.", options.compile_flags.value().native()));
+    }
+  }
 }
 
 const cppast::cpp_file& cppast_parser::parse(const boost::filesystem::path& source) {

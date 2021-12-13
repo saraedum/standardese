@@ -10,6 +10,7 @@
 #include "../../standardese/tool/options.hpp"
 #include "../util/logger.hpp"
 #include "../util/tmp_file.hpp"
+#include "../util/unindent.hpp"
 
 // TODO(0.6.0-beta): Test (probably not here). When parsing a Sphinx inventory from a missing file, a proper error is produced and not just "not in a supported format".
 
@@ -207,6 +208,32 @@ TEST_CASE("Parsing of Legacy --compilation.* Options", "[tool]") {
 
     CHECK(logstream.str() != "");
   }
+
+  SECTION("--compilation.command_dir") {
+    util::tmp_file header{"header.hpp", R"(
+      #ifndef MACRO
+      THIS_LINE_SHOULD_BE_IGNORED
+      #endif
+      )"};
+
+    auto compile_commands = util::tmp_file{"compile_commands.json", util::unindent(R"(
+      [
+        {
+          "directory": ")" + header.parent.path.native() + R"(",
+          "arguments": ["c++", "-DMACRO", "-c", "-o", "header.gch", "header.hpp"],
+          "file": ")" + header.path.native() + R"("
+        }
+      ]
+      )")};
+
+    const char* argv[] = {"standardese", "--compilation.commands_dir", compile_commands.parent.path.native().c_str(), "header.hpp"};
+    auto options = options::parse(sizeof(argv)/sizeof(*argv), argv, {});
+
+    parser::cppast_parser parser{options.parser_options.cppast_options};
+    parser.parse(header.path);
+
+    CHECK(logstream.str() != "");
+  }
 }
 
 TEST_CASE("Parsing of Legacy --comment.* Options", "[tool]") {
@@ -388,6 +415,30 @@ TEST_CASE("Parsing of Parser Options", "[tool]") {
       )"};
 
     const char* argv[] = {"standardese", "-U", "MACRO", "-D", "MACRO", "header.h"};
+    auto options = options::parse(sizeof(argv)/sizeof(*argv), argv, {});
+
+    parser::cppast_parser parser{options.parser_options.cppast_options};
+    parser.parse(header.path);
+  }
+
+  SECTION("--compile-commands") {
+    util::tmp_file header{"header.hpp", R"(
+      #ifndef MACRO
+      THIS_LINE_SHOULD_BE_IGNORED
+      #endif
+      )"};
+
+    auto compile_commands = util::tmp_file{"compile_commands.json", util::unindent(R"(
+      [
+        {
+          "directory": ")" + header.parent.path.native() + R"(",
+          "arguments": ["c++", "-DMACRO", "-c", "-o", "header.gch", "header.hpp"],
+          "file": ")" + header.path.native() + R"("
+        }
+      ]
+      )")};
+
+    const char* argv[] = {"standardese", "--compile-commands", compile_commands.path.native().c_str(), "header.hpp"};
     auto options = options::parse(sizeof(argv)/sizeof(*argv), argv, {});
 
     parser::cppast_parser parser{options.parser_options.cppast_options};
