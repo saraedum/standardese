@@ -234,6 +234,18 @@ TEST_CASE("Parsing of Legacy --compilation.* Options", "[tool]") {
 
     CHECK(logstream.str() != "");
   }
+
+  SECTION("--compilation.standard") {
+    const char* argv[] = {"standardese", "--compilation.standard", "c++17", "header.h"};
+    auto options = options::parse(sizeof(argv)/sizeof(*argv), argv, {});
+
+    const auto flags = cppast::detail::libclang_compile_config_access::flags(options.parser_options.cppast_options.clang_config);
+    CAPTURE(flags);
+
+    CHECK(std::find(begin(flags), end(flags), "-std=c++17") != end(flags));
+
+    CHECK(logstream.str() != "");
+  }
 }
 
 TEST_CASE("Parsing of Legacy --comment.* Options", "[tool]") {

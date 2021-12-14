@@ -299,8 +299,6 @@ standardese::entity_blacklist get_blacklist(const po::variables_map& options)
     return blacklist;
 }
 
-//TODO(0.6.0-alpha): bring these parameters back      ("compilation.standard", po::value<std::string>()->default_value("c++14"),
-//TODO(0.6.0-alpha): bring these parameters back       "the C++ standard to use for parsing, valid values are c++98/03/11/14/1z/17")
 //TODO(0.6.0-alpha): bring these parameters back      ("compilation.include_dir,I", po::value<std::vector<std::string>>(),
 //TODO(0.6.0-alpha): bring these parameters back       "adds an additional include directory to use for parsing")
 //TODO(0.6.0-alpha): bring these parameters back      ("compilation.feature,f", po::value<std::vector<std::string>>(),

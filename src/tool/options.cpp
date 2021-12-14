@@ -596,7 +596,8 @@ po::options_description options_parser::legacy_compilation_options() const {
   legacy.add_options()
       ("compilation.macro_definition", po::value<std::vector<std::string>>(), "deprecated, use -D instead.")
       ("compilation.macro_undefinition", po::value<std::vector<std::string>>(), "deprecated, use -U instead.")
-      ("compilation.commands_dir", po::value<std::string>(), "deprecated, use --compile-commands instead.");
+      ("compilation.commands_dir", po::value<std::string>(), "deprecated, use --compile-commands instead.")
+      ("compilation.standard", po::value<cppast::cpp_standard>(), "deprecated, use --std instead.");
 
   return legacy;
 }
@@ -628,8 +629,19 @@ void options_parser::process_legacy_compilation_options(po::variables_map& parse
     if (parsed.count("compile-commands"))
       logger::error("Command line flags for --compilation.commands_dir and --compile-commands are incompatible. Ignoring --compilation.commands_dir.");
     else
-      parsed.insert({"--compile-commands", {parsed.at("compilation.commands_dir"), false}});
+      parsed.insert({"compile-commands", parsed.at("compilation.commands_dir")});
 
+  }
+
+  if (parsed.count("compilation.standard")) {
+    logger::warn("--compilation.standard is deprecated, use --std instead.");
+
+    if (!parsed.count("std"))
+      parsed.insert({"std", parsed.at("compilation.standard")});
+    else if (parsed.at("std").defaulted())
+      parsed.at("std") = parsed.at("compilation.standard");
+    else
+      logger::error("Command line flags for --compilation.standard and --std are incompatible. Ignoring --compilation.standard.");
   }
 }
 
