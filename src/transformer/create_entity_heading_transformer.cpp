@@ -38,6 +38,7 @@ model::document heading(T& documentation, parser::cpp_context, type_safe::option
 create_entity_heading_transformer::create_entity_heading_transformer(model::entity_set* entities, const parser::cpp_context& cpp_context, struct create_entity_heading_transformer_options options) : inner_transformer(entities), options(options), cpp_context(cpp_context) {}
 
 create_entity_heading_transformer::create_entity_heading_transformer_options::create_entity_heading_transformer_options(formatter::inja_formatter::inja_formatter_options inja_formatter_options) : 
+  // TODO(0.6.0-beta): Ensure that any code blocks, like the one created here, do not have a trailing newline in MarkDown. This breaks the layout slightly see gmpxxll documentation.
   // TODO(0.6.0-alpha): Read from CLI and reset the default to standardese 0-5-0 equivalent.
   format(R"({% if cppast_kind == "file" %}# {{ join(reject("whitespace", list(md_escape(name), md(section("brief")))), " — ") }}{{ drop_section("brief") }}
         {%- else if cppast_kind in ["function", "member function", "conversion operator", "constructor", "destructor", "function template", "friend"] %}# {% if synopsis %}{{ md(code(md_escape(synopsis))) }}{% else %}{{ md(code(md_escape(text(format(option("cpp_format")))))) }}{% endif %}
