@@ -6,6 +6,7 @@
 #include <cppast/cpp_function.hpp>
 #include <cppast/cpp_function_template.hpp>
 #include <cppast/cpp_entity_kind.hpp>
+#include <cppast/cpp_template_parameter.hpp>
 
 #include "inja_formatter.impl.hpp"
 #include "../../standardese/logger.hpp"
@@ -22,7 +23,7 @@ nlohmann::json inja_formatter::parameters_callback(const nlohmann::json& data) c
       for(auto* param : parameters(*entity))
         params.push_back(to_json(param));
     } else {
-      logger::error(fmt::format("Template callback `parameters` not valid here. Cannot determine parameters for {}.", self->to_string(data)));
+      logger::error(fmt::format("Template callback `parameters` not valid here. Cannot determine parameters of {}.", self->to_string(data)));
     }
     return params;
   }, self->from_json(data));
@@ -40,6 +41,10 @@ std::vector<const cppast::cpp_entity*> inja_formatter::parameters(const cppast::
       break;
     case cppast::cpp_entity_kind::function_template_t:
       for (auto& param : static_cast<const cppast::cpp_function_template&>(entity).parameters())
+        params.push_back(&param);
+      break;
+    case cppast::cpp_entity_kind::template_template_parameter_t:
+      for (auto& param : static_cast<const cppast::cpp_template_template_parameter&>(entity).parameters())
         params.push_back(&param);
       break;
     default:

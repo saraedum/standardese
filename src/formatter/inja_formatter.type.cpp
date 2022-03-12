@@ -7,6 +7,7 @@
 #include <cppast/cpp_entity_kind.hpp>
 #include <cppast/cpp_function.hpp>
 #include <cppast/cpp_member_function.hpp>
+#include <cppast/cpp_template_parameter.hpp>
 
 #include "inja_formatter.impl.hpp"
 #include "../../standardese/logger.hpp"
@@ -20,6 +21,8 @@ nlohmann::json inja_formatter::type_callback(const nlohmann::json& data) const {
       switch(entity->kind()) {
         case cppast::cpp_entity_kind::function_parameter_t:
           return to_json(&type(*entity));
+        case cppast::cpp_entity_kind::non_type_template_parameter_t:
+          return to_json(&static_cast<const cppast::cpp_non_type_template_parameter*>(entity)->type());
       }
     } else if constexpr (std::is_same_v<T, const cppast::cpp_type*>) {
       switch(entity->kind()) {

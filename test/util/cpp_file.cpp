@@ -20,7 +20,9 @@ cpp_file::cpp_file(const std::string& code, const std::string& name) : code(unin
   auto logger = util::logger::throwing_logger();
 
   if (files.find(key()) == files.end()) {
-    parser::cppast_parser parser{{}};
+    parser::cppast_parser::cppast_parser_options options;
+    options.clang_config.set_flags(cppast::cpp_standard::cpp_17);
+    parser::cppast_parser parser{options};
 
     auto tmp = tmp_file(name, this->code);
 

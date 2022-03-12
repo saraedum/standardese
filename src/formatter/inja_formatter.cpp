@@ -67,8 +67,19 @@ inja_formatter::inja_formatter_options::inja_formatter_options() :
   parameter_type_format(type_format),
   type_declarator_format(R"({{ md_escape(join(reject("empty", list(namespace, scope, name)), "::")) }})"),
   template_parameters_format(R"({% for param in parameters %}{% if not loop.is_first %}, {% endif %}{{ format(option("template_parameter_format"), param) }}{% endfor %})"),
-  // TODO(0.6.0-alpha): Implement me.
-  template_parameter_format(R"({% if cppast_kind == "template type parameter" %}typename {% endif %}{{ md_escape(name) }})"),
+  template_parameter_format(R"({%
+    if cppast_kind == "non type template parameter" %}{%
+      set prefix = format(option("type_format"), type)
+    %}{% else if cppast_kind == "template type parameter" %}{%
+      set prefix = "typename"
+    %}{% else if cppast_kind == "template template parameter" %}{%
+      set prefix = join(list("template&lt;", format(option("template_parameters_format")), "&gt; typename"), "")
+    %}{% else %}{{
+      error("not implemented: inja_formatter cannot format a template parameter that is a {{ cppast_kind }} yet.")
+    }}{% endif %}{% if variadic == true %}{%
+      set prefix = prefix + "\\.\\.\\."
+    %}{% endif %}{{
+      join(reject("empty", list(prefix, md_escape(name))), " ") }})"),
   // TODO(0.6.0-alpha): Implement me.
   template_argument_format("TODO(0.6.0-alpha): template argument"),
   declaration_specifiers_format(R"({% if length(declaration_specifiers) != 0 %}{{ join(declaration_specifiers, " ") }}{% endif %})"),
@@ -204,6 +215,14 @@ inja_formatter::inja_formatter(struct inja_formatter_options options, const pars
     if (!check_arg_count(*this, "ref_qualification", args, 1))
       return std::string{};
     return ref_qualification_callback(*args[0]);
+  });
+  add_callback("variadic", [&]() {
+    return variadic_callback(data());
+  });
+  add_callback("variadic", [&](const std::vector<const nlohmann::json*>& args) {
+    if (!check_arg_count(*this, "variadic", args, 1))
+      return nlohmann::json{};
+    return variadic_callback(*args[0]);
   });
   add_callback("cppast_kind", [&]() {
     return cppast_kind_callback(data());

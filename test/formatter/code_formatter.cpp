@@ -24,15 +24,211 @@ TEST_CASE("Functions can be Formatted", "[code_formatter]") {
   auto logger = util::logger::throwing_logger();
 
   SECTION("Top-Level Functions") {
-    util::cpp_file header(R"(void f();)");
-    auto formatted = code_formatter{{}, header}.build(header["f"], header);
+    SECTION("Non-Template Functions") {
+      util::cpp_file header(R"(void f();)");
+      auto formatted = code_formatter{{}, header}.build(header["f"], header);
 
-    REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
-      <?xml version="1.0"?>
-      <paragraph>
-        <code>void f()</code>
-      </paragraph>
-      )"));
+      REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
+        <?xml version="1.0"?>
+        <paragraph>
+          <code>void f()</code>
+        </paragraph>
+        )"));
+    }
+
+    SECTION("Template Functions") {
+      SECTION("Template Functions with Non-Type Argument") {
+        util::cpp_file header(util::unindent(R"(
+          template <int x>
+          void f();
+        )"));
+
+        auto formatted = code_formatter{{}, header}.build(header["f"], header);
+
+        REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
+          <?xml version="1.0"?>
+          <paragraph>
+            <code>template&lt;int x&gt; void f()</code>
+          </paragraph>
+          )"));
+      }
+
+      SECTION("Template Functions with Unnamed Non-Type Argument") {
+        util::cpp_file header(util::unindent(R"(
+          template <int>
+          void f();
+        )"));
+
+        auto formatted = code_formatter{{}, header}.build(header["f"], header);
+
+        REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
+          <?xml version="1.0"?>
+          <paragraph>
+            <code>template&lt;int&gt; void f()</code>
+          </paragraph>
+          )"));
+      }
+
+      SECTION("Template Functions with Non-Type Parameter Pack Argument") {
+        util::cpp_file header(util::unindent(R"(
+          template <int... x>
+          void f();
+        )"));
+
+        auto formatted = code_formatter{{}, header}.build(header["f"], header);
+
+        REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
+          <?xml version="1.0"?>
+          <paragraph>
+            <code>template&lt;int... x&gt; void f()</code>
+          </paragraph>
+          )"));
+      }
+
+      SECTION("Template Functions with Non-Type Placeholder Argument") {
+        util::cpp_file header(util::unindent(R"(
+          template <auto** x>
+          void f();
+        )"));
+
+        auto formatted = code_formatter{{}, header}.build(header["f"], header);
+
+        REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
+          <?xml version="1.0"?>
+          <paragraph>
+            <code>template&lt;auto** x&gt; void f()</code>
+          </paragraph>
+          )"));
+      }
+
+      SECTION("Template Functions with Unnamed Non-Type Placeholder Parameter Pack Argument") {
+        util::cpp_file header(util::unindent(R"(
+          template <auto...>
+          void f();
+        )"));
+
+        auto formatted = code_formatter{{}, header}.build(header["f"], header);
+
+        REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
+          <?xml version="1.0"?>
+          <paragraph>
+            <code>template&lt;auto...&gt; void f()</code>
+          </paragraph>
+          )"));
+      }
+
+      SECTION("Template Functions with Type Argument") {
+        util::cpp_file header(util::unindent(R"(
+          template <typename T>
+          void f();
+        )"));
+
+        auto formatted = code_formatter{{}, header}.build(header["f"], header);
+
+        REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
+          <?xml version="1.0"?>
+          <paragraph>
+            <code>template&lt;typename T&gt; void f()</code>
+          </paragraph>
+          )"));
+      }
+
+      SECTION("Template Functions with Unnamed Type Argument") {
+        util::cpp_file header(util::unindent(R"(
+          template <typename>
+          void f();
+        )"));
+
+        auto formatted = code_formatter{{}, header}.build(header["f"], header);
+
+        REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
+          <?xml version="1.0"?>
+          <paragraph>
+            <code>template&lt;typename&gt; void f()</code>
+          </paragraph>
+          )"));
+      }
+
+      SECTION("Template Functions with Parameter Pack Type Argument") {
+        util::cpp_file header(util::unindent(R"(
+          template <typename... T>
+          void f();
+        )"));
+
+        auto formatted = code_formatter{{}, header}.build(header["f"], header);
+
+        REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
+          <?xml version="1.0"?>
+          <paragraph>
+            <code>template&lt;typename... T&gt; void f()</code>
+          </paragraph>
+          )"));
+      }
+
+      SECTION("Template Functions with Unnamed Parameter Pack Type Argument") {
+        util::cpp_file header(util::unindent(R"(
+          template <typename...>
+          void f();
+        )"));
+
+        auto formatted = code_formatter{{}, header}.build(header["f"], header);
+
+        REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
+          <?xml version="1.0"?>
+          <paragraph>
+            <code>template&lt;typename...&gt; void f()</code>
+          </paragraph>
+          )"));
+      }
+
+      SECTION("Template Functions with Template Template Argument") {
+        util::cpp_file header(util::unindent(R"(
+          template <template <class> typename T>
+          void f();
+        )"));
+
+        auto formatted = code_formatter{{}, header}.build(header["f"], header);
+
+        REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
+          <?xml version="1.0"?>
+          <paragraph>
+            <code>template&lt;template&lt;typename&gt; typename T&gt; void f()</code>
+          </paragraph>
+          )"));
+      }
+
+      SECTION("Template Functions with Unnamed Template Template Argument") {
+        util::cpp_file header(util::unindent(R"(
+          template <template <typename, int> typename>
+          void f();
+        )"));
+
+        auto formatted = code_formatter{{}, header}.build(header["f"], header);
+
+        REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
+          <?xml version="1.0"?>
+          <paragraph>
+            <code>template&lt;template&lt;typename, int&gt; typename&gt; void f()</code>
+          </paragraph>
+          )"));
+      }
+
+      SECTION("Template Functions with Template Template Parameter Pack Argument") {
+        util::cpp_file header(util::unindent(R"(
+          template <template <typename> typename... T>
+          void f();
+        )"));
+
+        auto formatted = code_formatter{{}, header}.build(header["f"], header);
+
+        REQUIRE(xml_generator::render(formatted) == util::unindent(R"(
+          <?xml version="1.0"?>
+          <paragraph>
+            <code>template&lt;template&lt;typename&gt; typename... T&gt; void f()</code>
+          </paragraph>
+          )"));
+      }
+    }
   }
 
   SECTION("Member Functions") {

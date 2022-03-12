@@ -30,6 +30,7 @@ set(src
     formatter/inja_formatter.parameters.cpp
     formatter/inja_formatter.parse.cpp
     formatter/inja_formatter.ref_qualification.cpp
+    formatter/inja_formatter.variadic.cpp
     formatter/inja_formatter.reject.cpp
     formatter/inja_formatter.relative.cpp
     formatter/inja_formatter.replace.cpp

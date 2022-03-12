@@ -74,8 +74,13 @@ std::string inja_formatter::name(const cppast::cpp_entity& entity) const {
     case cppast::cpp_entity_kind::destructor_t:
     case cppast::cpp_entity_kind::conversion_op_t:
     case cppast::cpp_entity_kind::function_parameter_t:
+      // If the parameter is unnamed, this returns the empty string.
     case cppast::cpp_entity_kind::template_type_parameter_t:
-      // If the fnuction parameter is unnamed, this returns the empty string.
+      // If the parameter is unnamed, this returns the empty string.
+    case cppast::cpp_entity_kind::non_type_template_parameter_t:
+      // If the parameter is unnamed, this returns the empty string.
+    case cppast::cpp_entity_kind::template_template_parameter_t:
+      // If the parameter is unnamed, this returns the empty string.
     case cppast::cpp_entity_kind::variable_t:
     case cppast::cpp_entity_kind::member_variable_t:
     case cppast::cpp_entity_kind::type_alias_t:

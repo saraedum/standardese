@@ -266,6 +266,11 @@ class inja_formatter {
 
   std::string ref_qualification(const cppast::cpp_type&) const;
 
+  /// Return whether this parameter is a parameter pack.
+  /// This method can be invoked in inja templates as `{{ variadic }}` or
+  /// `{{ variadic(entity) }}`.
+  bool variadic(const cppast::cpp_template_parameter&) const;
+
   /// Return a short name describing of which kind this entity is, e.g.,
   /// "class" for a class.
   /// This method can be invoked in inja templates as `{{ cppast_kind }}` or
@@ -406,6 +411,7 @@ class inja_formatter {
   std::string const_qualification_callback(const nlohmann::json&) const;
   std::string volatile_qualification_callback(const nlohmann::json&) const;
   std::string ref_qualification_callback(const nlohmann::json&) const;
+  nlohmann::json variadic_callback(const nlohmann::json&) const;
   std::string cppast_kind_callback(const nlohmann::json&) const;
   std::string kind_callback(const nlohmann::json&) const;
   nlohmann::json synopsis_callback(const nlohmann::json&) const;
