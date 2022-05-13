@@ -8,6 +8,7 @@
 
 #include <string>
 #include <memory>
+#include <map>
 #include <type_safe/reference.hpp>
 #include <cppast/cpp_file.hpp>
 #include <boost/filesystem/path.hpp>

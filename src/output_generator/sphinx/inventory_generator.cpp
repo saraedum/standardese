@@ -2,6 +2,8 @@
 // This file is subject to the license terms in the LICENSE file
 // found in the top-level directory of this distribution.
 
+#include <ostream>
+
 #include <cppast/cpp_language_linkage.hpp>
 
 #include "../../../standardese/output_generator/sphinx/inventory_generator.hpp"

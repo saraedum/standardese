@@ -29,6 +29,8 @@ namespace standardese::parser::commands
 
         count,
     };
+
+    std::ostream& operator<<(std::ostream&, special_command);
 }
 
 #endif // STANDARDESE_COMMENT_COMMANDS_HPP_INCLUDED

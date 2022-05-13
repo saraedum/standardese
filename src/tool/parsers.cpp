@@ -3,6 +3,7 @@
 // This file is subject to the license terms in the LICENSE file
 // found in the top-level directory of this distribution.
 
+#include <fstream>
 #include <cppast/cpp_entity.hpp>
 #include <cppast/visitor.hpp>
 #include <cppast/cpp_entity_kind.hpp>

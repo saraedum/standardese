@@ -12,6 +12,7 @@
 #include <cstring>
 #include <stdexcept>
 #include <type_traits>
+#include <fmt/ostream.h>
 
 #include <cmark-gfm.h>
 #include <cmark-gfm-extension_api.h>

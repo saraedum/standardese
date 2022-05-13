@@ -5,6 +5,7 @@
 #include <type_traits>
 #include <cassert>
 #include <fmt/format.h>
+#include <fmt/ostream.h>
 
 #include <cmark-gfm.h>
 #include <cmark-gfm-extension_api.h>

@@ -72,6 +72,7 @@ set(src
     output_generator/xml/xml_generator.cpp
     parser/cmark-extension/cmark_extension.cpp
     parser/cmark-extension/cmark_extension.hpp
+    parser/commands/special_command.cpp
     parser/command-extension/command_extension.cpp
     parser/command-extension/command_extension.hpp
     parser/command-extension/user_data.cpp

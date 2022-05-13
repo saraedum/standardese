@@ -16,6 +16,7 @@
 
 #include <cppast/cppast_fwd.hpp>
 #include <iostream>
+#include <fstream>
 #include <cstdlib>
 #include <stdexcept>
 #include <boost/program_options.hpp>
