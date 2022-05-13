@@ -204,6 +204,30 @@ TEST_CASE("Strings from Inja Templates", "[inja_formatter]") {
       REQUIRE(inja.namespaze(C) == "A");
     }
 
+    SECTION("`namespace` of a Builtin Primitive Type") {
+      util::cpp_file header(R"(
+        void f(int x);
+      )");
+
+      auto inja = inja_formatter({}, header);
+      // Get the type of the parameter x of f.
+      const auto& C = inja.type(*inja.parameters(header["f"]).at(0));
+      REQUIRE(inja.namespaze(C) == "");
+    }
+
+    SECTION("`namespace` of a Builtin Type") {
+      util::cpp_file header(R"(
+        #include <cstddef>
+
+        void f(std::nullptr_t x);
+      )");
+
+      auto inja = inja_formatter({}, header);
+      // Get the type of the parameter x of f.
+      const auto& C = inja.type(*inja.parameters(header["f"]).at(0));
+      REQUIRE(inja.namespaze(C) == "std");
+    }
+
     // TODO(0.6.0-beta): Test all other entities and types.
   }
 
@@ -279,6 +303,31 @@ TEST_CASE("Strings from Inja Templates", "[inja_formatter]") {
       REQUIRE(inja.replace("mp_limb_signed_t", "mp_limb_signed_t", "slong") == "slong");
       REQUIRE(inja.replace(R"(mp\_limb\_signed\_t)", R"(mp\\?_limb\\?_signed\\?_t)", "slong") == "slong");
     }
+  }
+
+  SECTION("`cppast_kind` Callback") {
+    SECTION("Types From Using") {
+      SECTION("A Using Declaration for a Namespace Member") {
+        util::cpp_file header(R"(
+          #include <cstddef>
+
+          using std::nullptr_t;
+
+          void f(nullptr_t x);
+        )");
+
+        auto inja = inja_formatter({}, header);
+
+        const auto& type = inja.type(*inja.parameters(header["f"]).at(0));
+
+        // Unfortunately, types pulled in through a using declaration count as
+        // "unexposed", i.e., we cannot really know anything about them at the
+        // moment. Probably, this could be improved by improving cppast.
+        REQUIRE(inja.cppast_kind(type) == "unexposed");
+        REQUIRE(inja.name(type) == "nullptr_t");
+      }
+    }
+    // TODO(0.6.0-rc): Test other types.
   }
 
   SECTION("`error` Callback") {

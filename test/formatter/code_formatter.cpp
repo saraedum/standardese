@@ -687,10 +687,13 @@ TEST_CASE("Functions can be Formatted", "[code_formatter]") {
       util::cpp_file header(R"(
         #include <cstddef>
 
-        // Has no effect on the printing of nullptr_t below.
-        using std::nullptr_t;
+        // Note that such a using would turn nullptr_t into an unexposed type
+        // and we would therefore loose any namespace information, see test for
+        // cppast_type() in inja_formatter.
+        // using std::nullptr_t;
+        // nullptr_t f();
 
-        nullptr_t f();
+        std::nullptr_t f();
       )");
 
       SECTION("With std namespace") {

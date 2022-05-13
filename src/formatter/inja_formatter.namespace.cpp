@@ -104,8 +104,16 @@ std::optional<std::vector<std::string>> inja_formatter::namespaces(const cppast:
   switch (type.kind()) {
     case cppast::cpp_type_kind::array_t:
       return namespaces(static_cast<const cppast::cpp_array_type&>(type).value_type());
-    case cppast::cpp_type_kind::auto_t:
     case cppast::cpp_type_kind::builtin_t:
+    {
+      switch(static_cast<const cppast::cpp_builtin_type&>(type).builtin_type_kind()) {
+        case cppast::cpp_builtin_type_kind::cpp_nullptr:
+          return std::vector<std::string>{"std"};
+        default:
+          return std::vector<std::string>{};
+      }
+    }
+    case cppast::cpp_type_kind::auto_t:
     case cppast::cpp_type_kind::decltype_auto_t:
     case cppast::cpp_type_kind::decltype_t:
     case cppast::cpp_type_kind::function_t:
