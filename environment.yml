@@ -9,6 +9,7 @@ dependencies:
   - boost-cpp
   - clangdev
   - cmake
+  - cmark-gfm
   - coreutils
   - cxx-compiler
   - make
