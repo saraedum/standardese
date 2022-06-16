@@ -44,8 +44,8 @@ void transformers::transform(model::entity_set& entities, const parser::cpp_cont
   entity_set_extend(entities, transformer::create_uncommented_module_transformer{&entities}.transform());
 
   // Create documents for the entities that we want to document explicitly,
-  // such as tho header files.
-  auto documents = transformer::create_entity_document_transformer{&entities, context, options.entity_document_options}.transform();
+  // such as the header files.
+  entities = transformer::create_entity_document_transformer{&entities, context, options.entity_document_options}.transform();
 
   // TODO(0.6.0-alpha):
   // Create index documents listing all entities of a certain kind.
