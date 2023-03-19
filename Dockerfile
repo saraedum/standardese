@@ -13,6 +13,10 @@ RUN apt-get update && apt-get install -y \
 
 FROM ubuntu:20.04 AS build-dependencies
 
+# See https://serverfault.com/a/1016972
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
 RUN apt-get update && apt-get install -y \
     libclang-dev \
     clang \
@@ -21,6 +25,7 @@ RUN apt-get update && apt-get install -y \
     python3 \
     libboost-program-options-dev \
     libboost-filesystem-dev \
+    git \
   && rm -rf /var/lib/apt/lists/*
 
 FROM build-dependencies AS built
